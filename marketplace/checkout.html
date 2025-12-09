@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran - CraftMart</title>
+    <link rel="stylesheet" href="/marketplace/marketplace-modern.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="loader-cube">
+                <div class="cube-face cube-face-front"></div>
+                <div class="cube-face cube-face-back"></div>
+                <div class="cube-face cube-face-right"></div>
+                <div class="cube-face cube-face-left"></div>
+                <div class="cube-face cube-face-top"></div>
+                <div class="cube-face cube-face-bottom"></div>
+            </div>
+            <h1>Marketplace</h1>
+            <p>Sedang Memuat...</p>
+        </div>
+    </div>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="/index.html">Detail Pembayaran</a></h1>
+            <a href="/marketplace/shop.html" class="cart-link"> 
+            BACK
+            </a>
+        </div>
+        
+    </header>
+
+    <main class="container checkout-page">
+        <div class="checkout-container">
+            <div class="billing-details">
+                <h2>Informasi Tagihan</h2>
+                <form id="checkout-form">
+                    <label for="name">Nama Lengkap</label>
+                    <input type="text" id="name" required>
+
+                    <label for="email">Email</label>
+                    <input type="email" id="email" required>
+
+                    <label for="address">Alamat Pengiriman</label>
+                    <textarea id="address" rows="4" required></textarea>
+                </form>
+            </div>
+            <div class="order-summary">
+                <h2>Ringkasan Pesanan</h2>
+                <div id="order-items">
+                    <!-- Item pesanan akan dimuat di sini -->
+                </div>
+                <hr>
+                <h3>Total: <span id="order-total">Rp 0</span></h3>
+                
+                <h2>Metode Pembayaran</h2>
+                <div class="payment-methods">
+                    <label><input type="radio" name="payment" value="transfer" checked> Transfer Bank</label>
+                    <label><input type="radio" name="payment" value="ewallet"> E-Wallet</label>
+                    <label><input type="radio" name="payment" value="cod"> Bayar di Tempat (COD)</label>
+                </div>
+
+                <button type="submit" form="checkout-form" class="btn btn-success">Tempatkan Pesanan</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <p class="text-gray-400 text-sm">
+                            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved. 
+                            Marketplace trading on hyrost server
+                        </p>
+    </footer>
+
+    <script src="/marketplace/js/script.js"></script>
+</body>
+</html>

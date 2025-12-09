@@ -1,0 +1,373 @@
+:root {
+    --primary-color: #4CAF50;
+    --secondary-color: #2E7D32;
+    --background-color: #f4f4f4;
+    --card-background: #ffffff;
+    --text-color: #333;
+    --border-color: #ddd;
+    --shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Header */
+header {
+    background-color: var(--card-background);
+    box-shadow: var(--shadow);
+    padding: 1rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+header .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-weight: 700;
+    font-size: 1.8rem;
+}
+
+.logo a {
+    text-decoration: none;
+    color: inherit;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 1.5rem;
+}
+
+nav a {
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 600;
+    transition: color 0.3s;
+}
+
+nav a:hover, nav a.active {
+    color: var(--primary-color);
+}
+
+.cart-link {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.cart-link:hover {
+    background-color: var(--secondary-color);
+}
+
+#cart-count {
+    background-color: red;
+    color: white;
+    border-radius: 50%;
+    padding: 2px 6px;
+    margin-left: 8px;
+    font-size: 0.8rem;
+}
+
+/* Main Content */
+main {
+    padding: 2rem 0;
+}
+
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card {
+    background-color: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    padding: 1rem;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+}
+
+.product-card img {
+    max-width: 100%;
+    height: 120px;
+    object-fit: contain;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+}
+
+.product-card h3 {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+}
+
+.price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 1rem 0;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+}
+
+.btn-success {
+    background-color: #2196F3;
+    color: white;
+    width: 100%;
+    padding: 15px;
+    font-size: 1.1rem;
+    margin-top: 1rem;
+}
+
+.btn-danger {
+    background-color: #f44336;
+    color: white;
+}
+
+/* Cart Page */
+.cart-page h1 {
+    margin-bottom: 2rem;
+}
+
+#cart-items-container .cart-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card-background);
+    padding: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.cart-summary {
+    text-align: right;
+    margin-top: 2rem;
+}
+
+.cart-summary h3 {
+    font-size: 1.5rem;
+}
+
+/* Checkout Page */
+.checkout-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.billing-details, .order-summary {
+    background: var(--card-background);
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.billing-details label, .order-summary h2 {
+    display: block;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.billing-details input, .billing-details textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+.payment-methods label {
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* Footer */
+footer {
+    text-align: center;
+    padding: 1.5rem 0;
+    margin-top: 2rem;
+    background-color: #333;
+    color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    header .container {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    nav ul {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    .checkout-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+
+/* =================== LOADING SCREEN =================== */
+
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #2c2c2c; /* Background gelap */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000; /* Pastikan di atas semua elemen */
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.loader-content {
+    text-align: center;
+    color: white;
+}
+
+.loader-content h1 {
+    color: var(--primary-color);
+    margin: 20px 0 10px 0;
+    font-size: 2.5rem;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.loader-content p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.8;
+}
+
+/* Animasi untuk kubus 3D */
+.loader-cube {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: spin-cube 2s infinite linear;
+    margin: 0 auto;
+}
+
+.cube-face {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: rgba(76, 175, 80, 0.7); /* Warna hijau tema dengan transparansi */
+    border: 2px solid #ffffff;
+}
+
+/* Posisikan setiap sisi kubus */
+.cube-face-front  { transform: rotateY(  0deg) translateZ(40px); }
+.cube-face-back   { transform: rotateY(180deg) translateZ(40px); }
+.cube-face-right  { transform: rotateY( 90deg) translateZ(40px); }
+.cube-face-left   { transform: rotateY(-90deg) translateZ(40px); }
+.cube-face-top    { transform: rotateX( 90deg) translateZ(40px); }
+.cube-face-bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+/* Animasi berputar untuk kubus */
+@keyframes spin-cube {
+    from {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
+    to {
+        transform: rotateX(360deg) rotateY(360deg);
+    }
+}
+
+/* Animasi denyut untuk teks */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+/* Class untuk menyembunyikan loading screen */
+#loading-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* --- Upload Page --- */
+.upload-form-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    background: var(--card-background);
+    padding: 2rem;
+    border-radius: 8px;
+    box-shadow: var(--shadow);
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}

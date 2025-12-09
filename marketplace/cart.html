@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keranjang Belanja - CraftMart</title>
+    <link rel="stylesheet" href="/marketplace/marketplace-modern.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="loader-cube">
+                <div class="cube-face cube-face-front"></div>
+                <div class="cube-face cube-face-back"></div>
+                <div class="cube-face cube-face-right"></div>
+                <div class="cube-face cube-face-left"></div>
+                <div class="cube-face cube-face-top"></div>
+                <div class="cube-face cube-face-bottom"></div>
+            </div>
+            <h1>Marketplace</h1>
+            <p>Sedang Memuat...</p>
+        </div>
+    </div>
+    <header>
+        <div class="container">
+            <h1 class="logo"><a href="/index.html">CART</a></h1>
+            <nav></nav>
+            <a href="/marketplace/cart.html" class="cart-link">
+                Keranjang <span id="cart-count">0</span>
+            </a>
+            <a href="/marketplace/shop.html" class="cart-link"> 
+                BACK
+            </a>
+        </div>
+    </header>
+
+    <main class="container cart-page">
+        <h1>Keranjang Belanja Anda</h1>
+        <div id="cart-items-container">
+            <!-- Item keranjang akan dimuat di sini -->
+        </div>
+        <div class="cart-summary">
+            <h3>Total: <span id="cart-total">Rp 0</span></h3>
+            <a href="checkout.html" class="btn btn-primary">Lanjut ke Pembayaran</a>
+        </div>
+    </main>
+
+    <footer>
+        <p class="text-gray-400 text-sm">
+                            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved. 
+                            Marketplace trading on hyrost server
+                        </p>
+    </footer>
+
+    <script src="/marketplace/js/script.js"></script>
+</body>
+</html>

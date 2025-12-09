@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Item Baru - Marketplace</title>
+    <link rel="stylesheet" href="/marketplace/marketplace-modern.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header untuk konsistensi navigasi -->
+    <header>
+        <div class="container">
+            <a href="/marketplace/shop.html" class="cart-link">← BACK</a>
+            <h1>Upload Item Baru</h1>
+            <a href="/marketplace/cart.html" class="cart-link">
+                Keranjang <span id="cart-count">0</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="container">
+        <div class="upload-form-container">
+            <form id="upload-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="item-name">Nama Item</label>
+                    <input type="text" id="item-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-price">Harga (Rp)</label>
+                    <input type="number" id="item-price" name="price" required>
+                </div>
+                <div class="form-group">
+                    <label for="item-category">Kategori</label>
+                    <select id="item-category" name="category" required>
+                        <option value="">-- Pilih Kategori --</option>
+                        <option value="weapon">Senjata</option>
+                        <option value="armor">Armor</option>
+                        <option value="tools">Alat</option>
+                        <option value="natural">Blok Alami</option>
+                        <option value="food">Makanan</option>
+                        <option value="ingredients">Bahan</option>
+                        <option value="building">Blok Bangunan</option>
+                        <option value="colored">Blok Warna</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="item-image">Gambar Item</label>
+                    <input type="file" id="item-image" name="image" accept="image/*" required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Item</button>
+            </form>
+        </div>
+    </main>
+
+    <footer>
+        <p class="text-gray-400 text-sm">
+            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved. 
+            Marketplace trading on hyrost server
+        </p>
+    </footer>
+
+    <!-- Ganti dengan file JavaScript khusus untuk upload -->
+    <script src="/marketplace/js/upload.js"></script>
+</body>
+</html>

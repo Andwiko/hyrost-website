@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost Forum</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../dashboard.css">
+    <link rel="stylesheet" href="forum-styles.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-wrapper">
+        <!-- 1. Left Sidebar (Menu) -->
+        <aside class="sidebar-menu">
+            <button onclick="window.location.href='/dashboard.html'" class="back-dashboard-btn">
+                <i class="fas fa-home"></i>
+                <span>Back To Dashboard</span>
+            </button>
+            
+            <div class="menu-group">
+                <span class="menu-title">MENU</span>
+                <ul class="nav-menu">
+                    <li><a href="#"><i class="fas fa-home"></i> Discover</a></li>
+                    <li><a href="#" class="active"><i class="fas fa-chart-line"></i> Trending</a></li>
+                    <li><a href="#"><i class="fas fa-video"></i> Streaming</a></li>
+                    <li><a href="#"><i class="fas fa-music"></i> Playlist</a></li>
+                    <li><a href="#"><i class="fas fa-bookmark"></i> Bookmark</a></li>
+                </ul>
+            </div>
+
+            <div class="menu-group">
+                <span class="menu-title">CATEGORY</span>
+                <ul class="nav-menu">
+                    <li><a href="#"><i class="fas fa-broadcast-tower"></i> Live Stream</a></li>
+                    <li><a href="#"><i class="fas fa-book"></i> Tutorial</a></li>
+                    <li><a href="#"><i class="fas fa-trophy"></i> Competition</a></li>
+                    <li><a href="#"><i class="fas fa-users"></i> Community</a></li>
+                </ul>
+            </div>
+
+            <div class="bottom-menu">
+                <div class="night-mode-toggle">
+                    <div class="toggle-switch active"></div>
+                    <span>Night mode</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- 2. Main Content (Center) -->
+        <main class="main-feed">
+            <header class="top-header">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="search-input" placeholder="Search">
+                </div>
+                <div class="user-profile-header">
+                    <div class="user-info">
+                        <img src="https://cravatar.eu/helmavatar/Thomas/32.png" alt="Profile">
+                        <span>Thomas <i class="fas fa-chevron-down"></i></span>
+                    </div>
+                    <div class="notification-icon">
+                        <i class="fas fa-bell"></i>
+                        <span class="dot"></span>
+                    </div>
+                </div>
+            </header>
+
+            <div class="feed-content">
+                <h2 class="feed-title">Trending</h2>
+                <div class="thread-list">
+                    <!-- Threads loaded by JS -->
+                </div>
+            </div>
+        </main>
+
+        <!-- 3. Right Sidebar (Widgets) -->
+        <aside class="sidebar-widgets">
+             <!-- Popular Skaters Widget -->
+            <div class="sidebar-widget">
+                <h3>Popular Skaters</h3>
+                <div class="user-grid">
+                    <div class="user-item">
+                        <div class="avatar-wrapper">
+                            <img src="https://cravatar.eu/helmavatar/Steve/64.png" alt="User">
+                            <i class="fas fa-check-circle verified-badge"></i>
+                        </div>
+                        <span>Wijaya</span>
+                    </div>
+                    <div class="user-item">
+                        <div class="avatar-wrapper">
+                            <img src="https://cravatar.eu/helmavatar/Alex/64.png" alt="User">
+                            <i class="fas fa-check-circle verified-badge"></i>
+                        </div>
+                        <span>Thomas</span>
+                    </div>
+                    <div class="user-item">
+                        <div class="avatar-wrapper">
+                            <img src="https://cravatar.eu/helmavatar/Notch/64.png" alt="User">
+                            <i class="fas fa-check-circle verified-badge"></i>
+                        </div>
+                        <span>Johny</span>
+                    </div>
+                    <div class="user-item">
+                        <div class="avatar-wrapper">
+                            <img src="https://cravatar.eu/helmavatar/Jeb/64.png" alt="User">
+                            <i class="fas fa-check-circle verified-badge"></i>
+                        </div>
+                        <span>Andy</span>
+                    </div>
+                    <div class="user-item">
+                        <div class="avatar-wrapper">
+                            <img src="https://cravatar.eu/helmavatar/Herobrine/64.png" alt="User">
+                            <i class="fas fa-check-circle verified-badge"></i>
+                        </div>
+                        <span>Budi</span>
+                    </div>
+                    <div class="user-item">
+                        <div class="avatar-wrapper">
+                            <img src="https://cravatar.eu/helmavatar/Dinnerbone/64.png" alt="User">
+                            <i class="fas fa-check-circle verified-badge"></i>
+                        </div>
+                        <span>Tony</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Popular Searches Widget -->
+            <div class="sidebar-widget">
+                <h3>Popular Searches</h3>
+                <ul class="popular-list">
+                    <li>
+                        <div class="topic-info">
+                            <span class="topic-name">Skateboard Trick</span>
+                            <span class="topic-count">21,983,098</span>
+                        </div>
+                        <div class="progress-bar-small"><div class="fill purple" style="width: 80%"></div></div>
+                    </li>
+                    <li>
+                        <div class="topic-info">
+                            <span class="topic-name">Tutorial skateboard<br>flip and jump</span>
+                            <span class="topic-count">7,098,765</span>
+                        </div>
+                        <div class="progress-bar-small"><div class="fill blue" style="width: 45%"></div></div>
+                    </li>
+                    <li>
+                        <div class="topic-info">
+                            <span class="topic-name">First time Learn using<br>skateboard</span>
+                            <span class="topic-count">7,098,765</span>
+                        </div>
+                        <div class="progress-bar-small"><div class="fill purple" style="width: 60%"></div></div>
+                    </li>
+                    <li>
+                        <div class="topic-info">
+                            <span class="topic-name">Safety Equipment</span>
+                            <span class="topic-count">21,983,098</span>
+                        </div>
+                        <div class="progress-bar-small"><div class="fill blue" style="width: 90%"></div></div>
+                    </li>
+                </ul>
+                <button class="btn-block">See All Popular Searches</button>
+            </div>
+        </aside>
+    </div>
+
+    <!-- Modal untuk membuat thread baru -->
+    <div id="thread-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-labelledby="modal-title">
+            <span class="close-modal" aria-label="Tutup modal">&times;</span>
+            <div class="forum-form">
+              <h3 id="modal-title">Buat Thread Baru</h3>
+              <div class="formatting-toolbar" role="toolbar">
+                <button type="button" data-format="bold" aria-label="Bold"><i class="icon-bold"></i></button>
+                <button type="button" data-format="italic" aria-label="Italic"><i class="icon-italic"></i></button>
+                <button type="button" data-format="preview" aria-label="Preview">Preview</button>
+              </div>
+              <input type="text" id="thread-title" placeholder="Judul Thread">
+              <textarea id="thread-content" placeholder="Konten thread Anda"></textarea>
+              <div id="preview-container" class="hidden"></div>
+              <button class="btn-primary" data-action="submit-thread">Post Thread</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk mengelola forum -->
+    <div id="manage-modal" class="modal hidden" aria-hidden="true">
+        <div class="modal-content" role="dialog" aria-labelledby="manage-modal-title">
+            <span class="close-modal" aria-label="Tutup modal">&times;</span>
+            <h3 id="manage-modal-title">Kelola Forum</h3>
+            <div class="manage-options">
+                <button class="forum-button" data-action="manage-threads">
+                    <img src="../assets/images/icon/note.png" alt="Manage Threads"> Kelola Thread
+                </button>
+                <button class="forum-button" data-action="manage-categories">
+                    <img src="../assets/images/icon/stone_bricks.png" alt="Manage Categories"> Kelola Kategori
+                </button>
+            </div>
+        </div>
+    </div>
+    <script src="../modules/forum.js"></script>
+</body>
+</html>

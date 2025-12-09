@@ -1,0 +1,386 @@
+/* Dashboard Layout Styles */
+:root {
+    --bg-primary: #0f172a;
+    --bg-secondary: #1e293b;
+    --bg-tertiary: #334155;
+    --text-primary: #e2e8f0;
+    --text-secondary: #94a3b8;
+    --accent-primary:  #e98a22;
+    --accent-secondary: #d8681d;
+    --accent-success: #10b981;
+    --accent-danger: #ef4444;
+    --border-color: #475569;
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar */
+.sidebar {
+    position: fixed; /* Membuat sidebar tetap di tempat */
+    top: 0;
+    left: 0;
+    width: 250px; /* Atur lebar sidebar */
+    height: 100vh; /* Membuat sidebar memenuhi tinggi layar */
+    background-color: var(--sidebar-bg); /* Warna latar belakang sidebar */
+    z-index: 1000; /* Memastikan sidebar berada di depan konten lainnya */
+    overflow: hidden; /* Menghapus fitur scroll */
+    box-shadow: var(--shadow-md); /* Menambahkan bayangan untuk memisahkan sidebar dari konten */
+}
+
+.main-content {
+    margin-left: 250px; /* Memberikan ruang untuk sidebar */
+    position: relative; /* Memastikan konten utama tidak tumpang tindih dengan sidebar */
+    z-index: 1; /* Memastikan konten utama berada di bawah sidebar */
+}
+
+/* Penyesuaian untuk mobile */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 100%; /* Sidebar memenuhi lebar layar di mobile */
+        height: auto; /* Tinggi sidebar menyesuaikan konten */
+        position: relative; /* Sidebar tidak fixed di mobile */
+        z-index: 1; /* Sidebar tidak menutupi konten di mobile */
+        box-shadow: none; /* Menghapus bayangan di mobile */
+    }
+    .main-content {
+        margin-left: 0; /* Tidak ada margin di mobile */
+    }
+}
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-logo {
+    width: 40px;
+    height: 40px;
+    background-color: var(--accent-primary);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 1.2rem;
+}
+
+.sidebar-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.nav-section {
+    margin-bottom: 2rem;
+}
+
+.nav-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.75rem;
+}
+
+.nav-list {
+    list-style: none;
+}
+
+.nav-item {
+    margin-bottom: 0.25rem;
+}
+
+.nav-link {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    color: var(--text-secondary);
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    font-weight: 500;
+}
+
+.nav-link:hover,
+.nav-link.active {
+    background-color: var(--bg-tertiary);
+    color: var(--accent-primary);
+}
+
+.nav-link i {
+    width: 20px;
+    text-align: center;
+}
+
+/* Main Content */
+.main-content {
+    flex: 1;
+    margin-left: 280px;
+    padding: 2rem;
+    background-color: var(--bg-primary);
+}
+
+.content-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.content-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.header-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+/* Product Grid */
+.product-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+
+.product-card {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 1.5rem;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow);
+}
+
+.product-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+    border-color: var(--accent-primary);
+}
+
+.product-card img {
+    max-width: 100%;
+    height: 120px;
+    object-fit: contain;
+    margin-bottom: 1rem;
+    border-radius: 8px;
+}
+
+.product-card h3 {
+    font-size: 1.1rem;
+    margin: 0.5rem 0;
+    color: var(--text-primary);
+    font-weight: 600;
+}
+
+.price {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--accent-success);
+    margin: 1rem 0;
+}
+
+/* Buttons */
+.btn {
+    display: inline-block;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+}
+
+.btn-primary {
+    background-color: var(--accent-primary);
+    color: white;
+}
+
+.btn-primary:hover {
+    background-color: var(--accent-secondary);
+    transform: translateY(-1px);
+}
+
+/* Footer */
+.main-footer {
+    margin-left: 280px;
+    padding: 2rem;
+    background-color: var(--bg-secondary);
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    color: var(--text-secondary);
+}
+
+/* Loading Screen */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-primary);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+    transition: opacity 0.5s ease-out, visibility 0.5s ease-out;
+}
+
+.loader-content {
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.loader-content h1 {
+    color: var(--accent-primary);
+    margin: 20px 0 10px 0;
+    font-size: 2.5rem;
+    animation: pulse 1.5s infinite ease-in-out;
+}
+
+.loader-content p {
+    margin: 0;
+    font-size: 1rem;
+    opacity: 0.8;
+    color: var(--text-secondary);
+}
+
+.loader-cube {
+    width: 80px;
+    height: 80px;
+    position: relative;
+    transform-style: preserve-3d;
+    animation: spin-cube 2s infinite linear;
+    margin: 0 auto;
+}
+
+.cube-face {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: rgba(246, 149, 59, 0.7);
+    border: 2px solid var(--accent-primary);
+}
+
+.cube-face-front  { transform: rotateY(  0deg) translateZ(40px); }
+.cube-face-back   { transform: rotateY(180deg) translateZ(40px); }
+.cube-face-right  { transform: rotateY( 90deg) translateZ(40px); }
+.cube-face-left   { transform: rotateY(-90deg) translateZ(40px); }
+.cube-face-top    { transform: rotateX( 90deg) translateZ(40px); }
+.cube-face-bottom { transform: rotateX(-90deg) translateZ(40px); }
+
+@keyframes spin-cube {
+    from {
+        transform: rotateX(0deg) rotateY(0deg);
+    }
+    to {
+        transform: rotateX(360deg) rotateY(360deg);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+#loading-screen.fade-out {
+    opacity: 0;
+    visibility: hidden;
+}
+
+/* Dropdown kategori dan subkategori */
+/* Subkategori sidebar lebih kecil dan rapi */
+.nav-sublist {
+    display: none;
+    position: absolute; /* Mengubah posisi menjadi absolute */
+    background: var(--sidebar-bg); /* Sesuaikan dengan warna latar belakang yang diinginkan */
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-md);
+    padding: 10px 0;
+    margin-top: 0; /* Sesuaikan jika perlu */
+    left: 100%; /* Muncul di sebelah kanan kategori utama */
+    top: 0; /* Sejajar dengan kategori utama */
+    min-width: 180px; /* Lebar minimum untuk subkategori */
+    z-index: 100; /* Pastikan muncul di atas elemen lain */
+    transition: all 0.3s ease;
+}
+
+.nav-sublist.open {
+    display: block;
+}
+
+/* Penyesuaian untuk mobile */
+/* Mobile Navigation Adjustments */
+@media (max-width: 768px) {
+    .nav-sublist {
+        display: none;
+        position: absolute; /* Floating again */
+        left: 50px; /* Offset from icon */
+        top: 100%; /* Drop down below item */
+        width: 200px;
+        background-color: var(--bg-secondary);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 5px 0;
+        z-index: 1000;
+        min-width: unset;
+        margin-top: 5px;
+    }
+
+    .nav-sublist.open {
+        display: block;
+        animation: slideDown 0.3s ease-out;
+    }
+
+    .nav-sublink {
+        padding: 10px 15px 10px 0;
+        font-size: 0.9rem;
+        color: var(--text-secondary);
+    }
+
+    .nav-item {
+        position: static;
+    }
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}

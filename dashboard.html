@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost - Dashboard</title>
+    <link rel="stylesheet" href="dashboard.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="assets/images/hyrost.png" alt="Logo">
+                <h2>Hyrost</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="#" class="nav-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-vote-yea"></i>
+                    <span>Vote</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-hammer"></i>
+                    <span>Keys</span>
+                </a>
+                <a href="/marketplace/shop.html" class="nav-item">
+                    <i class="fas fa-shop"></i>
+                    <span>Shop</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>About Us</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-widgets">
+                <!-- Recent Buyers Widget -->
+                <div class="widget recent-buyers">
+                    <h3>Our Recent Buyers</h3>
+                    <div class="buyer-item">
+                        <img src="https://cravatar.eu/helmavatar/CoolUser123/32.png" alt="CoolUser123">
+                        <div class="buyer-info">
+                            <span class="buyer-name">Akamegakill73</span>
+                            <span class="buyer-rank">[MVP+]</span>
+                        </div>
+                        <span class="buyer-price">$99.99</span>
+                    </div>
+                    <div class="recent-buyers-avatars">
+                        <img src="https://cravatar.eu/avatar/user1/24.png" alt="user1">
+                        <img src="https://cravatar.eu/avatar/user2/24.png" alt="user2">
+                        <img src="https://cravatar.eu/avatar/user3/24.png" alt="user3">
+                        <img src="https://cravatar.eu/avatar/user4/24.png" alt="user4">
+                        <img src="https://cravatar.eu/avatar/user5/24.png" alt="user5">
+                        <span class="more-buyers">+3 more</span>
+                    </div>
+                </div>
+
+                <!-- Server Status Widget -->
+                <div class="widget server-status">
+                    <h3>Server status <span class="status-indicator online"></span></h3>
+                    <div class="server-info">
+                        <p class="server-ip">hyrost.net</p>
+                        <p class="server-players">6/100 players</p>
+                    </div>
+                </div>
+
+                <!-- Giftcard Balance Widget -->
+                <div class="widget giftcard-balance">
+                    <h3>Giftcard balance</h3>
+                    <div class="giftcard-input-group">
+                        <input type="text" placeholder="Card number">
+                        <button><i class="fas fa-search"></i></button>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="sidebarToggle" class="icon-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="assets/images/hyrost_logo.png" alt="Logo">
+                <h2>Hyrost</h2>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Filter System -->
+            <div class="filter-system">
+                <!-- Desktop Filter Bar -->
+                <div class="filter-bar desktop-filter">
+                    <div class="filter-group">
+                        <label for="categoryFilter">Category:</label>
+                        <select id="categoryFilter" class="filter-select">
+                            <option value="all">All Categories</option>
+                            <option value="community">Community</option>
+                            <option value="management">Management</option>
+                            <option value="information">Information</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="statusFilter">Status:</label>
+                        <select id="statusFilter" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="online">Online</option>
+                            <option value="offline">Offline</option>
+                            <option value="maintenance">Maintenance</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="sortFilter">Sort by:</label>
+                        <select id="sortFilter" class="filter-select">
+                            <option value="name">Name</option>
+                            <option value="popularity">Popularity</option>
+                            <option value="recent">Most Recent</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <input type="text" id="searchFilter" class="filter-search" placeholder="Search modules...">
+                        <button class="filter-clear" id="clearFilters">Clear</button>
+                    </div>
+                </div>
+
+                <!-- Mobile Filter Toggle -->
+                <div class="mobile-filter-toggle">
+                    <button id="mobileFilterToggle" class="filter-toggle-btn">
+                        <i class="fas fa-filter"></i>
+                        <span>Filters</span>
+                    </button>
+                    <input type="text" id="mobileSearch" class="mobile-search" placeholder="Search...">
+                </div>
+
+                <!-- Mobile Filter Panel -->
+                <div class="mobile-filter-panel" id="mobileFilterPanel">
+                    <div class="mobile-filter-header">
+                        <h3>Filters</h3>
+                        <button id="closeMobileFilters" class="close-mobile-filters">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="mobile-filter-content">
+                        <div class="filter-group">
+                            <label for="mobileCategoryFilter">Category:</label>
+                            <select id="mobileCategoryFilter" class="filter-select">
+                                <option value="all">All Categories</option>
+                                <option value="community">Community</option>
+                                <option value="management">Management</option>
+                                <option value="information">Information</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="mobileStatusFilter">Status:</label>
+                            <select id="mobileStatusFilter" class="filter-select">
+                                <option value="all">All Status</option>
+                                <option value="online">Online</option>
+                                <option value="offline">Offline</option>
+                                <option value="maintenance">Maintenance</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="mobileSortFilter">Sort by:</label>
+                            <select id="mobileSortFilter" class="filter-select">
+                                <option value="name">Name</option>
+                                <option value="popularity">Popularity</option>
+                                <option value="recent">Most Recent</option>
+                            </select>
+                        </div>
+                        <button class="filter-clear mobile-clear" id="mobileClearFilters">Clear All Filters</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filter Results Info -->
+            <div class="filter-results">
+                <span id="resultsCount">8 modules found</span>
+                <span id="activeFilters" class="active-filters"></span>
+            </div>
+
+            <header class="content-header">
+                <h1>Dashboard</h1>
+                <p>Welcome back! Here's what's happening in your realm.</p>
+            </header>
+
+            <!-- Content Grid -->
+            <div class="content-grid" id="contentGrid">
+                <!-- Forum Module -->
+                <div class="module-card" data-category="community" data-status="online" data-popularity="high" data-name="forum" onclick="window.location.href='modules/forum.html'">
+                    <div class="module-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>Forum</h3>
+                    <p>Discuss with the community</p>
+                    <div class="module-status online">Active</div>
+                </div>
+
+                <!-- Members Module -->
+                <div class="module-card" data-category="community" data-status="online" data-popularity="medium" data-name="members" onclick="openModule('members')">
+                    <div class="module-icon">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Members</h3>
+                    <p>See who's online</p>
+                    <div class="module-status online">Active</div>
+                </div>
+
+                <!-- Vote Module -->
+                <div class="module-card" data-category="community" data-status="online" data-popularity="high" data-name="vote" onclick="openModule('vote')">
+                    <div class="module-icon">
+                        <i class="fas fa-vote-yea"></i>
+                    </div>
+                    <h3>Vote</h3>
+                    <p>Vote for our server</p>
+                    <div class="module-status online">Active</div>
+                </div>
+
+                <!-- Rules Module -->
+                <div class="module-card" data-category="information" data-status="online" data-popularity="low" data-name="rules" onclick="openModule('rules')">
+                    <div class="module-icon">
+                        <i class="fas fa-scroll"></i>
+                    </div>
+                    <h3>Rules</h3>
+                    <p>Read the server rules</p>
+                    <div class="module-status online">Active</div>
+                </div>
+
+                <!-- Status Module -->
+                <div class="module-card" data-category="information" data-status="online" data-popularity="high" data-name="status" onclick="openModule('status')">
+                    <div class="module-icon">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <h3>Status</h3>
+                    <p>Check server status</p>
+                    <div class="module-status online">Active</div>
+                </div>
+
+                <!-- Staff Module -->
+                <div class="module-card" data-category="management" data-status="online" data-popularity="medium" data-name="staff" onclick="openModule('staff')">
+                    <div class="module-icon">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                    <h3>Staff</h3>
+                    <p>Meet the staff team</p>
+                    <div class="module-status online">Active</div>
+                </div>
+
+                <!-- Resources Module -->
+                <div class="module-card" data-category="management" data-status="online" data-popularity="low" data-name="resources" onclick="openModule('resources')">
+                    <div class="module-icon">
+                        <i class="fas fa-folder"></i>
+                    </div>
+                    <h3>Resources</h3>
+                    <p>Manage resources</p>
+                    <div class="module-status online">Active</div>
+                </div>
+
+                <!-- Forms Module -->
+                <div class="module-card" data-category="management" data-status="online" data-popularity="medium" data-name="forms" onclick="openModule('forms')">
+                    <div class="module-icon">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <h3>Forms</h3>
+                    <p>Application forms</p>
+                    <div class="module-status online">Active</div>
+                </div>
+            </div>
+
+            <!-- Additional Content Area with Filterable Items -->
+            <div class="additional-content">
+                <div class="content-header">
+                    <h2>Recent Activity</h2>
+                    <p>Latest updates and content from your realm</p>
+                </div>
+                
+                <!-- Filterable Content Items -->
+                <div class="content-items" id="contentItems">
+                    <!-- Forum Post Item -->
+                    <div class="content-item" data-category="community" data-status="online" data-popularity="high" data-name="forum-post" data-type="post" data-date="2024-01-15">
+                        <div class="item-icon">
+                            <i class="fas fa-comment-dots"></i>
+                        </div>
+                        <div class="item-content">
+                            <h4>New Forum Discussion</h4>
+                            <p>Player guidelines updated for better community experience</p>
+                            <div class="item-meta">
+                                <span class="item-date">2 hours ago</span>
+                                <span class="item-status online">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Server Update Item -->
+                    <div class="content-item" data-category="information" data-status="online" data-popularity="high" data-name="server-update" data-type="update" data-date="2024-01-14">
+                        <div class="item-icon">
+                            <i class="fas fa-server"></i>
+                        </div>
+                        <div class="item-content">
+                            <h4>Server Maintenance Complete</h4>
+                            <p>All systems are now running smoothly with latest updates</p>
+                            <div class="item-meta">
+                                <span class="item-date">1 day ago</span>
+                                <span class="item-status online">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Staff Announcement Item -->
+                    <div class="content-item" data-category="management" data-status="online" data-popularity="medium" data-name="staff-announcement" data-type="announcement" data-date="2024-01-13">
+                        <div class="item-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <div class="item-content">
+                            <h4>New Staff Member</h4>
+                            <p>Welcome our newest moderator to the team!</p>
+                            <div class="item-meta">
+                                <span class="item-date">2 days ago</span>
+                                <span class="item-status online">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Vote Reminder Item -->
+                    <div class="content-item" data-category="community" data-status="online" data-popularity="high" data-name="vote-reminder" data-type="reminder" data-date="2024-01-12">
+                        <div class="item-icon">
+                            <i class="fas fa-vote-yea"></i>
+                        </div>
+                        <div class="item-content">
+                            <h4>Daily Vote Reminder</h4>
+                            <p>Don't forget to vote for our server today!</p>
+                            <div class="item-meta">
+                                <span class="item-date">3 days ago</span>
+                                <span class="item-status online">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Resource Update Item -->
+                    <div class="content-item" data-category="management" data-status="online" data-popularity="low" data-name="resource-update" data-type="resource" data-date="2024-01-11">
+                        <div class="item-icon">
+                            <i class="fas fa-folder-open"></i>
+                        </div>
+                        <div class="item-content">
+                            <h4>Resource Pack Updated</h4>
+                            <p>New textures and sounds added to enhance gameplay</p>
+                            <div class="item-meta">
+                                <span class="item-date">4 days ago</span>
+                                <span class="item-status online">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                
+                    <!-- Rule Change Item -->
+                    <div class="content-item" data-category="information" data-status="online" data-popularity="medium" data-name="rule-change" data-type="rule" data-date="2024-01-10">
+                        <div class="item-icon">
+                            <i class="fas fa-gavel"></i>
+                        </div>
+                        <div class="item-content">
+                            <h4>Rule Amendment</h4>
+                            <p>Building regulations updated for creative world</p>
+                            <div class="item-meta">
+                                <span class="item-date">5 days ago</span>
+                                <span class="item-status online">Active</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Load More Button -->
+                <div class="load-more-container">
+                    <button class="load-more-btn" id="loadMoreBtn">Load More Content</button>
+                </div>
+            </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="moduleModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <div id="moduleContent"></div>
+        </div>
+    </div>
+
+    <!-- Overlay for mobile filters -->
+    <div class="filter-overlay" id="filterOverlay"></div>
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <script src="dashboard.js"></script>
+</body>
+    <footer class="main-footer">
+        <p class="text-gray-400 text-sm">
+            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved on hyrost server
+        </p>
+    </footer>
+</html>

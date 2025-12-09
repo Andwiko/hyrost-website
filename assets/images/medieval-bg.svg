@@ -1,0 +1,54 @@
+<svg viewBox="0 0 1920 1080" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <pattern id="stone" patternUnits="userSpaceOnUse" width="40" height="40">
+      <rect width="40" height="40" fill="#3d2f1f"/>
+      <rect width="20" height="20" fill="#2a1810" x="0" y="0"/>
+      <rect width="20" height="20" fill="#2a1810" x="20" y="20"/>
+      <path d="M0,0 L40,0 L40,40 L0,40 Z" stroke="#d4af37" stroke-width="0.5" fill="none" opacity="0.3"/>
+    </pattern>
+    
+    <linearGradient id="medieval" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2a1810;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#1a0f0a;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d0704;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Stone pattern background -->
+  <rect width="1920" height="1080" fill="url(#medieval)"/>
+  <rect width="1920" height="1080" fill="url(#stone)" opacity="0.6"/>
+  
+  <!-- Ornamental castle towers -->
+  <g opacity="0.15">
+    <!-- Left tower -->
+    <rect x="100" y="300" width="80" height="600" fill="#d4af37"/>
+    <circle cx="140" cy="250" r="50" fill="#f0d787"/>
+    <rect x="120" y="250" width="40" height="50" fill="#d4af37"/>
+    
+    <!-- Right tower -->
+    <rect x="1740" y="400" width="80" height="500" fill="#d4af37"/>
+    <circle cx="1780" cy="350" r="50" fill="#f0d787"/>
+    <rect x="1760" y="350" width="40" height="50" fill="#d4af37"/>
+    
+    <!-- Center tower -->
+    <rect x="920" y="100" width="80" height="800" fill="#d4af37"/>
+    <circle cx="960" cy="50" r="50" fill="#f0d787"/>
+    <rect x="940" y="50" width="40" height="50" fill="#d4af37"/>
+  </g>
+  
+  <!-- Decorative border -->
+  <rect x="0" y="0" width="1920" height="1080" fill="none" stroke="url(#medieval)" stroke-width="20" opacity="0.3"/>
+  
+  <!-- Gold accent lines -->
+  <line x1="0" y1="200" x2="1920" y2="200" stroke="#d4af37" stroke-width="2" opacity="0.1"/>
+  <line x1="0" y1="800" x2="1920" y2="800" stroke="#d4af37" stroke-width="2" opacity="0.1"/>
+  
+  <!-- Vignette effect -->
+  <defs>
+    <radialGradient id="vignette" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" style="stop-color:#000000;stop-opacity:0" />
+      <stop offset="100%" style="stop-color:#000000;stop-opacity:0.4" />
+    </radialGradient>
+  </defs>
+  <rect width="1920" height="1080" fill="url(#vignette)"/>
+</svg>

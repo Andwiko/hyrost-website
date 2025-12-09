@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost - Realm Management System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Sign-In Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="assets/images/hyrost_logo.png" alt="Hyrost Logo">
+                <span>HYROST</span>
+            </a>
+            
+            <div class="nav-links-container" id="navLinksContainer">
+                <div class="navbar-menu">
+                    <a href="index.html" class="nav-link active">HOME</a>
+                    <a href="dashboard.html" class="nav-link">DASHBOARD</a>
+                    <a href="#modules" class="nav-link">MODULES</a>
+                </div>
+                <div class="navbar-buttons">
+                    <button class="btn-primary" onclick="goToDashboard()">GO TO DASHBOARD</button>
+                </div>
+            </div>
+
+            <button class="hamburger" id="hamburger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <h1 class="hero-title">Welcome to Hyrost</h1>
+                <p class="hero-subtitle">Manage your Minecraft realm with powerful tools</p>
+                <div class="hero-buttons">
+                    <button class="btn-primary" onclick="goToDashboard()">ACCESS DASHBOARD</button>
+                    <a href="login.html" class="btn-secondary">LOGIN</a>
+                </div>
+            </div>
+            <div class="hero-image">
+                <img src="assets/images/hero-castle.svg" alt="Hero Castle">
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Dashboard Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <img src="assets/images/icon/diamond_pickaxe.png" alt="Forum" class="feature-icon">
+                    <h3>Forum Management</h3>
+                    <p>Manage discussions and community threads</p>
+                </div>
+                <div class="feature-card">
+                    <img src="assets/images/icon/home.png" alt="Members" class="feature-icon">
+                    <h3>Member Management</h3>
+                    <p>Handle community members and roles</p>
+                </div>
+                <div class="feature-card">
+                    <img src="assets/images/icon/diamond_sword.png" alt="Voting" class="feature-icon">
+                    <h3>Vote System</h3>
+                    <p>Create and manage community polls</p>
+                </div>
+                <div class="feature-card">
+                    <img src="assets/images/icon/stone_bricks.png" alt="Rules" class="feature-icon">
+                    <h3>Rules & Moderation</h3>
+                    <p>Define and enforce realm rules</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Login Modal Removed (Using login.html) -->
+
+    <!-- User Info Display -->
+    <div id="userInfo" class="user-info" style="display: none;">
+        <img id="userAvatar" src="" alt="User Avatar">
+        <span id="userName"></span>
+        <button onclick="logout()" class="btn-secondary">LOGOUT</button>
+    </div>
+
+    <script src="index.js"></script>
+</body>
+    <footer class="main-footer">
+        <p class="text-gray-400 text-sm">
+            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved on hyrost server
+        </p>
+    </footer>
+</html>

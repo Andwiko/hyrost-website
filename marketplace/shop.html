@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Marketplace</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/marketplace/marketplace-layout.css">
+    <link rel="stylesheet" href="/marketplace/marketplace-responsive.css">
+</head>
+<body>
+    <!-- LOADING SCREEN -->
+    <div id="loading-screen">
+        <div class="loader-content">
+            <div class="loader-cube">
+                <div class="cube-face cube-face-front"></div>
+                <div class="cube-face cube-face-back"></div>
+                <div class="cube-face cube-face-right"></div>
+                <div class="cube-face cube-face-left"></div>
+                <div class="cube-face cube-face-top"></div>
+                <div class="cube-face cube-face-bottom"></div>
+            </div>
+            <h1>Marketplace</h1>
+            <p>Sedang Memuat...</p>
+        </div>
+    </div>
+
+    <!-- Mobile Toggle Button -->
+    <button class="mobile-toggle" id="mobile-toggle">
+        <i class="fas fa-bars"></i>
+    </button>
+
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <i class="fas fa-store"></i>
+                </div>
+                <h2 class="sidebar-title">Marketplace</h2>
+            </div>
+            <div class="nav-section">
+                <a href="/dashboard.html" class="nav-link">
+                    <i class="fas fa-home"></i>
+                    Back To Dashboard
+                </a>
+            </div>
+
+            <nav class="nav-section">
+                <h3 class="nav-title">Kategori</h3>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="#" class="nav-link active" data-category="all">
+                            <i class="fas fa-th-large"></i>
+                            Semua Produk
+                        </a>
+                    </li>
+                    
+                    <!-- Weapons Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="weapon">
+                            <i class="fas fa-hammer"></i>
+                            Senjata
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="sword">
+                                    <i class="fas fa-knife"></i> Pedang
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="bow">
+                                    <i class="fas fa-bow"></i> Busur & Panah
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="axe">
+                                    <i class="fas fa-hatchet"></i> Kapak
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="pickaxe">
+                                    <i class="fas fa-hammer"></i> Beliung
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="shovel">
+                                    <i class="fas fa-shovel"></i> Sekop
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="hoe">
+                                    <i class="fas fa-scythe"></i> Cangkul
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="trident">
+                                    <i class="fas fa-trident"></i> Trisula
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="crossbow">
+                                    <i class="fas fa-crossbow"></i> Busur Silang
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Armor Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="armor">
+                            <i class="fas fa-shield-alt"></i>
+                            Armor
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="helmet">
+                                    <i class="fas fa-hard-hat"></i> Helm
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="chestplate">
+                                    <i class="fas fa-tshirt"></i> Chestplate
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="leggings">
+                                    <i class="fas fa-socks"></i> Leggings
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="boots">
+                                    <i class="fas fa-shoe-prints"></i> Boots
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="shield">
+                                    <i class="fas fa-shield-alt"></i> Perisai
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="elytra">
+                                    <i class="fas fa-dove"></i> Elytra
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Tools Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="tools">
+                            <i class="fas fa-tools"></i>
+                            Alat
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="fishing-rod">
+                                    <i class="fas fa-fish"></i> Pancingan
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="shears">
+                                    <i class="fas fa-cut"></i> Gunting
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="flint-steel">
+                                    <i class="fas fa-fire"></i> Flint & Steel
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="bucket">
+                                    <i class="fas fa-bucket"></i> Ember
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="compass">
+                                    <i class="fas fa-compass"></i> Kompas
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="clock">
+                                    <i class="fas fa-clock"></i> Jam
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="lead">
+                                    <i class="fas fa-link"></i> Tali Kuda
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="name-tag">
+                                    <i class="fas fa-tag"></i> Name Tag
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="carrot-stick">
+                                    <i class="fas fa-carrot"></i> Wortel Tongkat
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="warped-fungus">
+                                    <i class="fas fa-seedling"></i> Warped Fungus on Stick
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Natural Blocks Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="natural">
+                            <i class="fas fa-mountain"></i>
+                            Blok Alami
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="stone">
+                                    <i class="fas fa-gem"></i> Batu
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="dirt">
+                                    <i class="fas fa-square"></i> Tanah
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="grass">
+                                    <i class="fas fa-leaf"></i> Rumput
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="sand">
+                                    <i class="fas fa-hourglass"></i> Pasir
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="gravel">
+                                    <i class="fas fa-circle"></i> Kerikil
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="clay">
+                                    <i class="fas fa-clay"></i> Tanah Liat
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="snow">
+                                    <i class="fas fa-snowflake"></i> Salju
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="ice">
+                                    <i class="fas fa-cube"></i> Es
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="obsidian">
+                                    <i class="fas fa-gem"></i> Obsidian
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="netherrack">
+                                    <i class="fas fa-fire"></i> Netherrack
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="end-stone">
+                                    <i class="fas fa-square"></i> End Stone
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="prismarine">
+                                    <i class="fas fa-water"></i> Prismarine
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Wood Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="wood">
+                            <i class="fas fa-tree"></i>
+                            Kayu
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="oak">
+                                    <i class="fas fa-tree"></i> Oak
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="spruce">
+                                    <i class="fas fa-tree"></i> Spruce
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="birch">
+                                    <i class="fas fa-tree"></i> Birch
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="jungle">
+                                    <i class="fas fa-tree"></i> Jungle
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="acacia">
+                                    <i class="fas fa-tree"></i> Acacia
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="dark-oak">
+                                    <i class="fas fa-tree"></i> Dark Oak
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="crimson">
+                                    <i class="fas fa-tree"></i> Crimson
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="warped">
+                                    <i class="fas fa-tree"></i> Warped
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" data-category="Senjata">Senjata</a>
+                      <ul class="nav-sublist">
+                        <li><a class="nav-sublink" data-subcategory="Pedang">Pedang</a></li>
+                        <li><a class="nav-sublink" data-subcategory="Panah">Panah</a></li>
+                      </ul>
+                    </li>
+                    
+                    <!-- Ores Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="ores">
+                            <i class="fas fa-gem"></i>
+                            Bahan Tambang
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="coal">
+                                    <i class="fas fa-circle"></i> Batu Bara
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="iron">
+                                    <i class="fas fa-circle"></i> Besi
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="gold">
+                                    <i class="fas fa-circle"></i> Emas
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="redstone">
+                                    <i class="fas fa-bolt"></i> Redstone
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="lapis">
+                                    <i class="fas fa-gem"></i> Lapis Lazuli
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="diamond">
+                                    <i class="fas fa-gem"></i> Berlian
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="emerald">
+                                    <i class="fas fa-gem"></i> Zamrud
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="quartz">
+                                    <i class="fas fa-gem"></i> Kuarsa
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="ancient-debris">
+                                    <i class="fas fa-gem"></i> Ancient Debris
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Food Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="food">
+                            <i class="fas fa-apple-alt"></i>
+                            Makanan
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="meat">
+                                    <i class="fas fa-drumstick-bite"></i> Daging
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="fish">
+                                    <i class="fas fa-fish"></i> Ikan
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="vegetables">
+                                    <i class="fas fa-carrot"></i> Sayuran
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="fruits">
+                                    <i class="fas fa-apple-alt"></i> Buah
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="bread">
+                                    <i class="fas fa-bread-slice"></i> Roti
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="soup">
+                                    <i class="fas fa-bowl"></i> Sup
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="cake">
+                                    <i class="fas fa-birthday-cake"></i> Kue
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="golden">
+                                    <i class="fas fa-crown"></i> Makanan Emas
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="special">
+                                    <i class="fas fa-star"></i> Makanan Khusus
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Plants Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="plants">
+                            <i class="fas fa-seedling"></i>
+                            Tanaman
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="seeds">
+                                    <i class="fas fa-seedling"></i> Benih
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="saplings">
+                                    <i class="fas fa-tree"></i> Bibit Pohon
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="flowers">
+                                    <i class="fas fa-flower"></i> Bunga
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="grass">
+                                    <i class="fas fa-leaf"></i> Rumput
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="mushrooms">
+                                    <i class="fas fa-seedling"></i> Jamur
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="crops">
+                                    <i class="fas fa-wheat"></i> Tanaman
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="vines">
+                                    <i class="fas fa-leaf"></i> Liana
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="cactus">
+                                    <i class="fas fa-tree"></i> Kaktus
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="sugar-cane">
+                                    <i class="fas fa-leaf"></i> Tebu
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Building Blocks Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="building">
+                            <i class="fas fa-building"></i>
+                            Blok Bangunan
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="bricks">
+                                    <i class="fas fa-square"></i> Bata
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="stone-bricks">
+                                    <i class="fas fa-square"></i> Bata Batu
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="glass">
+                                    <i class="fas fa-square"></i> Kaca
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="concrete">
+                                    <i class="fas fa-square"></i> Beton
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="terracotta">
+                                    <i class="fas fa-square"></i> Terracotta
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="planks">
+                                    <i class="fas fa-square"></i> Papan Kayu
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="stairs">
+                                    <i class="fas fa-stairs"></i> Tangga
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="slabs">
+                                    <i class="fas fa-minus"></i> Slab
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="fences">
+                                    <i class="fas fa-barcode"></i> Pagar
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="doors">
+                                    <i class="fas fa-door-open"></i> Pintu
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Colored Blocks Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="colored">
+                            <i class="fas fa-palette"></i>
+                            Blok Warna
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="wool">
+                                    <i class="fas fa-square"></i> Wol
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="carpet">
+                                    <i class="fas fa-square"></i> Karpet
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="stained-glass">
+                                    <i class="fas fa-square"></i> Kaca Berwarna
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="concrete-powder">
+                                    <i class="fas fa-square"></i> Serbuk Beton
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="glazed-terracotta">
+                                    <i class="fas fa-square"></i> Glazed Terracotta
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="shulker-box">
+                                    <i class="fas fa-box"></i> Shulker Box
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="bed">
+                                    <i class="fas fa-bed"></i> Tempat Tidur
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="banner">
+                                    <i class="fas fa-flag"></i> Banner
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Redstone Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="redstone">
+                            <i class="fas fa-bolt"></i>
+                            Redstone
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="redstone-dust">
+                                    <i class="fas fa-bolt"></i> Redstone Dust
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="redstone-torch">
+                                    <i class="fas fa-fire"></i> Obor Redstone
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="repeater">
+                                    <i class="fas fa-redo"></i> Repeater
+                                </a>
+</li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="comparator">
+<i class="fas fa-balance-scale"></i> Komparator
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+<a href="#" class="nav-sublink" data-category="dispenser">
+                                    <i class="fas fa-arrow-up"></i> Dispenser
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+<a href="#" class="nav-sublink" data-category="dropper">
+                                    <i class="fas fa-arrow-down"></i> Dropper
+                                </a>
+</li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="piston">
+                                    <i class="fas fa-arrows-alt"></i> Piston
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="observer">
+                                    <i class="fas fa-eye"></i> Observer
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="hopper">
+                                    <i class="fas fa-funnel"></i> Hopper
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="daylight-sensor">
+                                    <i class="fas fa-sun"></i> Daylight Sensor
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Transportation Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="transportation">
+                            <i class="fas fa-route"></i>
+                            Transportasi
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="rail">
+                                    <i class="fas fa-road"></i> Rel
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="powered-rail">
+                                    <i class="fas fa-bolt"></i> Powered Rail
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="detector-rail">
+                                    <i class="fas fa-search"></i> Detector Rail
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="activator-rail">
+                                    <i class="fas fa-play"></i> Activator Rail
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="minecart">
+                                    <i class="fas fa-cart"></i> Minecart
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="boat">
+                                    <i class="fas fa-ship"></i> Perahu
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="saddle">
+                                    <i class="fas fa-horse"></i> Saddle
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="elytra">
+                                    <i class="fas fa-dove"></i> Elytra
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Potions Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="potions">
+                            <i class="fas fa-flask"></i>
+                            Ramuan
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="potion">
+                                    <i class="fas fa-flask"></i> Ramuan
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="splash-potion">
+                                    <i class="fas fa-flask"></i> Splash Potion
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="lingering-potion">
+                                    <i class="fas fa-flask"></i> Lingering Potion
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="glass-bottle">
+                                    <i class="fas fa-wine-bottle"></i> Botol Kaca
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="brewing-stand">
+                                    <i class="fas fa-flask"></i> Brewing Stand
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="cauldron">
+                                    <i class="fas fa-bucket"></i> Kuali
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="blaze-powder">
+                                    <i class="fas fa-fire"></i> Blaze Powder
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="fermented-spider-eye">
+                                    <i class="fas fa-eye"></i> Fermented Spider Eye
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Enchanting Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="enchanting">
+                            <i class="fas fa-magic"></i>
+                            Enchanting
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="enchantment-table">
+                                    <i class="fas fa-book"></i> Meja Enchanting
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="bookshelf">
+                                    <i class="fas fa-book"></i> Rak Buku
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="book">
+                                    <i class="fas fa-book"></i> Buku
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="enchanted-book">
+                                    <i class="fas fa-book"></i> Buku Enchanted
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="experience-bottle">
+                                    <i class="fas fa-flask"></i> Experience Bottle
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="anvil">
+                                    <i class="fas fa-hammer"></i> Anvil
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="grindstone">
+                                    <i class="fas fa-circle"></i> Grindstone
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="enchanted-golden-apple">
+                                    <i class="fas fa-apple-alt"></i> Enchanted Golden Apple
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                    
+                    <!-- Miscellaneous Category with Subcategories -->
+                    <li class="nav-item">
+                        <a href="#" class="nav-link" data-category="miscellaneous">
+                            <i class="fas fa-box"></i>
+                            Lain-lain
+                        </a>
+                        <ul class="nav-sublist">
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="spawn-egg">
+                                    <i class="fas fa-egg"></i> Spawn Egg
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="music-disc">
+                                    <i class="fas fa-music"></i> Music Disc
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="firework">
+                                    <i class="fas fa-rocket"></i> Kembang Api
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="armor-stand">
+                                    <i class="fas fa-user"></i> Armor Stand
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="item-frame">
+                                    <i class="fas fa-frame"></i> Item Frame
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="flower-pot">
+                                    <i class="fas fa-pot"></i> Pot Bunga
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="banner">
+                                    <i class="fas fa-flag"></i> Banner
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="shield">
+                                    <i class="fas fa-shield-alt"></i> Perisai Berpola
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="totem">
+                                    <i class="fas fa-shield-alt"></i> Totem of Undying
+                                </a>
+                            </li>
+                            <li class="nav-subitem">
+                                <a href="#" class="nav-sublink" data-category="dragon-egg">
+                                    <i class="fas fa-egg"></i> Dragon Egg
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+
+            <nav class="nav-section">
+                <h3 class="nav-title">Aksi</h3>
+                <ul class="nav-list">
+                    <li class="nav-item">
+                        <a href="/marketplace/upload.html" class="nav-link">
+                            <i class="fas fa-upload"></i>
+                            Upload Item
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="cart.html" class="nav-link">
+                            <i class="fas fa-shopping-cart"></i>
+                            Keranjang
+                            <span id="sidebar-cart-count" class="cart-badge">0</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="content-title">Marketplace</h1>
+                <div class="header-actions">
+                    <span id="product-count">0 produk</span>
+                </div>
+            </div>
+
+            <div id="product-container" class="product-grid">
+                <!-- Produk akan dimuat di sini oleh JavaScript -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <p class="text-gray-400 text-sm">
+            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved. 
+            Marketplace trading on hyrost server
+        </p>
+    </footer>
+
+    <!-- SCRIPT FILTER & DROPDOWN KATEGORI -->
+    <script>
+        document.querySelectorAll('.nav-item > .nav-link[data-category]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const sublist = this.nextElementSibling;
+                if (sublist && sublist.classList.contains('nav-sublist')) {
+                    // Tutup subkategori lain
+                    document.querySelectorAll('.nav-sublist.open').forEach(sub => {
+                        if (sub !== sublist) sub.classList.remove('open');
+                    });
+                    // Toggle subkategori yang diklik
+                    sublist.classList.toggle('open');
+                    // Highlight kategori aktif
+                    document.querySelectorAll('.nav-link[data-category]').forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Filter produk berdasarkan subkategori
+        document.querySelectorAll('.nav-sublink[data-category]').forEach(sublink => {
+            sublink.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-sublink[data-category]').forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+                const category = this.getAttribute('data-category');
+                filterProducts(category);
+                e.stopPropagation(); // Agar tidak menutup dropdown
+            });
+        });
+
+        // Filter produk berdasarkan kategori utama
+        document.querySelectorAll('.nav-link[data-category]').forEach(link => {
+            link.addEventListener('click', function(e) {
+                const category = this.getAttribute('data-category');
+                filterProducts(category);
+            });
+        });
+
+        // Fungsi filter produk
+        function filterProducts(category) {
+            const products = document.querySelectorAll('.product-card');
+            products.forEach(card => {
+                if (!category || category === 'all') {
+                    card.style.display = '';
+                } else {
+                    const cardCategory = card.getAttribute('data-category');
+                    card.style.display = (cardCategory === category) ? '' : 'none';
+                }
+            });
+            updateProductCount();
+        }
+
+        // Responsif: tutup dropdown di mobile saat klik di luar sidebar & dropdown
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                const sidebar = document.getElementById('sidebar');
+                if (!sidebar.contains(e.target)) {
+                    document.querySelectorAll('.nav-sublist.open').forEach(sublist => {
+                        sublist.classList.remove('open');
+                    });
+                }
+            }
+        });
+    </script>
+    <script src="/marketplace/js/script.js"></script>
+    <script>
+        // Mobile sidebar toggle
+        const mobileToggle = document.getElementById('mobile-toggle');
+        const sidebar = document.getElementById('sidebar');
+
+        mobileToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('active');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) {
+                if (!sidebar.contains(e.target) && !mobileToggle.contains(e.target)) {
+                    sidebar.classList.remove('active');
+                }
+            }
+        });
+
+        // Update cart count in sidebar
+        function updateSidebarCartCount() {
+            const cartCount = document.getElementById('cart-count');
+            const sidebarCartCount = document.getElementById('sidebar-cart-count');
+            if (cartCount && sidebarCartCount) {
+                sidebarCartCount.textContent = cartCount.textContent;
+            }
+        }
+
+        // Call this function when cart count updates
+        setTimeout(updateSidebarCartCount, 1000);
+
+        // Active nav link handling
+        const navLinks = document.querySelectorAll('.nav-link[data-category]');
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+            });
+        });
+
+        // Update product count
+        function updateProductCount() {
+            const productContainer = document.getElementById('product-container');
+            const productCount = document.getElementById('product-count');
+            if (productContainer && productCount) {
+                const productCards = productContainer.querySelectorAll('.product-card');
+                productCount.textContent = `${productCards.length} produk`;
+            }
+        }
+
+        // Call this after products are loaded
+        setTimeout(updateProductCount, 2000);
+    </script>
+</body>
+</html>
