@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-const User = require('../models/User');
+// const User = require('../models/User'); // Disabling Mongoose model requirement
 
 // Middleware untuk verifikasi JWT
 exports.verifyToken = (req, res, next) => {
@@ -17,7 +17,8 @@ exports.verifyToken = (req, res, next) => {
 
 // Middleware untuk verifikasi admin
 exports.verifyAdmin = (req, res, next) => {
-  if (req.user?.role !== 'admin') {
+  // Check role case-insensitively
+  if (!req.user || !req.user.role || req.user.role.toLowerCase() !== 'admin') {
     return res.status(403).json({ message: 'Admin access required' });
   }
   next();

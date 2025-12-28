@@ -1,0 +1,145 @@
+/* Rewards Page Styles */
+
+.rewards-container {
+    padding: 30px;
+    text-align: center;
+}
+
+.streak-header {
+    margin-bottom: 40px;
+}
+
+.streak-header h2 {
+    font-size: 2.5rem;
+    color: #fff;
+    margin-bottom: 10px;
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.streak-header p {
+    color: #aaa;
+    font-size: 1.1rem;
+}
+
+/* Grid */
+.rewards-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+    margin-bottom: 50px;
+}
+
+.reward-card {
+    background: #1a1a1a;
+    border: 2px solid #333;
+    border-radius: 12px;
+    width: 140px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    opacity: 0.7;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.reward-card.active {
+    opacity: 1;
+    border-color: #e98a22;
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(233, 138, 34, 0.4);
+    z-index: 2;
+}
+
+.reward-card.claimed {
+    opacity: 0.5;
+    border-color: #4ade80;
+    filter: grayscale(0.5);
+}
+
+.reward-card.claimed::after {
+    content: '\f00c'; /* FontAwesome Check */
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    color: #4ade80;
+}
+
+.day-label {
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 15px;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+}
+
+.reward-icon {
+    font-size: 2.5rem;
+    color: #e98a22;
+    margin-bottom: 15px;
+}
+
+.reward-amount {
+    color: #aaa;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Special styling for Day 7 */
+.reward-card:nth-child(7) {
+    border-color: #a855f7;
+    width: 160px;
+}
+
+.reward-card:nth-child(7) .reward-icon { color: #a855f7; }
+.reward-card:nth-child(7) .day-label { color: #a855f7; }
+
+/* Action Area */
+.btn-claim {
+    background: linear-gradient(135deg, #e98a22 0%, #d07a1e 100%);
+    color: white;
+    border: none;
+    padding: 15px 40px;
+    border-radius: 50px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(233, 138, 34, 0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 auto;
+}
+
+.btn-claim:disabled {
+    background: #444;
+    cursor: not-allowed;
+    box-shadow: none;
+    color: #888;
+}
+
+.btn-claim:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(233, 138, 34, 0.5);
+}
+
+.timer-text {
+    margin-top: 15px;
+    color: #888;
+    font-size: 0.9rem;
+}
+
+.timer-text span {
+    color: #fff;
+    font-family: monospace;
+    font-size: 1.1rem;
+}

@@ -3,58 +3,149 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Keranjang Belanja - CraftMart</title>
-    <link rel="stylesheet" href="/marketplace/marketplace-modern.css">
+    <title>Hyrost Market - Keranjang</title>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../dashboard.css">
+    <link rel="stylesheet" href="../inventory/inventory.css">
+    <link rel="stylesheet" href="shop_dashboard.css">
+    
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body>
-    <div id="loading-screen">
-        <div class="loader-content">
-            <div class="loader-cube">
-                <div class="cube-face cube-face-front"></div>
-                <div class="cube-face cube-face-back"></div>
-                <div class="cube-face cube-face-right"></div>
-                <div class="cube-face cube-face-left"></div>
-                <div class="cube-face cube-face-top"></div>
-                <div class="cube-face cube-face-bottom"></div>
+<body class="page-cart">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/hyrost.png" alt="Logo">
+                <h2>Hyrost</h2>
             </div>
-            <h1>Marketplace</h1>
-            <p>Sedang Memuat...</p>
+            
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="../account/index.html" class="nav-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="../question/index.html" class="nav-item">
+                    <i class="fas fa-globe-asia"></i>
+                    <span>World</span>
+                </a>
+                <a href="../modules/forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="../modules/leaderboard.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="../inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Storage</span>
+                </a>
+                <a href="shop.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Shop</span>
+                </a>
+                <a href="auction.html" class="nav-item">
+                    <i class="fas fa-gavel"></i>
+                    <span>Auction</span>
+                </a>
+                <a href="../modules/role_shop.html" class="nav-item">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Role Shop</span>
+                </a>
+                <a href="../modules/rewards.html" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="../modules/wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki</span>
+                </a>
+                <a href="../modules/social.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Social</span>
+                </a>
+                <a href="../modules/support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Support</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Info</span>
+                </a>
+            </nav>
+
+
+
+        <!-- Server Status Widget -->
+        <div class="sidebar-widget server-status-widget">
+            <div class="widget-header">
+                <h3>Status Server</h3>
+                <span class="status-dot online"></span>
+            </div>
+            <div class="widget-content">
+                <p class="server-ip">play.hyrost.net</p>
+                <p class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</p>
+            </div>
         </div>
+        </aside>
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="sidebarToggle" class="icon-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="../assets/images/hyrost.png" alt="Logo">
+                <h2>Hyrost</h2>
+            </div>
+        </div>
+
+        <!-- Sidebar Overlay -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-left">
+                    <a href="shop.html" class="back-link"><i class="fas fa-arrow-left"></i> Kembali ke Toko</a>
+                    <h1>Keranjang Belanja</h1>
+                </div>
+            </header>
+
+            <div class="cart-container">
+                <div id="emptyCartMsg" style="display: none; text-align: center; color: var(--text-secondary); padding: 40px;">
+                    <i class="fas fa-shopping-basket" style="font-size: 4rem; opacity: 0.5; margin-bottom: 20px;"></i>
+                    <p>Keranjang Anda kosong.</p>
+                </div>
+                
+                <div id="cartItems" class="cart-items-list">
+                    <!-- Items rendered by JS -->
+                </div>
+
+                <div class="cart-summary-card">
+                    <div class="summary-row total">
+                        <span>Total</span>
+                        <span id="cartTotal">Rp 0</span>
+                    </div>
+                    <a href="checkout.html" id="btnCheckout" class="btn-primary-market" style="display: inline-block; text-align: center; margin-top: 20px;">
+                        Lanjut ke Pembayaran <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+        </main>
     </div>
-    <header>
-        <div class="container">
-            <h1 class="logo"><a href="/index.html">CART</a></h1>
-            <nav></nav>
-            <a href="/marketplace/cart.html" class="cart-link">
-                Keranjang <span id="cart-count">0</span>
-            </a>
-            <a href="/marketplace/shop.html" class="cart-link"> 
-                BACK
-            </a>
-        </div>
-    </header>
 
-    <main class="container cart-page">
-        <h1>Keranjang Belanja Anda</h1>
-        <div id="cart-items-container">
-            <!-- Item keranjang akan dimuat di sini -->
-        </div>
-        <div class="cart-summary">
-            <h3>Total: <span id="cart-total">Rp 0</span></h3>
-            <a href="checkout.html" class="btn btn-primary">Lanjut ke Pembayaran</a>
-        </div>
-    </main>
-
-    <footer>
-        <p class="text-gray-400 text-sm">
-                            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved. 
-                            Marketplace trading on hyrost server
-                        </p>
-    </footer>
-
-    <script src="/marketplace/js/script.js"></script>
+    <script src="../inventory/inventory.js"></script> <!-- Sidebar & Auth -->
+    <script src="market.js"></script> <!-- Market Logic -->
+    <script src='../assets/js/server_status.js'></script>
 </body>
 </html>

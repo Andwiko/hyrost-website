@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost - Messages</title>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../dashboard.css">
+    <link rel="stylesheet" href="social.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="chat-page-body">
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/hyrost.png" alt="Logo">
+                <h2>Hyrost</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="../account/index.html" class="nav-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="../question/index.html" class="nav-item">
+                    <i class="fas fa-globe-asia"></i>
+                    <span>World</span>
+                </a>
+                <a href="forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="../inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Storage</span>
+                </a>
+                <a href="../marketplace/shop.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Shop</span>
+                </a>
+                <a href="../marketplace/auction.html" class="nav-item">
+                    <i class="fas fa-gavel"></i>
+                    <span>Auction</span>
+                </a>
+                <a href="role_shop.html" class="nav-item">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Role Shop</span>
+                </a>
+                <a href="rewards.html" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki</span>
+                </a>
+                <a href="social.html" class="nav-item active">
+                    <i class="fas fa-users"></i>
+                    <span>Social</span>
+                </a>
+                <a href="support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Support</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Info</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Chat Interface -->
+        <main class="chat-interface">
+            <div class="chat-sidebar">
+                <div class="chat-header">
+                    <h3>Pesan</h3>
+                    <button class="new-chat-btn"><i class="fas fa-edit"></i></button>
+                </div>
+                <div class="search-chat">
+                    <input type="text" placeholder="Cari percakapan...">
+                </div>
+                <div class="conversation-list">
+                    <div class="conversation active">
+                        <img src="https://ui-avatars.com/api/?name=Steve+Craft&background=random" alt="User">
+                        <div class="conv-info">
+                            <h4>SteveCraft</h4>
+                            <p>Login kapan bro?</p>
+                        </div>
+                        <span class="time">10m</span>
+                    </div>
+                    <div class="conversation unread">
+                        <img src="https://ui-avatars.com/api/?name=Admin+Hyrost&background=random" alt="User">
+                        <div class="conv-info">
+                            <h4>Admin Hyrost</h4>
+                            <p>Tiket support Anda telah...</p>
+                        </div>
+                        <span class="badge">1</span>
+                    </div>
+                </div>
+                <div class="back-to-social">
+                    <a href="social.html"><i class="fas fa-arrow-left"></i> Kembali ke Social Hub</a>
+                </div>
+            </div>
+
+            <div class="chat-main">
+                <div class="chat-user-header">
+                    <div class="user-details">
+                        <img src="https://ui-avatars.com/api/?name=Steve+Craft&background=random" alt="User">
+                        <div>
+                            <h3>SteveCraft</h3>
+                            <span class="status online">Online</span>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button><i class="fas fa-phone"></i></button>
+                        <button><i class="fas fa-video"></i></button>
+                        <button><i class="fas fa-ellipsis-v"></i></button>
+                    </div>
+                </div>
+
+                <div class="messages-area" id="messagesArea">
+                    <div class="message received">
+                        <p>Bro, nanti malam war clan jam berapa?</p>
+                        <span class="msg-time">19:30</span>
+                    </div>
+                    <div class="message sent">
+                        <p>Jam 8 malam bro, jangan telat ya!</p>
+                        <span class="msg-time">19:32</span>
+                    </div>
+                    <div class="message received">
+                        <p>Siap, gue siapin pot dulu.</p>
+                        <span class="msg-time">19:33</span>
+                    </div>
+                    <div class="message sent">
+                        <p>Oke mantap.</p>
+                        <span class="msg-time">19:35</span>
+                    </div>
+                     <div class="message received">
+                        <p>Login kapan bro?</p>
+                        <span class="msg-time">20:01</span>
+                    </div>
+                </div>
+
+                <div class="message-input-area">
+                    <button class="attach-btn"><i class="fas fa-paperclip"></i></button>
+                    <input type="text" id="msgInput" placeholder="Ketik pesan...">
+                    <button class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="social.js"></script>
+</body>
+</html>

@@ -2,21 +2,23 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "- Autentikasi (JWT, Google/email)\r - Role: admin & user\r - Membership (akses premium)\r - Forum (thread, reply, kategori)\r - Chat (pribadi & grup, real-time)\r - Dashboard admin",
-  "main": "app.js",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node app.js",
-    "dev": "nodemon app.js"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "express": "^5.2.1",
-    "multer": "^2.0.2",
-    "mongoose": "^8.0.0",
+    "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
+    "express": "^5.2.1",
+    "google-auth-library": "^10.5.0",
     "jsonwebtoken": "^9.0.2",
-    "bcryptjs": "^2.4.3"
+    "mongoose": "^8.0.0",
+    "multer": "^2.0.2",
+    "mysql2": "^3.15.3"
   }
 }

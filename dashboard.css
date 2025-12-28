@@ -65,7 +65,34 @@ body {
 
 .sidebar-nav {
     margin-bottom: 30px;
+    overflow-y: scroll !important;
+    flex: 1 1 auto;
+    padding-right: 10px;
+    max-height: calc(100vh - 250px); /* Increased from 400px to show more items */
+    min-height: 400px;
 }
+
+/* Custom scrollbar for sidebar-nav - MUCH MORE VISIBLE */
+.sidebar-nav::-webkit-scrollbar {
+    width: 10px; /* Wider scrollbar */
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+    background: rgba(233, 138, 34, 0.15); /* Orange tint */
+    border-radius: 5px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--accent-orange); /* Bright orange */
+    border-radius: 5px;
+    border: 2px solid rgba(0, 0, 0, 0.3);
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: #ffa500; /* Even brighter on hover */
+    border-color: var(--accent-orange);
+}
+
 
 .nav-item {
     display: flex;
@@ -907,3 +934,40 @@ body {
         transition: none;
     }
 }
+/* Notification System */
+.notification-wrapper { position: relative; display: inline-block; }
+.notification-btn { position: relative; background: rgba(255, 255, 255, 0.05); border: none; color: #fff; width: 40px; height: 40px; border-radius: 50%; cursor: pointer; transition: all 0.3s ease; display: flex; align-items: center; justify-content: center; }
+.notification-btn:hover { background: rgba(255, 255, 255, 0.1); transform: translateY(-1px); }
+.notification-badge { position: absolute; top: -2px; right: -2px; background: #ef4444; color: white; font-size: 10px; padding: 2px 5px; border-radius: 10px; border: 2px solid #0f0f0f; display: none; }
+.notification-dropdown { position: absolute; top: 50px; right: 0; width: 320px; background: #1a1a1a; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); z-index: 1000; opacity: 0; visibility: hidden; transform: translateY(-10px); transition: all 0.3s ease; }
+.notification-dropdown.active { opacity: 1; visibility: visible; transform: translateY(0); }
+.dropdown-header { padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); display: flex; justify-content: space-between; align-items: center; }
+.dropdown-header h3 { margin: 0; font-size: 16px; color: #fff; }
+.mark-read-btn { background: none; border: none; color: #4ade80; font-size: 12px; cursor: pointer; }
+.notification-list { max-height: 300px; overflow-y: auto; }
+.notification-item { display: flex; padding: 15px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); transition: background 0.2s; }
+.notification-item:hover { background: rgba(255, 255, 255, 0.02); }
+.notification-item.unread { background: rgba(74, 222, 128, 0.05); }
+.notif-icon { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 12px; flex-shrink: 0; }
+.notif-content { flex: 1; }
+.notif-header { display: flex; justify-content: space-between; margin-bottom: 4px; }
+.notif-title { color: #fff; font-size: 14px; font-weight: 500; }
+.notif-time { color: #666; font-size: 11px; }
+.notif-message { color: #aaa; font-size: 12px; margin: 0; line-height: 1.4; }
+.dropdown-footer { padding: 10px; text-align: center; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+.dropdown-footer a { color: #4ade80; text-decoration: none; font-size: 13px; font-weight: 500; }
+.empty-notif { padding: 20px; text-align: center; color: #666; font-size: 13px; }
+
+/* Header Alignment */
+.header-title-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.header-title-row h1 { margin-bottom: 0; }
+
+/* Server Status Widget */
+.sidebar-widget { margin-top: auto; padding: 20px; background: rgba(255, 255, 255, 0.03); border-top: 1px solid rgba(255, 255, 255, 0.05); }
+.widget-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.widget-header h3 { font-size: 14px; color: #888; margin: 0; font-weight: 500; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; background: #444; box-shadow: 0 0 5px rgba(0,0,0,0.5); transition: all 0.3s ease; }
+.status-dot.online { background: #4ade80; box-shadow: 0 0 8px rgba(74, 222, 128, 0.6); }
+.widget-content .server-ip { color: #fff; font-weight: 600; font-size: 14px; margin-bottom: 5px; letter-spacing: 0.5px; }
+.widget-content .player-count { color: #888; font-size: 12px; display: flex; align-items: center; gap: 6px; }
+.widget-content .player-count i { font-size: 10px; }

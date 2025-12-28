@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost - Leaderboard</title>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../dashboard.css">
+    <link rel="stylesheet" href="leaderboard.css">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/hyrost.png" alt="Logo">
+                <h2>Hyrost</h2>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-item">
+                    <i class="fas fa-home"></i>
+                    <span>Home</span>
+                </a>
+                <a href="../account/index.html" class="nav-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profile</span>
+                </a>
+                <a href="../question/index.html" class="nav-item">
+                    <i class="fas fa-globe-asia"></i>
+                    <span>World</span>
+                </a>
+                <a href="forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item active">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="../inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-briefcase"></i>
+                    <span>Storage</span>
+                </a>
+                <a href="../marketplace/shop.html" class="nav-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Shop</span>
+                </a>
+                <a href="../marketplace/auction.html" class="nav-item">
+                    <i class="fas fa-gavel"></i>
+                    <span>Auction</span>
+                </a>
+                <a href="role_shop.html" class="nav-item">
+                    <i class="fas fa-user-tag"></i>
+                    <span>Role Shop</span>
+                </a>
+                <a href="rewards.html" class="nav-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki</span>
+                </a>
+                <a href="social.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Social</span>
+                </a>
+                <a href="support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Support</span>
+                </a>
+                <a href="#" class="nav-item">
+                    <i class="fas fa-info-circle"></i>
+                    <span>Info</span>
+                </a>
+            </nav>
+            
+            <!-- Server Status Widget -->
+            <div class="sidebar-widget server-status-widget">
+                <div class="widget-header">
+                    <h3>Status Server</h3>
+                    <span class="status-dot online"></span>
+                </div>
+                <div class="widget-content">
+                    <p class="server-ip">play.hyrost.net</p>
+                    <p class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</p>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <header class="content-header">
+                <div class="header-title-row">
+                    <h1>Leaderboard</h1>
+                     <!-- Notification System -->
+                     <div class="notification-wrapper">
+                        <button class="icon-btn notification-btn" id="notificationBtn">
+                            <i class="fas fa-bell"></i>
+                            <span class="notification-badge" id="notificationBadge">0</span>
+                        </button>
+                        <div class="notification-dropdown" id="notificationDropdown">
+                            <div class="dropdown-header">
+                                <h3>Notifications</h3>
+                                <button class="mark-read-btn">Mark all as read</button>
+                            </div>
+                            <div class="notification-list" id="notificationList">
+                                <!-- Items inserted by JS -->
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="#">View All</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <p>Pemain terbaik di Hyrost.</p>
+            </header>
+
+            <div class="leaderboard-controls">
+                <div class="filter-tabs">
+                    <button class="filter-tab active" data-filter="wealth">Most Wealthy</button>
+                    <button class="filter-tab" data-filter="level">Highest Level</button>
+                    <button class="filter-tab" data-filter="quests">Most Quests</button>
+                </div>
+            </div>
+
+            <div class="leaderboard-content">
+                <!-- Top 3 Podium -->
+                <div class="podium-container">
+                    <div class="podium-item silver">
+                        <div class="rank-badge">2</div>
+                        <img src="https://cravatar.eu/avatar/PlayerTwo/64.png" alt="Player">
+                        <span class="player-name">PlayerTwo</span>
+                        <span class="player-score">Level 48</span>
+                    </div>
+                    <div class="podium-item gold">
+                        <div class="rank-badge">1</div>
+                        <div class="crown"><i class="fas fa-crown"></i></div>
+                        <img src="https://cravatar.eu/avatar/TopPlayer/80.png" alt="Player">
+                        <span class="player-name">TopPlayer</span>
+                        <span class="player-score">Level 50</span>
+                    </div>
+                    <div class="podium-item bronze">
+                        <div class="rank-badge">3</div>
+                        <img src="https://cravatar.eu/avatar/PlayerThree/64.png" alt="Player">
+                        <span class="player-name">PlayerThree</span>
+                        <span class="player-score">Level 45</span>
+                    </div>
+                </div>
+
+                <!-- Ranking List -->
+                <div class="ranking-list" id="rankingList">
+                    <!-- JS will populate this -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="leaderboard.js"></script>
+    <script src="../assets/js/notifications.js"></script>
+</body>
+</html>
+
+<script src='../assets/js/server_status.js'></script>

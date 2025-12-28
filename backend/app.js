@@ -1,88 +1,45 @@
 const express = require('express');
-const mongoose = require('mongoose');
 const cors = require('cors');
 const path = require('path');
-const dotenv = require('dotenv');
-const { verifyToken, verifyAdmin } = require('./middleware/auth');
-
-// Load environment variables
-// Fallback for No-DB mode or missing env
-if (!process.env.JWT_SECRET) process.env.JWT_SECRET = 'fallback_secret_key_123';
-if (!process.env.MONGO_URI) process.env.MONGO_URI = 'mongodb://localhost:27017/hyrost';
-
-const result = dotenv.config({ path: path.join(__dirname, '.env') });
-
-// Error Handlers for process
-process.on('uncaughtException', (err) => {
-    console.error('UNCAUGHT EXCEPTION:', err);
-});
-process.on('unhandledRejection', (reason, promise) => {
-    console.error('UNHANDLED REJECTION:', reason);
-});
-
-// Force keep alive (Hack for No-DB mode persistent process)
-setInterval(() => {}, 10000);
-
-// Connect to MongoDB
-global.dbConnected = false;
-console.log('MONGO_URI:', process.env.MONGO_URI);
-mongoose.connect(process.env.MONGO_URI, { serverSelectionTimeoutMS: 5000 }) // Fail fast
-  .then(() => {
-    console.log('MongoDB Connected Successfully');
-    global.dbConnected = true;
-  })
-  .catch(err => {
-      console.error('MongoDB Connection Error:', err.message);
-      console.log('RUNNING IN NO-DB MODE (In-Memory Only)');
-      global.dbConnected = false;
-  });
+const errorHandler = require('./middleware/errorHandler');
 
 // Initialize app
 const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json());
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Serve static files from the parent directory (frontend)
-app.use(express.static(path.join(__dirname, '..')));
+// Serve frontend static files FIRST
+// This ensures index.html is loaded when accessing root /
+const rootDir = path.join(__dirname, '..');
+app.use(express.static(rootDir));
 
 // Routes
+// We mount all API routes under /api
+app.use('/api', require('./routes/index'));
+
+// Debug route to check files (temporary)
+app.get('/api/debug-files', (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+  const dir = path.join(__dirname, '..', 'modules');
+  try {
+    const files = fs.readdirSync(dir);
+    res.json({ root: path.join(__dirname, '..'), modules: files });
+  } catch (err) {
+    res.status(500).json({ error: err.message, dir });
+  }
+});
+
+// Default Route (Fallback for API testing if static file fails or for explicit checks)
+// Note: Since static middleware is above, this will only be hit if no static file matches
 app.get('/', (req, res) => {
   res.send('Hyrost API Running');
 });
 
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin');
+// Error Handler (Should be last)
+app.use(errorHandler);
 
-// Public routes
-app.use('/api/auth', authRoutes);
-
-// Protected routes
-app.use('/api/admin', verifyToken, verifyAdmin, adminRoutes);
-
-// Additional routes
-app.use('/api/forum', require('./routes/forum'));
-app.use('/api/chat', require('./routes/chat'));
-app.use('/api/products', require('./routes/productRoutes'));
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-    console.error(err.stack);
-    res.status(err.status || 500).json({
-        message: err.message || 'Internal Server Error',
-        ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-    });
-});
-
-// Request logger middleware
-app.use((req, res, next) => {
-    console.log(`${req.method} ${req.path}`);
-    next();
-});
-
-// Start server
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+module.exports = app;
