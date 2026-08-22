@@ -7,7 +7,60 @@ document.addEventListener('DOMContentLoaded', function() {
 
 // Initialize index page
 function initializeIndex() {
-    console.log('Initializing Hyrost Index Page...');
+    initVisitorLiveHub();
+}
+
+function initVisitorLiveHub() {
+    if (!window.HyrostLiveHub) return;
+
+    const token = localStorage.getItem('hyrostToken');
+    const chatHint = document.getElementById('visitorChatHint');
+    const chatInput = document.getElementById('visitorLiveChatInput');
+    const chatSend = document.getElementById('visitorLiveChatSend');
+
+    if (chatHint) {
+        chatHint.textContent = token
+            ? 'Anda terhubung — pesan akan tampil langsung ke seluruh pengunjung.'
+            : 'Masuk untuk ikut berdiskusi dengan komunitas.';
+    }
+
+    HyrostLiveHub.init({
+        chatContainerId: 'visitorLiveChat',
+        activityContainerId: 'visitorLiveActivity',
+        playerCountSelector: '#livePlayersCount',
+        statusTextSelector: '#liveStatusText',
+        statusDotSelector: '.hero-preview-card .badge-dot, .preview-status .badge-dot',
+        serverIpSelector: '#ipText',
+        forumCountSelector: '#liveForumCount',
+        webOnlineSelector: '#liveWebOnlineCount',
+        maxPlayers: 500,
+        chatReadOnly: !token,
+        intervals: { snapshot: 8000, presence: 15000 },
+    });
+
+    if (chatSend && chatInput) {
+        const submitChat = async () => {
+            const msg = chatInput.value.trim();
+            if (!msg) return;
+            chatSend.disabled = true;
+            const result = await HyrostLiveHub.sendChat(msg);
+            chatSend.disabled = false;
+            if (result.success) {
+                chatInput.value = '';
+                if (typeof showToast === 'function') {
+                    showToast("Pesan Anda dikirim ke obrolan komunitas!");
+                }
+            } else {
+                if (typeof showToast === 'function') {
+                    showToast(result.message || 'Gagal mengirim pesan');
+                }
+            }
+        };
+        chatSend.addEventListener('click', submitChat);
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') submitChat();
+        });
+    }
 }
 
 // Setup event listeners
@@ -35,34 +88,57 @@ function checkAuthStatus() {
 }
 
 // Handle Google Login
-function handleGoogleLogin(response) {
+async function handleGoogleLogin(response) {
     console.log('Google Login Response:', response);
     
-    // Decode JWT token
-    const payload = JSON.parse(atob(response.credential.split('.')[1]));
-    console.log('Google User Info:', payload);
-    
-    // Store user info
-    const userData = {
-        username: payload.name,
-        email: payload.email,
-        avatar: payload.picture,
-        googleId: payload.sub,
-        loginType: 'google',
-        loggedInAt: new Date().toISOString()
-    };
-    
-    localStorage.setItem('googleUser', JSON.stringify(userData));
-    localStorage.setItem('hyrostToken', 'google-' + Date.now());
-    
-    // Close modal and update UI
-    closeLoginModal();
-    updateUIForLoggedInUser();
-    
-    // Redirect to dashboard
-    setTimeout(() => {
-        window.location.href = 'dashboard.html';
-    }, 1000);
+    try {
+        let payload = null;
+        if (response.credential) {
+            try {
+                payload = JSON.parse(atob(response.credential.split('.')[1]));
+            } catch (e) {}
+        }
+
+        const res = await fetch('/api/auth/google', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                token: response.credential,
+                payload: payload
+            })
+        });
+
+        const data = await res.json();
+        if (!res.ok || !data.token) {
+            alert(data.message || 'Google Login Gagal');
+            return;
+        }
+
+        // Store authentic JWT token & user profile
+        localStorage.setItem('hyrostToken', data.token);
+        localStorage.setItem('currentUser', JSON.stringify(data.user));
+        if (payload) {
+            localStorage.setItem('googleUser', JSON.stringify({
+                username: data.user.username,
+                email: data.user.email,
+                avatar: data.user.avatarUrl,
+                googleId: data.user.googleId || payload.sub,
+                loginType: 'google'
+            }));
+        }
+
+        // Close modal & update UI
+        closeLoginModal();
+        updateUIForLoggedInUser();
+
+        // Redirect to dashboard
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 800);
+    } catch (err) {
+        console.error('Google Login Error:', err);
+        alert('Gagal menghubungkan ke server untuk Google Login.');
+    }
 }
 
 // Update UI for logged in user
@@ -77,17 +153,34 @@ function updateUIForLoggedInUser() {
         const navbarButtons = document.querySelector('.navbar-buttons');
         if (navbarButtons) {
             navbarButtons.innerHTML = `
-                <button class="btn-secondary" onclick="logout()">LOGOUT</button>
-                <button class="btn-primary" onclick="goToDashboard()">DASHBOARD</button>
+                <button class="btn-secondary" onclick="logout()" style="display:flex; align-items:center; gap:6px;">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Keluar</span>
+                </button>
+                <button class="btn-primary" onclick="goToDashboard()" style="display:flex; align-items:center; gap:6px;">
+                    <span>Dashboard</span>
+                    <i class="fas fa-arrow-right"></i>
+                </button>
             `;
         }
         
-        // Update hero buttons
+        // Update hero buttons while preserving Server IP Box
         const heroButtons = document.querySelector('.hero-buttons');
         if (heroButtons) {
             heroButtons.innerHTML = `
-                <button class="btn-primary" onclick="goToDashboard()">ACCESS DASHBOARD</button>
-                <button class="btn-secondary" onclick="logout()">LOGOUT</button>
+                <button class="btn-primary" onclick="goToDashboard()">
+                    <i class="fas fa-compass"></i>
+                    <span>Buka Dashboard</span>
+                </button>
+                <button class="btn-secondary" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Keluar</span>
+                </button>
+                <div class="server-ip-box" onclick="copyServerIP()" title="Klik untuk menyalin IP Server">
+                    <i class="fas fa-server" style="color: var(--accent-cyan);"></i>
+                    <span class="ip-text" id="ipText">play.hyrost.net</span>
+                    <i class="far fa-copy" style="color: var(--text-dim);"></i>
+                </div>
             `;
         }
         
@@ -116,7 +209,7 @@ function goToDashboard() {
 
 // Show login page (formerly modal)
 function showLoginModal() {
-    window.location.href = 'login.html';
+    window.location.href = 'auth/login.html';
 }
 
 // Close login modal

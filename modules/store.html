@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost — Toko Pangkat & Rank Perks</title>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .rank-store-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 22px;
+            margin-top: 24px;
+        }
+
+        .rank-card {
+            background: var(--bg-surface-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            padding: 26px 22px 22px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow-md);
+        }
+
+        .rank-card:hover {
+            transform: translateY(-4px);
+            border-color: var(--border-medium);
+            box-shadow: var(--shadow-lg);
+            background: var(--bg-surface-2);
+        }
+
+        .rank-card.featured {
+            border-color: var(--border-gold);
+            background: linear-gradient(180deg, rgba(245, 158, 11, 0.06) 0%, var(--bg-surface-1) 100%);
+        }
+
+        .rank-badge-ribbon {
+            position: absolute;
+            top: 14px;
+            right: -32px;
+            background: linear-gradient(135deg, var(--accent-gold), #d97706);
+            color: #000;
+            font-size: 0.65rem;
+            font-weight: 800;
+            padding: 4px 36px;
+            transform: rotate(45deg);
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .rank-header {
+            text-align: center;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-subtle);
+            margin-bottom: 18px;
+        }
+
+        .rank-icon-wrapper {
+            width: 56px;
+            height: 56px;
+            border-radius: var(--radius-md);
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.6rem;
+            box-shadow: var(--shadow-inset-top);
+        }
+
+        .rank-name {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            margin-bottom: 6px;
+            letter-spacing: -0.3px;
+        }
+
+        .rank-badge-pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: var(--radius-full);
+            font-size: 0.72rem;
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            margin-bottom: 10px;
+        }
+
+        .rank-price-tag {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--accent-gold-light);
+            font-family: var(--font-mono);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .perks-list {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 22px 0;
+            flex-grow: 1;
+        }
+
+        .perks-list li {
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            line-height: 1.4;
+        }
+
+        .perks-list li i {
+            color: var(--accent-emerald-light);
+            font-size: 0.9rem;
+            margin-top: 2px;
+            flex-shrink: 0;
+        }
+
+        .btn-buy-rank {
+            width: 100%;
+            padding: 11px;
+            border-radius: var(--radius-sm);
+            font-weight: 800;
+            font-size: 0.86rem;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            transition: var(--transition);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-buy-rank:hover {
+            transform: translateY(-1px);
+        }
+
+        .btn-store-currency {
+            padding: 7px 14px;
+            border: none;
+            border-radius: var(--radius-full);
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-store-currency.active {
+            background: var(--bg-surface-2);
+            color: #fff;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .pay-method-card {
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 10px 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 0.74rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            min-height: 64px;
+        }
+
+        .pay-method-card input { display: none; }
+        .pay-method-card i { font-size: 1.3rem; margin-bottom: 4px; }
+        .pay-method-card:hover { background: var(--bg-surface-3); color: #fff; }
+        .pay-method-card.active {
+            background: rgba(16, 185, 129, 0.12);
+            border-color: var(--accent-emerald);
+            color: #fff;
+        }
+
+        .store-result-box {
+            max-width: 440px;
+            width: 92%;
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-medium);
+            background: var(--bg-surface-1);
+            box-shadow: var(--shadow-lg);
+            padding: 26px 22px 20px;
+            text-align: center;
+        }
+
+        .store-result-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 1.4rem;
+        }
+
+        .store-result-icon.success { background: rgba(16, 185, 129, 0.15); color: #10b981; }
+        .store-result-icon.pending { background: rgba(245, 158, 11, 0.15); color: #f59e0b; }
+        .store-result-icon.error   { background: rgba(239, 68, 68, 0.15); color: #ef4444; }
+
+        .store-result-title { margin: 0 0 6px; font-size: 1.15rem; font-weight: 800; color: #fff; }
+        .store-result-message { margin: 0 0 16px; font-size: 0.86rem; color: var(--text-muted); line-height: 1.5; }
+        .store-result-meta {
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-sm);
+            padding: 12px 14px;
+            margin-bottom: 14px;
+            text-align: left;
+        }
+        .store-result-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 0; }
+        .store-result-row + .store-result-row { border-top: 1px solid var(--border-subtle); }
+        .store-result-label { font-size: 0.72rem; font-weight: 700; color: var(--text-dim); text-transform: uppercase; }
+        .store-result-value { font-size: 0.78rem; font-family: var(--font-mono); color: #e5e7eb; word-break: break-all; }
+        .store-result-hint {
+            display: flex; align-items: flex-start; gap: 10px;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.25);
+            border-radius: var(--radius-sm);
+            padding: 10px 12px; margin-bottom: 16px;
+            text-align: left; font-size: 0.78rem; color: #c7d2fe; line-height: 1.45;
+        }
+        .btn-store-result {
+            width: 100%; padding: 11px; border: none; border-radius: var(--radius-sm);
+            background: linear-gradient(135deg, #10b981, #059669); color: #fff;
+            font-weight: 800; font-size: 0.88rem; cursor: pointer;
+        }
+
+        .store-toast {
+            position: fixed; bottom: 24px; left: 50%;
+            transform: translateX(-50%) translateY(16px);
+            background: var(--bg-surface-1);
+            border: 1px solid var(--border-medium);
+            color: #fff; padding: 10px 18px;
+            border-radius: var(--radius-sm); font-size: 0.85rem;
+            font-weight: 600; display: flex; align-items: center; gap: 8px;
+            box-shadow: var(--shadow-lg); opacity: 0; pointer-events: none;
+            transition: opacity 0.25s, transform 0.25s; z-index: 10000;
+        }
+        .store-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .store-toast.success { border-color: rgba(16, 185, 129, 0.4); }
+        .store-toast.success i { color: #10b981; }
+        .store-toast.error   { border-color: rgba(239, 68, 68, 0.4); }
+        .store-toast.error i { color: #ef4444; }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Backdrop Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+        <!-- Sidebar -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <div class="brand-text">
+                    <h2>Hyrost</h2>
+                    <span>Member Realm</span>
+                </div>
+            </div>
+            
+            <div class="nav-section-label">Navigasi Utama</div>
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../account/index.html" class="nav-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="store.html" class="nav-item active">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
+                </a>
+                <a href="forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="../inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventaris</span>
+                </a>
+                <a href="../marketplace/index.html" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="rewards.html" class="nav-item">
+                    <i class="fas fa-gift"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki & Guide</span>
+                </a>
+                <a href="social.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pertemanan</span>
+                </a>
+                <a href="support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Pusat Bantuan</span>
+                </a>
+                <a href="../verify-user.html" class="nav-item">
+                    <i class="fab fa-discord" style="color:#5865F2;"></i>
+                    <span>Verifikasi Discord</span>
+                </a>
+                <div class="nav-divider"></div>
+                <div class="nav-section-label nav-section-admin">Admin Panel</div>
+                <a href="admin.html" class="nav-item nav-admin">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Panel</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-server-pill">
+                    <div class="server-pill-row">
+                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
+                        <span class="status-dot online"></span>
+                    </div>
+                    <div class="server-pill-ip">play.hyrost.net</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu" style="padding:8px 12px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-user-banner">
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; display:flex; align-items:center; gap:10px; color:#fff; margin-bottom:4px;">
+                        <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                        <span>Toko Pangkat &amp; Rank Perks</span>
+                    </h1>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Dapatkan hak istimewa, perintah khusus, kit harian eksklusif di Hyrost Realm.</p>
+                </div>
+                <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                    <!-- Currency Mode Switcher -->
+                    <div style="display:flex; background:var(--bg-surface-2); padding:3px; border-radius:var(--radius-full); border:1px solid var(--border-subtle);">
+                        <button class="btn-store-currency active" id="btnCurrIDR" onclick="switchStoreCurrency('idr')">
+                            <i class="fas fa-money-bill-wave" style="color:#10b981;"></i> Rupiah (IDR)
+                        </button>
+                        <button class="btn-store-currency" id="btnCurrGold" onclick="switchStoreCurrency('gold')">
+                            <i class="fas fa-coins" style="color:#f59e0b;"></i> Koin Gold
+                        </button>
+                    </div>
+
+                    <div class="currency-bar">
+                        <div class="coin-item coin-gold" title="Gold Coins">
+                            <i class="fas fa-coins"></i>
+                            <span id="userGoldBalance">0</span> Gold
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Security Assurance Banner -->
+            <div style="background:var(--bg-surface-1); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:14px 18px; margin-bottom:20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+                <div style="display:flex; align-items:center; gap:12px;">
+                    <div style="width:38px; height:38px; border-radius:var(--radius-sm); background:rgba(16,185,129,0.12); color:#10b981; display:flex; align-items:center; justify-content:center; font-size:1.15rem;">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <div>
+                        <h4 style="margin:0; color:#fff; font-size:0.9rem; font-weight:800;">Transaksi Aman &amp; Pengiriman Rank Otomatis</h4>
+                        <p style="margin:2px 0 0; color:var(--text-muted); font-size:0.78rem;">Sistem terhubung langsung dengan server Minecraft Realm.</p>
+                    </div>
+                </div>
+                <div style="display:flex; gap:12px; color:var(--accent-emerald-light); font-size:0.78rem; font-weight:700;">
+                    <span><i class="fas fa-lock"></i> SSL Secured</span>
+                    <span><i class="fas fa-check-circle"></i> Instant Activation</span>
+                </div>
+            </div>
+
+            <!-- Rank Store Grid -->
+            <div class="rank-store-grid" id="rankStoreGrid">
+                <div class="loading-spinner" style="grid-column: 1 / -1; text-align:center; padding:40px;">
+                    <i class="fas fa-spinner fa-spin" style="font-size:2rem; color:var(--accent-indigo);"></i>
+                    <p style="margin-top:10px; color:var(--text-secondary); font-size:0.85rem;">Memuat katalog pangkat...</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- High-Security Payment Gateway Modal -->
+    <div class="modal-overlay" id="rankCheckoutModal">
+        <div class="modal-content item-modal-box" style="max-width:520px; width:92%;">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border-subtle);">
+                <h3 style="margin:0; font-size:1.1rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-shield-alt" style="color:var(--accent-emerald);"></i> Gateway Pembayaran Aman
+                </h3>
+                <button class="close-modal" onclick="closeRankCheckoutModal()" style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); color:var(--text-muted); width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" style="padding:20px 22px;">
+                <div style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px 16px; margin-bottom:16px; display:flex; justify-content:space-between; align-items:center;">
+                    <div>
+                        <span style="font-size:0.68rem; color:var(--text-dim); font-weight:800; text-transform:uppercase;">PANGKAT DIBELI</span>
+                        <h3 id="checkoutRankName" style="color:#fff; margin:2px 0 2px; font-size:1.2rem; font-weight:800;">VIP</h3>
+                        <span id="checkoutMcTarget" style="font-size:0.75rem; color:var(--accent-emerald-light); font-weight:700;">Target MC: Steve</span>
+                    </div>
+                    <div style="text-align:right;">
+                        <span style="font-size:0.68rem; color:var(--text-dim); font-weight:800; text-transform:uppercase;">TOTAL BAYAR</span>
+                        <h2 id="checkoutRankPrice" style="color:var(--accent-gold-light); margin:2px 0 0; font-size:1.3rem; font-weight:800; font-family:var(--font-mono);">Rp 75.000</h2>
+                    </div>
+                </div>
+
+                <div style="margin-bottom:16px;">
+                    <label style="display:block; font-size:0.78rem; font-weight:700; color:#e5e7eb; margin-bottom:8px;">Pilih Metode Pembayaran:</label>
+                    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(100px, 1fr)); gap:8px;" id="checkoutPayMethodsGrid">
+                        <!-- Dynamic payment methods from store.js -->
+                    </div>
+                </div>
+
+                <!-- Voucher Code -->
+                <div style="display:flex; gap:8px; margin-bottom:16px;">
+                    <input type="text" id="storeVoucherInput" placeholder="Kode Promo (opsional)" style="flex:1; background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:9px 12px; color:#fff; font-size:0.84rem; outline:none;" />
+                    <button onclick="applyStoreVoucher()" class="btn-header-action" style="padding:9px 14px; font-weight:700;">Gunakan</button>
+                </div>
+
+                <!-- Payment Details View Box -->
+                <div id="checkoutPaymentDetailsBox" style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; text-align:center;">
+                    <!-- Dynamic rendering based on method -->
+                </div>
+
+                <div style="margin-top:18px; display:flex; gap:10px; align-items:center;">
+                    <button onclick="closeRankCheckoutModal()" class="btn-header-action" style="padding:10px 16px;">
+                        Batal
+                    </button>
+                    <button class="btn-header-action btn-primary-action" id="btnConfirmPayIDR" onclick="processRankIDRPayment()" style="flex:1; padding:10px 16px; justify-content:center; font-weight:800; background:linear-gradient(135deg, #10b981, #059669); border:none;">
+                        <i class="fas fa-lock"></i> Konfirmasi &amp; Bayar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Transaction Result Modal -->
+    <div class="modal-overlay" id="storeResultModal">
+        <div class="store-result-box">
+            <div class="store-result-icon success" id="storeResultIcon">
+                <i class="fas fa-check"></i>
+            </div>
+            <h3 class="store-result-title" id="storeResultTitle">Pembayaran Berhasil</h3>
+            <p class="store-result-message" id="storeResultMessage"></p>
+            <div class="store-result-meta" id="storeResultMeta" style="display:none;"></div>
+            <div class="store-result-hint" id="storeResultHint" style="display:none;">
+                <i class="fas fa-gamepad"></i>
+                <span id="storeResultHintText"></span>
+            </div>
+            <button type="button" class="btn-store-result" id="btnStoreResultClose">Selesai</button>
+        </div>
+    </div>
+
+    <div class="store-toast" id="storeToast" aria-live="polite">
+        <i class="fas fa-check-circle"></i>
+        <span id="storeToastText"></span>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../dashboard.js"></script>
+    <script src="store.js?v=13"></script>
+</body>
+</html>

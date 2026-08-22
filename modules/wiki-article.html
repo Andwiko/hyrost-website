@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyrost Wiki - Article</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css">
-    <link rel="stylesheet" href="wiki.css">
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    <link rel="stylesheet" href="wiki.css?v=50">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,20 +21,22 @@
             <div class="sidebar-header">
                 <img src="../assets/images/hyrost.png" alt="Logo">
                 <h2>Hyrost</h2>
+                <span>Member Realm</span>
             </div>
             
+            <div class="nav-section-label">Navigasi Utama</div>
             <nav class="sidebar-nav">
                 <a href="../dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
                 </a>
                 <a href="../account/index.html" class="nav-item">
                     <i class="fas fa-user-circle"></i>
-                    <span>Profile</span>
+                    <span>Profil Saya</span>
                 </a>
-                <a href="../question/index.html" class="nav-item">
-                    <i class="fas fa-globe-asia"></i>
-                    <span>World</span>
+                <a href="store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
                 </a>
                 <a href="forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
@@ -48,17 +50,9 @@
                     <i class="fas fa-briefcase"></i>
                     <span>Storage</span>
                 </a>
-                <a href="../marketplace/shop.html" class="nav-item">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Shop</span>
-                </a>
-                <a href="../marketplace/auction.html" class="nav-item">
-                    <i class="fas fa-gavel"></i>
-                    <span>Auction</span>
-                </a>
-                <a href="role_shop.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>
-                    <span>Role Shop</span>
+                <a href="../marketplace/index.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Marketplace</span>
                 </a>
                 <a href="rewards.html" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
@@ -174,6 +168,7 @@
         </main>
     </div>
 
+    <script src="../inventory/inventory.js"></script>
     <script src="../assets/js/notifications.js"></script>
     <script src="../assets/js/server_status.js"></script>
 </body>

@@ -1,26 +1,17 @@
+/**
+ * Realtime server status — delegates to HyrostMCServer + optional LiveHub.
+ */
 document.addEventListener('DOMContentLoaded', () => {
-    const playerCountElement = document.getElementById('onlinePlayers');
-    const statusIndicator = document.querySelector('.status-dot');
-    
-    // Simulate initial fetch
-    updatePlayerCount();
+  if (window.HyrostMCServer) {
+    HyrostMCServer.init();
+  }
 
-    // Update every 5 seconds
-    setInterval(updatePlayerCount, 5000);
-
-    function updatePlayerCount() {
-        if (!playerCountElement) return;
-
-        // Simulate fluctuation around 1,200 players
-        const base = 1200;
-        const variance = Math.floor(Math.random() * 50) - 25; // +/- 25
-        const count = base + variance;
-        
-        playerCountElement.textContent = count.toLocaleString();
-        
-        // Ensure status is online
-        if (statusIndicator) {
-            statusIndicator.classList.add('online');
-        }
-    }
+  if (window.HyrostLiveHub) {
+    window.HyrostLiveHub.init({
+      playerCountSelector: '#onlinePlayers, #sidebarOnlinePlayers, #livePlayersCount, #mcServerWidgetPlayers',
+      statusDotSelector: '.status-dot, .badge-dot, .mc-sync-dot',
+      serverIpSelector: '#ipText, .server-ip, .server-pill-ip, #mcServerWidgetIp, [data-mc-server-ip]',
+      intervals: { snapshot: 12000, presence: 20000 },
+    });
+  }
 });

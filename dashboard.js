@@ -1,814 +1,624 @@
-// Dashboard Management System for Hyrost
 document.addEventListener('DOMContentLoaded', function() {
-    checkAuthentication(); // Cek autentikasi dulu
-    initializeDashboard();
-    setupEventListeners();
-    loadDashboardData();
+    checkAuthentication();
+    loadUserProfile();
+    loadUserActivities();
+    loadQuests();
+    initDashboardLiveHub();
 });
 
-// Check authentication before loading dashboard
+function initDashboardLiveHub() {
+    if (!window.HyrostLiveHub) {
+        updateServerStatus();
+        loadLiveChat();
+        loadLiveRealmActivities();
+        setInterval(updateServerStatus, 15000);
+        setInterval(loadLiveChat, 5000);
+        setInterval(loadLiveRealmActivities, 12000);
+        return;
+    }
+
+    HyrostLiveHub.init({
+        chatContainerId: 'liveChatMessages',
+        activityContainerId: 'liveRealmActivityFeed',
+        playersContainerId: 'livePlayersList',
+        playerCountSelector: '#sidebarOnlinePlayers, #onlinePlayers',
+        serverIpSelector: '.server-ip, #sidebarServerIp',
+        statusDotSelector: '.status-dot',
+        intervals: { snapshot: 8000, presence: 15000 },
+    });
+}
+
+async function updateServerStatus() {
+    if (window.HyrostMCServer) {
+        await HyrostMCServer.refresh();
+        const data = HyrostMCServer.data;
+        if (data && data.playerList) renderLivePlayersList(data.playerList);
+        return;
+    }
+    try {
+        const res = await fetch('/api/server-status');
+        if (res.ok) {
+            const data = await res.json();
+            
+            const ipElements = document.querySelectorAll('.server-ip, #sidebarServerIp');
+            ipElements.forEach(el => el.textContent = data.serverIp || 'play.hyrost.net');
+
+            const countElements = document.querySelectorAll('#sidebarOnlinePlayers, #onlinePlayers');
+            countElements.forEach(el => el.textContent = data.onlinePlayers || 12);
+
+            const dots = document.querySelectorAll('.status-dot');
+            dots.forEach(el => {
+                if (data.isOnline) {
+                    el.classList.add('online');
+                    el.style.background = '#10b981';
+                } else {
+                    el.classList.remove('online');
+                    el.style.background = '#ef4444';
+                }
+            });
+
+            if (data.playerList) {
+                renderLivePlayersList(data.playerList);
+            }
+        }
+    } catch (err) {}
+}
+
+// 1. Verify User Session & Token
 function checkAuthentication() {
     const token = localStorage.getItem('hyrostToken');
-    const currentUser = localStorage.getItem('currentUser');
+    const currentUserStr = localStorage.getItem('currentUser');
     
-    if (!token || !currentUser) {
-        // Redirect to login page if not authenticated
-        window.location.href = 'index.html';
+    if (!token || !currentUserStr) {
+        window.location.href = 'auth/login.html';
         return;
     }
-    
-    // Verify token format (basic validation)
-    if (!token) {
-        logout();
+
+    try {
+        const u = JSON.parse(currentUserStr);
+        if (u && u.role && u.role.toLowerCase() === 'admin') {
+            document.body.classList.add('is-admin');
+        } else {
+            document.body.classList.remove('is-admin');
+        }
+    } catch(e) {}
+}
+
+// 2. Render Fresh Profile & Coins Data with Instant Resilient Session Fallback
+async function loadUserProfile() {
+    const token = localStorage.getItem('hyrostToken');
+    const localUserStr = localStorage.getItem('currentUser');
+
+    const displayUsername = document.getElementById('displayUsername');
+    const displayEmail = document.getElementById('displayEmail');
+    const displayRole = document.getElementById('displayRole');
+    const userAvatar = document.getElementById('userAvatar');
+    const coinBronze = document.getElementById('coinBronze');
+    const coinSilver = document.getElementById('coinSilver');
+    const coinGold = document.getElementById('coinGold');
+
+    function applyUserToDOM(userObj) {
+        if (!userObj) return;
+        const resolvedUsername = userObj.username || userObj.name || userObj.user_name || userObj.user || (userObj.email ? userObj.email.split('@')[0] : 'User');
+        const resolvedEmail = userObj.email || '-';
+        const resolvedRole = userObj.role || 'Member';
+        const resolvedAvatar = userObj.avatarUrl || userObj.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(resolvedUsername)}&background=6366f1&color=fff`;
+
+        if (displayUsername) displayUsername.textContent = resolvedUsername;
+        if (displayEmail) displayEmail.textContent = resolvedEmail;
+        if (displayRole) {
+            displayRole.textContent = resolvedRole;
+            if (resolvedRole.toLowerCase() === 'admin') {
+                displayRole.style.background = 'rgba(239, 68, 68, 0.2)';
+                displayRole.style.color = '#ef4444';
+                displayRole.style.borderColor = 'rgba(239, 68, 68, 0.4)';
+            } else {
+                displayRole.style.background = '';
+                displayRole.style.color = '';
+                displayRole.style.borderColor = '';
+            }
+        }
+        if (userAvatar) {
+            userAvatar.src = resolvedAvatar;
+        }
+        if (coinBronze) coinBronze.textContent = userObj.coinBronze || userObj.coin_bronze || userObj.coins?.bronze || 0;
+        if (coinSilver) coinSilver.textContent = userObj.coinSilver || userObj.coin_silver || userObj.coins?.silver || 0;
+        if (coinGold) coinGold.textContent = userObj.coinGold || userObj.coin_gold || userObj.coins?.gold || 0;
+
+        if (resolvedRole && resolvedRole.toLowerCase() === 'admin') {
+            document.body.classList.add('is-admin');
+        } else {
+            document.body.classList.remove('is-admin');
+        }
+    }
+
+    // 1. Instant Initial Render from LocalStorage Session (100% Instant & Resilient)
+    if (localUserStr) {
+        try {
+            const localUser = JSON.parse(localUserStr);
+            applyUserToDOM(localUser);
+        } catch(e) {}
+    }
+
+    if (!token && !localUserStr) {
+        window.location.href = 'auth/login.html';
         return;
+    }
+
+    // 2. Try fetching fresh data from API if available
+    try {
+        const res = await fetch('/api/users/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (res.status === 401) {
+            logout();
+            return;
+        }
+
+        if (res.ok) {
+            const userData = await res.json();
+            const updatedUser = {
+                username: userData.username,
+                email: userData.email,
+                role: userData.role,
+                avatarUrl: userData.avatarUrl,
+                coinBronze: userData.coins?.bronze || 0,
+                coinSilver: userData.coins?.silver || 0,
+                coinGold: userData.coins?.gold || 0
+            };
+            localStorage.setItem('currentUser', JSON.stringify(updatedUser));
+            applyUserToDOM(updatedUser);
+            updateClaimButtonState(userData.lastClaimTime);
+        }
+    } catch (err) {
+        console.warn("API profile fetch optional, using resilient local session.");
     }
 }
 
-// Get auth token
-function getAuthToken() {
-    return localStorage.getItem('hyrostToken') || '';
+// 3. Daily Claim Cooldown Logic
+function updateClaimButtonState(lastClaimTimeStr) {
+    const btnClaim = document.getElementById('btnClaimDaily');
+    const claimTimer = document.getElementById('claimTimer');
+    if (!btnClaim || !claimTimer) return;
+
+    if (!lastClaimTimeStr) {
+        btnClaim.disabled = false;
+        claimTimer.textContent = "Siap diklaim!";
+        return;
+    }
+
+    const lastClaim = new Date(lastClaimTimeStr).getTime();
+    const now = Date.now();
+    const cooldownMs = 24 * 60 * 60 * 1000;
+    const diff = now - lastClaim;
+
+    if (diff < cooldownMs) {
+        btnClaim.disabled = true;
+        btnClaim.style.opacity = '0.5';
+        btnClaim.style.cursor = 'not-allowed';
+
+        const hoursLeft = Math.ceil((cooldownMs - diff) / (1000 * 60 * 60));
+        claimTimer.textContent = `Tersedia dalam ${hoursLeft} jam lagi.`;
+    } else {
+        btnClaim.disabled = false;
+        btnClaim.style.opacity = '1';
+        btnClaim.style.cursor = 'pointer';
+        claimTimer.textContent = "Siap diklaim!";
+    }
 }
 
-// Update logout function
+// 4. Claim Daily Reward API Action
+async function claimDailyReward() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return;
+
+    const btnClaim = document.getElementById('btnClaimDaily');
+    if (btnClaim) btnClaim.disabled = true;
+
+    try {
+        const res = await fetch('/api/users/claim-daily-reward', {
+            method: 'POST',
+            headers: { 
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            alert(`🎉 ${data.message}`);
+            loadUserProfile(); // Refresh coins
+            loadUserActivities(); // Refresh activities
+        } else {
+            alert(`⚠️ ${data.message || 'Gagal mengklaim hadiah.'}`);
+        }
+    } catch (err) {
+        alert('Terjadi kesalahan koneksi.');
+    } finally {
+        if (btnClaim) btnClaim.disabled = false;
+    }
+}
+
+// 5. Fetch User Recent Activities
+async function loadUserActivities() {
+    const token = localStorage.getItem('hyrostToken');
+    const activityList = document.getElementById('activityList');
+    if (!token || !activityList) return;
+
+    try {
+        const res = await fetch('/api/users/activities', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+
+        if (!res.ok) return;
+
+        const activities = await res.json();
+
+        if (activities.length === 0) {
+            activityList.innerHTML = `
+                <div class="activity-item">
+                    <span class="activity-desc">Belum ada aktivitas tercatat.</span>
+                    <span class="activity-time">-</span>
+                </div>
+            `;
+            return;
+        }
+
+        activityList.innerHTML = activities.map(act => {
+            const timeStr = act.created_at ? new Date(act.created_at).toLocaleString() : '-';
+            return `
+                <div class="activity-item">
+                    <div>
+                        <span class="activity-desc">${escapeHTML(act.action)}</span>
+                        <div style="font-size: 0.8rem; color: var(--text-dim);">${escapeHTML(act.details || '')}</div>
+                    </div>
+                    <span class="activity-time">${timeStr}</span>
+                </div>
+            `;
+        }).join('');
+
+    } catch (err) {
+        console.error("LOAD ACTIVITIES ERROR:", err);
+    }
+}
+
+// 6. Utility Functions
+function copyIP() {
+    if (window.HyrostMCServer) {
+        HyrostMCServer.copyIp();
+        return;
+    }
+    const ip = "play.hyrost.net";
+    navigator.clipboard.writeText(ip).then(() => {
+        alert(`IP Server (${ip}) berhasil disalin!`);
+    });
+}
+
 function logout() {
     localStorage.removeItem('hyrostToken');
     localStorage.removeItem('currentUser');
+    localStorage.removeItem('googleUser');
     window.location.href = 'index.html';
 }
 
-// Initialize dashboard
-function initializeDashboard() {
-    console.log('Initializing Hyrost Dashboard...');
-    updateModuleStats();
-    checkAuthentication();
+function toggleMobileSidebar() {
+    const sidebar = document.getElementById('sidebar') || document.querySelector('.sidebar') || document.querySelector('.admin-sidebar');
+    const overlay = document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+        sidebar.classList.toggle('mobile-open');
+    }
+    if (overlay) {
+        overlay.classList.toggle('active');
+    }
 }
 
-// Setup event listeners
-function setupEventListeners() {
-    // Sidebar Toggle (Mobile)
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebar = document.querySelector('.sidebar');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
-
-    if (sidebarToggle && sidebar) {
-        sidebarToggle.addEventListener('click', function() {
-            sidebar.classList.toggle('active');
-            if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
-    }
-
-    // Close sidebar when clicking overlay
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', function() {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-        });
-    }
-
-    // Modal functionality
-    const modal = document.getElementById('moduleModal');
-    const closeBtn = document.querySelector('.close');
-    
-    if (closeBtn) {
-        closeBtn.addEventListener('click', closeModal);
-    }
-    
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeModal();
-            }
-        });
-    }
-
-    // Module card interactions
-    const moduleCards = document.querySelectorAll('.module-card');
-    moduleCards.forEach(card => {
-        card.addEventListener('mouseenter', function() {
-            this.style.transform = 'translateY(-5px)';
-        });
-        
-        card.addEventListener('mouseleave', function() {
-            this.style.transform = 'translateY(0)';
-        });
-    });
+function escapeHTML(str) {
+    if (typeof str !== 'string') return '';
+    return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
 
-// Check authentication
-function checkAuthentication() {
-    const token = getAuthToken();
-    if (!token) {
-        window.location.href = 'register.html';
+// Global scope bindings for HTML onclicks
+window.claimDailyReward = claimDailyReward;
+window.copyIP = copyIP;
+window.logout = logout;
+window.toggleMobileSidebar = toggleMobileSidebar;
+
+// 7. Live Online Players List
+async function renderLivePlayersList(playerList) {
+    const container = document.getElementById('livePlayersList');
+    if (!container) return;
+
+    if (!playerList || playerList.length === 0) {
+        container.innerHTML = '<span style="color:var(--text-dim); font-size:0.85rem;">Tidak ada pemain online saat ini.</span>';
         return;
     }
-    
-    // Verify token with backend
-    fetch('/api/auth/verify', {
-        method: 'GET',
-        headers: {
-            'Authorization': `Bearer ${token}`
-        }
-    })
-    .then(response => {
-        if (!response.ok) {
-            logout();
-        }
-    })
-    .catch(error => {
-        console.error('Auth verification failed:', error);
-        logout();
-    });
-}
 
-// Load dashboard data
-async function loadDashboardData() {
-    try {
-        const response = await fetch('/api/dashboard/stats', {
-            method: 'GET',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${getAuthToken()}`
-            }
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-            updateModuleStats(data);
-        } else {
-            console.warn('Failed to load dashboard data');
-            // Use demo data
-            updateModuleStats(getDemoData());
-        }
-    } catch (error) {
-        console.error('Error loading dashboard data:', error);
-        updateModuleStats(getDemoData());
-    }
-}
-
-// Get demo data for testing
-function getDemoData() {
-    return {
-        forum: { threads: 156, posts: 2341 },
-        members: { total: 1247, online: 42 },
-        vote: { active: 3, total: 892 },
-        rules: { rules: 12, violations: 7 },
-        staff: { staff: 8, moderators: 15 },
-        status: { status: 'Online', uptime: '99.2%' },
-        resources: { files: 2847, storage: '85%' },
-        forms: { forms: 6, submissions: 234 },
-        iframe: { embeds: 4, active: 3 },
-        jobs: { running: 2, queued: 15 },
-        badges: { badges: 24, awarded: 1567 },
-        tickets: { open: 8, pending: 3 },
-        friends: { friends: 156, requests: 4 },
-        infractions: { active: 7, total: 234 },
-        statistics: { players: 89, peak: 156 },
-        suggestions: { new: 12, total: 456 },
-        wiki: { pages: 127, edits: 2341 }
-    };
-}
-
-// Update module statistics
-function updateModuleStats(data = null) {
-    if (!data) return;
-
-    Object.keys(data).forEach(moduleName => {
-        const moduleCard = document.getElementById(`${moduleName}-module`);
-        if (moduleCard && data[moduleName]) {
-            updateModuleCard(moduleCard, data[moduleName]);
-        }
-    });
-}
-
-// Update individual module card
-function updateModuleCard(card, stats) {
-    const statElements = card.querySelectorAll('.stat');
-    statElements.forEach((element, index) => {
-        const text = element.textContent;
-        const [label, currentValue] = text.split(': ');
-        const statKeys = Object.keys(stats);
-        
-        if (statKeys[index]) {
-            element.textContent = `${label}: ${stats[statKeys[index]]}`;
-        }
-    });
-}
-
-// Open module management interface
-function openModule(moduleName) {
-    console.log(`Opening module: ${moduleName}`);
-    
-    const modal = document.getElementById('moduleModal');
-    const modalContent = document.getElementById('moduleContent');
-    
-    if (!modal || !modalContent) return;
-
-    // Show loading state
-    modalContent.innerHTML = `
-        <div class="module-detail active">
-            <h2>Loading ${moduleName.charAt(0).toUpperCase() + moduleName.slice(1)} Module...</h2>
-            <div class="loading" style="text-align: center; margin: 20px 0;">
-                <div class="loading-spinner"></div>
-            </div>
+    container.innerHTML = playerList.map(p => `
+        <div style="display:flex; align-items:center; gap:6px; background:rgba(255,255,255,0.05); padding:4px 10px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);">
+            <img src="${p.avatar}" alt="" style="width:20px; height:20px; border-radius:4px;" onerror="this.src='https://mc-heads.net/avatar/Steve/20'" />
+            <span style="font-size:0.8rem; font-weight:600; color:#fff;">${escapeHTML(p.username)}</span>
         </div>
-    `;
-    
-    modal.style.display = 'block';
-    
-    // Load module content
-    setTimeout(() => {
-        loadModuleContent(moduleName, modalContent);
-    }, 800);
+    `).join('');
 }
 
-// Load specific module content
-function loadModuleContent(moduleName, container) {
-    const moduleData = getModuleData(moduleName);
-    
-    container.innerHTML = `
-        <div class="module-detail active">
-            <h2>${moduleData.title}</h2>
-            <p>${moduleData.description}</p>
-            
-            <div class="module-detail-grid">
-                ${moduleData.features.map(feature => `
-                    <div class="detail-card">
-                        <h4>${feature.name}</h4>
-                        <p>${feature.description}</p>
-                        <div class="action-buttons">
-                            <button class="btn-primary" onclick="executeModuleAction('${moduleName}', '${feature.action}')">
-                                ${feature.buttonText}
-                            </button>
+// 8. Quests & Achievements
+async function loadQuests() {
+    const container = document.getElementById('questsListContainer');
+    if (!container) return;
+
+    const token = localStorage.getItem('hyrostToken');
+    try {
+        const res = await fetch('/api/quests', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success && data.quests) {
+            container.innerHTML = data.quests.map(q => `
+                <div style="display:flex; align-items:center; justify-content:space-between; padding:8px 12px; background:rgba(0,0,0,0.3); border-radius:8px; border:1px solid rgba(255,255,255,0.05);">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <i class="fas ${q.icon || 'fa-trophy'}" style="color:var(--accent-gold); font-size:1.1rem;"></i>
+                        <div>
+                            <div style="font-size:0.85rem; font-weight:700; color:#fff;">${escapeHTML(q.title)}</div>
+                            <div style="font-size:0.75rem; color:var(--text-dim);">${escapeHTML(q.description)}</div>
                         </div>
                     </div>
-                `).join('')}
-            </div>
-            
-            <div class="action-buttons">
-                <button class="btn-secondary" onclick="closeModal()">Close</button>
-                <button class="btn-primary" onclick="openFullModule('${moduleName}')">
-                    Open Full Module
-                </button>
-            </div>
-        </div>
-    `;
-}
-
-// Get module data configuration
-function getModuleData(moduleName) {
-    const modules = {
-        forum: {
-            title: 'Forum Management',
-            description: 'Manage discussion boards, threads, and community conversations.',
-            features: [
-                {
-                    name: 'Thread Management',
-                    description: 'Moderate and organize forum threads',
-                    buttonText: 'Manage Threads',
-                    action: 'threads'
-                },
-                {
-                    name: 'Category Setup',
-                    description: 'Create and organize forum categories',
-                    buttonText: 'Setup Categories',
-                    action: 'categories'
-                },
-                {
-                    name: 'Moderation Tools',
-                    description: 'Tools for forum moderation',
-                    buttonText: 'Moderation',
-                    action: 'moderate'
-                }
-            ]
-        },
-        members: {
-            title: 'Member Management',
-            description: 'Handle user accounts, roles, and permissions.',
-            features: [
-                {
-                    name: 'User Profiles',
-                    description: 'View and edit member profiles',
-                    buttonText: 'View Profiles',
-                    action: 'profiles'
-                },
-                {
-                    name: 'Role Assignment',
-                    description: 'Assign roles and permissions',
-                    buttonText: 'Manage Roles',
-                    action: 'roles'
-                },
-                {
-                    name: 'Activity Monitoring',
-                    description: 'Track member activity',
-                    buttonText: 'View Activity',
-                    action: 'activity'
-                }
-            ]
+                    <div>
+                        ${q.is_claimed ? 
+                            `<span style="font-size:0.75rem; color:#10b981; font-weight:700;"><i class="fas fa-check"></i> Selesai</span>` : 
+                            `<button class="btn-header-action" style="padding:4px 10px; font-size:0.75rem; background:var(--accent-gold); color:#000; font-weight:800;" onclick="claimQuestReward(${q.id})">Klaim +${q.reward_amount} ${q.reward_type.toUpperCase()}</button>`
+                        }
+                    </div>
+                </div>
+            `).join('');
         }
-        // Add more module configurations...
-    };
-
-    return modules[moduleName] || {
-        title: `${moduleName.charAt(0).toUpperCase() + moduleName.slice(1)} Management`,
-        description: `Manage ${moduleName} settings and configurations.`,
-        features: [
-            {
-                name: 'Settings',
-                description: `Configure ${moduleName} options`,
-                buttonText: 'Open Settings',
-                action: 'settings'
-            }
-        ]
-    };
-}
-
-// Execute module-specific actions
-function executeModuleAction(moduleName, action) {
-    console.log(`Executing action: ${action} for module: ${moduleName}`);
-    
-    // Simulate API call to backend
-    showNotification(`Executing ${action} for ${moduleName}...`, 'info');
-    
-    setTimeout(() => {
-        showNotification(`${moduleName} - ${action} completed successfully!`, 'success');
-    }, 1000);
-}
-
-// Open full module interface
-function openFullModule(moduleName) {
-    console.log(`Opening full module interface for: ${moduleName}`);
-    closeModal();
-    
-    // Redirect to module-specific page
-    const moduleUrl = `/modules/${moduleName}.html`;
-    window.location.href = moduleUrl;
-}
-
-// Modal control functions
-function closeModal() {
-    const modal = document.getElementById('moduleModal');
-    if (modal) {
-        modal.style.display = 'none';
+    } catch (err) {
+        console.error("LOAD QUESTS ERROR:", err);
     }
 }
 
-// Authentication helper
-function getAuthToken() {
-    return localStorage.getItem('authToken') || sessionStorage.getItem('authToken') || '';
-}
-
-// Logout function
-function logout() {
-    localStorage.removeItem('authToken');
-    sessionStorage.removeItem('authToken');
-    window.location.href = 'index.html';
-}
-
-// Notification system
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 5px;
-        color: white;
-        font-weight: bold;
-        z-index: 3000;
-        animation: slideIn 0.3s ease;
-        max-width: 300px;
-        word-wrap: break-word;
-    `;
-    
-    const colors = {
-        success: '#4CAF50',
-        error: '#f44336',
-        warning: '#ff9800',
-        info: '#2196F3'
-    };
-    
-    notification.style.backgroundColor = colors[type] || colors.info;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease';
-        setTimeout(() => {
-            if (document.body.contains(notification)) {
-                document.body.removeChild(notification);
-            }
-        }, 300);
-    }, 3000);
-}
-
-// Add CSS animations
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes slideIn {
-        from { transform: translateX(100%); opacity: 0; }
-        to { transform: translateX(0); opacity: 1; }
-    }
-    @keyframes slideOut {
-        from { transform: translateX(0); opacity: 1; }
-        to { transform: translateX(100%); opacity: 0; }
-    }
-    .loading-spinner {
-        border: 3px solid rgba(168, 138, 90, 0.3);
-        border-top: 3px solid #d4af37;
-        border-radius: 50%;
-        width: 30px;
-        height: 30px;
-        animation: spin 1s linear infinite;
-        margin: 0 auto;
-    }
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-`;
-document.head.appendChild(style);
-
-// Export functions for global use
-window.openModule = openModule;
-window.executeModuleAction = executeModuleAction;
-window.openFullModule = openFullModule;
-window.closeModal = closeModal;
-window.logout = logout;
-window.showNotification = showNotification;
-
-// Enhanced authentication check for Google users
-function checkAuthentication() {
-    const googleUser = localStorage.getItem('googleUser');
+async function claimQuestReward(questId) {
     const token = localStorage.getItem('hyrostToken');
-    const currentUser = localStorage.getItem('currentUser');
-    
-    if (!googleUser && !token) {
-        window.location.href = 'index.html';
+    try {
+        const res = await fetch(`/api/quests/claim/${questId}`, {
+            method: 'POST',
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            alert(data.message);
+            loadQuests();
+            loadUserProfile();
+        } else {
+            alert(data.message || "Gagal mengklaim misi");
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+}
+
+// 9. Community Web Live Chatbox
+async function loadLiveChat() {
+    const container = document.getElementById('liveChatMessages');
+    if (!container) return;
+
+    try {
+        const res = await fetch('/api/live-chat');
+        const data = await res.json();
+        if (res.ok && data.messages) {
+            if (data.messages.length === 0) {
+                container.innerHTML = '<span style="color:var(--text-dim); font-size:0.85rem;">Belum ada pesan. Mulai obrolan sekarang!</span>';
+                return;
+            }
+            container.innerHTML = data.messages.map(m => `
+                <div style="display:flex; align-items:flex-start; gap:8px; font-size:0.8rem;">
+                    <img src="${m.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(m.username)}&background=6366f1&color=fff`}" style="width:22px; height:22px; border-radius:50%; margin-top:2px;" alt="" />
+                    <div>
+                        <strong style="color:var(--accent-cyan);">${escapeHTML(m.username)}:</strong>
+                        <span style="color:#e2e8f0; margin-left:4px;">${escapeHTML(m.message)}</span>
+                    </div>
+                </div>
+            `).join('');
+            container.scrollTop = container.scrollHeight;
+        }
+    } catch (err) {
+        console.error("LOAD LIVE CHAT ERROR:", err);
+    }
+}
+
+async function sendLiveChat() {
+    const input = document.getElementById('liveChatInput');
+    const message = input ? input.value.trim() : '';
+    if (!message) return;
+
+    if (window.HyrostLiveHub) {
+        const data = await HyrostLiveHub.sendChat(message);
+        if (data.success) {
+            if (input) input.value = '';
+        } else {
+            alert(data.message || 'Gagal mengirim pesan chat');
+        }
         return;
     }
+
+    const token = localStorage.getItem('hyrostToken');
+    try {
+        const res = await fetch('/api/live-chat', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ message })
+        });
+        const data = await res.json();
+        if (res.ok && data.success) {
+            if (input) input.value = '';
+            loadLiveChat();
+        } else {
+            alert(data.message || "Gagal mengirim pesan chat");
+        }
+    } catch (e) {
+        alert("Error: " + e.message);
+    }
+}
+
+function toggleMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar') || document.querySelector('.admin-sidebar');
+    const overlay = document.querySelector('.sidebar-overlay') || document.getElementById('sidebarOverlay');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+        sidebar.classList.toggle('open');
+        sidebar.classList.toggle('mobile-open');
+    }
+    if (overlay) {
+        overlay.classList.toggle('active');
+        overlay.classList.toggle('open');
+    }
+}
+
+function closeMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar') || document.querySelector('.admin-sidebar');
+    const overlay = document.querySelector('.sidebar-overlay') || document.getElementById('sidebarOverlay');
+    if (sidebar) {
+        sidebar.classList.remove('active', 'open', 'mobile-open');
+    }
+    if (overlay) {
+        overlay.classList.remove('active', 'open');
+    }
+}
+
+// Auto-close sidebar on scroll or click outside
+let lastMobileScrollY = window.scrollY;
+
+window.addEventListener('scroll', () => {
+    const currentScrollY = window.scrollY;
+    const mobileHeader = document.querySelector('.mobile-header');
+    const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar') || document.querySelector('.admin-sidebar');
+
+    // 1. Auto-Close Mobile Sidebar when user scrolls page
+    if (sidebar && (sidebar.classList.contains('active') || sidebar.classList.contains('open') || sidebar.classList.contains('mobile-open'))) {
+        closeMobileSidebar();
+    }
+
+    // 2. Auto-Hide Mobile Header on Scroll Down, Show on Scroll Up
+    if (mobileHeader && window.innerWidth <= 1024) {
+        if (currentScrollY > lastMobileScrollY && currentScrollY > 50) {
+            mobileHeader.style.transform = 'translateY(-100%)';
+        } else {
+            mobileHeader.style.transform = 'translateY(0)';
+        }
+    }
+    lastMobileScrollY = currentScrollY;
+}, { passive: true });
+
+document.addEventListener('click', (e) => {
+    const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar') || document.querySelector('.admin-sidebar');
+    const toggleBtn = document.getElementById('sidebarToggle') || document.querySelector('.mobile-header button');
     
-    // Verify token format
-    if (token && !token) {
-        logout();
-        return;
-    }
-    
-    // If Google user, update UI
-    if (googleUser) {
-        const userData = JSON.parse(googleUser);
-        updateDashboardForGoogleUser(userData);
-    }
-}
-
-// Update dashboard for Google user
-function updateDashboardForGoogleUser(userData) {
-    // Add Google user indicator
-    const dashboardHeader = document.querySelector('.dashboard-header .container');
-    if (dashboardHeader && !document.querySelector('.google-user-indicator')) {
-        const indicator = document.createElement('div');
-        indicator.className = 'google-user-indicator';
-        indicator.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 1rem;">
-                <img src="${userData.avatar}" alt="Avatar" style="width: 30px; height: 30px; border-radius: 50%;">
-                <span>Welcome, ${userData.username}!</span>
-            </div>
-        `;
-        dashboardHeader.insertBefore(indicator, dashboardHeader.firstChild);
-    }
-}
-
-// Enhanced getAuthToken function
-function getAuthToken() {
-    return localStorage.getItem('hyrostToken') || '';
-}
-
-// Enhanced logout function
-function logout() {
-    localStorage.removeItem('googleUser');
-    localStorage.removeItem('hyrostToken');
-    localStorage.removeItem('currentUser');
-    window.location.href = 'index.html';
-}
-
-// Enhanced Filter System for All Content
-class ContentFilter {
-    constructor() {
-        this.moduleCards = document.querySelectorAll('.module-card');
-        this.contentItems = document.querySelectorAll('.content-item');
-        this.activeFilters = {
-            category: 'all',
-            status: 'all',
-            sort: 'name',
-            search: '',
-            type: 'all',
-            date: 'all'
-        };
-        this.init();
-    }
-
-    init() {
-        this.bindEvents();
-        this.updateResults();
-    }
-
-    bindEvents() {
-        // Desktop filters
-        document.getElementById('categoryFilter')?.addEventListener('change', (e) => {
-            this.activeFilters.category = e.target.value;
-            this.applyFilters();
-        });
-
-        document.getElementById('statusFilter')?.addEventListener('change', (e) => {
-            this.activeFilters.status = e.target.value;
-            this.applyFilters();
-        });
-
-        document.getElementById('sortFilter')?.addEventListener('change', (e) => {
-            this.activeFilters.sort = e.target.value;
-            this.applyFilters();
-        });
-
-        document.getElementById('searchFilter')?.addEventListener('input', (e) => {
-            this.activeFilters.search = e.target.value.toLowerCase();
-            this.applyFilters();
-        });
-
-        // Mobile filters
-        document.getElementById('mobileCategoryFilter')?.addEventListener('change', (e) => {
-            this.activeFilters.category = e.target.value;
-            this.applyFilters();
-        });
-
-        document.getElementById('mobileStatusFilter')?.addEventListener('change', (e) => {
-            this.activeFilters.status = e.target.value;
-            this.applyFilters();
-        });
-
-        document.getElementById('mobileSortFilter')?.addEventListener('change', (e) => {
-            this.activeFilters.sort = e.target.value;
-            this.applyFilters();
-        });
-
-        document.getElementById('mobileSearch')?.addEventListener('input', (e) => {
-            this.activeFilters.search = e.target.value.toLowerCase();
-            this.applyFilters();
-        });
-
-        // Clear filters
-        document.getElementById('clearFilters')?.addEventListener('click', () => {
-            this.clearAllFilters();
-        });
-
-        document.getElementById('mobileClearFilters')?.addEventListener('click', () => {
-            this.clearAllFilters();
-        });
-
-        // Mobile filter panel
-        document.getElementById('mobileFilterToggle')?.addEventListener('click', () => {
-            document.getElementById('mobileFilterPanel').classList.add('active');
-        });
-
-        document.getElementById('closeMobileFilters')?.addEventListener('click', () => {
-            document.getElementById('mobileFilterPanel').classList.remove('active');
-        });
-    }
-
-    applyFilters() {
-        this.filterModules();
-        this.filterContentItems();
-        this.updateResults();
-        this.updateActiveFilterTags();
-    }
-
-    filterModules() {
-        const contentGrid = document.getElementById('contentGrid');
-        if (!contentGrid) return;
-
-        contentGrid.classList.add('filtered');
-        let visibleCount = 0;
-
-        this.moduleCards.forEach(card => {
-            const matches = this.checkCardMatch(card);
-            if (matches) {
-                card.classList.add('filter-match');
-                card.style.display = 'block';
-                visibleCount++;
-            } else {
-                card.classList.remove('filter-match');
-                card.style.display = 'none';
-            }
-        });
-
-        // Sort if needed
-        if (this.activeFilters.sort !== 'name') {
-            this.sortModules();
+    if (sidebar && (sidebar.classList.contains('active') || sidebar.classList.contains('open') || sidebar.classList.contains('mobile-open'))) {
+        // Close if click is outside sidebar & outside hamburger button
+        if (!sidebar.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+            closeMobileSidebar();
+        }
+        // Close if click is on a navigation link item
+        if (e.target.closest('.nav-item') || e.target.closest('a')) {
+            closeMobileSidebar();
         }
     }
-
-    filterContentItems() {
-        const contentItems = document.getElementById('contentItems');
-        if (!contentItems) return;
-
-        contentItems.classList.add('filtered');
-        let visibleCount = 0;
-
-        this.contentItems.forEach(item => {
-            const matches = this.checkItemMatch(item);
-            if (matches) {
-                item.classList.add('filter-match');
-                item.style.display = 'flex';
-                visibleCount++;
-            } else {
-                item.classList.remove('filter-match');
-                item.style.display = 'none';
-            }
-        });
-    }
-
-    checkCardMatch(card) {
-        const category = card.dataset.category;
-        const status = card.dataset.status;
-        const name = card.dataset.name.toLowerCase();
-        const searchTerm = this.activeFilters.search;
-
-        // Category filter
-        if (this.activeFilters.category !== 'all' && category !== this.activeFilters.category) {
-            return false;
-        }
-
-        // Status filter
-        if (this.activeFilters.status !== 'all' && status !== this.activeFilters.status) {
-            return false;
-        }
-
-        // Search filter
-        if (searchTerm && !name.includes(searchTerm)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    checkItemMatch(item) {
-        const category = item.dataset.category;
-        const status = item.dataset.status;
-        const name = item.dataset.name.toLowerCase();
-        const type = item.dataset.type;
-        const searchTerm = this.activeFilters.search;
-
-        // Category filter
-        if (this.activeFilters.category !== 'all' && category !== this.activeFilters.category) {
-            return false;
-        }
-
-        // Status filter
-        if (this.activeFilters.status !== 'all' && status !== this.activeFilters.status) {
-            return false;
-        }
-
-        // Type filter (for content items)
-        if (this.activeFilters.type !== 'all' && type !== this.activeFilters.type) {
-            return false;
-        }
-
-        // Search filter
-        if (searchTerm && !name.includes(searchTerm)) {
-            return false;
-        }
-
-        return true;
-    }
-
-    sortModules() {
-        const contentGrid = document.getElementById('contentGrid');
-        if (!contentGrid) return;
-
-        const cards = Array.from(this.moduleCards);
-        
-        cards.sort((a, b) => {
-            switch (this.activeFilters.sort) {
-                case 'popularity':
-                    const popA = a.dataset.popularity;
-                    const popB = b.dataset.popularity;
-                    const popularityOrder = { high: 3, medium: 2, low: 1 };
-                    return popularityOrder[popB] - popularityOrder[popA];
-                
-                case 'recent':
-                    const dateA = a.dataset.date || '0';
-                    const dateB = b.dataset.date || '0';
-                    return dateB.localeCompare(dateA);
-                
-                case 'name':
-                default:
-                    const nameA = a.dataset.name.toLowerCase();
-                    const nameB = b.dataset.name.toLowerCase();
-                    return nameA.localeCompare(nameB);
-            }
-        });
-
-        // Re-append sorted cards
-        cards.forEach(card => {
-            contentGrid.appendChild(card);
-        });
-    }
-
-    updateResults() {
-        const moduleMatches = document.querySelectorAll('.module-card.filter-match').length;
-        const contentMatches = document.querySelectorAll('.content-item.filter-match').length;
-        const totalMatches = moduleMatches + contentMatches;
-
-        const resultsCount = document.getElementById('resultsCount');
-        if (resultsCount) {
-            resultsCount.textContent = `${totalMatches} items found (${moduleMatches} modules, ${contentMatches} content items)`;
-        }
-    }
-
-    updateActiveFilterTags() {
-        const activeFiltersContainer = document.getElementById('activeFilters');
-        if (!activeFiltersContainer) return;
-
-        const tags = [];
-        
-        if (this.activeFilters.category !== 'all') {
-            tags.push({ type: 'category', label: `Category: ${this.activeFilters.category}` });
-        }
-        
-        if (this.activeFilters.status !== 'all') {
-            tags.push({ type: 'status', label: `Status: ${this.activeFilters.status}` });
-        }
-        
-        if (this.activeFilters.search) {
-            tags.push({ type: 'search', label: `Search: "${this.activeFilters.search}"` });
-        }
-
-        activeFiltersContainer.innerHTML = tags.map(tag => `
-            <span class="filter-tag">
-                ${tag.label}
-                <button class="remove-tag" data-type="${tag.type}">×</button>
-            </span>
-        `).join('');
-
-        // Add event listeners to remove tags
-        activeFiltersContainer.querySelectorAll('.remove-tag').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const type = e.target.dataset.type;
-                this.removeFilter(type);
-            });
-        });
-    }
-
-    removeFilter(type) {
-        switch (type) {
-            case 'category':
-                this.activeFilters.category = 'all';
-                document.getElementById('categoryFilter').value = 'all';
-                document.getElementById('mobileCategoryFilter').value = 'all';
-                break;
-            case 'status':
-                this.activeFilters.status = 'all';
-                document.getElementById('statusFilter').value = 'all';
-                document.getElementById('mobileStatusFilter').value = 'all';
-                break;
-            case 'search':
-                this.activeFilters.search = '';
-                document.getElementById('searchFilter').value = '';
-                document.getElementById('mobileSearch').value = '';
-                break;
-        }
-        
-        this.applyFilters();
-    }
-
-    clearAllFilters() {
-        this.activeFilters = {
-            category: 'all',
-            status: 'all',
-            sort: 'name',
-            search: '',
-            type: 'all',
-            date: 'all'
-        };
-
-        // Reset all filter inputs
-        document.getElementById('categoryFilter').value = 'all';
-        document.getElementById('statusFilter').value = 'all';
-        document.getElementById('sortFilter').value = 'name';
-        document.getElementById('searchFilter').value = '';
-        
-        document.getElementById('mobileCategoryFilter').value = 'all';
-        document.getElementById('mobileStatusFilter').value = 'all';
-        document.getElementById('mobileSortFilter').value = 'name';
-        document.getElementById('mobileSearch').value = '';
-
-        this.applyFilters();
-    }
-}
-
-// Initialize the enhanced filter system
-document.addEventListener('DOMContentLoaded', () => {
-    new ContentFilter();
 });
+
+window.toggleMobileSidebar = toggleMobileSidebar;
+window.closeMobileSidebar = closeMobileSidebar;
+window.claimQuestReward = claimQuestReward;
+window.sendLiveChat = sendLiveChat;
+
+// ─── PWA SERVICE WORKER & INSTALL PROMPT ─────────────────────────────────────
+let deferredPwaPrompt = null;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPwaPrompt = e;
+});
+
+function openPwaInstallModal() {
+    const modal = document.getElementById('pwaInstallModal');
+    if (modal) modal.classList.add('active');
+}
+window.openPwaInstallModal = openPwaInstallModal;
+window.promptPWAInstall = openPwaInstallModal;
+
+function closePwaInstallModal() {
+    const modal = document.getElementById('pwaInstallModal');
+    if (modal) modal.classList.remove('active');
+}
+window.closePwaInstallModal = closePwaInstallModal;
+
+function executePwaInstall() {
+    if (deferredPwaPrompt) {
+        deferredPwaPrompt.prompt();
+        deferredPwaPrompt.userChoice.then((choiceResult) => {
+            if (choiceResult.outcome === 'accepted') {
+                console.log('User accepted PWA installation');
+                closePwaInstallModal();
+            }
+            deferredPwaPrompt = null;
+        });
+    } else {
+        alert("📲 Silakan ikuti petunjuk manual di bawah untuk menyelesaikan instalasi pada browser Anda!");
+    }
+}
+window.executePwaInstall = executePwaInstall;
+
+function downloadDesktopShortcut() {
+    const shortcutContent = `[InternetShortcut]\nURL=${window.location.protocol}//${window.location.host}/dashboard.html\nIconIndex=0\nIconFile=${window.location.protocol}//${window.location.host}/favicon.ico\n`;
+    const blob = new Blob([shortcutContent], { type: 'application/x-ms-shortcut' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'Hyrost Realm.url';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    alert("✅ File pintasan 'Hyrost Realm.url' berhasil diunduh! Klik file tersebut di komputer Anda untuk membuka Hyrost secara langsung.");
+}
+window.downloadDesktopShortcut = downloadDesktopShortcut;
+
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js').then((reg) => {
+            console.log('⚡ PWA Service Worker Registered:', reg.scope);
+        }).catch((err) => {
+            console.warn('PWA SW registration failed:', err);
+        });
+    });
+}
+
+// ─── LIVE REALM ACTIVITY FEED (fallback when liveHub unavailable) ─────────────
+async function loadLiveRealmActivities() {
+    try {
+        const res = await fetch('/api/live-activity');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!data.activities || data.activities.length === 0) return;
+
+        const container = document.getElementById('liveRealmActivityFeed');
+        if (!container) return;
+
+        container.innerHTML = data.activities.map(a => `
+            <div style="display:flex; align-items:center; gap:10px; padding:10px 14px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.06); border-radius:12px; margin-bottom:8px;">
+                <div style="width:34px; height:34px; border-radius:10px; background:${a.color}22; color:${a.color}; display:flex; align-items:center; justify-content:center; font-size:0.95rem; border:1px solid ${a.color}44;">
+                    <i class="fas ${a.icon}"></i>
+                </div>
+                <div style="flex:1;">
+                    <h5 style="margin:0; color:#fff; font-size:0.82rem; font-weight:700;">${escapeHTML(a.title)}</h5>
+                    <p style="margin:2px 0 0; color:#9ca3af; font-size:0.75rem;">${escapeHTML(a.details)}</p>
+                </div>
+            </div>
+        `).join('');
+    } catch(e) {}
+}

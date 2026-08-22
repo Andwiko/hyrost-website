@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-// const User = require('../models/User'); // Disabling Mongoose model requirement
+const pool = require('../config/mysql');
 
 // Middleware untuk verifikasi JWT
 exports.verifyToken = (req, res, next) => {
@@ -15,11 +15,26 @@ exports.verifyToken = (req, res, next) => {
   }
 };
 
-// Middleware untuk verifikasi admin
-exports.verifyAdmin = (req, res, next) => {
-  // Check role case-insensitively
-  if (!req.user || !req.user.role || req.user.role.toLowerCase() !== 'admin') {
+// Middleware untuk verifikasi admin (dengan DB role lookup real-time)
+exports.verifyAdmin = async (req, res, next) => {
+  if (!req.user || !req.user.id) {
     return res.status(403).json({ message: 'Admin access required' });
   }
-  next();
+
+  try {
+    const [users] = await pool.execute('SELECT username, email, role FROM users WHERE id = ?', [req.user.id]);
+    const user = users[0];
+    const role = user ? user.role : req.user.role;
+
+    const isAdmin = role && role.toLowerCase() === 'admin';
+
+    if (!isAdmin) {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    req.user.role = 'Admin';
+    next();
+  } catch (err) {
+    return res.status(403).json({ message: 'Admin access required' });
+  }
 };

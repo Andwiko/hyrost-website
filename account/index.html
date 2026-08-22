@@ -4,16 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Hyrost - Profil Saya</title>
-    <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css" />
-    <link rel="stylesheet" href="../inventory/inventory.css" />
-    <link rel="stylesheet" href="account.css" />
+    <link rel="stylesheet" href="../dashboard.css?v=50" />
+    <link rel="stylesheet" href="../inventory/inventory.css?v=50" />
+    <link rel="stylesheet" href="account.css?v=50" />
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link
@@ -30,64 +29,63 @@
           <h2>Hyrost</h2>
         </div>
 
-        <nav class="sidebar-nav">
-          <a href="../dashboard.html" class="nav-item">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-          </a>
-          <a href="#" class="nav-item active">
-            <i class="fas fa-user-circle"></i>
-            <span>Profile</span>
-          </a>
-          <a href="../question/index.html" class="nav-item">
-            <i class="fas fa-globe-asia"></i>
-            <span>World</span>
-          </a>
-          <a href="../modules/forum.html" class="nav-item">
-            <i class="fas fa-comments"></i>
-            <span>Forum</span>
-          </a>
-          <a href="../modules/leaderboard.html" class="nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>Leaderboard</span>
-          </a>
-          <a href="../inventory/inventory.html" class="nav-item">
-            <i class="fas fa-briefcase"></i>
-            <span>Storage</span>
-          </a>
-          <a href="../marketplace/shop.html" class="nav-item">
-            <i class="fas fa-shopping-bag"></i>
-            <span>Shop</span>
-          </a>
-          <a href="../marketplace/auction.html" class="nav-item">
-            <i class="fas fa-gavel"></i>
-            <span>Auction</span>
-          </a>
-          <a href="../modules/role_shop.html" class="nav-item">
-            <i class="fas fa-user-tag"></i>
-            <span>Role Shop</span>
-          </a>
-          <a href="../modules/rewards.html" class="nav-item">
-            <i class="fas fa-calendar-check"></i>
-            <span>Daily Rewards</span>
-          </a>
-          <a href="../modules/wiki.html" class="nav-item">
-            <i class="fas fa-book"></i>
-            <span>Wiki</span>
-          </a>
-          <a href="../modules/social.html" class="nav-item">
-            <i class="fas fa-users"></i>
-            <span>Social</span>
-          </a>
-          <a href="../modules/support.html" class="nav-item">
-             <i class="fas fa-headset"></i>
-             <span>Support</span>
-          </a>
-          <a href="#" class="nav-item">
-            <i class="fas fa-info-circle"></i>
-            <span>Info</span>
-          </a>
-        </nav>
+            <div class="nav-section-label">Navigasi Utama</div>
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="index.html" class="nav-item active">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="../modules/store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
+                </a>
+                <a href="../modules/forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="../modules/leaderboard.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="../inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventaris</span>
+                </a>
+                <a href="../marketplace/index.html" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="../modules/rewards.html" class="nav-item">
+                    <i class="fas fa-gift"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="../modules/wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki & Guide</span>
+                </a>
+                <a href="../modules/social.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pertemanan</span>
+                </a>
+                <a href="../modules/support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Pusat Bantuan</span>
+                </a>
+                <a href="../verify-user.html" class="nav-item">
+                    <i class="fab fa-discord" style="color:#5865F2;"></i>
+                    <span>Verifikasi Discord</span>
+                </a>
+                <div class="nav-divider"></div>
+                <div class="nav-section-label nav-section-admin" style="margin-top:12px;">Admin Panel</div>
+                <a href="../modules/admin.html" class="nav-item nav-admin">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Panel</span>
+                </a>
+            </nav>
 
 
 
@@ -101,22 +99,29 @@
                 <p class="server-ip">play.hyrost.net</p>
                 <p class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</p>
             </div>
+            <div style="display:flex; justify-content:center; gap:8px; font-size:0.75rem; margin-top:12px; color:rgba(255,255,255,0.4);">
+                <a href="../terms.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Terms</a>
+                <span>•</span>
+                <a href="../privacy.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Privacy</a>
+                <span>•</span>
+                <a href="../index.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
+            </div>
         </div>
       </aside>
 
       <!-- Mobile Header -->
       <div class="mobile-header">
-        <button id="sidebarToggle" class="icon-btn">
+        <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu">
           <i class="fas fa-bars"></i>
         </button>
         <div class="mobile-logo">
-          <img src="../assets/images/hyrost.png" alt="Logo" />
-          <h2>Hyrost</h2>
+          <img src="../assets/images/hyrost.png" alt="Logo" style="width:28px; height:28px; border-radius:6px;" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'" />
+          <h2 style="font-size:1.1rem; color:#fff; font-weight:800; margin:0;">Hyrost</h2>
         </div>
       </div>
 
       <!-- Sidebar Overlay -->
-      <div class="sidebar-overlay" id="sidebarOverlay"></div>
+      <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
 
       <!-- Main Content Area -->
       <main class="main-content">
@@ -132,16 +137,20 @@
               <button
                 class="change-avatar-btn-mini"
                 onclick="handleAvatarChange()"
+                title="Ganti Avatar"
               >
                 <i class="fas fa-camera"></i>
               </button>
             </div>
             <div class="banner-text">
-              <h2 id="bannerUsername">Steve</h2>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <h2 id="bannerUsername">Steve</h2>
+                <span class="value role-tag" id="displayRole" style="background: rgba(99,102,241,0.2); color:#6366f1; padding: 3px 12px; border-radius: 9999px; font-size:0.75rem; font-weight:700;">Member</span>
+              </div>
               <p id="bannerEmail">steve@hyrost.net</p>
             </div>
           </div>
-          <!-- Banner Stats with 3 Coins -->
+          <!-- Banner Stats with Coins & Security Score -->
           <div class="banner-stats">
             <div class="b-stat">
               <span class="coin-label bronze">Bronze</span>
@@ -161,255 +170,636 @@
                 <i class="fas fa-exchange-alt"></i>
             </button>
 
-            <div class="b-stat">
-              <span>Member Sejak</span>
-              <p id="bannerJoinDate">Loading...</p>
+            <div class="b-stat" style="border-color: rgba(16,185,129,0.3); background: rgba(16,185,129,0.08);">
+              <span style="color:#10b981;"><i class="fas fa-shield-alt"></i> Keamanan</span>
+              <h3 id="bannerSecurityScore" style="color:#10b981;">95%</h3>
             </div>
           </div>
         </div>
 
-        <!-- Admin Button Container (Hidden by default) -->
+        <!-- Admin Button Container -->
         <div
           id="adminPanelBtnContainer"
           style="
             display: none;
             margin-bottom: 20px;
             text-align: right;
-            padding-right: 20px;
           "
         >
-          <button class="btn-save-primary" onclick="openAdminModal()">
-            <i class="fas fa-user-shield"></i> Admin Panel
+          <button class="btn-admin-panel" onclick="window.location.href='../modules/admin.html'">
+            <i class="fas fa-user-shield"></i> Buka Admin Panel
           </button>
         </div>
 
-        <div class="account-grid">
-          <!-- Left Column -->
-          <div class="grid-column left-col">
-            <!-- Info Card -->
-            <div class="card info-card">
-              <div class="card-header-actions">
-                <h3>Profile Information</h3>
-                <div class="action-menu-container">
-                  <button class="btn-icon" id="profileMenuToggle">
-                    <i class="fas fa-ellipsis-v"></i>
-                  </button>
-                  <div class="action-dropdown" id="profileActionDropdown">
-                    <button class="dropdown-item" id="btnLogout">
-                      <i class="fas fa-sign-out-alt"></i> Logout
-                    </button>
-                    <div class="dropdown-divider"></div>
-                    <button
-                      class="dropdown-item text-danger"
-                      id="btnTriggerDelete"
-                    >
-                      <i class="fas fa-trash-alt"></i> Hapus Akun
+        <!-- INTEGRATED NAVIGATION TABS -->
+        <div class="account-tabs">
+            <button class="tab-btn active" data-tab="overview" onclick="switchProfileTab('overview')"><i class="fas fa-user-circle"></i> Ringkasan Profil</button>
+            <button class="tab-btn" data-tab="edit-profile" onclick="switchProfileTab('edit-profile')"><i class="fas fa-user-edit"></i> Edit Profil</button>
+            <button class="tab-btn" data-tab="minecraft" onclick="switchProfileTab('minecraft')"><i class="fas fa-cube" style="color:#84cc16;"></i> Tautan Minecraft</button>
+            <button class="tab-btn" data-tab="security" onclick="switchProfileTab('security')"><i class="fas fa-shield-alt"></i> Keamanan & 2FA</button>
+            <button class="tab-btn" data-tab="sessions" onclick="switchProfileTab('sessions')"><i class="fas fa-laptop-house"></i> Sesi & Perangkat</button>
+            <button class="tab-btn" data-tab="activity" onclick="switchProfileTab('activity')"><i class="fas fa-history"></i> Log Aktivitas</button>
+            <button class="tab-btn" data-tab="danger" onclick="switchProfileTab('danger')"><i class="fas fa-exclamation-triangle"></i> Zona Bahaya</button>
+        </div>
+
+        <!-- TAB 1: OVERVIEW -->
+        <div class="tab-content active" id="tab-overview">
+            <div class="account-grid">
+              <div class="grid-column left-col">
+                <div class="card info-card">
+                  <h3>
+                    <span><i class="fas fa-user" style="color: var(--accent-indigo);"></i> Informasi Akun</span>
+                  </h3>
+                  <div class="info-list">
+                    <div class="info-row">
+                      <span class="label">Username:</span>
+                      <span class="value" id="displayUsername">Steve</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="label">Email Terdaftar:</span>
+                      <span class="value" id="displayEmail">steve@hyrost.net</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="label">Status Verifikasi:</span>
+                      <span class="value" style="color:#10b981;"><i class="fas fa-check-circle"></i> Terverifikasi</span>
+                    </div>
+                    <div class="info-row">
+                      <span class="label">Member Sejak:</span>
+                      <span class="value" id="displayCreatedAt">-</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Linked Accounts (Google, Discord, Mojang) -->
+                <div class="card linked-card">
+                  <h3>
+                    <span><i class="fas fa-link" style="color: var(--accent-cyan);"></i> Akun & Konektivitas Terhubung</span>
+                  </h3>
+
+                  <!-- Google Connection -->
+                  <div class="linked-item" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 14px;">
+                    <div class="linked-content" style="display:flex; align-items:center; gap:12px;">
+                      <div style="width:40px; height:40px; border-radius:50%; background:rgba(239,68,68,0.15); display:flex; align-items:center; justify-content:center; color:#ef4444; font-size:1.2rem;">
+                        <i class="fab fa-google"></i>
+                      </div>
+                      <div>
+                        <h4 style="margin:0; font-size:0.95rem; color:#fff;">Google OAuth</h4>
+                        <p id="googleLinkStatus" style="margin:2px 0 0; color: #9ca3af; font-size:0.85rem;">Belum Terhubung</p>
+                      </div>
+                    </div>
+                    <button class="btn-action-outline" id="btnGoogleLink" onclick="handleGoogleConnect()" style="padding: 6px 14px; font-size:0.85rem;">Hubungkan</button>
+                  </div>
+
+                  <!-- Discord Connection -->
+                  <div class="linked-item" style="border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 14px; margin-bottom: 14px;">
+                    <div class="linked-content" style="display:flex; align-items:center; gap:12px;">
+                      <div style="width:40px; height:40px; border-radius:50%; background:rgba(88,101,242,0.15); display:flex; align-items:center; justify-content:center; color:#5865F2; font-size:1.2rem;">
+                        <i class="fab fa-discord"></i>
+                      </div>
+                      <div>
+                        <h4 style="margin:0; font-size:0.95rem; color:#fff;">Discord Realm</h4>
+                        <p id="discordLinkStatus" style="margin:2px 0 0; color: #9ca3af; font-size:0.85rem;">Belum Terhubung</p>
+                      </div>
+                    </div>
+                    <button class="btn-action-outline" id="btnDiscordLink" onclick="handleDiscordConnect()" style="padding: 6px 14px; font-size:0.85rem;">Hubungkan</button>
+                  </div>
+
+                  <!-- Mojang / Minecraft Connection -->
+                  <div class="linked-item">
+                    <div class="linked-content" style="display:flex; align-items:center; gap:12px;">
+                      <div style="width:40px; height:40px; border-radius:50%; background:rgba(16,185,129,0.15); display:flex; align-items:center; justify-content:center; color:#10b981; font-size:1.2rem;" id="mojangAvatarContainer">
+                        <i class="fas fa-cube"></i>
+                      </div>
+                      <div>
+                        <h4 style="margin:0; font-size:0.95rem; color:#fff;">Mojang / Minecraft</h4>
+                        <p id="mojangLinkStatus" style="margin:2px 0 0; color: #9ca3af; font-size:0.85rem;">Belum Terhubung</p>
+                      </div>
+                    </div>
+                    <button class="btn-action-outline" id="btnMojangLink" onclick="handleMojangConnect()" style="padding: 6px 14px; font-size:0.85rem;">Hubungkan Mojang</button>
+                  </div>
+                </div>
+              </div>
+
+              <div class="grid-column right-col">
+                <!-- Quick Security Health Card -->
+                <div class="card">
+                  <h3>
+                    <span><span style="color:#10b981;"><i class="fas fa-shield-check"></i> Audit Keamanan Akun</span></span>
+                  </h3>
+                  <div class="security-score-card">
+                    <div>
+                      <h4 style="margin:0; font-size:1.1rem; color:#fff;">Status Keamanan: <span style="color:#10b981;">Sangat Aman</span></h4>
+                      <p style="margin:4px 0 0; color:#9ca3af; font-size:0.85rem;">Perlindungan enkripsi Bcrypt & Sesi JWT Aktif</p>
+                      <div class="security-progress-bar">
+                        <div class="security-progress-fill" id="securityProgressBar" style="width: 95%;"></div>
+                      </div>
+                    </div>
+                    <div class="security-score-circle" id="securityScoreCircle">95%</div>
+                  </div>
+                  <div style="display:flex; gap:12px; margin-top:16px;">
+                    <button class="btn-action-outline" onclick="switchProfileTab('security')" style="flex:1; justify-content:center;">
+                        <i class="fas fa-key"></i> Kelola Keamanan & Sandi
                     </button>
                   </div>
                 </div>
               </div>
-              <div class="info-list">
-                <div class="info-row">
-                  <span class="label">Username:</span>
-                  <span class="value" id="displayUsername">Steve</span>
-                </div>
-                <div class="info-row">
-                  <span class="label">Email:</span>
-                  <span class="value" id="displayEmail">steve@hyrost.net</span>
-                </div>
-                <div class="info-row">
-                  <span class="label">Role:</span>
-                  <span class="value role-badge" id="displayRole">Member</span>
-                </div>
-                <div class="info-row">
-                  <span class="label">Created At:</span>
-                  <span class="value" id="displayCreatedAt">-</span>
-                </div>
-              </div>
-              <!-- Delete Button Removed -->
-            </div>
 
-            <!-- Linked Accounts -->
-            <div class="card linked-card">
-              <div class="linked-item">
-                <div class="linked-icon google">
-                  <i class="fab fa-google"></i>
-                </div>
-                <div class="linked-content">
-                  <h4>Google Account Linked</h4>
-                  <p class="success-text" id="googleLinkStatus">Not Linked</p>
-                </div>
-                <button class="btn-unlink" id="btnGoogleLink">Link</button>
-              </div>
-            </div>
-
-            <!-- Verification -->
-            <div class="card verification-card">
-              <h3>Kamu terverifikasi!</h3>
-              <div class="discord-item">
-                <div class="discord-avatar">
-                  <img
-                    src="https://ui-avatars.com/api/?name=Discord&background=7289DA&color=fff"
-                    alt="Discord"
-                  />
-                </div>
-                <div class="discord-info">
-                  <h4>Discord User</h4>
-                  <p>ID: 7231605...</p>
-                  <a href="#" class="link-resync">Re-Sync Discord</a>
+              <!-- Voucher Claim Card -->
+              <div class="card" style="margin-top:20px; border: 1px solid rgba(245,158,11,0.3); background: linear-gradient(135deg, rgba(245,158,11,0.05), rgba(0,0,0,0.4));">
+                <h3>
+                  <span><i class="fas fa-ticket-alt" style="color: #f59e0b;"></i> Klaim Kode Voucher Promo</span>
+                </h3>
+                <p style="font-size:0.85rem; color:var(--text-secondary); margin-bottom:14px;">
+                  Punya kode voucher spesial? Masukkan di bawah untuk mendapatkan bonus Koin Realm gratis!
+                </p>
+                <div style="display:flex; gap:10px; flex-wrap:wrap;">
+                  <input type="text" id="voucherCodeInput" placeholder="Contoh: HYROST2026" style="flex:1; min-width:200px; padding:10px 14px; background:rgba(0,0,0,0.5); border:1px solid rgba(245,158,11,0.4); border-radius:8px; color:#fff; font-weight:700; text-transform:uppercase; letter-spacing:1px; outline:none;" />
+                  <button class="btn-save" style="margin:0; width:auto; padding:10px 20px;" onclick="redeemVoucherCode()">
+                    <i class="fas fa-gift"></i> KLAIM VOUCHER
+                  </button>
                 </div>
               </div>
             </div>
-          </div>
+        </div>
 
-          <!-- Right Column -->
-          <div class="grid-column right-col">
-            <!-- Settings Card -->
-            <div class="card settings-card">
-              <div class="card-header">
-                <h3>Settings</h3>
-              </div>
-              <form id="profileForm">
+        <!-- TAB 2: EDIT PROFILE -->
+        <div class="tab-content" id="tab-edit-profile">
+            <div class="card" style="max-width: 700px; margin: 0 auto;">
+              <h3>
+                <span><i class="fas fa-user-edit" style="color: var(--accent-indigo);"></i> Pengaturan Profil Pengguna</span>
+              </h3>
+              <form id="profileEditForm">
                 <div class="form-group">
-                  <label for="username">Name</label>
+                  <label for="username">Nama Pengguna (Username)</label>
                   <input
                     type="text"
                     id="username"
                     class="form-control"
-                    value="Steve"
+                    placeholder="Masukkan username..."
                   />
                 </div>
                 <div class="form-group">
-                  <label for="email">Email</label>
+                  <label for="email">Alamat Email</label>
                   <input
                     type="email"
                     id="email"
                     class="form-control"
-                    value="steve@hyrost.net"
+                    placeholder="Masukkan email..."
                   />
                 </div>
 
-                <div class="form-divider"></div>
-
-                <h4>Change Password</h4>
                 <div class="form-group">
-                  <label>Current Password</label>
-                  <input
-                    type="password"
-                    id="currentPassword"
-                    class="form-control"
-                    placeholder="••••••"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>New Password</label>
-                  <input
-                    type="password"
-                    id="newPassword"
-                    class="form-control"
-                    placeholder="••••••"
-                  />
-                </div>
-                <div class="form-group">
-                  <label>Confirm Password</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    class="form-control"
-                    placeholder="••••••"
-                  />
+                  <label>Foto Profil (Avatar)</label>
+                  <div style="display:flex; align-items:center; gap:16px;">
+                    <img src="https://cravatar.eu/avatar/Steve/64.png" id="editAvatarPreview" style="width:54px; height:54px; border-radius:50%; border:2px solid #6366f1;" />
+                    <button type="button" class="btn-action-outline" onclick="handleAvatarChange()">
+                      <i class="fas fa-camera"></i> Pilih Foto Avatar Baru
+                    </button>
+                  </div>
                 </div>
 
-                <button type="submit" class="btn-save-primary">
-                  Save Changes
+                <button type="submit" class="btn-save" style="margin-top: 24px;">
+                  <i class="fas fa-save"></i> SIMPAN PERUBAHAN PROFIL
                 </button>
               </form>
             </div>
+        </div>
 
-            <!-- Activity Logs -->
-            <div class="activity-section">
-              <h3>Activity Logs</h3>
-              <div id="activityLogsContainer">
-                <p class="text-muted">Loading activity...</p>
+        <!-- TAB 3: INTEGRATED SECURITY & 2FA -->
+        <div class="tab-content" id="tab-security">
+            <div class="account-grid">
+              <div class="grid-column left-col">
+                <!-- Change Password Form -->
+                <div class="card">
+                  <h3>
+                    <span><i class="fas fa-lock" style="color: var(--accent-cyan);"></i> Ganti Password Akun</span>
+                  </h3>
+                  <form id="changePasswordForm">
+                    <div class="form-group">
+                      <label>Password Saat Ini</label>
+                      <input
+                        type="password"
+                        id="currentPassword"
+                        class="form-control"
+                        placeholder="Masukkan password lama..."
+                        required
+                      />
+                    </div>
+                    <div class="form-group">
+                      <label>Password Baru</label>
+                      <input
+                        type="password"
+                        id="newPassword"
+                        class="form-control"
+                        placeholder="Masukkan password baru (min. 6 karakter)..."
+                        oninput="validatePasswordStrength(this.value)"
+                        required
+                      />
+                      <!-- Live Strength Meter -->
+                      <div class="password-meter-container">
+                        <div class="password-meter-bar">
+                          <div class="password-meter-segment" id="pwdSeg1"></div>
+                          <div class="password-meter-segment" id="pwdSeg2"></div>
+                          <div class="password-meter-segment" id="pwdSeg3"></div>
+                        </div>
+                        <div class="password-strength-text" id="pwdStrengthText">Ketik password baru...</div>
+                      </div>
+                    </div>
+                    <div class="form-group">
+                      <label>Konfirmasi Password Baru</label>
+                      <input
+                        type="password"
+                        id="confirmPassword"
+                        class="form-control"
+                        placeholder="Ulangi password baru..."
+                        required
+                      />
+                    </div>
+
+                    <button type="submit" class="btn-save">
+                      <i class="fas fa-shield-alt"></i> PERBARUI PASSWORD
+                    </button>
+                  </form>
+                </div>
+              </div>
+
+              <div class="grid-column right-col">
+                <!-- 2-Factor Authentication (2FA) -->
+                <div class="card">
+                  <h3>
+                    <span><i class="fas fa-mobile-alt" style="color: var(--accent-gold);"></i> Verifikasi 2-Langkah (2FA)</span>
+                  </h3>
+                  <div style="background: rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.07); padding: 18px; border-radius: 14px; margin-bottom: 16px;">
+                    <label class="switch-label">
+                      <div>
+                        <h4 style="margin:0; font-size:1rem; color:#fff;">Status 2-Factor Authentication</h4>
+                        <p style="margin:4px 0 0; color:#9ca3af; font-size:0.8rem;" id="twoFactorStatusDesc">Perlindungan ganda dengan kode OTP saat login.</p>
+                      </div>
+                      <input type="checkbox" id="toggle2FASwitch" style="display:none;" onchange="handle2FAToggle(this.checked)" />
+                      <div class="switch-toggle"></div>
+                    </label>
+                  </div>
+                  <div style="font-size:0.85rem; color:#9ca3af;">
+                    <i class="fas fa-info-circle" style="color:#06b6d4; margin-right:6px;"></i> Ketika 2FA aktif, sistem akan meminta verifikasi OTP setiap kali Anda login dari lokasi/browser baru.
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+        </div>
+
+        <!-- TAB MINECRAFT LINK -->
+        <div class="tab-content" id="tab-minecraft">
+            <div class="card info-card" style="max-width: 800px; margin: 0 auto;">
+                <h3>
+                    <span><i class="fas fa-cube" style="color: #84cc16;"></i> Tautan Akun Minecraft</span>
+                </h3>
+                <p style="color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 20px;">
+                    Hubungkan akun Minecraft (Java / Bedrock Edition) Anda untuk menerima otomatis item, rank, dan koin yang Anda beli di Web Marketplace atau klaim di Inventaris.
+                </p>
+
+                <!-- Linked State -->
+                <div id="mcLinkedState" style="display:none; background: rgba(132, 204, 22, 0.08); border: 1px solid rgba(132, 204, 22, 0.3); padding: 20px; border-radius: 12px; margin-bottom: 20px;">
+                    <div style="display:flex; align-items:center; gap: 16px; flex-wrap: wrap;">
+                        <img id="mcHeadAvatar" src="https://cravatar.eu/helmavatar/Steve/64.png" style="width: 56px; height: 56px; border-radius: 12px; border: 2px solid #84cc16;">
+                        <div style="flex:1; min-width: 200px;">
+                            <div style="font-size: 1.1rem; font-weight: 800; color: #fff;" id="mcLinkedUsername">Steve</div>
+                            <div style="font-size: 0.8rem; color: var(--text-secondary);" id="mcLinkedUuid">UUID: Loading...</div>
+                            <div style="font-size: 0.78rem; color: #84cc16; margin-top: 4px;"><i class="fas fa-check-circle"></i> Akun Terverifikasi In-Game</div>
+                        </div>
+                        <button class="btn-cancel-modal" onclick="unlinkMinecraftAccount()" style="color: #ef4444; border-color: rgba(239,68,68,0.3);">
+                            <i class="fas fa-unlink"></i> Lepas Tautan
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Unlinked State -->
+                <div id="mcUnlinkedState" style="background: rgba(255,255,255,0.03); border: 1px solid var(--border-color); padding: 24px; border-radius: 12px;">
+                    <h4 style="color:#fff; margin-bottom:10px;">Langkah Penautan Akun:</h4>
+                    <ol style="color: var(--text-secondary); font-size: 0.88rem; margin-left: 20px; line-height: 1.8; margin-bottom: 20px;">
+                        <li>Klik tombol <strong>"Buat Kode Verifikasi"</strong> di bawah ini.</li>
+                        <li>Buka server Minecraft Hyrost Realm (<code>play.hyrost.net</code>).</li>
+                        <li>Ketik perintah di chat in-game: <code style="color:#84cc16; background:rgba(0,0,0,0.4); padding:2px 8px; border-radius:4px;" id="mcCommandSample">/link HYR-XXXXXX</code></li>
+                    </ol>
+
+                    <div id="mcCodeDisplay" style="display:none; background: rgba(99,102,241,0.1); border: 1px dashed rgba(99,102,241,0.4); padding: 16px; border-radius: 10px; text-align: center; margin-bottom: 20px;">
+                        <div style="font-size: 0.8rem; color: var(--text-secondary);">Kode Verifikasi Anda (Berlaku 15 menit):</div>
+                        <div id="mcGeneratedCode" style="font-size: 1.8rem; font-weight: 800; color: #6366f1; letter-spacing: 3px; margin: 8px 0;">HYR-XXXXXX</div>
+                        <div style="font-size: 0.82rem; color: #a5b4fc;">Ketik di server: <strong id="mcFullCommand">/link HYR-XXXXXX</strong></div>
+                    </div>
+
+                    <button class="btn-save" id="btnGenMcCode" onclick="requestMinecraftLinkCode()">
+                        <i class="fas fa-key"></i> Buat Kode Verifikasi Baru
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- TAB 4: SESSIONS & DEVICES -->
+        <div class="tab-content" id="tab-sessions">
+            <div class="card" style="max-width: 800px; margin: 0 auto;">
+              <h3>
+                <span><i class="fas fa-laptop-house" style="color: var(--accent-cyan);"></i> Sesi & Perangkat Login Aktif</span>
+                <button class="btn-danger-outline" style="font-size:0.8rem; padding: 6px 14px;" onclick="handleRevokeSessions()">
+                    <i class="fas fa-power-off"></i> Keluarkan Sesi Lain
+                </button>
+              </h3>
+              <p style="color:#9ca3af; font-size:0.88rem; margin-bottom:20px;">Daftar perangkat yang saat ini memiliki akses terotentikasi ke akun Anda.</p>
+              
+              <div id="activeSessionsContainer">
+                <div class="session-item">
+                  <div style="display:flex; align-items:center; gap:14px;">
+                    <div class="session-icon"><i class="fas fa-desktop"></i></div>
+                    <div class="session-details">
+                      <h4>Desktop PC / Windows Browser</h4>
+                      <p>Google Chrome • IP: 127.0.0.1 (Lokal)</p>
+                    </div>
+                  </div>
+                  <span class="badge-current"><i class="fas fa-circle" style="font-size:0.5rem; vertical-align:middle; margin-right:4px;"></i> Sesi Ini</span>
+                </div>
+              </div>
+            </div>
+        </div>
+
+        <!-- TAB 5: SECURITY ACTIVITY LOGS -->
+        <div class="tab-content" id="tab-activity">
+            <div class="card" style="max-width: 850px; margin: 0 auto;">
+              <h3>
+                <span><i class="fas fa-history" style="color: var(--accent-cyan);"></i> Log Keamanan & Aktivitas Akun</span>
+              </h3>
+              <div id="activityLogsContainer" class="info-list">
+                <p style="color: var(--text-dim, #6b7280);">Memuat aktivitas...</p>
+              </div>
+            </div>
+        </div>
+
+        <!-- TAB 6: DANGER ZONE -->
+        <div class="tab-content" id="tab-danger">
+            <div class="card" style="max-width: 650px; margin: 0 auto; border-color: rgba(239, 68, 68, 0.4); background: rgba(239, 68, 68, 0.05);">
+              <h3 style="color:#ef4444;">
+                <span><i class="fas fa-exclamation-triangle"></i> Hapus Akun Permanen</span>
+              </h3>
+              <p style="color:#d1d5db; font-size:0.9rem; line-height:1.5;">
+                Tindakan ini akan menonaktifkan akun Anda secara permanen. Semua data profil, saldo koin (Bronze, Silver, Gold), dan inventaris kosmetik akan dihapus dan tidak dapat dipulihkan kembali.
+              </p>
+              <div style="margin-top:20px;">
+                <button class="btn-danger-outline" id="btnTriggerDelete" style="width:100%; justify-content:center; padding:14px;">
+                  <i class="fas fa-trash-alt"></i> HAPUS AKUN SAYA PERMANEN
+                </button>
+              </div>
+            </div>
         </div>
       </main>
       <!-- Avatar Selection Modal -->
       <div class="modal-overlay" id="avatarModal">
-        <div class="modal-content">
+        <div class="modal-content avatar-modal-box">
           <div class="modal-header">
-            <h3>Ganti Foto Profil</h3>
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div class="modal-header-icon"><i class="fas fa-user-ninja"></i></div>
+              <div>
+                <h3 style="margin:0; font-size:1.25rem;">Pilihan Head Avatar Profil</h3>
+                <p style="margin:2px 0 0; color:#9ca3af; font-size:0.8rem;">Pilih dari 20 koleksi head Minecraft, cari username, atau unggah foto foto sendiri</p>
+              </div>
+            </div>
             <button class="close-modal" id="closeAvatarModal">
               <i class="fas fa-times"></i>
             </button>
           </div>
-          <div class="modal-body">
-            <div class="avatar-section">
-              <h4>Pilih dari Default</h4>
-              <div class="avatar-grid">
-                <img
-                  src="https://cravatar.eu/avatar/Steve/128.png"
-                  alt="Steve"
-                  class="avatar-option"
-                  data-url="https://cravatar.eu/avatar/Steve/128.png"
-                />
-                <img
-                  src="https://cravatar.eu/avatar/Alex/128.png"
-                  alt="Alex"
-                  class="avatar-option"
-                  data-url="https://cravatar.eu/avatar/Alex/128.png"
-                />
-                <img
-                  src="https://cravatar.eu/avatar/Herobrine/128.png"
-                  alt="Herobrine"
-                  class="avatar-option"
-                  data-url="https://cravatar.eu/avatar/Herobrine/128.png"
-                />
-                <img
-                  src="https://cravatar.eu/avatar/Dream/128.png"
-                  alt="Dream"
-                  class="avatar-option"
-                  data-url="https://cravatar.eu/avatar/Dream/128.png"
-                />
-                <img
-                  src="https://cravatar.eu/avatar/Notch/128.png"
-                  alt="Notch"
-                  class="avatar-option"
-                  data-url="https://cravatar.eu/avatar/Notch/128.png"
-                />
+
+          <div class="modal-body" style="padding: 20px;">
+            <!-- Live Selected Avatar Preview Banner -->
+            <div class="avatar-live-preview-card">
+              <div class="preview-avatar-wrapper">
+                <img id="avatarModalPreviewImg" src="https://cravatar.eu/helmavatar/Steve/128.png" alt="Preview Avatar" />
+                <span class="preview-active-badge"><i class="fas fa-check"></i></span>
+              </div>
+              <div class="preview-details">
+                <span class="preview-subtitle">PRATINJAU HEAD PILIHAN</span>
+                <h4 id="avatarModalPreviewName" class="preview-title">Steve (Classic Hero)</h4>
+                <p id="avatarModalPreviewType" class="preview-tag">Head Minecraft Default</p>
               </div>
             </div>
 
-            <div class="separator">
-              <span>ATAU</span>
+            <!-- Subtab Navigation Filters -->
+            <div class="avatar-tab-nav">
+              <button class="avatar-nav-btn active" data-subtab="all"><i class="fas fa-th-large"></i> Semua (20)</button>
+              <button class="avatar-nav-btn" data-subtab="legends"><i class="fas fa-crown"></i> Character & Legend</button>
+              <button class="avatar-nav-btn" data-subtab="youtubers"><i class="fas fa-video"></i> Youtuber</button>
+              <button class="avatar-nav-btn" data-subtab="mobs"><i class="fas fa-ghost"></i> Mob Minecraft</button>
+              <button class="avatar-nav-btn" data-subtab="mcsearch"><i class="fas fa-search"></i> Cari Username MC</button>
+              <button class="avatar-nav-btn" data-subtab="custom"><i class="fas fa-upload"></i> Upload Custom</button>
             </div>
 
-            <div class="upload-section">
-              <h4>Upload Foto Custom</h4>
-              <p class="upload-hint">Min: 16x16px, Max: 512x512px</p>
-              <div class="custom-upload-container">
-                <input
-                  type="file"
-                  id="customAvatarInput"
-                  accept="image/*"
-                  hidden
-                />
-                <button
-                  class="btn-upload"
-                  onclick="document.getElementById('customAvatarInput').click()"
-                >
-                  <i class="fas fa-upload"></i> Pilih File
+            <!-- TAB SECTION 1: PRESET HEADS GRID (20 HEAD TYPES) -->
+            <div class="avatar-tab-panel active" id="avatarPanelGrid">
+              <div class="avatar-head-grid">
+                <!-- 1. Steve -->
+                <div class="avatar-head-card avatar-option selected" data-url="https://cravatar.eu/helmavatar/Steve/128.png" data-name="Steve" data-tag="Classic Hero" data-category="legends">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Steve/128.png" alt="Steve" />
+                  </div>
+                  <span class="head-name">Steve</span>
+                  <span class="head-badge legend">Classic</span>
+                </div>
+                <!-- 2. Alex -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Alex/128.png" data-name="Alex" data-tag="Classic Heroine" data-category="legends">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Alex/128.png" alt="Alex" />
+                  </div>
+                  <span class="head-name">Alex</span>
+                  <span class="head-badge legend">Classic</span>
+                </div>
+                <!-- 3. Herobrine -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Herobrine/128.png" data-name="Herobrine" data-tag="Legenda Mistik" data-category="legends">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Herobrine/128.png" alt="Herobrine" />
+                  </div>
+                  <span class="head-name">Herobrine</span>
+                  <span class="head-badge legend">Legend</span>
+                </div>
+                <!-- 4. Dream -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Dream/128.png" data-name="Dream" data-tag="Speedrun King" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Dream/128.png" alt="Dream" />
+                  </div>
+                  <span class="head-name">Dream</span>
+                  <span class="head-badge yt">Youtuber</span>
+                </div>
+                <!-- 5. Technoblade -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Technoblade/128.png" data-name="Technoblade" data-tag="The Pig King" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Technoblade/128.png" alt="Technoblade" />
+                  </div>
+                  <span class="head-name">Technoblade</span>
+                  <span class="head-badge yt">King</span>
+                </div>
+                <!-- 6. Notch -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Notch/128.png" data-name="Notch" data-tag="Minecraft Creator" data-category="legends">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Notch/128.png" alt="Notch" />
+                  </div>
+                  <span class="head-name">Notch</span>
+                  <span class="head-badge legend">Creator</span>
+                </div>
+                <!-- 7. MumboJumbo -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/MumboJumbo/128.png" data-name="MumboJumbo" data-tag="Redstone Master" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/MumboJumbo/128.png" alt="MumboJumbo" />
+                  </div>
+                  <span class="head-name">MumboJumbo</span>
+                  <span class="head-badge yt">Redstone</span>
+                </div>
+                <!-- 8. Grian -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Grian/128.png" data-name="Grian" data-tag="Master Builder" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Grian/128.png" alt="Grian" />
+                  </div>
+                  <span class="head-name">Grian</span>
+                  <span class="head-badge yt">Builder</span>
+                </div>
+                <!-- 9. DanTDM -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/DanTDM/128.png" data-name="DanTDM" data-tag="Diamond Minecart" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/DanTDM/128.png" alt="DanTDM" />
+                  </div>
+                  <span class="head-name">DanTDM</span>
+                  <span class="head-badge yt">Diamond</span>
+                </div>
+                <!-- 10. Skeppy -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Skeppy/128.png" data-name="Skeppy" data-tag="Diamond Knight" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Skeppy/128.png" alt="Skeppy" />
+                  </div>
+                  <span class="head-name">Skeppy</span>
+                  <span class="head-badge yt">Knight</span>
+                </div>
+                <!-- 11. BadBoyHalo -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/BadBoyHalo/128.png" data-name="BadBoyHalo" data-tag="Demon Hero" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/BadBoyHalo/128.png" alt="BadBoyHalo" />
+                  </div>
+                  <span class="head-name">BadBoyHalo</span>
+                  <span class="head-badge yt">Demon</span>
+                </div>
+                <!-- 12. TommyInnit -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/TommyInnit/128.png" data-name="TommyInnit" data-tag="Chaos King" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/TommyInnit/128.png" alt="TommyInnit" />
+                  </div>
+                  <span class="head-name">TommyInnit</span>
+                  <span class="head-badge yt">Youtuber</span>
+                </div>
+                <!-- 13. Tubbo -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Tubbo/128.png" data-name="Tubbo" data-tag="Bee Master" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Tubbo/128.png" alt="Tubbo" />
+                  </div>
+                  <span class="head-name">Tubbo</span>
+                  <span class="head-badge yt">Bee</span>
+                </div>
+                <!-- 14. Ranboo -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Ranboo/128.png" data-name="Ranboo" data-tag="Ender Prince" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Ranboo/128.png" alt="Ranboo" />
+                  </div>
+                  <span class="head-name">Ranboo</span>
+                  <span class="head-badge yt">Ender</span>
+                </div>
+                <!-- 15. GeorgeNotFound -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/GeorgeNotFound/128.png" data-name="GeorgeNotFound" data-tag="Goggles Hero" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/GeorgeNotFound/128.png" alt="GeorgeNotFound" />
+                  </div>
+                  <span class="head-name">GeorgeNF</span>
+                  <span class="head-badge yt">Goggles</span>
+                </div>
+                <!-- 16. Sapnap -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/Sapnap/128.png" data-name="Sapnap" data-tag="Fire Warrior" data-category="youtubers">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/Sapnap/128.png" alt="Sapnap" />
+                  </div>
+                  <span class="head-name">Sapnap</span>
+                  <span class="head-badge yt">Fire</span>
+                </div>
+                <!-- 17. Creeper -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/MHF_Creeper/128.png" data-name="Creeper" data-tag="Creeper Head" data-category="mobs">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/MHF_Creeper/128.png" alt="Creeper" />
+                  </div>
+                  <span class="head-name">Creeper</span>
+                  <span class="head-badge mob">Mob</span>
+                </div>
+                <!-- 18. Enderman -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/MHF_Enderman/128.png" data-name="Enderman" data-tag="Enderman Head" data-category="mobs">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/MHF_Enderman/128.png" alt="Enderman" />
+                  </div>
+                  <span class="head-name">Enderman</span>
+                  <span class="head-badge mob">Mob</span>
+                </div>
+                <!-- 19. Zombie Pigman -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/MHF_PigZombie/128.png" data-name="Pigman" data-tag="Pigman Head" data-category="mobs">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/MHF_PigZombie/128.png" alt="Pigman" />
+                  </div>
+                  <span class="head-name">Zombie Pigman</span>
+                  <span class="head-badge mob">Mob</span>
+                </div>
+                <!-- 20. Iron Golem -->
+                <div class="avatar-head-card avatar-option" data-url="https://cravatar.eu/helmavatar/MHF_Golem/128.png" data-name="Iron Golem" data-tag="Iron Golem Head" data-category="mobs">
+                  <div class="head-img-wrapper">
+                    <img src="https://cravatar.eu/helmavatar/MHF_Golem/128.png" alt="Iron Golem" />
+                  </div>
+                  <span class="head-name">Iron Golem</span>
+                  <span class="head-badge mob">Mob</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB SECTION 2: SEARCH MINECRAFT IGN HEAD -->
+            <div class="avatar-tab-panel" id="avatarPanelSearch" style="display:none;">
+              <div class="mc-head-search-box">
+                <h4><i class="fas fa-search" style="color:#6366f1;"></i> Cari Head dari Username Minecraft In-Game</h4>
+                <p class="search-desc">Masukkan IGN (In-Game Name) akun Minecraft Java/Bedrock Anda. Sistem akan secara otomatis mengunduh head 3D resmi dari Mojang.</p>
+                <div class="search-input-group">
+                  <input type="text" id="mcUsernameSearchInput" placeholder="Contoh: Jeb_, Spreen, DanTDM..." />
+                  <button type="button" id="btnSearchMcHead" onclick="fetchCustomMcHead()">
+                    <i class="fas fa-magic"></i> Ambil Head
+                  </button>
+                </div>
+                <div id="mcHeadSearchResult" class="mc-search-result-container" style="display:none;">
+                  <div class="found-head-card">
+                    <img id="foundHeadImg" src="" alt="Found Head" />
+                    <div>
+                      <h5 id="foundHeadName">Username</h5>
+                      <span class="head-badge" style="background:rgba(16,185,129,0.2); color:#10b981;">Mojang Verified Head</span>
+                    </div>
+                    <button type="button" class="btn-use-head" id="btnApplyFoundHead">
+                      <i class="fas fa-check-circle"></i> Gunakan Head Ini
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB SECTION 3: CUSTOM FILE UPLOAD -->
+            <div class="avatar-tab-panel" id="avatarPanelUpload" style="display:none;">
+              <div class="upload-dropzone" id="avatarDropzone">
+                <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                <h4>Unggah Foto Profil Custom</h4>
+                <p class="upload-hint">Pilih gambar JPG, PNG, atau WEBP. Min: 32x32px, Max: 5MB.</p>
+                <input type="file" id="customAvatarInput" accept="image/*" hidden />
+                <button type="button" class="btn-upload-trigger" onclick="document.getElementById('customAvatarInput').click()">
+                  <i class="fas fa-folder-open"></i> Pilih File Foto
                 </button>
-                <span id="fileName">Tidak ada file dipilih</span>
+                <span id="fileName" class="file-name-text">Tidak ada file dipilih</span>
               </div>
               <div id="uploadError" class="error-msg"></div>
             </div>
           </div>
+
           <div class="modal-footer">
-            <button class="btn-cancel" id="cancelAvatarModal">Batal</button>
-            <button class="btn-save" id="saveAvatarModal">Simpan</button>
+            <button class="btn-cancel" id="cancelAvatarModal"><i class="fas fa-times"></i> Batal</button>
+            <button class="btn-save" id="saveAvatarModal"><i class="fas fa-save"></i> Simpan Avatar</button>
           </div>
         </div>
       </div>
@@ -508,8 +898,6 @@
       <div id="toastContainer"></div>
     </div>
 
-    <!-- Script that combines shared logic and page specific logic -->
-    <script src="../inventory/inventory.js"></script>
     <!-- Exchange Modal -->
     <div class="modal-overlay" id="exchangeModal">
         <div class="modal-content" style="max-width: 450px;">
@@ -562,9 +950,6 @@
     </div>
 
     <!-- Scripts -->
-    <script type="module" src="account.js"></script>
+    <script src="account.js?v=8"></script>
   </body>
 </html>
-```
-
-<script src='../assets/js/server_status.js'></script>

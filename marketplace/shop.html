@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyrost - Toko</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css">
-    <link rel="stylesheet" href="../inventory/inventory.css">
-    <link rel="stylesheet" href="shop_dashboard.css">
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    <link rel="stylesheet" href="../inventory/inventory.css?v=50">
+    <link rel="stylesheet" href="shop_dashboard.css?v=50">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,18 +24,19 @@
                 <h2>Hyrost</h2>
             </div>
             
+            <div class="nav-section-label">Navigasi Utama</div>
             <nav class="sidebar-nav">
                 <a href="../dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
                 </a>
                 <a href="../account/index.html" class="nav-item">
                     <i class="fas fa-user-circle"></i>
-                    <span>Profile</span>
+                    <span>Profil Saya</span>
                 </a>
-                <a href="../question/index.html" class="nav-item">
-                    <i class="fas fa-globe-asia"></i>
-                    <span>World</span>
+                <a href="../modules/store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
                 </a>
                 <a href="../modules/forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
@@ -49,17 +50,9 @@
                     <i class="fas fa-briefcase"></i>
                     <span>Storage</span>
                 </a>
-                <a href="#" class="nav-item active">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Shop</span>
-                </a>
-                <a href="auction.html" class="nav-item">
-                    <i class="fas fa-gavel"></i>
-                    <span>Auction</span>
-                </a>
-                <a href="../modules/role_shop.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>
-                    <span>Role Shop</span>
+                <a href="index.html" class="nav-item active">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Marketplace</span>
                 </a>
                 <a href="../modules/rewards.html" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
@@ -158,89 +151,19 @@
                 </div>
             </div>
 
-            <!-- Category Filters -->
-            <div class="category-filters">
-                <button class="filter-tab active">Semua</button>
-                <button class="filter-tab">Senjata</button>
-                <button class="filter-tab">Armor</button>
-                <button class="filter-tab">Alat</button>
-                <button class="filter-tab">Ramuan</button>
-                <button class="filter-tab">Blok</button>
-            </div>
+            <!-- Product Grid (Admin cosmetics from API) -->
+            <h3 style="margin: 24px 0 12px; font-size:1rem; color:var(--text-secondary);">Kosmetik & Nametag (Admin)</h3>
+            <div class="product-grid" id="itemsGrid"></div>
 
-            <!-- Product Grid -->
-            <div class="product-grid">
-                <!-- Product 1 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <i class="fas fa-khanda"></i>
-                    </div>
-                    <div class="product-info">
-                        <h3>Pedang Api Legendaris</h3>
-                        <p>Damage tinggi dengan efek bakar.</p>
-                        <div class="product-price">1500 Koin</div>
-                    </div>
-                    <button class="btn-add-cart" data-id="p1" data-name="Pedang Api Legendaris" data-price="1500" data-image="../assets/images/items/sword_fire.png">Tambah ke Keranjang</button>
-                </div>
-
-                <!-- Product 2 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <div class="product-info">
-                        <h3>Perisai Berlian</h3>
-                        <p>Pertahanan maksimal dari serangan.</p>
-                        <div class="product-price">2000 Koin</div>
-                    </div>
-                    <button class="btn-add-cart" data-id="p2" data-name="Perisai Berlian" data-price="2000" data-image="https://minecraft.wiki/images/Diamond_Shield.png">Tambah ke Keranjang</button>
-                </div>
-
-                <!-- Product 3 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <i class="fas fa-magic"></i>
-                    </div>
-                    <div class="product-info">
-                        <h3>Tongkat Sihir</h3>
-                        <p>Keluarkan mantra dahsyat.</p>
-                        <div class="product-price">3500 Koin</div>
-                    </div>
-                    <button class="btn-add-cart" data-id="p3" data-name="Tongkat Sihir" data-price="3500" data-image="https://minecraft.wiki/images/Stick.png">Tambah ke Keranjang</button>
-                </div>
-
-                <!-- Product 4 -->
-                <div class="product-card">
-                    <div class="product-image">
-                        <i class="fas fa-flask"></i>
-                    </div>
-                    <div class="product-info">
-                        <h3>Ramuan Kecepatan</h3>
-                        <p>Tingkatkan kecepatan bergerak.</p>
-                        <div class="product-price">500 Koin</div>
-                    </div>
-                    <button class="btn-add-cart" data-id="p4" data-name="Sepatu Wind Walker" data-price="500" data-image="https://minecraft.wiki/images/Leather_Boots.png">Tambah ke Keranjang</button>
-                </div>
-
-                 <!-- Product 5 -->
-                 <div class="product-card">
-                    <div class="product-image">
-                        <i class="fas fa-gem"></i>
-                    </div>
-                    <div class="product-info">
-                        <h3>Berlian Murni</h3>
-                        <p>Material langka untuk crafting.</p>
-                        <div class="product-price">1000 Koin</div>
-                    </div>
-                    <button class="btn-add-cart" data-id="p5" data-name="Berlian Murni" data-price="1000" data-image="https://minecraft.wiki/images/Diamond.png">Tambah ke Keranjang</button>
-                 </div>
-            </div>
+            <h3 style="margin: 32px 0 12px; font-size:1rem; color:var(--text-secondary);">Badge (Admin)</h3>
+            <div class="product-grid" id="badgeShopGrid"></div>
         </main>
     </div>
 
     <script src="../inventory/inventory.js"></script> <!-- Reusing sidebar functionality -->
     <script src="market.js"></script>
     <script src='../assets/js/notifications.js'></script>
+    <script src='../assets/js/mcServerWidget.js'></script>
     <script src='../assets/js/server_status.js'></script>
 </body>
 </html>

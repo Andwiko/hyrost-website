@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Hyrost - Create Account</title>
+    <link rel="icon" type="image/png" href="../assets/images/hyrost.png">
     <link rel="stylesheet" href="auth.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,7 +19,7 @@
                     <i class="fas fa-arrow-left"></i> Back to Home
                 </a>
                 <div class="logo-area">
-                    <img src="../assets/images/hyrost_logo.png" alt="Hyrost Logo" class="logo-img">
+                    <img src="../assets/images/hyrost.png" alt="Hyrost Logo" class="logo-img" style="width:54px; height:54px; border-radius:12px;">
                     <h1>HYROST</h1>
                     <p>Begin Your Adventure</p>
                 </div>
@@ -41,6 +42,10 @@
                     </div>
                 </div>
                 
+                <div style="font-size: 0.8rem; color: #9ca3af; margin-bottom: 18px; line-height: 1.5; text-align: center;">
+                    Dengan mendaftar, Anda menyetujui <a href="../terms.html" target="_blank" style="color: #6366f1; text-decoration: underline;">Ketentuan Layanan</a> &amp; <a href="../privacy.html" target="_blank" style="color: #06b6d4; text-decoration: underline;">Kebijakan Privasi</a> Hyrost.
+                </div>
+
                 <button type="submit" class="register-btn">
                     <span>CREATE ACCOUNT</span>
                     <i class="fas fa-arrow-right"></i>
@@ -50,13 +55,18 @@
             <div class="card-footer">
                 <div id="message" style="display: none; margin-bottom: 15px; text-align: center;"></div>
                 <p>Already have an account? <a href="login.html">Login here</a></p>
+                <div style="margin-top: 12px; font-size: 0.75rem; color: #6b7280; display: flex; justify-content: center; gap: 12px;">
+                    <a href="../terms.html" style="color: #9ca3af; text-decoration: none;">Terms of Service</a>
+                    <span>•</span>
+                    <a href="../privacy.html" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a>
+                </div>
             </div>
         </div>
     </div>
     
     <!-- Google Sign-In Script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="register.js"></script>
+    <script src="register.js?v=20"></script>
     <script>
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');

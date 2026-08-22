@@ -1,109 +1,136 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const notificationBtn = document.getElementById('notificationBtn');
-    const notificationDropdown = document.getElementById('notificationDropdown');
-    const notificationBadge = document.getElementById('notificationBadge');
-    const notificationList = document.getElementById('notificationList');
+  const notificationBtn = document.getElementById('notificationBtn');
+  const notificationDropdown = document.getElementById('notificationDropdown');
+  const notificationBadge = document.getElementById('notificationBadge');
+  const notificationList = document.getElementById('notificationList');
 
-    // Mock Notifications Data
-    let notifications = [
-        {
-            id: 1,
-            title: "Welcome to Hyrost!",
-            message: "Thanks for joining our community.",
-            time: "2 mins ago",
-            read: false,
-            icon: "fas fa-smile",
-            color: "#4ade80"
-        },
-        {
-            id: 2,
-            title: "New Quest Available",
-            message: "Check out the 'Dragon Slayer' quest in World.",
-            time: "1 hour ago",
-            read: false,
-            icon: "fas fa-scroll",
-            color: "#fbbf24"
-        },
-        {
-            id: 3,
-            title: "System Update",
-            message: "Server maintenance scheduled for tonight.",
-            time: "5 hours ago",
-            read: true,
-            icon: "fas fa-cog",
-            color: "#60a5fa"
-        }
-    ];
+  if (!notificationBtn || !notificationDropdown || !notificationList) return;
 
-    // Initialize
+  let notifications = [];
+
+  loadNotifications();
+
+  notificationBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    notificationDropdown.classList.toggle('active');
+    if (notificationDropdown.classList.contains('active')) {
+      markAllAsSeen();
+    }
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
+      notificationDropdown.classList.remove('active');
+    }
+  });
+
+  async function loadNotifications() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) {
+      notifications = [];
+      updateBadge();
+      renderNotifications();
+      return;
+    }
+
+    try {
+      const res = await fetch('/api/notifications', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (!res.ok) throw new Error('Failed to load');
+      const data = await res.json();
+      notifications = (data.notifications || []).map((n) => ({
+        id: n.id,
+        title: n.title,
+        message: n.message,
+        time: formatTime(n.created_at),
+        read: !!n.is_read,
+        icon: 'fas fa-bell',
+        color: '#60a5fa',
+      }));
+    } catch (e) {
+      notifications = [];
+    }
+
+    updateBadge();
+    renderNotifications();
+  }
+
+  function formatTime(dateStr) {
+    if (!dateStr) return '';
+    const diff = Date.now() - new Date(dateStr).getTime();
+    const mins = Math.floor(diff / 60000);
+    if (mins < 1) return 'Baru saja';
+    if (mins < 60) return `${mins} mnt lalu`;
+    const hours = Math.floor(mins / 60);
+    if (hours < 24) return `${hours} jam lalu`;
+    return `${Math.floor(hours / 24)} hari lalu`;
+  }
+
+  function updateBadge() {
+    if (!notificationBadge) return;
+    const unreadCount = notifications.filter((n) => !n.read).length;
+    if (unreadCount > 0) {
+      notificationBadge.style.display = 'block';
+      notificationBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
+    } else {
+      notificationBadge.style.display = 'none';
+    }
+  }
+
+  function renderNotifications() {
+    notificationList.innerHTML = '';
+
+    if (notifications.length === 0) {
+      notificationList.innerHTML = '<div class="empty-notif">Tidak ada notifikasi</div>';
+      return;
+    }
+
+    notifications.forEach((notif) => {
+      const item = document.createElement('div');
+      item.className = `notification-item ${notif.read ? 'read' : 'unread'}`;
+
+      const icon = document.createElement('div');
+      icon.className = 'notif-icon';
+      icon.style.cssText = `background:${notif.color}20;color:${notif.color}`;
+      icon.innerHTML = `<i class="${notif.icon}"></i>`;
+
+      const content = document.createElement('div');
+      content.className = 'notif-content';
+      const title = document.createElement('span');
+      title.className = 'notif-title';
+      title.textContent = notif.title;
+      const time = document.createElement('span');
+      time.className = 'notif-time';
+      time.textContent = notif.time;
+      const header = document.createElement('div');
+      header.className = 'notif-header';
+      header.append(title, time);
+      const msg = document.createElement('p');
+      msg.className = 'notif-message';
+      msg.textContent = notif.message;
+
+      content.append(header, msg);
+      item.append(icon, content);
+      notificationList.appendChild(item);
+    });
+  }
+
+  async function markAllAsSeen() {
+    const unreadIds = notifications.filter((n) => !n.read).map((n) => n.id);
+    notifications.forEach((n) => { n.read = true; });
     updateBadge();
     renderNotifications();
 
-    // Toggle Dropdown
-    notificationBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        notificationDropdown.classList.toggle('active');
-        if (notificationDropdown.classList.contains('active')) {
-            markAllAsSeen();
-        }
-    });
-
-    // Close when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!notificationBtn.contains(e.target) && !notificationDropdown.contains(e.target)) {
-            notificationDropdown.classList.remove('active');
-        }
-    });
-
-    function updateBadge() {
-        const unreadCount = notifications.filter(n => !n.read).length;
-        if (unreadCount > 0) {
-            notificationBadge.style.display = 'block';
-            notificationBadge.textContent = unreadCount > 9 ? '9+' : unreadCount;
-        } else {
-            notificationBadge.style.display = 'none';
-        }
-    }
-
-    function renderNotifications() {
-        notificationList.innerHTML = '';
-        
-        if (notifications.length === 0) {
-            notificationList.innerHTML = '<div class="empty-notif">No new notifications</div>';
-            return;
-        }
-
-        notifications.forEach(notif => {
-            const item = document.createElement('div');
-            item.className = `notification-item ${notif.read ? 'read' : 'unread'}`;
-            item.innerHTML = `
-                <div class="notif-icon" style="background: ${notif.color}20; color: ${notif.color}">
-                    <i class="${notif.icon}"></i>
-                </div>
-                <div class="notif-content">
-                    <div class="notif-header">
-                        <span class="notif-title">${notif.title}</span>
-                        <span class="notif-time">${notif.time}</span>
-                    </div>
-                    <p class="notif-message">${notif.message}</p>
-                </div>
-            `;
-            notificationList.appendChild(item);
+    const token = localStorage.getItem('hyrostToken');
+    if (token && unreadIds.length) {
+      try {
+        await fetch('/api/features/notifications/read', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({ notificationIds: unreadIds }),
         });
+      } catch (_) {}
     }
-
-    function markAllAsSeen() {
-        // Visual update only, in real app sends API request
-        // notifications.forEach(n => n.read = true);
-        // updateBadge();
-        // renderNotifications();
-        
-        // For UX, maybe just hide badge on open, but keep 'unread' style until clicked?
-        // Let's just update badge for now
-        setTimeout(() => {
-             notifications.forEach(n => n.read = true);
-             updateBadge();
-             renderNotifications();
-        }, 1000);
-    }
+  }
 });

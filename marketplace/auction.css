@@ -270,3 +270,11 @@
 }
 
 .btn-place-bid:hover { background: #d07a1e; }
+
+@media (max-width: 768px) {
+    .auction-controls { flex-direction: column; align-items: stretch; }
+    .search-box { width: 100%; }
+    .filter-tabs { overflow-x: auto; flex-wrap: nowrap; }
+    .auction-grid { grid-template-columns: 1fr; gap: 16px; }
+}
+

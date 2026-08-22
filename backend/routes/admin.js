@@ -1,21 +1,82 @@
 const express = require('express');
 const router = express.Router();
 const adminController = require('../controllers/adminController');
-const { verifyToken, verifyAdmin } = require('../middleware/auth');
+const pluginController = require('../controllers/pluginController');
 
-// All routes here should be protected by verifyToken AND verifyAdmin
-router.post('/role', verifyToken, verifyAdmin, adminController.createRole);
-router.get('/roles', verifyToken, verifyAdmin, adminController.getAllRoles);
-router.post('/assign-role', verifyToken, verifyAdmin, adminController.assignRole);
-router.get('/users', verifyToken, verifyAdmin, adminController.getAllUsers);
-router.post('/update-coins', verifyToken, verifyAdmin, adminController.updateCoins);
+// Auth (verifyToken + verifyAdmin) is applied on /api/admin in routes/index.js
 
-// Banned Words
-router.get('/banned-words', verifyToken, verifyAdmin, adminController.getBannedWords);
-router.post('/banned-word', verifyToken, verifyAdmin, adminController.addBannedWord);
-router.delete('/banned-word/:id', verifyToken, verifyAdmin, adminController.deleteBannedWord);
+// Roles
+router.get('/roles', adminController.getAllRoles);
+router.post('/role', adminController.createRole);
+router.put('/role/:id', adminController.updateRoleCustomization);
+router.delete('/role/:id', adminController.deleteRole);
+router.post('/assign-role', adminController.assignRole);
 
-// User Management Actions
-router.delete('/user/:id', verifyToken, verifyAdmin, adminController.deleteUserByAdmin);
+// Users & economy
+router.get('/users', adminController.getAllUsers);
+router.post('/update-coins', adminController.updateCoins);
+router.delete('/user/:id', adminController.deleteUserByAdmin);
+
+// Settings & banned words
+router.get('/settings', adminController.getSettings);
+router.post('/settings', adminController.updateSetting);
+router.post('/setting', adminController.updateSetting);
+router.get('/banned-words', adminController.getBannedWords);
+router.post('/banned-word', adminController.addBannedWord);
+router.delete('/banned-word/:id', adminController.deleteBannedWord);
+
+// Forum moderation
+router.get('/threads', adminController.getRecentThreads);
+router.get('/forum/threads', adminController.getRecentThreads);
+router.delete('/thread/:id', adminController.deleteThread);
+router.delete('/forum/thread/:id', adminController.deleteThread);
+router.post('/thread/:id/pin', adminController.togglePinThread);
+router.post('/forum/thread/:id/pin', adminController.togglePinThread);
+
+// Logs
+router.get('/activity-logs', adminController.getActivityLogs);
+router.get('/logs', adminController.getActivityLogs);
+
+// Cosmetics
+router.get('/cosmetics', adminController.getAllCosmetics);
+router.post('/cosmetics', adminController.createCosmetic);
+router.post('/cosmetic', adminController.createCosmetic);
+router.delete('/cosmetics/:id', adminController.deleteCosmetic);
+router.delete('/cosmetic/:id', adminController.deleteCosmetic);
+
+// Tickets (legacy admin endpoint)
+router.get('/tickets', adminController.getAllTickets);
+router.put('/ticket/:id/status', adminController.updateTicketStatus);
+
+// Rewards, server, payments, vouchers
+router.get('/rewards-config', adminController.getRewardsConfig);
+router.post('/rewards-config', adminController.updateRewardsConfig);
+router.get('/server-config', adminController.getServerStatus);
+router.post('/server-config', adminController.saveServerConfig);
+router.get('/payment-settings', adminController.getPaymentSettings);
+router.post('/payment-settings', adminController.updatePaymentSettings);
+router.get('/payment-methods', adminController.getAllPaymentMethods);
+router.post('/payment-method', adminController.savePaymentMethod);
+router.delete('/payment-method/:key', adminController.deletePaymentMethod);
+
+// Plugin item catalog (HyrostBridge integration)
+router.get('/plugin-catalog', pluginController.adminListCatalog);
+router.post('/plugin-catalog', pluginController.adminSaveCatalogItem);
+router.delete('/plugin-catalog/:id', pluginController.adminDeleteCatalogItem);
+
+router.get('/vouchers', adminController.getPromoVouchers);
+router.post('/voucher', adminController.createPromoVoucher);
+router.delete('/voucher/:id', adminController.deletePromoVoucher);
+
+// Backup, broadcast, wiki, IP blacklist
+router.get('/backup', adminController.exportBackup);
+router.post('/restore', adminController.restoreBackup);
+router.post('/broadcast', adminController.sendMassBroadcast);
+router.get('/wiki', adminController.getWikiArticles);
+router.post('/wiki', adminController.createWikiArticle);
+router.delete('/wiki/:id', adminController.deleteWikiArticle);
+router.get('/ip-blacklist', adminController.getIPBlacklist);
+router.post('/ip-blacklist', adminController.blockIP);
+router.delete('/ip-blacklist/:ip', adminController.unblockIP);
 
 module.exports = router;

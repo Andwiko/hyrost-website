@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Terms of Service (Ketentuan Layanan) - Hyrost Realm</title>
+    <meta name="description" content="Ketentuan Layanan dan Aturan Resmi bermain di Hyrost Minecraft Server, Komunitas Discord Bot Mei, dan Layanan Website Hyrost.">
+    <meta name="theme-color" content="#6366f1">
+    
+    <!-- OpenGraph Meta Tags -->
+    <meta property="og:title" content="Terms of Service - Hyrost Realm">
+    <meta property="og:description" content="Ketentuan Layanan dan Aturan Resmi ekosistem Hyrost Realm.">
+    <meta property="og:image" content="assets/images/hyrost.png">
+    <meta property="og:type" content="website">
+    
+    <!-- PWA Manifest & Favicon -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/images/hyrost.png">
+    
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="styles.css?v=30">
+    <link rel="stylesheet" href="assets/css/legal.css?v=30">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="assets/images/hyrost.png" alt="Hyrost Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <span>HYROST <span class="logo-badge">REALM</span></span>
+            </a>
+            
+            <div class="nav-links-container" id="navLinksContainer">
+                <div class="navbar-menu">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="bot/index.html" class="nav-link" style="color: #FF3385; font-weight: 700;"><i class="fab fa-discord" style="color:#5865F2;"></i> Bot Mei</a>
+                    <a href="modules/forum.html" class="nav-link">Forum</a>
+                    <a href="modules/leaderboard.html" class="nav-link">Leaderboard</a>
+                    <a href="marketplace/index.html" class="nav-link">Marketplace</a>
+                    <a href="modules/wiki.html" class="nav-link">Wiki</a>
+                </div>
+                <div class="navbar-buttons">
+                    <a href="auth/login.html" class="btn-secondary">Masuk</a>
+                    <a href="dashboard.html" class="btn-primary">
+                        <span>Dashboard</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Header / Hero Section -->
+    <header class="legal-header">
+        <div class="container">
+            <div class="legal-breadcrumb" style="justify-content: center;">
+                <a href="index.html"><i class="fas fa-home"></i> Beranda</a>
+                <span class="separator">/</span>
+                <span>Legalitas</span>
+                <span class="separator">/</span>
+                <span style="color: #ffffff;">Terms of Service</span>
+            </div>
+
+            <div class="legal-badge">
+                <i class="fas fa-file-contract"></i> Dokumen Resmi
+            </div>
+            <h1 class="hero-title" style="font-size: 2.8rem; margin-bottom: 12px;">
+                Ketentuan <span class="gradient-text">Layanan</span>
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 650px; margin: 0 auto;">
+                Harap baca dengan saksama seluruh aturan dan ketentuan penggunaan platform Hyrost Realm sebelum bermain, bertransaksi, atau berinteraksi.
+            </p>
+
+            <div class="legal-meta">
+                <div class="legal-meta-item">
+                    <i class="fas fa-calendar-check"></i>
+                    <span>Terakhir Diperbarui: <strong>19 Agustus 2026</strong></span>
+                </div>
+                <div class="legal-meta-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Versi Kebijakan: <strong>v2.4 (Aktif)</strong></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Legal Layout -->
+    <div class="legal-layout">
+        <!-- Sticky Table of Contents -->
+        <aside class="legal-sidebar">
+            <div class="toc-title">
+                <i class="fas fa-list-ol"></i>
+                <span>Daftar Isi</span>
+            </div>
+            <nav class="toc-nav">
+                <a href="#section-1" class="toc-link active"><span class="toc-number">1.</span> Penerimaan Ketentuan</a>
+                <a href="#section-2" class="toc-link"><span class="toc-number">2.</span> Pendaftaran Akun</a>
+                <a href="#section-3" class="toc-link"><span class="toc-number">3.</span> Aturan Minecraft Server</a>
+                <a href="#section-4" class="toc-link"><span class="toc-number">4.</span> Transaksi &amp; Mata Uang</a>
+                <a href="#section-5" class="toc-link"><span class="toc-number">5.</span> Marketplace &amp; Forum</a>
+                <a href="#section-6" class="toc-link"><span class="toc-number">6.</span> Penggunaan Bot Mei</a>
+                <a href="#section-7" class="toc-link"><span class="toc-number">7.</span> Sanksi &amp; Banned</a>
+                <a href="#section-8" class="toc-link"><span class="toc-number">8.</span> Batasan Tanggung Jawab</a>
+                <a href="#section-9" class="toc-link"><span class="toc-number">9.</span> Perubahan Ketentuan</a>
+            </nav>
+
+            <div class="sidebar-actions">
+                <a href="privacy.html" class="btn-sidebar-action secondary">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Kebijakan Privasi</span>
+                </a>
+                <a href="modules/support.html" class="btn-sidebar-action secondary">
+                    <i class="fas fa-headset"></i>
+                    <span>Pusat Bantuan</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Legal Content -->
+        <main class="legal-content">
+            <!-- Alert Callout -->
+            <div class="legal-alert info">
+                <i class="fas fa-info-circle"></i>
+                <div>
+                    <strong style="color: #fff; display: block; margin-bottom: 4px;">Pemberitahuan Penting:</strong>
+                    <p>
+                        Dengan mendaftar akun, mengakses website ini, bergabung ke server Discord Bot Mei, atau bermain di server Minecraft <strong>play.hyrost.net</strong>, Anda secara otomatis menyetujui seluruh ketentuan di bawah ini.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section 1 -->
+            <section id="section-1" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">1</div>
+                    <h2>Penerimaan dan Ketentuan Umum</h2>
+                </div>
+                <p>
+                    Ketentuan Layanan ini ("Ketentuan") merupakan perjanjian yang mengikat secara hukum antara Anda ("Pengguna", "Pemain") dan pengelola <strong>Hyrost Realm Network</strong> ("Kami", "Pengelola", "Staf Hyrost").
+                </p>
+                <p>
+                    Layanan kami mencakup website resmi Hyrost, server permainan Minecraft (Java &amp; Bedrock), bot komunitas Discord (Bot Mei), platform forum diskusi, portal marketplace in-game, serta layanan pendukung lainnya. Jika Anda tidak menyetujui salah satu bagian dari ketentuan ini, Anda dipersilakan untuk tidak menggunakan atau mengakses layanan kami.
+                </p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="section-2" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">2</div>
+                    <h2>Pendaftaran Akun dan Keamanan</h2>
+                </div>
+                <p>
+                    Untuk mengakses fitur eksklusif seperti dashboard, forum, dompet koin, inventaris, dan toko server, Anda diwajibkan membuat akun resmi Hyrost.
+                </p>
+                <ul>
+                    <li><strong>Kebenaran Data:</strong> Anda wajib memberikan alamat email yang valid dan informasi yang akurat saat pendaftaran.</li>
+                    <li><strong>Kerahasiaan Akun:</strong> Anda bertanggung jawab penuh atas keamanan kata sandi dan seluruh aktivitas yang terjadi pada akun Anda.</li>
+                    <li><strong>Satu Akun Per Pengguna:</strong> Penggunaan multi-akun (alt-account) untuk eksploitasi reward, bypass ban, atau manipulasi voting dilarang keras.</li>
+                    <li><strong>Penautan Akun (Account Linking):</strong> Menautkan UUID Minecraft atau Discord ID Anda harus dilakukan melalui otorisasi sah yang disediakan platform.</li>
+                </ul>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="section-3" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">3</div>
+                    <h2>Aturan Bermain Minecraft Realm &amp; Fair Play</h2>
+                </div>
+                <p>
+                    Kami berkomitmen menjaga pengalaman bermain yang adil, ramah, dan kompetitif bagi seluruh anggota komunitas. Pelanggaran terhadap poin berikut akan dikenakan sanksi tegas:
+                </p>
+                <ul>
+                    <li><strong>Larangan Cheat &amp; Hacked Client:</strong> Penggunaan modifikasi ilegal seperti X-Ray, Fly, Killaura, Speedhack, Auto-Clicker makro berlebihan, atau client modifikasi yang memberikan keuntungan tidak adil dilarang secara permanen.</li>
+                    <li><strong>Anti-Griefing &amp; Anti-Theft:</strong> Dilarang merusak bangunan pemain lain di luar zona PvP/klaim yang diizinkan, mencuri item di area terproteksi, atau merusak infrastruktur umum server.</li>
+                    <li><strong>Etika &amp; Anti-Toxic:</strong> Dilarang melakukan ujaran kebencian (hate speech), pelecehan, intimidasi, diskriminasi SARA, spam chat berlebihan, maupun promosi server pihak ketiga tanpa izin staf.</li>
+                    <li><strong>Eksploitasi Bug:</strong> Menemukan celah bug duplikasi item, crash server, atau exploit ekonomi wajib segera dilaporkan ke tim admin via sistem tiket support. Memanfaatkan atau menyebarkan bug akan berakibat hukuman IP ban.</li>
+                </ul>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="section-4" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">4</div>
+                    <h2>Transaksi, Mata Uang Virtual, dan Kebijakan Donasi</h2>
+                </div>
+                <p>
+                    Hyrost menyediakan layanan toko digital untuk pembelian koin server (Bronze, Silver, Gold), item kosmetik, rank keanggotaan (VIP, MVP, HYROST), dan booster gameplay.
+                </p>
+                <div class="legal-alert warning">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div>
+                        <strong style="color: #fff;">Kebijakan Pengembalian Dana (No-Refund Policy):</strong>
+                        <p>Seluruh pembelian paket donasi, koin virtual, dan item rank bersifat final dan tidak dapat dikembalikan (non-refundable) setelah transaksi berhasil diproses oleh sistem.</p>
+                    </div>
+                </div>
+                <ul>
+                    <li><strong>Status Mata Uang:</strong> Koin virtual tidak memiliki nilai tunai di dunia nyata dan tidak dapat diuangkan kembali (cash-out) menjadi mata uang fiat.</li>
+                    <li><strong>Pembayaran Resmi:</strong> Transaksi hanya sah jika dilakukan melalui gateway pembayaran yang tertera di situs resmi Hyrost (QRIS, E-Wallet, Transfer Bank, Saldo Coin).</li>
+                    <li><strong>Chargeback / Sengketa Palsu:</strong> Melakukan chargeback ilegal tanpa konfirmasi staf akan mengakibatkan penguncian akun secara otomatis dan pemblokiran permanen dari seluruh jaringan server.</li>
+                </ul>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="section-5" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">5</div>
+                    <h2>Marketplace Pemain &amp; Forum Komunitas</h2>
+                </div>
+                <p>
+                    Fitur Marketplace memungkinkan pemain memperjualbelikan item in-game menggunakan sistem escrow koin server:
+                </p>
+                <ul>
+                    <li>Pemain dilarang melakukan penipuan (scamming) atau memanipulasi listing lelang marketplace.</li>
+                    <li>Dilarang melakukan transaksi mata uang nyata (Real World Trading / RMT) di luar platform resmi yang diawasi pengelola.</li>
+                    <li>Konten postingan forum tidak boleh mengandung unsur pornografi, kekerasan ekstrem, materi hak cipta ilegal, atau tautan berbahaya (malware/phishing).</li>
+                </ul>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="section-6" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">6</div>
+                    <h2>Penggunaan Bot Discord (Bot Mei)</h2>
+                </div>
+                <p>
+                    Bot Mei disediakan untuk mengotomatiskan fitur komunitas seperti verifikasi role, sistem tiket, musik, moderasi, serta integrasi statistik permainan.
+                </p>
+                <ul>
+                    <li>Dilarang melakukan spamming perintah (command spam) atau mencoba melakukan DDoS/eksploitasi API bot.</li>
+                    <li>Pengelola berhak membatasi atau mencabut hak akses bot pada server Discord tertentu yang melanggar panduan komunitas Discord (Terms of Service Discord).</li>
+                </ul>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="section-7" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">7</div>
+                    <h2>Sanksi, Penangguhan, dan Pemblokiran Akun</h2>
+                </div>
+                <p>
+                    Tim Administrator dan Moderator Hyrost berhak memberikan tindakan disipliner bertingkat sesuai dengan tingkat pelanggaran:
+                </p>
+                <div class="legal-table-wrapper">
+                    <table class="legal-table">
+                        <thead>
+                            <tr>
+                                <th>Tingkat Pelanggaran</th>
+                                <th>Contoh Pelanggaran</th>
+                                <th>Tindakan / Sanksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Ringan</strong></td>
+                                <td>Spam chat, huruf kapital berlebih, kata-kata kasar ringan.</td>
+                                <td>Peringatan resmi (Warn) atau Mute sementara (15-60 menit).</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Sedang</strong></td>
+                                <td>Griefing skala kecil, trolling pemain, toxicity berulang.</td>
+                                <td>Temp-Ban (1 - 7 hari) dan pembersihan area terkait.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Berat</strong></td>
+                                <td>Penggunaan cheat/hack, duplikasi item, pelecehan seksual, RMT ilegal.</td>
+                                <td>Permanent Ban pada akun, penghapusan inventaris &amp; koin.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Kritis</strong></td>
+                                <td>DDoS attack, doxxing, penyebaran exploit, ancaman nyata.</td>
+                                <td>Blacklist IP, UUID, dan pelaporan ke otoritas berwenang.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p>
+                    Pemain yang merasa dikenai sanksi keliru dapat mengajukan banding resmi melalui <a href="modules/support.html" style="color: var(--accent-indigo);">Pusat Bantuan &amp; Tiket Banding</a>.
+                </p>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="section-8" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">8</div>
+                    <h2>Batasan Tanggung Jawab &amp; Disclaimer</h2>
+                </div>
+                <p>
+                    Layanan kami disediakan berdasarkan asas <em>"as is"</em> (sebagaimana adanya) tanpa jaminan mutlak atas ketiadaan downtime server akibat pemeliharaan teknis, gangguan jaringan internet global, atau pembaruan berkala dari Mojang Studios.
+                </p>
+                <div class="legal-alert danger">
+                    <i class="fas fa-shield-alt"></i>
+                    <div>
+                        <strong style="color: #fff;">Disclaimer Mojang Studios:</strong>
+                        <p>Hyrost Realm <strong>BUKAN PRODUK RESMI MINECRAFT</strong> dan tidak terafiliasi secara langsung dengan Mojang Studios atau Microsoft Corporation. Seluruh aset grafis Minecraft adalah milik Mojang AB.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section 9 -->
+            <section id="section-9" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num">9</div>
+                    <h2>Perubahan Ketentuan &amp; Kontak Bantuan</h2>
+                </div>
+                <p>
+                    Pengelola berhak memperbarui Ketentuan Layanan ini sewaktu-waktu untuk menyesuaikan perkembangan fitur atau regulasi hukum. Perubahan signifikan akan diumumkan melalui kanal pengumuman server Discord dan notifikasi situs web.
+                </p>
+                <p>
+                    Jika Anda memiliki pertanyaan mengenai Ketentuan Layanan ini, silakan hubungi tim kami:
+                </p>
+                <ul>
+                    <li><strong>Pusat Dukungan:</strong> <a href="modules/support.html" style="color: var(--accent-indigo);">hyrost.net/modules/support.html</a></li>
+                    <li><strong>Discord Support:</strong> Bergabung melalui <a href="bot/index.html" style="color: var(--accent-indigo);">Server Discord Bot Mei</a></li>
+                    <li><strong>Email Administrator:</strong> <code style="color: var(--accent-cyan); background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px;">admin@hyrost.net</code></li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <!-- Floating Back to Top -->
+    <button class="btn-back-to-top" id="backToTop" aria-label="Kembali ke atas">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="dashboard.html" class="footer-link">Dashboard</a>
+                <a href="bot/index.html" class="footer-link" style="color: #FF3385;"><i class="fab fa-discord"></i> Bot Mei</a>
+                <a href="modules/forum.html" class="footer-link">Forum</a>
+                <a href="modules/support.html" class="footer-link">Support</a>
+                <a href="terms.html" class="footer-link" style="color: var(--accent-indigo); font-weight: 700;">Terms of Service</a>
+                <a href="privacy.html" class="footer-link">Privacy Policy</a>
+            </div>
+            <p class="footer-text">
+                &copy; 2026 <strong style="color: var(--accent-indigo);">Hyrost Server</strong>. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const hamburger = document.getElementById('hamburger');
+            const navLinksContainer = document.getElementById('navLinksContainer');
+            if (hamburger && navLinksContainer) {
+                hamburger.addEventListener('click', () => {
+                    hamburger.classList.toggle('active');
+                    navLinksContainer.classList.toggle('active');
+                });
+            }
+
+            // ScrollSpy & Back to Top
+            const sections = document.querySelectorAll('.legal-section');
+            const navLinks = document.querySelectorAll('.toc-link');
+            const backToTop = document.getElementById('backToTop');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    if (window.scrollY >= sectionTop) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+
+                // Toggle Back to Top Button
+                if (backToTop) {
+                    if (window.scrollY > 400) {
+                        backToTop.classList.add('visible');
+                    } else {
+                        backToTop.classList.remove('visible');
+                    }
+                }
+            });
+
+            if (backToTop) {
+                backToTop.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        });
+    </script>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme-light.css">
+</body>
+</html>

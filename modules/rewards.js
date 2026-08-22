@@ -1,186 +1,173 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const rewardsGrid = document.getElementById('rewardsGrid');
+const API_URL = '/api';
+const token = localStorage.getItem('hyrostToken');
+
+document.addEventListener('DOMContentLoaded', async () => {
     const claimBtn = document.getElementById('claimBtn');
     const streakCountEl = document.getElementById('streakCount');
-    const nextRewardTimer = document.getElementById('nextRewardTimer');
+    const rewardsGrid = document.getElementById('rewardsGrid');
+    const timerText = document.getElementById('nextRewardTimer');
+    const timerContainer = document.getElementById('timerText');
+    const streakProgressFill = document.getElementById('streakProgressFill');
+    const streakPercentText = document.getElementById('streakPercentText');
 
-    // Reward Data configuration
-    const rewards = [
-        { day: 1, type: 'coin', amount: 100, icon: 'fa-coins' },
-        { day: 2, type: 'coin', amount: 200, icon: 'fa-coins' },
-        { day: 3, type: 'xp', amount: 500, icon: 'fa-star' },
-        { day: 4, type: 'coin', amount: 500, icon: 'fa-coins' },
-        { day: 5, type: 'item', amount: 'Iron Key', icon: 'fa-key' },
-        { day: 6, type: 'coin', amount: 1000, icon: 'fa-coins' },
-        { day: 7, type: 'item', amount: 'Golden Box', icon: 'fa-box-open' }
+    let isClaimable = false;
+    let timeUntilNext = 0;
+    let currentStreakDay = 1;
+
+    const streakConfig = [
+        { day: 1, title: "Hari 1", reward: "5 Bronze", icon: "fa-coins", color: "#cd7f32" },
+        { day: 2, title: "Hari 2", reward: "10 Bronze", icon: "fa-coins", color: "#cd7f32" },
+        { day: 3, title: "Hari 3", reward: "15 Bronze", icon: "fa-coins", color: "#cd7f32" },
+        { day: 4, title: "Hari 4", reward: "1 Silver", icon: "fa-coins", color: "#c0c0c0" },
+        { day: 5, title: "Hari 5", reward: "25 Bronze", icon: "fa-coins", color: "#cd7f32" },
+        { day: 6, title: "Hari 6", reward: "2 Silver", icon: "fa-coins", color: "#c0c0c0" },
+        { day: 7, title: "Hari 7 (Bonus)", reward: "1 Gold + Mystery Chest", icon: "fa-gem", color: "#ffd700" }
     ];
 
-    // Initialize User Data from localStorage or Mock
-    // In production, this would come from the server
-    let userData = JSON.parse(localStorage.getItem('dailyRewardData')) || {
-        lastClaimTime: 0, // Timestamp
-        currentStreak: 0, // 0 to 6 (index for rewards array)
-        streakStartDate: null
-    };
+    // Load Initial Status
+    await checkRewardStatus();
 
-    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
-    
-    // Check Status
-    checkClaimStatus();
-    renderGrid();
+    // Start Live Timer
     setInterval(updateTimer, 1000);
 
-    function checkClaimStatus() {
-        const now = new Date().getTime();
-        const timeSinceLastClaim = now - userData.lastClaimTime;
-        
-        let canClaim = false;
+    async function checkRewardStatus() {
+        try {
+            if (token) {
+                const res = await fetch(`${API_URL}/users/me`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                
+                if (res.ok) {
+                    const user = await res.json();
+                    
+                    const lastClaim = user.lastClaimTime ? new Date(user.lastClaimTime).getTime() : 0;
+                    const now = new Date().getTime();
+                    const diff = now - lastClaim;
+                    const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+                    const TWO_DAYS_MS = 48 * 60 * 60 * 1000;
 
-        // Logic: Can claim if > 24 hours since last claim
-        // Reset streak if > 48 hours since last claim (missed a day)
-        
-        if (userData.lastClaimTime === 0) {
-            canClaim = true;
-        } else if (timeSinceLastClaim > ONE_DAY_MS) {
-            canClaim = true;
-            if (timeSinceLastClaim > ONE_DAY_MS * 2) {
-                // Streak broken
-                userData.currentStreak = 0; 
-                showNotification("Streak Reset! You missed a day.", "warning");
+                    if (lastClaim === 0) {
+                        currentStreakDay = 1;
+                    } else if (diff < TWO_DAYS_MS) {
+                        currentStreakDay = (user.streakCount || 1) % 7;
+                        if (currentStreakDay === 0) currentStreakDay = 7;
+                    } else {
+                        currentStreakDay = 1;
+                    }
+
+                    if (diff >= ONE_DAY_MS || lastClaim === 0) {
+                        isClaimable = true;
+                        timeUntilNext = 0;
+                    } else {
+                        isClaimable = false;
+                        timeUntilNext = ONE_DAY_MS - diff;
+                    }
+                    
+                    updateUI();
+                    return;
+                }
             }
+        } catch (e) {
+            console.warn('Reward status unavailable:', e.message);
         }
 
-        // Cycle complete check (if streak was 7, reset to 0 for next cycle)
-        if (userData.currentStreak >= 7) {
-            userData.currentStreak = 0;
-            canClaim = true; // Wait... logic needs refinement. Usually user claims Day 7 then waits.
-            // Correct Logic: 
-            // If they claimed day 7, streak is displayed as completed or reset.
-            // Let's settle on: loop 0-6.
-        }
+        isClaimable = false;
+        timeUntilNext = 0;
+        updateUI();
+    }
 
-        streakCountEl.textContent = userData.currentStreak;
-        
-        if (canClaim) {
-            claimBtn.disabled = false;
-            claimBtn.innerHTML = '<i class="fas fa-gift"></i> Claim Reward';
-            claimBtn.parentElement.querySelector('.timer-text').style.display = 'none';
+    function updateUI() {
+        if (streakCountEl) streakCountEl.textContent = `${currentStreakDay} Hari`;
+        const percent = Math.round((currentStreakDay / 7) * 100);
+        if (streakProgressFill) streakProgressFill.style.width = `${percent}%`;
+        if (streakPercentText) streakPercentText.textContent = `${percent}%`;
+
+        if (isClaimable) {
+            if (claimBtn) {
+                claimBtn.disabled = false;
+                claimBtn.innerHTML = '<i class="fas fa-hand-holding-usd"></i> KLAIM HADIAH HARIAN SEKARANG';
+            }
+            if (timerContainer) timerContainer.style.display = 'none';
         } else {
-            claimBtn.disabled = true;
-            claimBtn.innerHTML = '<i class="fas fa-check"></i> Claimed';
-            claimBtn.parentElement.querySelector('.timer-text').style.display = 'block';
-        }
-    }
-
-    function renderGrid() {
-        rewardsGrid.innerHTML = '';
-        const now = new Date().getTime();
-        const canClaim = !claimBtn.disabled;
-
-        rewards.forEach((reward, index) => {
-            const card = document.createElement('div');
-            card.className = 'reward-card';
-            
-            // Status Logic
-            // If index < currentStreak: Already Claimed
-            // If index === currentStreak: Current Target
-            // If index > currentStreak: Locked
-            
-            if (index < userData.currentStreak) {
-                card.classList.add('claimed');
-            } else if (index === userData.currentStreak) {
-                 // It's the current day. 
-                 // If we CAN claim, visually highlight it as active-claimable
-                 // If we CANNOT claim (already claimed today but array index updated? No, wait.)
-                 
-                 // Revised logic for display:
-                 // `userData.currentStreak` represents the number of days SUCCESSFULLY claimed in this cycle.
-                 // So if streak is 0, we are aiming for Day 1 (index 0).
-                 // If streak is 1, we basically finished Day 1, aiming for Day 2 (index 1).
-                 // Wait, usually currentStreak = days claimed in a row.
-                 
-                 // If I have a streak of 0, I want to claim Day 1.
-                 // So index 0 is Active.
-                 card.classList.add('active');
+            if (claimBtn) {
+                claimBtn.disabled = true;
+                claimBtn.innerHTML = '<i class="fas fa-check-circle"></i> HADIAH SUDAH DIAMBIL HARI INI';
             }
-
-            card.innerHTML = `
-                <div class="day-label">Day ${reward.day}</div>
-                <div class="reward-icon"><i class="fas ${reward.icon}"></i></div>
-                <div class="reward-amount">${reward.amount}</div>
-            `;
-            rewardsGrid.appendChild(card);
-        });
-    }
-
-    function updateTimer() {
-        if (!claimBtn.disabled) return;
-
-        const now = new Date().getTime();
-        const nextClaimTime = userData.lastClaimTime + ONE_DAY_MS;
-        const diff = nextClaimTime - now;
-
-        if (diff <= 0) {
-            // Ready to claim!
-            checkClaimStatus();
-            renderGrid();
-            return;
+            if (timerContainer) timerContainer.style.display = 'block';
         }
-
-        const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const s = Math.floor((diff % (1000 * 60)) / 1000);
-
-        nextRewardTimer.textContent = `${pad(h)}:${pad(m)}:${pad(s)}`;
-    }
-
-    function pad(n) { return n < 10 ? '0' + n : n; }
-
-    claimBtn.addEventListener('click', () => {
-        // Claim Action
-        const rewardIndex = userData.currentStreak;
-        if (rewardIndex >= rewards.length) return; // Basic safety
-
-        const reward = rewards[rewardIndex];
         
-        // Update Data
-        userData.lastClaimTime = new Date().getTime();
-        userData.currentStreak++;
-        
-        // Save
-        localStorage.setItem('dailyRewardData', JSON.stringify(userData));
+        // Render 7-Day Rewards Grid
+        if (rewardsGrid) {
+            rewardsGrid.innerHTML = '';
+            streakConfig.forEach(item => {
+                const isPast = item.day < currentStreakDay || (!isClaimable && item.day === currentStreakDay);
+                const isCurrent = item.day === currentStreakDay && isClaimable;
 
-        // UI Feedback
-        fireConfetti();
-        checkClaimStatus();
-        renderGrid();
-
-        alert(`You claimed Day ${reward.day} reward: ${reward.amount}!`);
-        
-        // Reset if cycle complete
-        if (userData.currentStreak >= 7) {
-            setTimeout(() => {
-                alert("Congratulations! You completed the 7-day streak!");
-                userData.currentStreak = 0;
-                localStorage.setItem('dailyRewardData', JSON.stringify(userData));
-                checkClaimStatus();
-                renderGrid();
-            }, 2000);
-        }
-    });
-
-    function fireConfetti() {
-        if (window.confetti) {
-            window.confetti({
-                particleCount: 100,
-                spread: 70,
-                origin: { y: 0.6 }
+                const card = document.createElement('div');
+                card.className = `reward-card ${isCurrent ? 'active' : ''} ${isPast ? 'claimed' : ''}`;
+                card.innerHTML = `
+                    <div class="day-label">${item.title}</div>
+                    <div class="reward-icon"><i class="fas ${item.icon}" style="color: ${item.color};"></i></div>
+                    <div class="reward-amount" style="color:#fff; font-weight:700;">${item.reward}</div>
+                `;
+                rewardsGrid.appendChild(card);
             });
         }
     }
 
-    function showNotification(msg, type) {
-        // Reuse toast/notification logic if available, else alert
-        console.log(`[${type}] ${msg}`);
+    function updateTimer() {
+        if (isClaimable) return;
+        
+        if (timeUntilNext > 0) {
+            timeUntilNext -= 1000;
+            
+            const h = Math.floor((timeUntilNext % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const m = Math.floor((timeUntilNext % (1000 * 60 * 60)) / (1000 * 60));
+            const s = Math.floor((timeUntilNext % (1000 * 60)) / 1000);
+            
+            const pad = (n) => String(n).padStart(2, '0');
+            if (timerText) timerText.textContent = `${pad(h)}j ${pad(m)}m ${pad(s)}d`;
+        } else {
+            isClaimable = true;
+            updateUI();
+        }
+    }
+
+    if (claimBtn) {
+        claimBtn.addEventListener('click', async () => {
+            if (!isClaimable) return;
+
+            claimBtn.disabled = true;
+            claimBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengklaim Hadiah...';
+
+            try {
+                if (token) {
+                    const res = await fetch(`${API_URL}/users/daily-claim`, {
+                        method: 'POST',
+                        headers: { 'Authorization': `Bearer ${token}` }
+                    });
+                    
+                    if (res.ok) {
+                        const data = await res.json();
+                        isClaimable = false;
+                        if (typeof confetti === 'function') {
+                            confetti({ particleCount: 180, spread: 90, origin: { y: 0.6 } });
+                        }
+                        await checkRewardStatus();
+                        alert(`🎉 ${data.message || 'Hadiah harian berhasil diklaim!'}`);
+                        return;
+                    }
+                    const errData = await res.json().catch(() => ({}));
+                    alert(errData.message || 'Gagal mengklaim hadiah.');
+                } else {
+                    alert('Silakan login terlebih dahulu.');
+                }
+            } catch (e) {
+                alert('Gagal terhubung ke server. Coba lagi nanti.');
+            }
+
+            claimBtn.disabled = false;
+            claimBtn.innerHTML = '<i class="fas fa-hand-holding-usd"></i> KLAIM HADIAH HARIAN SEKARANG';
+        });
     }
 });

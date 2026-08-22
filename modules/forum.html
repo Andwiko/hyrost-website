@@ -3,222 +3,286 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost - Forum</title>
-    <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css">
-    <link rel="stylesheet" href="../inventory/inventory.css">
-    <link rel="stylesheet" href="forum_dashboard.css">
-    
-    <!-- Fonts -->
+    <title>Hyrost — Forum Komunitas</title>
+    <meta name="description" content="Forum diskusi komunitas pemain Hyrost Realm. Berbagi tips, panduan, dan berita terbaru.">
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    <link rel="stylesheet" href="forum_dashboard.css?v=50">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
-            <div class="sidebar-header">
-                <img src="../assets/images/hyrost.png" alt="Logo">
+<div class="dashboard-container">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar" id="mainSidebar">
+        <div class="sidebar-header">
+            <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
                 <h2>Hyrost</h2>
+                <span>Member Realm</span>
+        </div>
+        <div class="nav-section-label">Navigasi Utama</div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="../account/index.html" class="nav-item"><i class="fas fa-user-circle"></i><span>Profil Saya</span></a>
+            <a href="store.html" class="nav-item"><i class="fas fa-crown" style="color:var(--accent-gold);"></i><span>Toko Pangkat</span></a>
+            <a href="forum.html" class="nav-item active"><i class="fas fa-comments"></i><span>Forum</span></a>
+            <a href="leaderboard.html" class="nav-item"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+            <a href="../inventory/inventory.html" class="nav-item"><i class="fas fa-box"></i><span>Inventaris</span></a>
+            <a href="../marketplace/index.html" class="nav-item"><i class="fas fa-store"></i><span>Marketplace</span></a>
+            <a href="rewards.html" class="nav-item"><i class="fas fa-gift"></i><span>Daily Rewards</span></a>
+            <a href="wiki.html" class="nav-item"><i class="fas fa-book"></i><span>Wiki &amp; Guide</span></a>
+            <a href="social.html" class="nav-item"><i class="fas fa-users"></i><span>Pertemanan</span></a>
+            <a href="support.html" class="nav-item"><i class="fas fa-headset"></i><span>Pusat Bantuan</span></a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-label nav-section-admin">Admin Panel</div>
+            <a href="admin.html" class="nav-item nav-admin"><i class="fas fa-user-shield"></i><span>Admin Panel</span></a>
+        </nav>
+        <div class="server-status-widget">
+            <div class="widget-header"><span>Status Server</span><span class="status-dot online"></span></div>
+            <div class="server-ip">play.hyrost.net</div>
+            <div class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</div>
+        </div>
+        <div style="display:flex; justify-content:center; gap:8px; font-size:0.75rem; margin-top:12px; color:rgba(255,255,255,0.4);">
+            <a href="../terms.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Terms</a>
+            <span>•</span>
+            <a href="../privacy.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Privacy</a>
+            <span>•</span>
+            <a href="../index.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
+        </div>
+    </aside>
+
+    <!-- Mobile Header -->
+    <div class="mobile-header">
+        <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu"><i class="fas fa-bars"></i></button>
+        <div class="mobile-logo">
+            <img src="../assets/images/hyrost.png" alt="Logo" style="width:28px; height:28px; border-radius:6px;" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+            <h2 style="font-size:1.1rem; color:#fff; font-weight:800; margin:0;">Hyrost</h2>
+        </div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+    <!-- ═══ MAIN CONTENT ═══ -->
+    <main class="main-content">
+
+        <!-- Forum Header -->
+        <div class="forum-hero-banner">
+            <div class="forum-hero-text">
+                <h1><i class="fas fa-comments"></i> Forum Komunitas</h1>
+                <p>Diskusi, panduan, dan obrolan sesama pemain Hyrost Realm</p>
             </div>
-            
-            <nav class="sidebar-nav">
-                <a href="../dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-                <a href="../account/index.html" class="nav-item">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Profile</span>
-                </a>
-                <a href="../question/index.html" class="nav-item">
-                    <i class="fas fa-globe-asia"></i>
-                    <span>World</span>
-                </a>
-                <a href="forum.html" class="nav-item active">
-                    <i class="fas fa-comments"></i>
-                    <span>Forum</span>
-                </a>
-                <a href="leaderboard.html" class="nav-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>Leaderboard</span>
-                </a>
-                <a href="../inventory/inventory.html" class="nav-item">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Storage</span>
-                </a>
-                <a href="../marketplace/shop.html" class="nav-item">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Shop</span>
-                </a>
-                <a href="../marketplace/auction.html" class="nav-item">
-                    <i class="fas fa-gavel"></i>
-                    <span>Auction</span>
-                </a>
-                <a href="role_shop.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>
-                    <span>Role Shop</span>
-                </a>
-                <a href="rewards.html" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Daily Rewards</span>
-                </a>
-                <a href="wiki.html" class="nav-item">
-                    <i class="fas fa-book"></i>
-                    <span>Wiki</span>
-                </a>
-                <a href="social.html" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    <span>Social</span>
-                </a>
-                <a href="support.html" class="nav-item">
-                    <i class="fas fa-headset"></i>
-                    <span>Support</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Info</span>
-                </a>
-            </nav>
-
-
-            <!-- Server Status Widget -->
-            <div class="sidebar-widget server-status-widget">
-                <div class="widget-header">
-                    <h3>Status Server</h3>
-                    <span class="status-dot online"></span>
+            <div class="forum-hero-stats">
+                <div class="hero-stat-item">
+                    <div class="hero-stat-num" id="statTotalThreads">—</div>
+                    <div class="hero-stat-label">Thread</div>
                 </div>
-                <div class="widget-content">
-                    <p class="server-ip">play.hyrost.net</p>
-                    <p class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</p>
+                <div class="hero-stat-item">
+                    <div class="hero-stat-num" id="statTotalMembers">—</div>
+                    <div class="hero-stat-label">Member Aktif</div>
                 </div>
-            </div>
-        </aside>
-
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-            <button id="sidebarToggle" class="icon-btn">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="mobile-logo">
-                <img src="../assets/images/hyrost.png" alt="Logo">
-                <h2>Hyrost</h2>
+                <div class="hero-stat-item">
+                    <div class="hero-stat-num" id="statOnlineNow">—</div>
+                    <div class="hero-stat-label">Online Sekarang</div>
+                </div>
             </div>
         </div>
 
-        <!-- Sidebar Overlay -->
-        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <!-- Forum Body Layout -->
+        <div class="forum-body-grid">
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <header class="content-header">
-                <div style="display: flex; justify-content: space-between; align-items: center;">
-                    <h1>Forum Komunitas</h1>
-                    <!-- Notification System -->
-                    <div class="notification-wrapper">
-                        <button class="icon-btn notification-btn" id="notificationBtn">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge" id="notificationBadge">0</span>
-                        </button>
-                        <div class="notification-dropdown" id="notificationDropdown">
-                            <div class="dropdown-header">
-                                <h3>Notifications</h3>
-                                <button class="mark-read-btn">Mark all as read</button>
-                            </div>
-                            <div class="notification-list" id="notificationList">
-                                <!-- Items inserted by JS -->
-                            </div>
-                            <div class="dropdown-footer">
-                                <a href="#">View All</a>
-                            </div>
+            <!-- LEFT: Main Area -->
+            <div class="forum-main-col">
+
+                <!-- Toolbar: Search + Sort + Create -->
+                <div class="forum-toolbar">
+                    <div class="forum-search-wrap">
+                        <i class="fas fa-search forum-search-icon"></i>
+                        <input type="text" id="forumSearchInput" placeholder="Cari topik diskusi..." class="forum-search-input">
+                    </div>
+                    <div class="forum-sort-btns">
+                        <button class="sort-btn active" data-sort="latest" onclick="setSort('latest')"><i class="fas fa-clock"></i> Terbaru</button>
+                        <button class="sort-btn" data-sort="popular" onclick="setSort('popular')"><i class="fas fa-fire"></i> Populer</button>
+                        <button class="sort-btn" data-sort="unanswered" onclick="setSort('unanswered')"><i class="fas fa-question-circle"></i> Belum Dijawab</button>
+                        <button class="sort-btn" data-sort="views" onclick="setSort('views')"><i class="fas fa-eye"></i> Terbanyak Dilihat</button>
+                    </div>
+                    <button class="btn-create-thread" id="btnCreateThread" onclick="openCreateModal()">
+                        <i class="fas fa-plus"></i> <span>Buat Thread</span>
+                    </button>
+                </div>
+
+                <!-- Active Category Pill -->
+                <div class="active-cat-bar" id="activeCatBar" style="display:none;">
+                    <span id="activeCatLabel"></span>
+                    <button onclick="filterCategory('all')" style="background:none;border:none;color:#9ca3af;cursor:pointer;"><i class="fas fa-times"></i></button>
+                </div>
+
+                <!-- Pinned Threads Section -->
+                <div id="pinnedSection" style="display:none; margin-bottom:16px;">
+                    <div class="forum-section-label pinned-label"><i class="fas fa-thumbtack"></i> THREAD DIPIN</div>
+                    <div id="pinnedList"></div>
+                </div>
+
+                <!-- Thread List -->
+                <div class="forum-section-label"><i class="fas fa-list"></i> DISKUSI TERBARU</div>
+                <div id="threadList" class="forum-thread-list">
+                    <div class="forum-empty-state">
+                        <i class="fas fa-comments"></i>
+                        <h3>Memuat diskusi...</h3>
+                        <p>Mengambil data forum</p>
+                    </div>
+                </div>
+
+                <!-- Load More -->
+                <div id="loadMoreWrap" style="text-align:center; margin-top:20px; display:none;">
+                    <button class="btn-load-more" onclick="loadMoreThreads()"><i class="fas fa-chevron-down"></i> Muat Lebih Banyak</button>
+                </div>
+
+            </div>
+
+            <!-- RIGHT: Sidebar -->
+            <div class="forum-sidebar-col">
+
+                <!-- User Quick Info -->
+                <div class="forum-widget" id="userQuickWidget">
+                    <div class="forum-widget-header">
+                        <i class="fas fa-user"></i> Akun Saya
+                    </div>
+                    <div id="userWidgetBody" class="forum-widget-body">
+                        <div style="text-align:center; padding:16px;">
+                            <p style="color:#9ca3af; font-size:0.85rem;">Login untuk berpartisipasi dalam diskusi</p>
+                            <a href="../auth/login.html" class="btn-create-thread" style="display:inline-block; margin-top:10px; font-size:0.85rem; padding:8px 18px; text-decoration:none;">
+                                <i class="fas fa-sign-in-alt"></i> Login
+                            </a>
                         </div>
                     </div>
                 </div>
-                <p>Diskusi, panduan, dan obrolan tentang Hyrost.</p>
-            </header>
 
-            <!-- Controls -->
-            <div class="forum-controls">
-                <div class="search-bar">
-                    <input type="text" id="searchInput" placeholder="Cari topik...">
-                    <button><i class="fas fa-search"></i></button>
+                <!-- Categories -->
+                <div class="forum-widget">
+                    <div class="forum-widget-header"><i class="fas fa-folder"></i> KATEGORI</div>
+                    <div id="categoryList" class="forum-cat-list">
+                        <button class="forum-cat-item active" onclick="filterCategory('all')" data-cat="all">
+                            <span class="cat-icon" style="color:#6366f1;"><i class="fas fa-globe"></i></span>
+                            <span class="cat-name">Semua Topik</span>
+                            <span class="cat-count" id="catCount-all">—</span>
+                        </button>
+                    </div>
                 </div>
-                <button class="btn-create-thread" id="btnCreateThread">
-                    <i class="fas fa-plus"></i> Buat Thread
-                </button>
-            </div>
 
-            <!-- Thread List -->
-            <div class="thread-list" id="threadList">
-                <p style="color:#888; text-align:center; padding:50px;">Memuat forum...</p>
-            </div>
-        </main>
-    </div>
-
-    <!-- Modal Create Thread -->
-    <div id="createThreadModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h3>Buat Thread Baru</h3>
-            <form class="forum-form" id="threadForm">
-                <input type="text" placeholder="Judul Thread" required id="threadTitle">
-                <select id="threadCategory" required style="margin-bottom: 15px; background: #2a2a2a; border: 1px solid #444; color: #fff; padding: 10px; border-radius: 8px;">
-                    <option value="" disabled selected>Pilih Kategori</option>
-                    <option value="General">General</option>
-                    <option value="Announcement">Announcement</option>
-                    <option value="Question">Question</option>
-                    <option value="Economy">Economy</option>
-                    <option value="Minecraft">Minecraft</option>
-                </select>
-                <div class="formatting-toolbar">
-                    <button type="button" data-tag="bold"><i class="fas fa-bold"></i></button>
-                    <button type="button" data-tag="italic"><i class="fas fa-italic"></i></button>
-                    <button type="button" data-tag="link"><i class="fas fa-link"></i></button>
+                <!-- Role Permissions Info -->
+                <div class="forum-widget" id="rolePermWidget">
+                    <div class="forum-widget-header"><i class="fas fa-shield-alt"></i> HAK AKSES ANDA</div>
+                    <div id="rolePermBody" class="forum-widget-body" style="font-size:0.82rem; color:#9ca3af;">
+                        <p>Login untuk melihat hak akses Anda.</p>
+                    </div>
                 </div>
-                <textarea placeholder="Tulis sesuatu..." required id="threadContent"></textarea>
-                <button type="submit" class="btn-create-thread" style="justify-content: center; width: 100%;">
-                    Kirim
-                </button>
+
+                <!-- Forum Rules -->
+                <div class="forum-widget">
+                    <div class="forum-widget-header"><i class="fas fa-gavel"></i> PERATURAN FORUM</div>
+                    <div class="forum-widget-body">
+                        <ul class="forum-rules-list">
+                            <li><i class="fas fa-check-circle"></i> Hormati sesama pemain</li>
+                            <li><i class="fas fa-check-circle"></i> Dilarang spam & flood</li>
+                            <li><i class="fas fa-check-circle"></i> Konten sesuai kategori</li>
+                            <li><i class="fas fa-check-circle"></i> Tidak ada SARA & pornografi</li>
+                            <li><i class="fas fa-check-circle"></i> Dilarang promosi ilegal</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- ═══ TOAST CONTAINER ═══ -->
+<div id="toastContainer"></div>
+
+<!-- ═══ CREATE/EDIT THREAD MODAL ═══ -->
+<div id="createThreadModal" class="modal-overlay">
+    <div class="modal-content forum-modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle"><i class="fas fa-plus-circle"></i> Buat Thread Baru</h3>
+            <button class="close-modal" onclick="closeCreateModal()"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <form id="threadForm">
+                <div class="form-group">
+                    <label for="threadTitle">Judul Thread <span style="color:#ef4444;">*</span></label>
+                    <input type="text" id="threadTitle" class="form-control" required maxlength="200" placeholder="Masukkan judul yang jelas dan deskriptif...">
+                    <div class="char-counter"><span id="titleCharCount">0</span>/200</div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group" style="flex:1;">
+                        <label for="threadCategory">Kategori <span style="color:#ef4444;">*</span></label>
+                        <select id="threadCategory" class="form-control" required>
+                            <option value="General">💬 General</option>
+                            <option value="Guides">📖 Guides &amp; Tips</option>
+                            <option value="Economy">💰 Economy</option>
+                            <option value="Minecraft">🧱 Minecraft</option>
+                            <option value="Report">🚩 Report</option>
+                        </select>
+                        <div id="catPermWarning" class="form-hint" style="color:#f59e0b; display:none;"></div>
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label for="threadTags">Tags <span style="color:#9ca3af; font-weight:400;">(pisahkan koma)</span></label>
+                        <input type="text" id="threadTags" class="form-control" placeholder="pvp, economy, guide..." maxlength="200">
+                    </div>
+                </div>
+
+                <!-- Rich Text Toolbar -->
+                <div class="form-group">
+                    <label>Isi Konten <span style="color:#ef4444;">*</span></label>
+                    <div class="rich-editor-toolbar">
+                        <button type="button" title="Bold" data-action="bold"><i class="fas fa-bold"></i></button>
+                        <button type="button" title="Italic" data-action="italic"><i class="fas fa-italic"></i></button>
+                        <button type="button" title="Strikethrough" data-action="strike"><i class="fas fa-strikethrough"></i></button>
+                        <div class="toolbar-divider"></div>
+                        <button type="button" title="Heading" data-action="heading"><i class="fas fa-heading"></i></button>
+                        <button type="button" title="Quote" data-action="quote"><i class="fas fa-quote-left"></i></button>
+                        <button type="button" title="Code" data-action="code"><i class="fas fa-code"></i></button>
+                        <div class="toolbar-divider"></div>
+                        <button type="button" title="Link" data-action="link"><i class="fas fa-link"></i></button>
+                        <button type="button" title="Sisipkan Gambar" data-action="image"><i class="fas fa-image"></i></button>
+                        <button type="button" title="Unordered List" data-action="ul"><i class="fas fa-list-ul"></i></button>
+                        <button type="button" title="Ordered List" data-action="ol"><i class="fas fa-list-ol"></i></button>
+                    </div>
+                    <textarea id="threadContent" class="form-control forum-editor" rows="8" required placeholder="Tuliskan isi diskusi Anda di sini... Markdown didukung."></textarea>
+                    <div class="char-counter"><span id="contentCharCount">0</span> karakter</div>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label>Lampirkan Gambar <span style="color:#9ca3af; font-weight:400;">(opsional)</span></label>
+                    <div class="image-upload-area" id="imageUploadArea" onclick="document.getElementById('threadImageInput').click()">
+                        <i class="fas fa-cloud-upload-alt upload-icon"></i>
+                        <p>Klik atau drag &amp; drop gambar di sini</p>
+                        <p class="upload-hint" id="uploadSizeHint">Maks: 5MB</p>
+                    </div>
+                    <input type="file" id="threadImageInput" accept="image/*" style="display:none;" onchange="handleThreadImageUpload(event)">
+                    <div id="imagePreviewWrap" style="display:none; margin-top:10px;">
+                        <img id="imagePreview" style="max-width:100%; max-height:220px; border-radius:10px; border:1px solid rgba(255,255,255,0.1);">
+                        <button type="button" class="btn-remove-image" onclick="removeThreadImage()"><i class="fas fa-trash"></i> Hapus Gambar</button>
+                    </div>
+                    <div id="imageError" class="form-error"></div>
+                </div>
+
+                <div class="modal-footer-btns">
+                    <button type="button" class="btn-cancel-modal" onclick="closeCreateModal()">Batal</button>
+                    <button type="submit" class="btn-submit-thread" id="submitThreadBtn">
+                        <i class="fas fa-paper-plane"></i> <span id="submitBtnLabel">Publikasikan</span>
+                    </button>
+                </div>
             </form>
         </div>
     </div>
+</div>
 
-    <!-- Modal Thread Detail -->
-    <div id="threadDetailModal" class="modal">
-        <div class="modal-content" style="max-width: 800px;">
-            <span class="close-modal" onclick="closeDetailModal()">&times;</span>
-            <div id="threadDetailContent">
-                <h3 id="detailTitle">Judul Thread</h3>
-                <div class="thread-header" id="detailHeader" style="margin-bottom: 15px;">
-                    <!-- Meta info here -->
-                </div>
-                <div class="thread-detail-body" id="detailBody">
-                    <!-- Content here -->
-                </div>
-                
-                <div class="replies-section">
-                    <h4><i class="fas fa-comments"></i> Balasan</h4>
-                    <div class="replies-list" id="repliesList">
-                        <!-- Replies here -->
-                    </div>
-                    
-                    <form class="forum-form reply-form" id="replyForm">
-                        <textarea placeholder="Tulis balasan..." required id="replyContent"></textarea>
-                        <button type="submit" class="btn-create-thread" style="justify-content: center; width: 100%;">
-                            <i class="fas fa-paper-plane"></i> Balas
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <script src="../inventory/inventory.js"></script> <!-- Sidebar & Auth -->
-    <script src="forum.js"></script> <!-- Forum Logic -->
-    <script src="../assets/js/notifications.js"></script>
+<!-- ═══ SCRIPTS ═══ -->
+<script src="../inventory/inventory.js"></script>
+<script src="forum.js?v=5"></script>
 </body>
 </html>
-
-<script src='../assets/js/server_status.js'></script>

@@ -27,7 +27,7 @@
 
 .search-bar button {
     padding: 10px 15px;
-    background-color: var(--accent-orange);
+    background-color: var(--accent-indigo, #6366f1);
     border: none;
     border-radius: 6px;
     color: white;
@@ -48,7 +48,7 @@
     position: absolute;
     top: -5px;
     right: -5px;
-    background-color: var(--accent-orange);
+    background-color: var(--accent-cyan, #06b6d4);
     color: white;
     font-size: 0.7rem;
     padding: 2px 6px;
@@ -486,3 +486,222 @@
     color: var(--accent-orange);
 }
 
+
+/* Shop Grid (Standardized) */
+.shop-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+/* Role Shop Cards */
+.role-card {
+    background: linear-gradient(145deg, #1e2024, #141619);
+    border: 1px solid rgba(233, 138, 34, 0.2);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.role-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    border-color: var(--accent-orange);
+}
+
+.role-card .badge-preview {
+    display: inline-block;
+    padding: 8px 15px;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.role-card .role-name {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: white;
+    margin-bottom: 5px;
+}
+
+.role-card .role-desc {
+    font-size: 0.9rem;
+    color: #888;
+    margin-bottom: 20px;
+    line-height: 1.4;
+}
+
+.role-card .price-tag {
+    background: rgba(0,0,0,0.3);
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+}
+
+.role-card .price-item {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+}
+
+.role-card .price-value {
+    color: var(--accent-orange);
+    font-weight: bold;
+}
+
+/* Badge Cards */
+.badge-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 20px;
+    text-align: center;
+    transition: 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.badge-card:hover {
+    transform: translateY(-5px);
+    border-color: var(--accent-orange);
+    box-shadow: 0 5px 15px rgba(233, 138, 34, 0.15);
+}
+
+/* Auction Grid */
+.auction-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+}
+
+.auction-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+.auction-card .card-image {
+    background: #111;
+    height: 150px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 20px;
+}
+
+.auction-card .card-image img {
+    max-height: 100%;
+    max-width: 100%;
+    filter: drop-shadow(0 5px 10px rgba(0,0,0,0.5));
+}
+
+.rarity-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: white;
+}
+
+.rarity-legendary { background: #ffaa00; box-shadow: 0 0 10px #ffaa00; }
+.rarity-epic { background: #a335ee; }
+.rarity-rare { background: #0070dd; }
+
+.auction-card .card-body {
+    padding: 15px;
+}
+
+.auction-stats {
+    display: flex;
+    justify-content: space-between;
+    margin: 15px 0;
+    font-size: 0.9rem;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-item label {
+    font-size: 0.7rem;
+    color: #888;
+}
+
+.price-current {
+    color: var(--accent-orange);
+    font-weight: bold;
+    font-size: 1.1rem;
+}
+
+.timer {
+    background: rgba(255,255,255,0.05);
+    text-align: center;
+    padding: 8px;
+    border-radius: 6px;
+    font-family: monospace;
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #aaa;
+}
+
+.timer.urgent {
+    color: #ff5555;
+    background: rgba(255, 85, 85, 0.1);
+    animation: pulse 1s infinite;
+}
+
+.btn-bid {
+    width: 100%;
+    padding: 10px;
+    background: var(--accent-orange);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-bid:hover {
+    background: #d07a1e;
+}
+
+.btn-buy.btn-coin {
+    background: linear-gradient(to right, #ffd700, #ffaa00);
+    color: black;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+    margin-bottom: 5px;
+}
+
+.btn-buy.btn-real {
+    background: linear-gradient(to right, #2ecc71, #27ae60);
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    width: 100%;
+    font-weight: bold;
+    cursor: pointer;
+}

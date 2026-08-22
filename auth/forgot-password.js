@@ -10,7 +10,7 @@ document.getElementById('forgot-form').addEventListener('submit', async function
     btn.innerHTML = '<span>SENDING...</span>';
     
     try {
-        const response = await fetch('http://localhost:3000/api/auth/forgotpassword', {
+        const response = await fetch('/api/auth/forgotpassword', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'

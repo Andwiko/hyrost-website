@@ -4,58 +4,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const closeModalBtn = document.querySelector('.close-modal');
     const confirmBidBtn = document.getElementById('confirmBidBtn');
     const bidAmountInput = document.getElementById('bidAmount');
-    
-    // Mock Data
-    let items = [
-        {
-            id: 1,
-            name: "Dragon Slayer Sword",
-            image: "https://minecraft.wiki/images/Netherite_Sword_JE2_BE2.png",
-            rarity: "legendary",
-            currentBid: 5000,
-            bidder: "TopG_Player",
-            endTime: new Date().getTime() + 1000 * 60 * 60 * 2 // 2 hours from now
-        },
-        {
-            id: 2,
-            name: "Elytra Wings",
-            image: "https://minecraft.wiki/images/Elytra_JE2_BE2.png",
-            rarity: "epic",
-            currentBid: 12500,
-            bidder: "FlyMaster99",
-            endTime: new Date().getTime() + 1000 * 60 * 45 // 45 mins from now
-        },
-        {
-            id: 3,
-            name: "Enchanted Golden Apple",
-            image: "https://minecraft.wiki/images/Enchanted_Golden_Apple_JE2_BE2.png",
-            rarity: "rare",
-            currentBid: 800,
-            bidder: "NoobKiller",
-            endTime: new Date().getTime() + 1000 * 60 * 5 // 5 mins (Urgent!)
-        },
-        {
-            id: 4,
-            name: "Netherite Chestplate",
-            image: "https://minecraft.wiki/images/Netherite_Chestplate_JE2_BE2.png",
-            rarity: "epic",
-            currentBid: 4500,
-            bidder: "TankBuild",
-            endTime: new Date().getTime() + 1000 * 60 * 60 * 24 // 24 hours
-        }
-    ];
 
+    let items = [];
     let activeItem = null;
 
-    // Initial Render
-    renderAuctions();
+    loadAuctions();
     
     // Start Timer Loop
     setInterval(updateTimers, 1000);
 
+    async function loadAuctions() {
+        if (!auctionGrid) return;
+        auctionGrid.innerHTML = '<p style="grid-column:1/-1;text-align:center;color:#9ca3af;padding:40px;"><i class="fas fa-spinner fa-spin"></i> Memuat lelang...</p>';
+
+        try {
+            const res = await fetch('/api/features/auctions');
+            if (res.ok) {
+                const data = await res.json();
+                const rows = data.auctions || [];
+                items = rows.map((row) => ({
+                        id: row.id,
+                        name: row.item_name,
+                        image: row.image_url || 'https://mc-heads.net/avatar/Steve/128.png',
+                        rarity: row.price_type || 'bronze',
+                        currentBid: row.current_bid || row.price_coin || 0,
+                        bidder: row.seller_name || '-',
+                        endTime: row.auction_ends_at ? new Date(row.auction_ends_at).getTime() : Date.now() + 86400000,
+                    }));
+            }
+        } catch (_) {}
+
+        renderAuctions();
+    }
+
     function renderAuctions() {
         if(!auctionGrid) return;
         auctionGrid.innerHTML = '';
+
+        if (!items.length) {
+            auctionGrid.innerHTML = `
+                <div style="grid-column:1/-1;text-align:center;padding:48px 24px;color:#9ca3af;">
+                    <i class="fas fa-gavel" style="font-size:2.5rem;margin-bottom:12px;color:#6366f1;"></i>
+                    <p>Belum ada lelang aktif saat ini.</p>
+                    <p style="font-size:0.85rem;margin-top:8px;">Listing lelang akan muncul di sini setelah fitur backend tersedia.</p>
+                </div>`;
+            return;
+        }
 
         items.forEach(item => {
             const card = document.createElement('div');
@@ -152,25 +146,35 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     if(confirmBidBtn) {
-        confirmBidBtn.addEventListener('click', () => {
+        confirmBidBtn.addEventListener('click', async () => {
             if(!activeItem) return;
 
-            const bidVal = parseInt(bidAmountInput.value);
+            const bidVal = parseInt(bidAmountInput.value, 10);
             if(bidVal <= activeItem.currentBid) {
                 alert('Tawaran harus lebih tinggi dari harga saat ini!');
                 return;
             }
 
-            // Update Mock Data
-            activeItem.currentBid = bidVal;
-            activeItem.bidder = "You"; // In real app, current user
-            
-            // Re-render
-            renderAuctions();
-            updateTimers(); // Immediate update
+            const token = localStorage.getItem('hyrostToken');
+            if (!token) { alert('Login diperlukan untuk bid'); return; }
 
-            bidModal.classList.remove('active');
-            alert(`Berhasil menawar ${activeItem.name} seharga ${bidVal} Gold!`);
+            try {
+                const res = await fetch(`/api/features/auctions/${activeItem.id}/bid`, {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount: bidVal }),
+                });
+                const data = await res.json();
+                if (data.success) {
+                    alert(data.message || 'Bid berhasil!');
+                    bidModal.classList.remove('active');
+                    loadAuctions();
+                } else {
+                    alert(data.message || 'Bid gagal');
+                }
+            } catch (_) {
+                alert('Gagal mengirim bid');
+            }
         });
     }
 });

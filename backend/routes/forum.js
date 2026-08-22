@@ -1,18 +1,25 @@
 const express = require('express');
-const router = express.Router();
+const router  = express.Router();
 const forumController = require('../controllers/forumController');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, verifyAdmin } = require('../middleware/auth');
 
-console.log('DEBUG: Registering Forum Routes. Controller keys:', Object.keys(forumController || {}));
+// ─── PUBLIC ROUTES ────────────────────────────────────────────────────────────
+router.get('/threads',          forumController.listThreads);
+router.get('/categories',       forumController.listCategories);
+router.get('/thread/:id',       forumController.getThreadDetails);
 
-router.post('/thread', verifyToken, forumController.createThread || ((req, res) => res.status(500).send('Handler Missing: createThread')));
-router.get('/thread/:id', forumController.getThreadDetails || ((req, res) => res.status(500).send('Handler Missing: getThreadDetails')));
-router.put('/thread/:id', verifyToken, forumController.updateThread || ((req, res) => res.status(500).send('Handler Missing: updateThread')));
-router.delete('/thread/:id', verifyToken, forumController.deleteThread || ((req, res) => res.status(500).send('Handler Missing: deleteThread')));
-router.post('/thread/:id/reply', verifyToken, forumController.replyThread || ((req, res) => res.status(500).send('Handler Missing: replyThread')));
-router.post('/thread/:id/vote', verifyToken, forumController.voteThread || ((req, res) => res.status(500).send('Handler Missing: voteThread')));
-router.get('/threads', forumController.listThreads || ((req, res) => res.status(500).send('Handler Missing: listThreads')));
-router.get('/categories', forumController.listCategories || ((req, res) => res.status(500).send('Handler Missing: listCategories')));
-router.get('/init-db', forumController.initForumDB); // Emergency Init
+// ─── AUTH REQUIRED ROUTES ─────────────────────────────────────────────────────
+router.get('/permissions',        verifyToken, forumController.getPermissions);
+router.post('/thread',            verifyToken, forumController.createThread);
+router.put('/thread/:id',         verifyToken, forumController.updateThread);
+router.delete('/thread/:id',      verifyToken, forumController.deleteThread);
+router.post('/thread/:id/reply',  verifyToken, forumController.replyThread);
+router.post('/thread/:id/vote',   verifyToken, forumController.voteThread);
+router.delete('/reply/:replyId',  verifyToken, forumController.deleteReply);
+router.post('/reply/:replyId/like', verifyToken, forumController.likeReply);
+
+// ─── ADMIN ROUTES ─────────────────────────────────────────────────────────────
+router.post('/thread/:id/pin',  verifyToken, verifyAdmin, forumController.pinThread);
+router.get('/init-db', verifyToken, verifyAdmin, forumController.initForumDB);
 
 module.exports = router;

@@ -1,0 +1,4 @@
+# Local data — jangan commit isi folder ini (backup & upload user)
+*
+!.gitignore
+!README.md

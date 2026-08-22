@@ -30,20 +30,18 @@ async function loadShopRoles() {
     if (!grid) return;
 
     try {
-        const res = await fetch(`${API_URL}/admin/roles`, { headers });
-        const roles = await res.json();
-        
-        grid.innerHTML = '';
-        
-        // Filter out basic roles from shop if needed, but for now show all except maybe Admin
-        const shopRoles = roles.filter(r => r.name !== 'Admin');
+        const res = await fetch(`${API_URL}/store/ranks`);
+        const data = await res.json();
+        const roles = (data.ranks || []).filter(r => r.name !== 'Admin' && r.name !== 'Member');
 
-        if (shopRoles.length === 0) {
+        grid.innerHTML = '';
+
+        if (roles.length === 0) {
             grid.innerHTML = '<p style="color:#888; text-align:center; padding:50px;">Belum ada gelar yang tersedia untuk dibeli.</p>';
             return;
         }
 
-        shopRoles.forEach(role => {
+        roles.forEach(role => {
             const card = document.createElement('div');
             card.className = 'role-card';
             
@@ -126,13 +124,15 @@ document.getElementById('confirmBuyBtn').addEventListener('click', async () => {
     if (!selectedRole || !selectedMethod) return;
 
     try {
-        const res = await fetch(`${API_URL}/admin/purchase-role`, {
+        const endpoint = selectedMethod === 'coin' ? '/store/buy-rank' : '/store/buy-rank-idr';
+        const body = selectedMethod === 'coin'
+            ? { rankName: selectedRole.name }
+            : { rankName: selectedRole.name, paymentMethod: 'qris' };
+
+        const res = await fetch(`${API_URL}${endpoint}`, {
             method: 'POST',
             headers,
-            body: JSON.stringify({
-                roleId: selectedRole.id,
-                paymentMethod: selectedMethod
-            })
+            body: JSON.stringify(body)
         });
 
         const data = await res.json();

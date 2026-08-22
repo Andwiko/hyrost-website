@@ -1,452 +1,1155 @@
 <!DOCTYPE html>
 <html lang="id">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Hyrost - Admin Modern Panel</title>
-    <link rel="stylesheet" href="../dashboard.css" />
-    <link rel="stylesheet" href="forum_dashboard.css" />
-    <link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
-    />
-  </head>
-  <body style="background: #0f0f0f">
-    <div class="dashboard-container">
-      <!-- Sidebar -->
-      <aside class="sidebar" id="mainSidebar">
-        <div class="sidebar-header">
-          <img src="../assets/images/hyrost.png" alt="Logo" />
-          <h2>Hyrost</h2>
-        </div>
-        <nav class="sidebar-nav">
-          <a href="../dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-          <a href="../account/index.html" class="nav-item">
-            <i class="fas fa-user-circle"></i>
-            <span>Profile</span>
-          </a>
-          <a href="../question/index.html" class="nav-item">
-            <i class="fas fa-globe-asia"></i>
-            <span>World</span>
-          </a>
-          <a href="../modules/forum.html" class="nav-item">
-            <i class="fas fa-comments"></i>
-            <span>Forum</span>
-          </a>
-          <a href="../modules/leaderboard.html" class="nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>Leaderboard</span>
-          </a>
-          <a href="../inventory/inventory.html" class="nav-item">
-            <i class="fas fa-briefcase"></i>
-            <span>Storage</span>
-          </a>
-          <a href="../marketplace/shop.html" class="nav-item">
-            <i class="fas fa-shopping-bag"></i>
-            <span>Shop</span>
-          </a>
-          <a href="../marketplace/auction.html" class="nav-item">
-            <i class="fas fa-gavel"></i>
-            <span>Auction</span>
-          </a>
-          <a href="role_shop.html" class="nav-item">
-            <i class="fas fa-user-tag"></i>
-            <span>Role Shop</span>
-          </a>
-          <a href="rewards.html" class="nav-item">
-            <i class="fas fa-calendar-check"></i>
-            <span>Daily Rewards</span>
-          </a>
-          <a href="wiki.html" class="nav-item">
-            <i class="fas fa-book"></i>
-            <span>Wiki</span>
-          </a>
-          <a href="social.html" class="nav-item">
-            <i class="fas fa-users"></i>
-            <span>Social</span>
-          </a>
-          <a href="support.html" class="nav-item">
-            <i class="fas fa-headset"></i>
-            <span>Support</span>
-          </a>
-          <a href="#" class="nav-item">
-            <i class="fas fa-info-circle"></i>
-            <span>Info</span>
-          </a>
-          <a href="admin.html" class="nav-item active">
-             <i class="fas fa-user-shield"></i>
-             <span>Admin Panel</span>
-          </a>
-        </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hyrost — Admin Command Center</title>
+  <link rel="stylesheet" href="admin.css?v=4" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+</head>
+<body>
 
-        <!-- Server Status Widget -->
-        <div class="sidebar-widget server-status-widget">
-            <div class="widget-header">
-                <h3>Status Server</h3>
-                <span class="status-dot online"></span>
-            </div>
-            <div class="widget-content">
-                <p class="server-ip">play.hyrost.net</p>
-                <p class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</p>
-            </div>
-        </div>
-      </aside>
+<!-- Toast Container -->
+<div id="toast-container"></div>
+<div id="sidebarOverlay" class="sidebar-overlay" aria-hidden="true"></div>
 
-      <!-- Main Content -->
-      <main class="main-content">
-          <header class="content-header" style="padding: 20px 30px; border-bottom: 1px solid rgba(255,255,255,0.05); display:flex; justify-content:space-between; align-items:center;">
-              <div>
-                  <h1 style="font-size: 1.8rem; color: #fff;">Admin Command Center</h1>
-                  <p style="color: #888; font-size:0.9rem;">Pusat kendali ekosistem Hyrost.</p>
-              </div>
-          </header>
-
-          <!-- TAB NAVIGATION -->
-          <div class="admin-tabs">
-              <button class="tab-btn active" onclick="switchTab('roles')"><i class="fas fa-id-badge"></i> Role Editor</button>
-              <button class="tab-btn" onclick="switchTab('users')"><i class="fas fa-users-cog"></i> Users & Economy</button>
-              <button class="tab-btn" onclick="switchTab('settings')"><i class="fas fa-sliders-h"></i> User & Settings</button>
-              <button class="tab-btn" onclick="switchTab('mods')"><i class="fas fa-gavel"></i> Forum Mod</button>
-              <button class="tab-btn" onclick="switchTab('tickets')"><i class="fas fa-ticket-alt"></i> Tickets</button>
-              <button class="tab-btn" onclick="switchTab('cosmetics')"><i class="fas fa-magic"></i> Cosmetics</button>
-              <button class="tab-btn" onclick="switchTab('logs')"><i class="fas fa-history"></i> Logs</button>
-          </div>
-
-          <div class="admin-grid" style="margin-top:20px;">
-              
-              <!-- TAB: ROLES -->
-              <div id="tab-roles" class="tab-content active full-width-card">
-                 <div class="admin-card full-width-card" style="border:none; background:transparent; box-shadow:none; padding:0;">
-                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                          <h2 style="margin:0; border:none;">Manajemen Role & Badge</h2>
-                          <button class="btn-action" onclick="showCreateRoleModal()">
-                              <i class="fas fa-plus"></i> Buat Role Baru
-                          </button>
-                      </div>
-                      <div id="roleListGrid" class="role-grid-container">
-                          <!-- Roles loaded here -->
-                      </div>
-                 </div>
-              </div>
-
-              <!-- TAB: USERS -->
-              <div id="tab-users" class="tab-content full-width-card" style="display:none;">
-                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                      <div class="admin-card">
-                          <h2><i class="fas fa-user-tag"></i> Role Pengguna</h2>
-                          <div id="roleUserList" class="scrollable-list"></div>
-                      </div>
-                      <div class="admin-card">
-                          <h2><i class="fas fa-coins"></i> Harta Pengguna</h2>
-                          <div id="coinUserList" class="scrollable-list"></div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- TAB: SETTINGS -->
-              <div id="tab-settings" class="tab-content full-width-card" style="display:none;">
-                  <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                      <div class="admin-card">
-                          <h2><i class="fas fa-bullhorn"></i> Pengumuman Global</h2>
-                          <div class="form-group">
-                              <label>Banner Text</label>
-                              <textarea id="globalAnnouncement" rows="3" placeholder="Tulis pesan untuk seluruh member..."></textarea>
-                              <button class="btn-action" onclick="saveAnnouncement()" style="margin-top:10px; width:100%;">Update Banner</button>
-                          </div>
-                          <div class="form-group" style="margin-top:20px; display:flex; align-items:center; justify-content:space-between; background:rgba(255,255,255,0.03); padding:15px; border-radius:10px;">
-                              <label style="margin:0; color:#fff;">Mode Maintenance</label>
-                              <label class="switch">
-                                  <input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenance()">
-                                  <span class="slider round"></span>
-                              </label>
-                          </div>
-                      </div>
-                      <div class="admin-card">
-                          <h2><i class="fas fa-ban"></i> Filter Kata Kasar</h2>
-                          <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-                              <input type="text" id="newBannedWord" placeholder="Tambah kata..." style="flex:1">
-                              <button class="btn-submit" style="width:auto; margin-top:0;" onclick="addBannedWord()">Add</button>
-                          </div>
-                          <div id="bannedWordsList" style="display: flex; flex-wrap: wrap; gap: 8px;"></div>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- TAB: MODS -->
-              <div id="tab-mods" class="tab-content full-width-card" style="display:none;">
-                  <div class="admin-card full-width-card">
-                      <h2><i class="fas fa-comments"></i> Moderasi Forum</h2>
-                      <div id="forumModList" class="scrollable-list"></div>
-                  </div>
-              </div>
-
-              <!-- TAB: LOGS -->
-              <div id="tab-logs" class="tab-content full-width-card" style="display:none;">
-                  <div class="admin-card full-width-card">
-                      <h2><i class="fas fa-clipboard-list"></i> Riwayat Aktivitas</h2>
-                      <div id="activityLogTable">
-                          <table class="data-table">
-                              <thead>
-                                  <tr style="color:#888; text-align:left;">
-                                      <th>Waktu</th> <th>User</th> <th>Aksi</th> <th>Detail</th>
-                                  </tr>
-                              </thead>
-                              <tbody id="activityLogBody"></tbody>
-                          </table>
-                      </div>
-                  </div>
-              </div>
-
-              <!-- TAB: COSMETICS -->
-              <div id="tab-cosmetics" class="tab-content full-width-card" style="display:none;">
-                  <div class="admin-card full-width-card">
-                      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
-                        <h2 style="margin:0; border:none;">Manajemen Kosmetik</h2>
-                        <button class="btn-action" onclick="showCreateCosmeticModal()"><i class="fas fa-plus"></i> Tambah Item</button>
-                      </div>
-                      <div id="cosmeticListGrid" class="role-grid-container">
-                          <!-- Cosmetic Items will be loaded here -->
-                      </div>
-                  </div>
-              </div>
-
-          </div>
-      </main>
-
+<div class="admin-layout">
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-brand">
+      <img src="../assets/images/hyrost.png" alt="Hyrost" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'" />
+      <div class="brand-text">
+        <h2>Hyrost</h2>
+        <span>Admin Center</span>
       </div>
     </div>
 
-    <!-- Role Edit Modal (Updated with Font Selector) -->
-    <div class="modal" id="createRoleModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Konfigurasi Role</h3>
-                <span style="cursor:pointer; font-size:1.5rem;" onclick="closeCreateModal()">&times;</span>
-            </div>
-            <div class="form-group">
-                <label>Nama Role (ID Sistem)</label>
-                <input type="text" id="roleNameInput" readonly style="opacity:0.7; cursor:not-allowed;">
-            </div>
-            
-            <div class="form-group">
-                <label>Teks Badge</label>
-                <input type="text" id="badgeTextInput" placeholder="Nama yang tampil (misal: SULTAN)">
-            </div>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                <div class="form-group">
-                    <label>Warna Badge</label>
-                    <input type="color" id="badgeColorInput" style="height:45px; padding:5px;">
-                </div>
-                <!-- NEW FONT SELECTOR -->
-                <div class="form-group">
-                    <label>Gaya Font</label>
-                    <select id="badgeStyleInput">
-                        <option value="normal">Normal</option>
-                        <option value="font-bold">Bold Strong</option>
-                        <option value="font-pixel">Pixel Arcade</option>
-                        <option value="font-serif">Elegant Serif</option>
-                        <option value="font-mono">Code Mono</option>
-                        <option value="font-neon">Neon Glow</option>
-                    </select>
-                </div>
-            </div>
+    <div class="sidebar-section-label">Navigasi Utama</div>
+    <nav class="admin-nav" id="adminNav">
+      <a href="../dashboard.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-chart-pie"></i></span>
+        <span>Dashboard</span>
+      </a>
+      <a href="../account/index.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-user-circle"></i></span>
+        <span>Profil Saya</span>
+      </a>
+      <a href="forum.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-comments"></i></span>
+        <span>Forum Komunitas</span>
+      </a>
+      <a href="leaderboard.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-trophy"></i></span>
+        <span>Leaderboard</span>
+      </a>
+      <a href="../inventory/inventory.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-box"></i></span>
+        <span>Inventaris</span>
+      </a>
+      <a href="store.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-crown" style="color:var(--accent-gold);"></i></span>
+        <span>Toko Pangkat</span>
+      </a>
+      <a href="../marketplace/index.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-store"></i></span>
+        <span>Marketplace</span>
+      </a>
+      <a href="rewards.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-gift"></i></span>
+        <span>Daily Rewards</span>
+      </a>
+      <a href="wiki.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-book"></i></span>
+        <span>Wiki & Guide</span>
+      </a>
+      <a href="social.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-users"></i></span>
+        <span>Pertemanan</span>
+      </a>
+      <a href="support.html" class="nav-link">
+        <span class="nav-icon"><i class="fas fa-headset"></i></span>
+        <span>Pusat Bantuan</span>
+      </a>
 
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:15px;">
-                <div class="form-group">
-                    <label>Harga Koin</label>
-                    <input type="number" id="roleCoinPrice" placeholder="0">
-                </div>
-                <div class="form-group">
-                    <label>Harga IDR</label>
-                    <input type="number" id="roleIdrPrice" placeholder="0">
-                </div>
-            </div>
+      <div style="height:1px; background:rgba(255,255,255,0.06); margin:10px 0;"></div>
+      <div style="font-size:0.62rem; font-weight:700; text-transform:uppercase; letter-spacing:2px; color:#4b5563; padding:4px 13px 6px;">Admin Panel</div>
 
-            <div class="form-group">
-                <label>Deskripsi</label>
-                <textarea id="roleDescInput" rows="2" placeholder="Keuntungan role ini..."></textarea>
-            </div>
+      <a href="admin.html" class="nav-link active admin-only" id="nav-admin-panel">
+        <span class="nav-icon"><i class="fas fa-shield-halved"></i></span>
+        <span>Admin Panel</span>
+      </a>
+    </nav>
 
-            <div class="btn-group" style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-action" style="flex:1" onclick="saveRoleChanges()">Simpan</button>
-                <button class="btn-delete" style="flex:1" onclick="deleteRole()">Hapus Role</button>
-            </div>
+    <div class="sidebar-bottom">
+      <div class="sidebar-server-pill">
+        <div class="server-pill-row">
+          <span><i class="fas fa-server" style="margin-right:5px; color:var(--accent-cyan);"></i>Status Server</span>
+          <span class="status-dot" id="serverStatusDot"></span>
         </div>
+        <div class="server-pill-ip" id="serverIpDisplay">play.hyrost.net</div>
+        <div style="font-size:0.72rem; color:var(--text-dim); margin-top:4px;">
+          <i class="fas fa-users"></i> <span id="serverPlayerCount">--</span> Online
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══ MAIN ═══ -->
+  <div class="admin-main">
+    <!-- TOP BAR -->
+    <header class="admin-topbar">
+      <div class="topbar-left">
+        <button type="button" class="admin-menu-toggle" id="adminSidebarToggle" aria-label="Buka menu">
+          <i class="fas fa-bars"></i>
+        </button>
+        <div>
+          <h1 id="tabPageTitle">Overview — Command Center</h1>
+          <p id="tabPageSubtitle">Pantau dan kelola ekosistem Hyrost Realm</p>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="topbar-user">
+          <img id="adminAvatar" src="https://ui-avatars.com/api/?name=Admin&background=6366f1&color=fff" alt="avatar" />
+          <div class="user-info">
+            <span id="adminUsername">Loading...</span>
+            <small>Administrator</small>
+          </div>
+        </div>
+        <a href="../dashboard.html" class="btn-topbar">
+          <i class="fas fa-arrow-left"></i><span>Dashboard</span>
+        </a>
+        <button class="btn-topbar danger" onclick="logout()">
+          <i class="fas fa-sign-out-alt"></i><span>Keluar</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Admin sub-navigation (horizontal tabs) -->
+    <div class="admin-tab-bar">
+      <nav class="tab-nav admin-tab-nav" id="adminTabNav" aria-label="Menu Admin Panel">
+        <button type="button" class="tab-btn active" data-tab="overview" onclick="showTab('overview')">
+          <i class="fas fa-gauge-high"></i><span>Overview</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="users" onclick="showTab('users')">
+          <i class="fas fa-users-cog"></i><span>User</span>
+          <span class="tab-count" id="badge-users">0</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="roles" onclick="showTab('roles')">
+          <i class="fas fa-id-badge"></i><span>Role</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="economy" onclick="showTab('economy')">
+          <i class="fas fa-coins"></i><span>Ekonomi</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="forum" onclick="showTab('forum')">
+          <i class="fas fa-gavel"></i><span>Forum</span>
+          <span class="tab-count" id="badge-forum" style="display:none">0</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="tickets" onclick="showTab('tickets')">
+          <i class="fas fa-ticket"></i><span>Tiket</span>
+          <span class="tab-count" id="badge-tickets" style="display:none">0</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="rewards" onclick="showTab('rewards')">
+          <i class="fas fa-gift"></i><span>Rewards</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="cosmetics" onclick="showTab('cosmetics')">
+          <i class="fas fa-magic"></i><span>Kosmetik</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="payments" onclick="showTab('payments')">
+          <i class="fas fa-wallet"></i><span>Pembayaran</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="settings" onclick="showTab('settings')">
+          <i class="fas fa-sliders-h"></i><span>Server</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="wiki" onclick="showTab('wiki')">
+          <i class="fas fa-book-open"></i><span>Wiki</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="vouchers" onclick="showTab('vouchers')">
+          <i class="fas fa-ticket-alt"></i><span>Voucher</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="ipblock" onclick="showTab('ipblock')">
+          <i class="fas fa-shield-virus"></i><span>IP Block</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="logs" onclick="showTab('logs')">
+          <i class="fas fa-clipboard-list"></i><span>Log</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="health" onclick="showTab('health')">
+          <i class="fas fa-heartbeat"></i><span>Health</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="payments-admin" onclick="showTab('payments-admin')">
+          <i class="fas fa-receipt"></i><span>Orders</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="backup" onclick="showTab('backup')">
+          <i class="fas fa-file-export"></i><span>Backup</span>
+        </button>
+        <button type="button" class="tab-btn" data-tab="broadcast" onclick="showTab('broadcast')">
+          <i class="fas fa-bullhorn"></i><span>Broadcast</span>
+        </button>
+      </nav>
     </div>
 
-    <script src="../inventory/inventory.js"></script>
-    <script src="admin.js"></script>
-    <!-- Cosmetic Creator Modal -->
-    <div class="modal" id="createCosmeticModal">
-        <div class="modal-content" style="max-width: 700px;">
-            <div class="modal-header">
-                <h3>Buat Item Kosmetik</h3>
-                <span style="cursor:pointer; font-size:1.5rem;" onclick="closeCosmeticModal()">&times;</span>
-            </div>
-            
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;">
-                <!-- Left: Form -->
-                <div>
-                     <div class="form-group">
-                        <label>Nama Item</label>
-                        <input type="text" id="cosNameInput" placeholder="Nametag Pelangi">
-                    </div>
-                     <div class="form-group">
-                        <label>Tipe Item</label>
-                        <select id="cosTypeInput" onchange="updateCosmeticPreview()">
-                            <option value="nametag">Nametag (Warna Nama)</option>
-                            <option value="badge">Badge (Ikon di Sebelah Nama)</option>
-                            <option value="nameplate">Nameplate (Background Nama)</option>
-                        </select>
-                    </div>
-                     <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
-                        <div class="form-group">
-                            <label style="color:#cd7f32"><i class="fas fa-coins"></i> Harga Bronze</label>
-                            <input type="number" id="cosPriceBronze" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label style="color:#c0c0c0"><i class="fas fa-coins"></i> Harga Silver</label>
-                            <input type="number" id="cosPriceSilver" placeholder="0">
-                        </div>
-                        <div class="form-group">
-                            <label style="color:#ffd700"><i class="fas fa-coins"></i> Harga Gold</label>
-                            <input type="number" id="cosPriceGold" placeholder="0">
-                        </div>
-                         <div class="form-group">
-                            <label style="color:#fff">Harga IDR</label>
-                            <input type="number" id="cosPriceIdr" placeholder="0">
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Right: Visual Builder -->
-                <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 10px;">
-                    <h4 style="color:#e98a22; margin-top:0;">Visual Builder</h4>
-                    
-                    <div style="display:flex; gap:10px; margin-bottom:15px;">
-                        <div style="flex:1;">
-                            <label style="color:#aaa; font-size:0.8rem;">Warna Dasar</label>
-                            <div style="display:flex; gap:5px;">
-                                <input type="color" id="cosColorPicker" style="height:40px; width:50px; padding:0; border:none;" value="#ffffff" oninput="applyColorFromPicker()">
-                                <input type="text" id="cosColorHex" placeholder="#ffffff" style="flex:1;" onchange="applyHexColor()">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label>CSS Style (Manual)</label>
-                        <textarea id="cosCssInput" rows="2" placeholder="color: red; text-shadow: 0 0 5px yellow;" oninput="updateCosmeticPreview()"></textarea>
-                    </div>
-
-                    <div class="form-group">
-                        <label>Efek Animasi (25 Jenis)</label>
-                        <select id="cosAnimInput" onchange="updateCosmeticPreview()">
-                            <option value="">-- Pilih Efek --</option>
-                            <option value="anim-rainbow">1. Rainbow (Pelangi)</option>
-                            <option value="anim-pulse">2. Pulse Glow (Berdenyut)</option>
-                            <option value="anim-glitch">3. Glitch (Rusak)</option>
-                            <option value="anim-fire">4. Fire Aura (Api)</option>
-                            <option value="anim-neon">5. Neon Flicker (Kedip Neon)</option>
-                            <option value="anim-electric">6. Electric Shock (Listrik)</option>
-                            <option value="anim-water">7. Water Wave (Air)</option>
-                            <option value="anim-matrix">8. Matrix (Kode Hijau)</option>
-                            <option value="anim-gold">9. Golden Shine (Emas)</option>
-                            <option value="anim-ice">10. Ice Freeze (Es)</option>
-                            <option value="anim-ghost">11. Ghost Fade (Hantu)</option>
-                            <option value="anim-heartbeat">12. Heartbeat (Detak Jantung)</option>
-                            <option value="anim-spin">13. Spin 3D (Putar)</option>
-                            <option value="anim-bounce">14. Bounce (Mantul)</option>
-                            <option value="anim-blur">15. Blur Focus (Blur)</option>
-                            <option value="anim-typewriter">16. Typewriter (Ketik)</option>
-                            <option value="anim-blood">17. Blood Drip (Darah)</option>
-                            <option value="anim-cosmic">18. Cosmic (Angkasa)</option>
-                            <option value="anim-toxic">19. Toxic (Racun)</option>
-                            <option value="anim-retro">20. Retro (Pixel)</option>
-                            <option value="anim-shake">21. Shake (Guncang)</option>
-                            <option value="anim-spotlight">22. Spotlight (Sorot)</option>
-                            <option value="anim-metal">23. Metallic (Logam)</option>
-                            <option value="anim-magma">24. Magma (Lahar)</option>
-                            <option value="anim-holy">25. Holy Light (Suci)</option>
-                        </select>
-                    </div>
-
-                    <div style="margin-top:20px; text-align:center;">
-                        <label>Preview:</label>
-                        <div style="background:#222; padding:20px; border-radius:8px; margin-top:5px;">
-                            <span id="previewCosmeticTarget" style="font-size:1.2rem; font-weight:bold; color:white;">Username</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="btn-group" style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-action" style="flex:1" onclick="saveCosmetic()">Simpan Item</button>
-            </div>
+    <!-- PAGE CONTENT -->
+    <div class="admin-content">
+      <div class="tab-panel active" id="tab-overview">
+        <!-- Stat Cards -->
+        <div class="stats-grid">
+          <div class="stat-card" style="--card-accent:var(--accent-indigo); --card-bg-icon:rgba(99,102,241,0.15);">
+            <div class="stat-card-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-card-value" id="stat-total-users">--</div>
+            <div class="stat-card-label">Total Member Terdaftar</div>
+            <span class="stat-card-change up"><i class="fas fa-arrow-up"></i> Aktif</span>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--accent-emerald); --card-bg-icon:rgba(16,185,129,0.15);">
+            <div class="stat-card-icon"><i class="fas fa-server"></i></div>
+            <div class="stat-card-value" id="stat-online-players">--</div>
+            <div class="stat-card-label">Pemain Online Sekarang</div>
+            <span class="stat-card-change up" id="stat-server-status-text"><i class="fas fa-circle"></i> Online</span>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--accent-gold); --card-bg-icon:rgba(245,158,11,0.15);">
+            <div class="stat-card-icon"><i class="fas fa-id-badge"></i></div>
+            <div class="stat-card-value" id="stat-total-roles">--</div>
+            <div class="stat-card-label">Total Role Dibuat</div>
+            <span class="stat-card-change up"><i class="fas fa-palette"></i> Aktif</span>
+          </div>
+          <div class="stat-card" style="--card-accent:var(--accent-pink); --card-bg-icon:rgba(236,72,153,0.15);">
+            <div class="stat-card-icon"><i class="fas fa-ticket"></i></div>
+            <div class="stat-card-value" id="stat-open-tickets">--</div>
+            <div class="stat-card-label">Tiket Support Terbuka</div>
+            <span class="stat-card-change" id="ticket-change-badge"><i class="fas fa-clock"></i> Pending</span>
+          </div>
         </div>
-    </div>
 
-  </body>
-</html>
-
-<script src='../assets/js/server_status.js'></script>
-
-
-<!-- TAB: TICKETS -->
-<div id="tab-tickets" class="admin-tab-content" style="display:none;">
-    <div class="card">
-        <div class="card-header">
-            <h3><i class="fas fa-ticket-alt"></i> User Tickets</h3>
-            <div class="action-btn-group">
-                <button class="btn-action" onclick="filterTickets('open')">Open</button>
-                <button class="btn-action" onclick="filterTickets('closed')">Closed</button>
+        <div class="two-col">
+          <!-- Recent Users -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-user-plus"></i> Member Terbaru</h3>
+              <button class="btn btn-sm btn-secondary" onclick="showTab('users')">Lihat Semua</button>
             </div>
+            <div class="card-body">
+              <div class="recent-list" id="recentUsersList">
+                <div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat...</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Recent Activity -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-history"></i> Aktivitas Terbaru</h3>
+              <button class="btn btn-sm btn-secondary" onclick="showTab('logs')">Semua Log</button>
+            </div>
+            <div class="card-body">
+              <div id="overviewActivityList">
+                <div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat...</div>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="table-responsive">
-            <table class="admin-table">
+
+        <!-- Server Status Card -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-network-wired"></i> Status Server Minecraft</h3>
+            <button class="btn btn-sm btn-secondary" onclick="refreshServerStatus()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="card-body">
+            <div class="three-col">
+              <div style="text-align:center; padding:16px; background:var(--bg-glass); border-radius:var(--r-md); border:1px solid var(--border-subtle);">
+                <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">IP Server</div>
+                <div style="font-family:monospace; font-size:1.2rem; font-weight:800; color:var(--accent-cyan);" id="overviewServerIp">--</div>
+              </div>
+              <div style="text-align:center; padding:16px; background:var(--bg-glass); border-radius:var(--r-md); border:1px solid var(--border-subtle);">
+                <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">Pemain Online</div>
+                <div style="font-size:1.5rem; font-weight:800; color:var(--accent-emerald);" id="overviewOnlinePlayers">--</div>
+              </div>
+              <div style="text-align:center; padding:16px; background:var(--bg-glass); border-radius:var(--r-md); border:1px solid var(--border-subtle);">
+                <div style="font-size:0.72rem; text-transform:uppercase; letter-spacing:1px; color:var(--text-dim); margin-bottom:8px;">Status</div>
+                <div style="font-size:1.1rem; font-weight:800;" id="overviewServerStatusText">--</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: USERS ═══════ -->
+      <div class="tab-panel" id="tab-users">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-users-cog"></i> Manajemen User</h3>
+            <span style="font-size:0.8rem; color:var(--text-dim);" id="userCountLabel">Memuat...</span>
+          </div>
+          <div class="card-body">
+            <div class="filter-row">
+              <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="userSearchInput" placeholder="Cari username atau email..." oninput="filterUsers()" />
+              </div>
+              <select class="filter-select" id="userRoleFilter" onchange="filterUsers()">
+                <option value="">Semua Role</option>
+              </select>
+              <button class="btn btn-secondary btn-sm" onclick="loadUsers()"><i class="fas fa-sync"></i></button>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
                 <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>User</th>
-                        <th>Subject</th>
-                        <th>Category</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Action</th>
-                    </tr>
+                  <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Koin</th>
+                    <th>Bergabung</th>
+                    <th style="text-align:right;">Aksi</th>
+                  </tr>
                 </thead>
-                <tbody id="ticketTableBody">
-                    <!-- Mock Data -->
-                    <tr>
-                        <td>#T-1001</td>
-                        <td>PlayerTwo</td>
-                        <td>Lupa password akun kedua</td>
-                        <td>Account</td>
-                        <td><span class="badge badge-high">High</span></td>
-                        <td><span class="badge badge-closed">Closed</span></td>
-                        <td><button class="btn-small"><i class="fas fa-eye"></i> View</button></td>
-                    </tr>
-                    <tr>
-                        <td>#T-1002</td>
-                        <td>Guest_123</td>
-                        <td>Gagal klaim hadiah harian</td>
-                        <td>Bug</td>
-                        <td><span class="badge badge-medium">Medium</span></td>
-                        <td><span class="badge badge-open">Open</span></td>
-                        <td><button class="btn-small btn-primary"><i class="fas fa-reply"></i> Reply</button></td>
-                    </tr>
+                <tbody id="usersTableBody">
+                  <tr><td colspan="5"><div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat data user...</div></td></tr>
                 </tbody>
-            </table>
+              </table>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- ═══════ TAB: ROLES ═══════ -->
+      <div class="tab-panel" id="tab-roles">
+        <div class="section-title">
+          <div>
+            <h2>Role & Badge Editor</h2>
+            <p>Kelola semua role, kustomisasi badge, dan harga</p>
+          </div>
+          <button class="btn btn-primary" onclick="openRoleModal(null)">
+            <i class="fas fa-plus"></i> Buat Role Baru
+          </button>
+        </div>
+        <div class="role-grid" id="roleGrid">
+          <div class="loading-spinner" style="grid-column:1/-1;"><i class="fas fa-spinner"></i> Memuat role...</div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: ECONOMY ═══════ -->
+      <div class="tab-panel" id="tab-economy">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-coins"></i> Manajemen Ekonomi & Koin</h3>
+            <button class="btn btn-sm btn-secondary" onclick="loadEconomy()"><i class="fas fa-sync"></i></button>
+          </div>
+          <div class="card-body">
+            <div class="filter-row">
+              <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="econSearchInput" placeholder="Cari username..." oninput="filterEcon()" />
+              </div>
+            </div>
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Bronze</th>
+                    <th>Silver</th>
+                    <th>Gold</th>
+                    <th>Set Koin</th>
+                  </tr>
+                </thead>
+                <tbody id="econTableBody">
+                  <tr><td colspan="5"><div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat data...</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: FORUM ═══════ -->
+      <div class="tab-panel" id="tab-forum">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-gavel"></i> Moderasi Forum</h3>
+            <button class="btn btn-sm btn-secondary" onclick="loadForum()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="card-body">
+            <div class="filter-row">
+              <div class="search-bar">
+                <i class="fas fa-search"></i>
+                <input type="text" id="forumSearchInput" placeholder="Cari judul thread..." oninput="filterForum()" />
+              </div>
+            </div>
+            <div id="forumThreadList">
+              <div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat thread...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: REWARDS ═══════ -->
+      <div class="tab-panel" id="tab-rewards">
+        <div class="two-col">
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-gift"></i> Konfigurasi Daily Rewards</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label><i class="fas fa-coins" style="color:#cd7f32"></i> Bronze Coin per Klaim</label>
+                <input type="number" id="cfgRewardBronze" value="100" min="0" />
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-coins" style="color:#c0c0c0"></i> Silver Coin per Klaim</label>
+                <input type="number" id="cfgRewardSilver" value="50" min="0" />
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-coins" style="color:#ffd700"></i> Gold Coin per Klaim</label>
+                <input type="number" id="cfgRewardGold" value="10" min="0" />
+              </div>
+              <div class="form-group">
+                <label><i class="fas fa-clock"></i> Cooldown (Jam)</label>
+                <input type="number" id="cfgRewardCooldown" value="24" min="1" />
+              </div>
+              <button class="btn btn-primary" style="width:100%;" onclick="saveRewardsConfig()">
+                <i class="fas fa-save"></i> Simpan Konfigurasi
+              </button>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-info-circle"></i> Info Sistem Rewards</h3>
+            </div>
+            <div class="card-body">
+              <p style="color:var(--text-secondary); font-size:0.875rem; line-height:1.7;">
+                Sistem daily rewards memungkinkan member untuk klaim koin gratis setiap hari.
+                Jumlah koin yang diklaim acak antara <strong>1x</strong> sampai <strong>nilai maksimum</strong> yang dikonfigurasi.
+              </p>
+              <div style="margin-top:20px; display:flex; flex-direction:column; gap:10px;">
+                <div class="switch-row">
+                  <label><i class="fas fa-power-off"></i> Daily Reward Aktif</label>
+                  <label class="switch"><input type="checkbox" id="rewardActiveToggle" checked><span class="slider"></span></label>
+                </div>
+                <div class="switch-row">
+                  <label><i class="fas fa-star"></i> Bonus Weekend</label>
+                  <label class="switch"><input type="checkbox" id="rewardWeekendBonus"><span class="slider"></span></label>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: COSMETICS ═══════ -->
+      <div class="tab-panel" id="tab-cosmetics">
+        <div class="section-title">
+          <div>
+            <h2>Manajemen Item Kosmetik</h2>
+            <p>Kelola Nametag, Badge, dan Nameplate untuk shop</p>
+          </div>
+          <button class="btn btn-primary" onclick="openCosmeticModal()">
+            <i class="fas fa-plus"></i> Tambah Item Baru
+          </button>
+        </div>
+        <div class="cosmetic-grid" id="cosmeticGrid">
+          <div class="loading-spinner" style="grid-column:1/-1;"><i class="fas fa-spinner"></i> Memuat item...</div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: TICKETS ═══════ -->
+      <div class="tab-panel" id="tab-tickets">
+        <div class="section-title">
+          <div>
+            <h2>Manajemen Tiket Support Member</h2>
+            <p>Tangani laporan kendala, pertanyaan, dan berikan respon resmi staf</p>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h3><i class="fas fa-ticket-alt"></i> Daftar Tiket Support</h3>
+            <select id="adminTicketFilterStatus" class="form-control" style="width: auto; padding: 6px 12px; background: rgba(0,0,0,0.3); color:#fff; border:1px solid rgba(255,255,255,0.1); border-radius:6px;" onchange="filterAdminTickets()">
+              <option value="ALL">Semua Status</option>
+              <option value="Open">Open</option>
+              <option value="In Progress">In Progress</option>
+              <option value="Resolved">Resolved</option>
+              <option value="Closed">Closed</option>
+            </select>
+          </div>
+          <div class="card-body">
+            <div id="adminTicketsList">
+              <div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat tiket...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: SETTINGS ═══════ -->
+      <div class="tab-panel" id="tab-settings">
+
+        <!-- 💳 PAYMENT GATEWAY CONFIGURATION CARD -->
+        <div class="card" style="margin-bottom:24px;">
+          <div class="card-header">
+            <h3><i class="fas fa-credit-card" style="color:#10b981;"></i> Pengaturan Gateway & Metode Pembayaran Toko</h3>
+            <button class="btn btn-sm btn-primary" onclick="savePaymentSettings()"><i class="fas fa-save"></i> Simpan Pengaturan Payment</button>
+          </div>
+          <div class="card-body">
+            <h4 style="color:#fff; font-size:0.9rem; margin-bottom:12px;"><i class="fas fa-toggle-on"></i> Sakelar Metode Pembayaran Aktif:</h4>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px; background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+              <label class="switch-row" style="margin:0;">
+                <span><i class="fas fa-qrcode" style="color:#10b981;"></i> QRIS Instant</span>
+                <label class="switch"><input type="checkbox" id="payCfgQris" checked><span class="slider"></span></label>
+              </label>
+              <label class="switch-row" style="margin:0;">
+                <span><i class="fas fa-university" style="color:#06b6d4;"></i> BCA Virtual Acc</span>
+                <label class="switch"><input type="checkbox" id="payCfgBca" checked><span class="slider"></span></label>
+              </label>
+              <label class="switch-row" style="margin:0;">
+                <span><i class="fas fa-university" style="color:#f59e0b;"></i> Mandiri Virtual Acc</span>
+                <label class="switch"><input type="checkbox" id="payCfgMandiri" checked><span class="slider"></span></label>
+              </label>
+              <label class="switch-row" style="margin:0;">
+                <span><i class="fas fa-university" style="color:#6366f1;"></i> BNI / BRI VA</span>
+                <label class="switch"><input type="checkbox" id="payCfgBni" checked><span class="slider"></span></label>
+              </label>
+              <label class="switch-row" style="margin:0;">
+                <span><i class="fas fa-credit-card" style="color:#ec4899;"></i> Kartu Kredit 3DS2</span>
+                <label class="switch"><input type="checkbox" id="payCfgCc" checked><span class="slider"></span></label>
+              </label>
+              <label class="switch-row" style="margin:0;">
+                <span><i class="fas fa-store" style="color:#84cc16;"></i> Indomaret / Alfa</span>
+                <label class="switch"><input type="checkbox" id="payCfgIndomaret" checked><span class="slider"></span></label>
+              </label>
+            </div>
+
+            <h4 style="color:#fff; font-size:0.9rem; margin-bottom:12px;"><i class="fas fa-university"></i> Detail Rekening Merchant & QRIS:</h4>
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px;">
+              <div>
+                <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Nama Merchant / Pemilik Rekening</label>
+                <input type="text" id="payCfgMerchantName" value="PT HYROST MEDIA REALM" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+              </div>
+              <div>
+                <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Nomor Rekening BCA Virtual Account</label>
+                <input type="text" id="payCfgBcaNum" value="88009442808943" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px; font-family:monospace;" />
+              </div>
+              <div>
+                <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Nomor Rekening Mandiri VA</label>
+                <input type="text" id="payCfgMandiriNum" value="88012398471230" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px; font-family:monospace;" />
+              </div>
+              <div>
+                <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Pajak / Biaya Admin Transaksi (%)</label>
+                <input type="number" id="payCfgTaxRate" value="0" min="0" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <!-- Server Config -->
+          <div class="card">
+            <div class="card-header">
+              <h3><i class="fas fa-network-wired"></i> Konfigurasi IP Server</h3>
+            </div>
+            <div class="card-body">
+              <div class="form-group">
+                <label>Domain / IP Address</label>
+                <input type="text" id="cfgServerIp" placeholder="play.hyrost.net" />
+              </div>
+              <div class="form-group">
+                <label>Port Server</label>
+                <input type="text" id="cfgServerPort" placeholder="25565" />
+              </div>
+              <div class="form-group">
+                <label>Nama Realm</label>
+                <input type="text" id="cfgServerName" placeholder="Hyrost Realm" />
+              </div>
+              <div class="switch-row">
+                <label>Auto-Ping Status Server</label>
+                <label class="switch"><input type="checkbox" id="cfgServerAutoPing" checked><span class="slider"></span></label>
+              </div>
+              <button class="btn btn-primary" style="width:100%; margin-top:14px;" onclick="saveServerConfig()">
+                <i class="fas fa-plug"></i> Simpan & Hubungkan
+              </button>
+              <p class="form-hint" style="margin-top:12px;font-size:0.85rem;color:var(--text-muted);">
+                Status online dicek ke: <strong id="serverQueryTarget">play.hyrost.net</strong>
+                <br>Sumber: <span id="serverStatusSource">—</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Announcements + Maintenance -->
+          <div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-bullhorn"></i> Pengumuman Global</h3>
+              </div>
+              <div class="card-body">
+                <div class="form-group">
+                  <label>Teks Banner Pengumuman</label>
+                  <textarea id="globalAnnouncement" rows="3" placeholder="Tulis pesan untuk seluruh member..."></textarea>
+                </div>
+                <button class="btn btn-primary" style="width:100%;" onclick="saveAnnouncement()">
+                  <i class="fas fa-paper-plane"></i> Perbarui Banner
+                </button>
+              </div>
+            </div>
+            <div class="card">
+              <div class="card-header">
+                <h3><i class="fas fa-tools"></i> Mode Sistem</h3>
+              </div>
+              <div class="card-body">
+                <div class="switch-row">
+                  <label><i class="fas fa-wrench"></i> Mode Maintenance</label>
+                  <label class="switch"><input type="checkbox" id="maintenanceToggle" onchange="toggleMaintenance()"><span class="slider"></span></label>
+                </div>
+                <p style="color:var(--text-dim); font-size:0.78rem; margin-top:10px;">
+                  Saat mode maintenance aktif, user reguler tidak dapat login ke sistem.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Banned Words -->
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-ban"></i> Filter Kata Terlarang</h3>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="text" id="newBannedWord" placeholder="Tambah kata..." style="padding:7px 12px; background:rgba(255,255,255,0.05); border:1px solid var(--border-subtle); border-radius:var(--r-sm); color:#fff; font-family:var(--font); font-size:0.82rem; outline:none;" onkeydown="if(event.key==='Enter') addBannedWord()" />
+              <button class="btn btn-danger btn-sm" onclick="addBannedWord()"><i class="fas fa-plus"></i> Tambah</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <div id="bannedWordsList" style="display:flex; flex-wrap:wrap; gap:8px; min-height:40px;">
+              <div class="loading-spinner"><i class="fas fa-spinner"></i></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: LOGS ═══════ -->
+      <div class="tab-panel" id="tab-logs">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-clipboard-list"></i> Riwayat Aktivitas Sistem</h3>
+            <div style="display:flex; gap:8px;">
+              <div class="search-bar" style="background:rgba(255,255,255,0.05); border:1px solid var(--border-subtle); padding:6px 12px;">
+                <i class="fas fa-search"></i>
+                <input type="text" id="logSearchInput" placeholder="Cari user atau aksi..." oninput="filterLogs()" />
+              </div>
+              <button class="btn btn-sm btn-secondary" onclick="loadLogs()"><i class="fas fa-sync"></i></button>
+            </div>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Waktu</th>
+                    <th>User</th>
+                    <th>Aksi</th>
+                    <th>Detail</th>
+                  </tr>
+                </thead>
+                <tbody id="logsTableBody">
+                  <tr><td colspan="4"><div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat log...</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: SYSTEM HEALTH ═══════ -->
+      <div class="tab-panel" id="tab-health">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-heartbeat"></i> System Health Dashboard</h3>
+            <button class="btn btn-sm btn-secondary" onclick="loadSystemHealth()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="card-body" id="healthDashboard">
+            <div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat status sistem...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: PAYMENT ORDERS ═══════ -->
+      <div class="tab-panel" id="tab-payments-admin">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-receipt"></i> Order Pembayaran Pending</h3>
+            <button class="btn btn-sm btn-secondary" onclick="loadPaymentOrders()"><i class="fas fa-sync"></i> Refresh</button>
+          </div>
+          <div class="card-body">
+            <div class="admin-table-wrap" id="paymentOrdersTable">
+              <div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat...</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: BACKUP & RESTORE ═══════ -->
+      <div class="tab-panel" id="tab-backup">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-file-export"></i> Cadangan & Pemulihan Database (Backup & Restore)</h3>
+          </div>
+          <div class="card-body">
+            <p style="color:var(--text-dim); margin-bottom:20px;">
+              Unduh cadangan data lengkap website Hyrost Realm (Pengguna, Role, Kosmetik, Tiket, Pengaturan) dalam format berkas JSON untuk mengamankan data.
+            </p>
+            <div style="display:flex; gap:16px; flex-wrap:wrap;">
+              <button class="btn btn-primary" onclick="downloadDatabaseBackup()"><i class="fas fa-download"></i> Ekspor Backup Database (.json)</button>
+              <label class="btn btn-secondary" style="cursor:pointer; margin:0;">
+                <i class="fas fa-upload"></i> Pulihkan Dari Backup (.json)
+                <input type="file" id="restoreFileInput" accept=".json" style="display:none;" onchange="uploadRestoreBackup(event)" />
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: BROADCAST ═══════ -->
+      <div class="tab-panel" id="tab-broadcast">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-bullhorn"></i> Siaran Pesan Massal (In-App Broadcast)</h3>
+          </div>
+          <div class="card-body">
+            <div class="form-group" style="margin-bottom:14px;">
+              <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Judul Pesan Broadcast</label>
+              <input type="text" id="broadcastTitle" placeholder="Contoh: Pemeliharaan Server Malam Ini" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+            </div>
+            <div class="form-group" style="margin-bottom:14px;">
+              <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Target Penerima</label>
+              <select id="broadcastTargetRole" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;">
+                <option value="ALL">Semua User Terdaftar (Semua Role)</option>
+                <option value="Member">Khusus Member</option>
+                <option value="VIP">Khusus VIP Status</option>
+                <option value="Admin">Khusus Admin & Staf</option>
+              </select>
+            </div>
+            <div class="form-group" style="margin-bottom:20px;">
+              <label style="color:#aaa; font-size:0.85rem; display:block; margin-bottom:6px;">Isi Pesan Broadcast</label>
+              <textarea id="broadcastMessage" rows="4" placeholder="Tuliskan pengumuman lengkap di sini..." style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;"></textarea>
+            </div>
+            <button class="btn btn-primary" style="width:100%;" onclick="submitMassBroadcast()"><i class="fas fa-paper-plane"></i> Kirim Pesan Broadcast Sekarang</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: WIKI MANAGER ═══════ -->
+      <div class="tab-panel" id="tab-wiki">
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-book-open"></i> Pengelola Artikel Wiki & Guide Realm</h3>
+            <button class="btn btn-primary btn-sm" onclick="openCreateWikiModal()"><i class="fas fa-plus"></i> Artikel Baru</button>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Judul Artikel</th>
+                    <th>Kategori</th>
+                    <th>Ikon</th>
+                    <th>Konten</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="wikiTableBody">
+                  <tr><td colspan="5"><div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat artikel wiki...</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: IP BLACKLIST ═══════ -->
+      <div class="tab-panel" id="tab-ipblock">
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-shield-virus"></i> Blokir Alamat IP Baru</h3>
+          </div>
+          <div class="card-body">
+            <div style="display:flex; gap:12px; flex-wrap:wrap;">
+              <input type="text" id="blockIpAddress" placeholder="Contoh IP: 192.168.1.100" style="flex:1; min-width:200px; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+              <input type="text" id="blockIpReason" placeholder="Alasan (Contoh: Bot Spam / Cheating)" style="flex:2; min-width:250px; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+              <button class="btn btn-danger" onclick="submitBlockIP()"><i class="fas fa-ban"></i> Blokir IP</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-list"></i> Daftar Alamat IP Yang Diblokir</h3>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Alamat IP</th>
+                    <th>Alasan Pemblokiran</th>
+                    <th>Diblokir Oleh</th>
+                    <th>Waktu</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="ipBlacklistTableBody">
+                  <tr><td colspan="5"><div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat daftar pemblokiran IP...</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: VOUCHERS & PROMO CODES MANAGER ═══════ -->
+      <div class="tab-panel" id="tab-vouchers">
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header">
+            <h3><i class="fas fa-tags" style="color:var(--accent-gold);"></i> Penerbitan Kode Voucher & Promo Diskon Belanja</h3>
+          </div>
+          <div class="card-body">
+            <div style="display:flex; gap:16px; margin-bottom:16px; align-items:center;">
+              <label style="color:#fff; font-weight:700; font-size:0.85rem;">Pilih Kategori Voucher:</label>
+              <label style="display:flex; align-items:center; gap:6px; color:#10b981; font-weight:700; font-size:0.82rem; cursor:pointer;">
+                <input type="radio" name="voucherCategoryAdmin" value="discount" checked onchange="toggleVoucherFormCategory('discount')">
+                🏷️ Kode Promo Diskon (Toko Pangkat & Web)
+              </label>
+              <label style="display:flex; align-items:center; gap:6px; color:#f59e0b; font-weight:700; font-size:0.82rem; cursor:pointer;">
+                <input type="radio" name="voucherCategoryAdmin" value="reward" onchange="toggleVoucherFormCategory('reward')">
+                🎁 Voucher Klaim Hadiah Koin
+              </label>
+            </div>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap:12px; margin-bottom:14px;">
+              <div>
+                <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Kode Voucher / Promo</label>
+                <input type="text" id="voucherCodeInputAdmin" placeholder="MISAL: HYROST2026" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px; font-weight:700; text-transform:uppercase;" />
+              </div>
+              
+              <!-- Discount Promo Fields -->
+              <div id="voucherDiscountFieldsGroup" style="display:contents;">
+                <div>
+                  <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Tipe Potongan Diskon</label>
+                  <select id="voucherDiscountTypeAdmin" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;">
+                    <option value="percent">Persentase (%) Diskon</option>
+                    <option value="flat">Potongan Nominal Rp / Gold</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Nilai Diskon (% / Rp)</label>
+                  <input type="number" id="voucherDiscountValueAdmin" placeholder="20 (Diskon 20%)" min="1" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+                </div>
+              </div>
+
+              <!-- Reward Fields -->
+              <div id="voucherRewardFieldsGroup" style="display:none;">
+                <div>
+                  <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Tipe Hadiah Koin</label>
+                  <select id="voucherRewardTypeAdmin" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;">
+                    <option value="gold">Koin Gold</option>
+                    <option value="silver">Koin Silver</option>
+                    <option value="bronze">Koin Bronze</option>
+                  </select>
+                </div>
+                <div>
+                  <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Jumlah Hadiah Koin</label>
+                  <input type="number" id="voucherRewardAmountAdmin" placeholder="100" min="1" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+                </div>
+              </div>
+
+              <div>
+                <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Batas Maks Penggunaan</label>
+                <input type="number" id="voucherMaxUsesAdmin" placeholder="100" min="1" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="submitCreateVoucher()"><i class="fas fa-ticket-alt"></i> Terbitkan Kode Voucher / Promo</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3><i class="fas fa-tags"></i> Daftar Kode Promo & Voucher Aktif</h3>
+          </div>
+          <div class="card-body" style="padding:0;">
+            <div class="table-responsive">
+              <table class="data-table">
+                <thead>
+                  <tr>
+                    <th>Kode Voucher</th>
+                    <th>Kategori & Nilai</th>
+                    <th>Kuota Terpakai</th>
+                    <th>Status</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="vouchersTableBody">
+                  <tr><td colspan="5"><div class="loading-spinner"><i class="fas fa-spinner"></i> Memuat daftar voucher...</div></td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ═══════ TAB: PAYMENT METHODS MANAGER ═══════ -->
+      <div class="tab-panel" id="tab-payments">
+        <div class="card" style="margin-bottom:20px;">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <h3><i class="fas fa-wallet" style="color:#10b981;"></i> Pengelola Jenis & Metode Pembayaran Toko</h3>
+            <button class="btn btn-primary" onclick="openPaymentMethodModal(null)" style="background:linear-gradient(135deg, #10b981, #059669); border:none;">
+              <i class="fas fa-plus"></i> Tambah Metode Pembayaran Baru
+            </button>
+          </div>
+          <div class="card-body">
+            <p style="color:#9ca3af; font-size:0.85rem; margin-bottom:16px;">
+              Atur seluruh jenis pembayaran (QRIS, Virtual Account Bank, E-Wallet, Retail, dan Kartu Kredit). Tambahkan metode kustom atau edit nomor rekening dan status aktif secara real-time.
+            </p>
+
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px;" id="paymentMethodsAdminGrid">
+              <div class="loading-spinner" style="grid-column: 1 / -1; text-align:center; padding:40px;">
+                <i class="fas fa-spinner fa-spin" style="font-size:2rem; color:#10b981;"></i>
+                <p style="margin-top:10px; color:#9ca3af;">Memuat daftar jenis pembayaran...</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /.admin-content -->
+  </div><!-- /.admin-main -->
+</div><!-- /.admin-layout -->
+
+<!-- ═══════════════════════════════════════
+     MODAL: PAYMENT METHOD EDITOR
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="paymentMethodModal">
+  <div class="modal-box" style="max-width:520px;">
+    <div class="modal-head">
+      <h3 id="paymentModalTitle">Edit Jenis Pembayaran</h3>
+      <button class="modal-close" onclick="closePaymentMethodModal()"><i class="fas fa-times"></i></button>
     </div>
+    <div style="padding:20px;">
+      <input type="hidden" id="payMethodIdInput" />
+      <div class="form-group">
+        <label>Kode ID Unik (Key)</label>
+        <input type="text" id="payMethodKeyInput" placeholder="Misal: qris, bca_va, gopay, mandiri_va, dana..." />
+      </div>
+      <div class="form-group">
+        <label>Nama Jenis Pembayaran</label>
+        <input type="text" id="payMethodNameInput" placeholder="Misal: BCA Virtual Account, QRIS Instan..." />
+      </div>
+      <div class="two-col">
+        <div class="form-group">
+          <label>Ikon FontAwesome</label>
+          <input type="text" id="payMethodIconInput" placeholder="fa-qrcode, fa-university, fa-credit-card..." />
+        </div>
+        <div class="form-group">
+          <label>Warna Tema Icon</label>
+          <input type="color" id="payMethodColorInput" value="#10b981" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Nomor Rekening / VA / Link QRIS</label>
+        <input type="text" id="payMethodAccountInput" placeholder="88009442808943 atau URL Gambar QRIS..." />
+      </div>
+      <div class="form-group">
+        <label>Petunjuk Instruksi Bayar untuk Pembeli</label>
+        <textarea id="payMethodInstructInput" rows="2" placeholder="Transfer tepat sesuai nominal ke nomor VA di atas..."></textarea>
+      </div>
+      <div class="switch-row" style="margin-top:10px;">
+        <label>Status Metode Pembayaran Aktif</label>
+        <label class="switch"><input type="checkbox" id="payMethodActiveInput" checked><span class="slider"></span></label>
+      </div>
+    </div>
+    <div class="modal-footer" style="padding:16px 20px;">
+      <button class="btn btn-primary" onclick="savePaymentMethodAdmin()"><i class="fas fa-save"></i> Simpan Metode Pembayaran</button>
+      <button class="btn btn-danger" id="btnDeletePayMethod" onclick="deletePaymentMethodAdmin()" style="display:none;"><i class="fas fa-trash"></i> Hapus</button>
+      <button class="btn btn-secondary" onclick="closePaymentMethodModal()">Batal</button>
+    </div>
+  </div>
 </div>
 
-          </div> <!-- End admin-grid -->
-      </main>
+<!-- ═══════════════════════════════════════
+     MODAL: ROLE EDITOR
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="roleModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="roleModalTitle">Konfigurasi Role</h3>
+      <button class="modal-close" onclick="closeRoleModal()"><i class="fas fa-times"></i></button>
     </div>
+    <div class="form-group">
+      <label>Nama Role (ID Sistem)</label>
+      <input type="text" id="roleNameInput" placeholder="Nama role unik..." />
+    </div>
+    <div class="form-group">
+      <label>Teks Badge Tampil</label>
+      <input type="text" id="badgeTextInput" placeholder="Misal: SULTAN, VIP, PRO..." />
+    </div>
+    <div class="two-col">
+      <div class="form-group">
+        <label>Warna Badge</label>
+        <input type="color" id="badgeColorInput" value="#6366f1" />
+      </div>
+      <div class="form-group">
+        <label>Gaya Font</label>
+        <select id="badgeStyleInput">
+          <option value="normal">Normal</option>
+          <option value="font-bold">Bold Strong</option>
+          <option value="font-pixel">Pixel Arcade</option>
+          <option value="font-serif">Elegant Serif</option>
+          <option value="font-mono">Code Mono</option>
+          <option value="font-neon">Neon Glow</option>
+        </select>
+      </div>
+    </div>
+    <!-- Live Preview -->
+    <div style="margin-bottom:16px; text-align:center; padding:16px; background:rgba(0,0,0,0.4); border-radius:var(--r-sm);">
+      <div style="font-size:0.72rem; color:var(--text-dim); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Preview Badge</div>
+      <span class="role-badge-preview" id="roleBadgePreview" style="background:#6366f1;">ROLE</span>
+    </div>
+    <div class="two-col">
+      <div class="form-group">
+        <label><i class="fas fa-coins" style="color:#ffd700"></i> Harga Koin Gold</label>
+        <input type="number" id="roleCoinPrice" placeholder="0" min="0" />
+      </div>
+      <div class="form-group">
+        <label><i class="fas fa-money-bill"></i> Harga IDR</label>
+        <input type="number" id="roleIdrPrice" placeholder="0" min="0" />
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Deskripsi Role</label>
+      <textarea id="roleDescInput" rows="2" placeholder="Keuntungan dan info role ini..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveRole()"><i class="fas fa-save"></i> Simpan</button>
+      <button class="btn btn-danger" id="deleteRoleBtn" onclick="deleteRole()" style="display:none;"><i class="fas fa-trash"></i> Hapus Role</button>
+      <button class="btn btn-secondary" onclick="closeRoleModal()">Batal</button>
+    </div>
+  </div>
+</div>
 
+<!-- ═══════════════════════════════════════
+     MODAL: COSMETIC CREATOR
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="cosmeticModal">
+  <div class="modal-box wide">
+    <div class="modal-head">
+      <h3>Buat Item Kosmetik Baru</h3>
+      <button class="modal-close" onclick="closeCosmeticModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="two-col">
+      <!-- Left Form -->
+      <div>
+        <div class="form-group">
+          <label>Nama Item</label>
+          <input type="text" id="cosNameInput" placeholder="Nametag Pelangi..." />
+        </div>
+        <div class="form-group">
+          <label>Tipe Item</label>
+          <select id="cosTypeInput" onchange="updateCosPreview()">
+            <option value="nametag">Nametag (Warna Nama)</option>
+            <option value="badge">Badge (Ikon Nama)</option>
+            <option value="nameplate">Nameplate (Background)</option>
+          </select>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <div class="form-group">
+            <label style="color:#cd7f32;"><i class="fas fa-coins"></i> Harga Bronze</label>
+            <input type="number" id="cosPriceBronze" placeholder="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label style="color:#c0c0c0;"><i class="fas fa-coins"></i> Harga Silver</label>
+            <input type="number" id="cosPriceSilver" placeholder="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label style="color:#ffd700;"><i class="fas fa-coins"></i> Harga Gold</label>
+            <input type="number" id="cosPriceGold" placeholder="0" min="0" />
+          </div>
+          <div class="form-group">
+            <label><i class="fas fa-money-bill"></i> Harga IDR</label>
+            <input type="number" id="cosPriceIdr" placeholder="0" min="0" />
+          </div>
+        </div>
+      </div>
+      <!-- Right Visual Builder -->
+      <div>
+        <div style="background:rgba(0,0,0,0.3); border:1px solid var(--border-subtle); border-radius:var(--r-md); padding:16px; height:100%;">
+          <div style="font-size:0.72rem; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:var(--accent-gold); margin-bottom:14px;"><i class="fas fa-paint-brush"></i> Visual Builder</div>
+          <div class="form-group">
+            <label>Warna Dasar</label>
+            <div style="display:flex; gap:8px;">
+              <input type="color" id="cosColorPicker" value="#ffffff" style="width:44px; height:38px; padding:2px;" oninput="applyCosPicker()" />
+              <input type="text" id="cosColorHex" placeholder="#ffffff" onchange="applyCosHex()" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label>CSS Style Manual</label>
+            <textarea id="cosCssInput" rows="2" placeholder="color: red; text-shadow: 0 0 5px yellow;" oninput="updateCosPreview()"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Efek Animasi</label>
+            <select id="cosAnimInput" onchange="updateCosPreview()">
+              <option value="">-- Pilih Efek --</option>
+              <option value="anim-rainbow">1. Rainbow Pelangi</option>
+              <option value="anim-pulse">2. Pulse Glow</option>
+              <option value="anim-glitch">3. Glitch</option>
+              <option value="anim-fire">4. Fire Aura</option>
+              <option value="anim-neon">5. Neon Flicker</option>
+              <option value="anim-electric">6. Electric Shock</option>
+              <option value="anim-water">7. Water Wave</option>
+              <option value="anim-matrix">8. Matrix</option>
+              <option value="anim-gold">9. Golden Shine</option>
+              <option value="anim-ice">10. Ice Freeze</option>
+              <option value="anim-ghost">11. Ghost Fade</option>
+              <option value="anim-heartbeat">12. Heartbeat</option>
+              <option value="anim-spin">13. Spin 3D</option>
+              <option value="anim-bounce">14. Bounce</option>
+              <option value="anim-blur">15. Blur Focus</option>
+              <option value="anim-typewriter">16. Typewriter</option>
+              <option value="anim-blood">17. Blood Drip</option>
+              <option value="anim-cosmic">18. Cosmic</option>
+              <option value="anim-toxic">19. Toxic</option>
+              <option value="anim-shake">20. Shake</option>
+            </select>
+          </div>
+          <div style="text-align:center; margin-top:12px;">
+            <div style="font-size:0.72rem; color:var(--text-dim); margin-bottom:8px; text-transform:uppercase; letter-spacing:1px;">Preview</div>
+            <div style="background:#111; padding:20px; border-radius:var(--r-sm); border:1px dashed var(--border-subtle);" id="cosPreviewContainer">
+              <span id="cosPreviewTarget" style="font-size:1.1rem; font-weight:700; color:#fff;">Username</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveCosmetic()"><i class="fas fa-save"></i> Simpan Item</button>
+      <button class="btn btn-secondary" onclick="closeCosmeticModal()">Batal</button>
+    </div>
+  </div>
+</div>
 
-<script src='../assets/js/server_status.js'></script>
+<!-- ═══════════════════════════════════════
+     MODAL: EDIT USER INLINE
+═══════════════════════════════════════ -->
+<div class="modal-overlay" id="userModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3>Edit User: <span id="userModalName"></span></h3>
+      <button class="modal-close" onclick="closeUserModal()"><i class="fas fa-times"></i></button>
+    </div>
+    <input type="hidden" id="editUserId" />
+    <div class="form-group">
+      <label>Assign Role</label>
+      <select id="editUserRole"></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" onclick="saveUserRole()"><i class="fas fa-save"></i> Simpan Role</button>
+      <button class="btn btn-danger" onclick="deleteUserConfirm()"><i class="fas fa-user-slash"></i> Hapus User</button>
+      <button class="btn btn-secondary" onclick="closeUserModal()">Batal</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/mobileLayout.js"></script>
+<script src="admin.js?v=3"></script>
+</body>
+</html>

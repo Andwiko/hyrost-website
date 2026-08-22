@@ -19,7 +19,7 @@ document.getElementById('reset-form').addEventListener('submit', async function(
     btn.innerHTML = '<span>UPDATING...</span>';
     
     try {
-        const response = await fetch(`http://localhost:3000/api/auth/resetpassword/${token}`, {
+        const response = await fetch(`/api/auth/resetpassword/${token}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json'

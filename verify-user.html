@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verifikasi Akun Discord (Linked Roles) - Hyrost Realm</title>
+    <meta name="description" content="Pusat Verifikasi Pengguna (Linked Roles) Hyrost Realm & Bot Mei. Hubungkan akun Discord dan dapatkan role eksklusif.">
+    <meta name="theme-color" content="#5865F2">
+    
+    <!-- OpenGraph Meta Tags -->
+    <meta property="og:title" content="Verify User & Linked Roles - Hyrost Realm">
+    <meta property="og:description" content="Verifikasi akun Discord Anda untuk mendapatkan Discord Linked Roles resmi dari Hyrost Realm.">
+    <meta property="og:image" content="assets/images/hyrost.png">
+    <meta property="og:type" content="website">
+    
+    <!-- PWA Manifest & Favicon -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/images/hyrost.png">
+    
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="styles.css?v=50">
+    <link rel="stylesheet" href="assets/css/legal.css?v=50">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .verify-hero {
+            padding: 110px 0 45px;
+            text-align: center;
+            background: linear-gradient(180deg, rgba(88, 101, 242, 0.08) 0%, transparent 100%);
+            border-bottom: 1px solid var(--border-subtle, rgba(255, 255, 255, 0.07));
+        }
+        
+        .verify-container {
+            max-width: 820px;
+            margin: -24px auto 80px;
+            padding: 0 20px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .verify-card {
+            background: var(--bg-surface-1, #0d121f);
+            border: 1px solid var(--border-medium, rgba(255, 255, 255, 0.12));
+            border-radius: var(--radius-lg, 18px);
+            padding: 32px 28px;
+            box-shadow: 0 12px 36px rgba(0, 0, 0, 0.5);
+            margin-bottom: 28px;
+        }
+
+        .discord-btn-oauth {
+            width: 100%;
+            padding: 16px 24px;
+            background: #5865F2;
+            border: none;
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(88, 101, 242, 0.4);
+            transition: var(--transition);
+            text-decoration: none;
+            margin-bottom: 24px;
+        }
+
+        .discord-btn-oauth:hover {
+            background: #4752c4;
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(88, 101, 242, 0.6);
+        }
+
+        .divider-or {
+            display: flex;
+            align-items: center;
+            text-align: center;
+            margin: 20px 0 28px;
+            color: var(--text-dim);
+            font-size: 0.85rem;
+            font-weight: 700;
+        }
+
+        .divider-or::before,
+        .divider-or::after {
+            content: '';
+            flex: 1;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .divider-or span {
+            padding: 0 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .verify-input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .verify-input-group label {
+            display: block;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #e5e7eb;
+            margin-bottom: 8px;
+        }
+
+        .verify-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-size: 1rem;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .verify-input:focus {
+            border-color: #5865F2;
+            box-shadow: 0 0 0 4px rgba(88, 101, 242, 0.2);
+            background: rgba(15, 23, 42, 0.95);
+        }
+
+        .btn-manual-verify {
+            width: 100%;
+            padding: 14px 20px;
+            background: linear-gradient(135deg, var(--accent-indigo), #4f46e5);
+            border: none;
+            border-radius: var(--radius-md);
+            color: #ffffff;
+            font-size: 0.98rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
+            transition: var(--transition);
+        }
+
+        .btn-manual-verify:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.5);
+        }
+
+        .result-box {
+            display: none;
+            padding: 20px;
+            border-radius: var(--radius-md);
+            margin-top: 24px;
+            text-align: left;
+        }
+
+        .result-box.success {
+            display: block;
+            background: rgba(16, 185, 129, 0.12);
+            border: 1px solid rgba(16, 185, 129, 0.35);
+            color: #d1fae5;
+        }
+
+        .result-box.error {
+            display: block;
+            background: rgba(239, 68, 68, 0.12);
+            border: 1px solid rgba(239, 68, 68, 0.35);
+            color: #fee2e2;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 18px;
+            margin-top: 24px;
+        }
+
+        .step-item {
+            background: rgba(15, 20, 31, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            text-align: left;
+        }
+
+        .step-num {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: rgba(88, 101, 242, 0.2);
+            border: 1px solid #5865F2;
+            color: #818cf8;
+            font-weight: 800;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+        }
+
+        .dev-portal-info {
+            background: rgba(0, 0, 0, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            text-align: left;
+            margin-top: 30px;
+        }
+
+        .code-box {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #67e8f9;
+            word-break: break-all;
+            margin: 8px 0 16px;
+        }
+
+        @media (max-width: 640px) {
+            .verify-hero {
+                padding: 90px 16px 30px;
+            }
+            .verify-container {
+                padding: 0 12px;
+                margin-top: -10px;
+            }
+            .verify-card {
+                padding: 22px 16px;
+            }
+            .steps-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow" style="background: radial-gradient(circle at 50% 20%, rgba(88, 101, 242, 0.18), transparent 50%);"></div>
+
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="assets/images/hyrost.png" alt="Hyrost Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <span>HYROST <span class="logo-badge">REALM</span></span>
+            </a>
+            
+            <div class="nav-links-container" id="navLinksContainer">
+                <div class="navbar-menu">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="bot/index.html" class="nav-link" style="color: #FF3385; font-weight: 700;"><i class="fab fa-discord" style="color:#5865F2;"></i> Bot Mei</a>
+                    <a href="modules/forum.html" class="nav-link">Forum</a>
+                    <a href="modules/leaderboard.html" class="nav-link">Leaderboard</a>
+                    <a href="marketplace/index.html" class="nav-link">Marketplace</a>
+                    <a href="modules/wiki.html" class="nav-link">Wiki</a>
+                </div>
+                <div class="navbar-buttons">
+                    <a href="auth/login.html" class="btn-secondary">Masuk</a>
+                    <a href="dashboard.html" class="btn-primary">
+                        <span>Dashboard</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <header class="verify-hero">
+        <div class="container">
+            <div class="legal-breadcrumb" style="justify-content: center;">
+                <a href="index.html"><i class="fas fa-home"></i> Beranda</a>
+                <span class="separator">/</span>
+                <span>Discord Integration</span>
+                <span class="separator">/</span>
+                <span style="color: #ffffff;">Linked Roles (/verify-user)</span>
+            </div>
+
+            <div class="legal-badge" style="background: rgba(88, 101, 242, 0.15); border-color: rgba(88, 101, 242, 0.4); color: #818cf8;">
+                <i class="fab fa-discord"></i> Discord Linked Roles Verification
+            </div>
+
+            <h1 class="hero-title" style="font-size: 2.6rem; margin-bottom: 12px;">
+                Verifikasi Akun <span class="gradient-text">Discord &amp; Realm</span>
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 650px; margin: 0 auto;">
+                Tautkan akun Discord Anda ke Hyrost Realm Network untuk mendapatkan <strong>Discord Linked Role</strong> resmi dan mengklaim hak akses server.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Verification Card -->
+    <main class="verify-container">
+        <div class="verify-card">
+            <!-- OAuth2 1-Click Verification (Primary Method for Discord Linked Roles) -->
+            <div style="text-align: center; margin-bottom: 24px;">
+                <h2 style="font-size: 1.35rem; font-weight: 800; color: #fff; margin-bottom: 6px;">
+                    <i class="fas fa-link" style="color: #5865F2; margin-right: 8px;"></i> Otorisasi Discord 1-Klik
+                </h2>
+                <p style="font-size: 0.88rem; color: var(--text-muted); margin: 0;">
+                    Metode tercepat untuk mendapatkan role verified otomatis di server Discord kami.
+                </p>
+            </div>
+
+            <a href="/api/verify-user/discord-oauth" class="discord-btn-oauth" id="btnDiscordOAuth">
+                <i class="fab fa-discord" style="font-size: 1.3rem;"></i>
+                <span>Tautkan Akun &amp; Verifikasi Linked Role</span>
+            </a>
+
+            <div class="divider-or">
+                <span>Atau Masukkan Kode / Username Secara Manual</span>
+            </div>
+
+            <!-- Manual Verification Form -->
+            <form id="verifyForm" onsubmit="handleManualVerify(event)">
+                <div class="verify-input-group">
+                    <label for="inputCode"><i class="fas fa-key" style="color: var(--accent-indigo); margin-right: 6px;"></i> Kode Verifikasi (6-Digit) / Discord User ID</label>
+                    <input type="text" id="inputCode" class="verify-input" placeholder="Contoh: HYR123 atau 723160545146044437" required />
+                </div>
+
+                <div class="verify-input-group">
+                    <label for="inputIgn"><i class="fas fa-cube" style="color: var(--accent-emerald); margin-right: 6px;"></i> Username Minecraft (Opsional untuk sinkronisasi IGN)</label>
+                    <input type="text" id="inputIgn" class="verify-input" placeholder="Contoh: SteveCraft_ID" />
+                </div>
+
+                <button type="submit" class="btn-manual-verify" id="btnSubmitManual">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Verifikasi Manual Sekarang</span>
+                </button>
+            </form>
+
+            <div id="verifyAlert" class="result-box"></div>
+        </div>
+
+        <!-- How Linked Roles Work -->
+        <h3 style="color: #fff; font-size: 1.25rem; font-weight: 800; text-align: center; margin-bottom: 8px;">
+            Bagaimana Cara Kerjanya?
+        </h3>
+        <p style="color: var(--text-muted); font-size: 0.88rem; text-align: center; margin-bottom: 20px;">
+            Alur verifikasi Discord Linked Roles yang aman dan instan:
+        </p>
+
+        <div class="steps-grid">
+            <div class="step-item">
+                <div class="step-num">1</div>
+                <h4 style="color:#fff; font-size:1rem; margin-bottom:6px;">Klik Tautkan Akun</h4>
+                <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.6; margin:0;">
+                    Tekan tombol Discord OAuth2 untuk mengizinkan bot membaca identitas Discord Anda secara aman.
+                </p>
+            </div>
+
+            <div class="step-item">
+                <div class="step-num">2</div>
+                <h4 style="color:#fff; font-size:1rem; margin-bottom:6px;">Sinkronisasi Otomatis</h4>
+                <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.6; margin:0;">
+                    Sistem backend kami mengirimkan metadata verifikasi langsung ke Discord Role Connections API.
+                </p>
+            </div>
+
+            <div class="step-item">
+                <div class="step-num">3</div>
+                <h4 style="color:#fff; font-size:1rem; margin-bottom:6px;">Role Aktif Seketika</h4>
+                <p style="color:var(--text-muted); font-size:0.85rem; line-height:1.6; margin:0;">
+                    Server Discord akan otomatis menyematkan role verified dan membuka channel khusus anggota.
+                </p>
+            </div>
+        </div>
+
+        <!-- Developer Portal Reference Card -->
+        <div class="dev-portal-info">
+            <h4 style="color: #fff; font-size: 1rem; font-weight: 800; margin-bottom: 8px; display:flex; align-items:center; gap:8px;">
+                <i class="fab fa-discord" style="color: #5865F2;"></i> Discord Developer Portal Configuration
+            </h4>
+            <p style="color: var(--text-muted); font-size: 0.85rem; line-height: 1.6; margin-bottom: 12px;">
+                Konfigurasi URL resmi untuk aplikasi <strong>Mei</strong> pada Discord Developer Portal:
+            </p>
+            
+            <div style="font-size: 0.82rem; color: #9ca3af; font-weight: 700;">Interactions Endpoint URL:</div>
+            <div class="code-box">https://hyrost.web.id/api/interactions</div>
+
+            <div style="font-size: 0.82rem; color: #9ca3af; font-weight: 700;">Linked Roles Verification URL:</div>
+            <div class="code-box">https://hyrost.web.id/verify-user</div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="dashboard.html" class="footer-link">Dashboard</a>
+                <a href="bot/index.html" class="footer-link" style="color: #FF3385;"><i class="fab fa-discord"></i> Bot Mei</a>
+                <a href="terms.html" class="footer-link">Terms of Service</a>
+                <a href="privacy.html" class="footer-link">Privacy Policy</a>
+            </div>
+            <p class="footer-text">
+                &copy; 2026 <strong style="color: var(--accent-indigo);">Hyrost Server</strong>. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Verification Client Script -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const hamburger = document.getElementById('hamburger');
+            const navLinksContainer = document.getElementById('navLinksContainer');
+            if (hamburger && navLinksContainer) {
+                hamburger.addEventListener('click', () => {
+                    hamburger.classList.toggle('active');
+                    navLinksContainer.classList.toggle('active');
+                });
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const status = urlParams.get('status');
+            const discordName = urlParams.get('discord');
+            const alertBox = document.getElementById('verifyAlert');
+
+            if (status === 'success') {
+                alertBox.className = 'result-box success';
+                alertBox.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.05rem; margin-bottom:6px;">
+                        <i class="fas fa-check-circle" style="font-size:1.3rem; color:#10b981;"></i>
+                        <span>Verifikasi Linked Role Berhasil!</span>
+                    </div>
+                    <p style="font-size:0.85rem; margin:0; opacity:0.9;">
+                        Akun Discord <strong>${discordName || 'Anda'}</strong> berhasil ditautkan dan Linked Role Discord telah terpasang.
+                    </p>
+                `;
+            }
+        });
+
+        async function handleManualVerify(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSubmitManual');
+            const alertBox = document.getElementById('verifyAlert');
+            const codeInput = document.getElementById('inputCode').value.trim();
+            const ignInput = document.getElementById('inputIgn').value.trim();
+
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> <span>Memproses...</span>';
+            alertBox.className = 'result-box';
+            alertBox.style.display = 'none';
+
+            try {
+                const payload = {};
+                if (/^\d{16,20}$/.test(codeInput)) {
+                    payload.discordId = codeInput;
+                } else if (codeInput.length === 6) {
+                    payload.code = codeInput;
+                } else {
+                    payload.username = codeInput;
+                }
+
+                if (ignInput) payload.ign = ignInput;
+
+                const token = localStorage.getItem('token') || localStorage.getItem('jwt');
+                const headers = { 'Content-Type': 'application/json' };
+                if (token) headers['Authorization'] = 'Bearer ' + token;
+
+                const res = await fetch('/api/verify-user', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await res.json();
+
+                if (res.ok && data.success) {
+                    alertBox.className = 'result-box success';
+                    alertBox.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.05rem; margin-bottom:6px;">
+                            <i class="fas fa-check-circle" style="font-size:1.3rem;"></i>
+                            <span>${data.message || 'Verifikasi Berhasil!'}</span>
+                        </div>
+                        <p style="font-size:0.85rem; margin:0; opacity:0.9;">
+                            Akun Anda telah berhasil diverifikasi dalam ekosistem Hyrost Realm.
+                        </p>
+                    `;
+                } else {
+                    alertBox.className = 'result-box error';
+                    alertBox.innerHTML = `
+                        <div style="display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.05rem; margin-bottom:6px;">
+                            <i class="fas fa-exclamation-circle" style="font-size:1.3rem;"></i>
+                            <span>Verifikasi Gagal</span>
+                        </div>
+                        <p style="font-size:0.85rem; margin:0; opacity:0.9;">
+                            ${data.message || 'Kode verifikasi tidak valid atau akun tidak ditemukan.'}
+                        </p>
+                    `;
+                }
+            } catch (err) {
+                alertBox.className = 'result-box error';
+                alertBox.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:10px; font-weight:700; font-size:1.05rem; margin-bottom:6px;">
+                        <i class="fas fa-times-circle" style="font-size:1.3rem;"></i>
+                        <span>Koneksi Gagal</span>
+                    </div>
+                    <p style="font-size:0.85rem; margin:0; opacity:0.9;">
+                        Tidak dapat menghubungi server: ${err.message}
+                    </p>
+                `;
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-check-circle"></i> <span>Verifikasi Manual Sekarang</span>';
+            }
+        }
+    </script>
+</body>
+</html>

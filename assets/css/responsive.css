@@ -1,0 +1,366 @@
+/* =====================================================
+   HYROST — Global Responsive Utilities
+   Loaded via dashboard.css & admin.css @import
+   ===================================================== */
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Fluid tables */
+.table-responsive,
+.admin-table-wrap,
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Prevent horizontal page scroll */
+body {
+  overflow-x: hidden;
+}
+
+/* Main content safe area on all dashboard pages */
+.main-content,
+.admin-content {
+  min-width: 0;
+}
+
+@media (max-width: 992px) {
+  .dashboard-container {
+    flex-direction: column !important;
+    width: 100% !important;
+    min-height: 100vh !important;
+    overflow-x: hidden !important;
+  }
+
+  .sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 268px !important;
+    max-width: 85vw !important;
+    height: 100vh !important;
+    z-index: 2000 !important;
+    transform: translateX(-105%) !important;
+    transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+    overflow-y: auto !important;
+  }
+
+  .sidebar.active,
+  .sidebar.open,
+  .sidebar.mobile-open {
+    transform: translateX(0) !important;
+    box-shadow: 6px 0 30px rgba(0, 0, 0, 0.8) !important;
+  }
+
+  .main-content {
+    margin-left: 0 !important;
+    padding: 16px 14px 60px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+  }
+
+  .mobile-header {
+    display: flex !important;
+    position: sticky !important;
+    top: 0 !important;
+    width: 100% !important;
+    z-index: 1000 !important;
+  }
+}
+
+/* ─── Admin layout mobile (mirrors dashboard.css drawer) ─── */
+@media (min-width: 993px) {
+  .admin-menu-toggle {
+    display: none !important;
+  }
+}
+
+@media (max-width: 992px) {
+  .admin-sidebar {
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    width: 280px !important;
+    max-width: 86vw !important;
+    height: 100vh !important;
+    z-index: 2000 !important;
+    transform: translateX(-105%) !important;
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    visibility: hidden;
+    pointer-events: none;
+    overflow-y: auto !important;
+  }
+
+  .admin-sidebar.active,
+  .admin-sidebar.open,
+  .admin-sidebar.mobile-open {
+    transform: translateX(0) !important;
+    visibility: visible !important;
+    pointer-events: auto !important;
+  }
+
+  .admin-main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+
+  .admin-topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .admin-topbar .topbar-left {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .admin-topbar .topbar-left h1 {
+    font-size: 1rem !important;
+    line-height: 1.25;
+  }
+
+  .admin-topbar .topbar-left p {
+    display: none;
+  }
+
+  .admin-topbar .topbar-right {
+    flex-wrap: wrap;
+    justify-content: flex-end;
+  }
+
+  .admin-topbar .topbar-user .user-info {
+    display: none;
+  }
+
+  .admin-menu-toggle {
+    display: inline-flex !important;
+  }
+
+  .admin-tab-nav {
+    top: 0;
+  }
+
+  .sidebar-overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.72);
+    backdrop-filter: blur(4px);
+    z-index: 1990;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+  }
+
+  .sidebar-overlay.active,
+  .sidebar-overlay.open {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+}
+
+@media (min-width: 993px) {
+  .admin-menu-toggle {
+    display: none !important;
+  }
+}
+
+.admin-menu-toggle {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+/* ─── Chat page stack on mobile ─── */
+@media (max-width: 992px) {
+  body.chat-page-body {
+    overflow: auto !important;
+  }
+
+  .chat-interface {
+    flex-direction: column !important;
+    height: auto !important;
+    min-height: calc(100vh - 56px);
+  }
+
+  .chat-sidebar {
+    width: 100% !important;
+    max-width: 100% !important;
+    min-height: 220px;
+    max-height: 45vh;
+    border-right: none !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .chat-main-panel {
+    flex: 1;
+    min-height: 50vh;
+  }
+}
+
+/* ─── Social hub ─── */
+@media (max-width: 768px) {
+  .social-tabs {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .social-tabs .btn-chat-link {
+    margin-left: 0;
+    width: 100%;
+    text-align: center;
+  }
+
+  .friends-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ─── Rewards ─── */
+@media (max-width: 768px) {
+  .rewards-container {
+    padding: 16px !important;
+  }
+
+  .streak-header h2 {
+    font-size: 1.6rem !important;
+  }
+
+  .reward-card {
+    width: calc(50% - 12px) !important;
+    min-width: 120px;
+  }
+
+  .reward-card.active {
+    transform: scale(1.03);
+  }
+}
+
+@media (max-width: 420px) {
+  .reward-card {
+    width: 100% !important;
+    max-width: 200px;
+  }
+}
+
+/* ─── Auction ─── */
+@media (max-width: 768px) {
+  .auction-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .search-box {
+    width: 100% !important;
+  }
+
+  .filter-tabs {
+    overflow-x: auto;
+    flex-wrap: nowrap;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .auction-grid {
+    grid-template-columns: 1fr !important;
+  }
+}
+
+/* ─── Inventory ─── */
+@media (max-width: 768px) {
+  .inventory-grid,
+  .items-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+    gap: 12px !important;
+  }
+
+  .inventory-stats-bar {
+    flex-direction: column;
+    align-items: stretch !important;
+    gap: 10px;
+  }
+
+  .modal-box,
+  .item-modal-box {
+    width: 94vw !important;
+    max-width: 94vw !important;
+    margin: 12px auto !important;
+  }
+}
+
+/* ─── Landing page extras ─── */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.85rem !important;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .hero-buttons .btn-primary,
+  .hero-buttons .btn-secondary,
+  .server-ip-box {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .live-chat-compose {
+    flex-direction: column;
+  }
+
+  .live-chat-compose button {
+    width: 100%;
+  }
+}
+
+/* ─── Dashboard widgets ─── */
+@media (max-width: 600px) {
+  .module-grid {
+    grid-template-columns: 1fr !important;
+  }
+
+  .widget-card {
+    padding: 14px !important;
+  }
+
+  .top-user-banner h1,
+  .page-header h1 {
+    font-size: 1.25rem !important;
+  }
+}
+
+/* Touch-friendly tap targets */
+@media (hover: none) and (pointer: coarse) {
+  .nav-item,
+  .tab-btn,
+  .btn-header-action,
+  button,
+  .nav-link {
+    min-height: 44px;
+  }
+}

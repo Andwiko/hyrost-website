@@ -1,202 +1,224 @@
-/* Leaderboard Styles */
+/* ==========================================================================
+   HYROST LEADERBOARD — HIGH-END OBSIDIAN SLATE THEME
+   ========================================================================== */
+
 .leaderboard-controls {
-    margin-bottom: 30px;
+  margin-bottom: 24px;
 }
 
 .filter-tabs {
-    display: flex;
-    gap: 10px;
-    background: #1a1a1a;
-    padding: 5px;
-    border-radius: 8px;
-    display: inline-flex;
+  display: inline-flex;
+  gap: 6px;
+  background: var(--bg-surface-2);
+  padding: 4px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--border-subtle);
+  box-shadow: var(--shadow-inset-top);
 }
 
 .filter-tab {
-    background: transparent;
-    border: none;
-    color: #888;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 500;
-    transition: all 0.3s ease;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.84rem;
+  transition: var(--transition);
+  font-family: var(--font-main);
 }
 
 .filter-tab.active {
-    background: #e98a22;
-    color: white;
+  background: var(--bg-surface-1);
+  color: #ffffff;
+  border: 1px solid var(--border-medium);
+  box-shadow: var(--shadow-sm);
 }
 
 .filter-tab:hover:not(.active) {
-    color: white;
-    background: rgba(255,255,255,0.05);
+  color: #ffffff;
 }
 
-/* Podium */
+/* ─── PODIUM STYLES ───────────────────────────────── */
 .podium-container {
-    display: flex;
-    justify-content: center;
-    align-items: flex-end;
-    gap: 20px;
-    margin-bottom: 50px;
-    padding-top: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 36px;
+  padding-top: 24px;
 }
 
 .podium-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    background: #1e1e1e;
-    border-radius: 12px;
-    padding: 20px;
-    width: 160px;
-    position: relative;
-    border: 1px solid #333;
-    transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--bg-surface-1);
+  border-radius: var(--radius-lg);
+  padding: 22px 18px;
+  width: 190px;
+  position: relative;
+  border: 1px solid var(--border-subtle);
+  transition: var(--transition);
+  box-shadow: var(--shadow-md);
 }
 
 .podium-item:hover {
-    transform: translateY(-5px);
+  transform: translateY(-4px);
+  border-color: var(--border-medium);
+  box-shadow: var(--shadow-lg);
 }
 
-.podium-item img {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    margin-bottom: 10px;
-    border: 3px solid #333;
+.podium-item.rank-1 {
+  height: 250px;
+  border-color: var(--border-gold);
+  background: linear-gradient(180deg, rgba(245, 158, 11, 0.08) 0%, var(--bg-surface-1) 100%);
 }
 
-.podium-item.gold {
-    height: 250px;
-    border-color: #ffd700;
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.1);
+.podium-item.rank-2 {
+  height: 220px;
+  border-color: rgba(226, 232, 240, 0.25);
+  background: linear-gradient(180deg, rgba(226, 232, 240, 0.05) 0%, var(--bg-surface-1) 100%);
 }
 
-.podium-item.gold img {
-    width: 80px;
-    height: 80px;
-    border-color: #ffd700;
+.podium-item.rank-3 {
+  height: 200px;
+  border-color: rgba(249, 115, 22, 0.25);
+  background: linear-gradient(180deg, rgba(249, 115, 22, 0.05) 0%, var(--bg-surface-1) 100%);
 }
 
-.podium-item.silver {
-    height: 220px;
-    border-color: #c0c0c0;
+.podium-crown {
+  position: absolute;
+  top: -22px;
+  font-size: 1.6rem;
 }
 
-.podium-item.silver img {
-    border-color: #c0c0c0;
+.podium-item.rank-1 .podium-crown { color: var(--accent-gold); }
+.podium-item.rank-2 .podium-crown { color: #cbd5e1; }
+.podium-item.rank-3 .podium-crown { color: #f97316; }
+
+.podium-avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 10px;
+  border: 2px solid var(--border-medium);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
-.podium-item.bronze {
-    height: 200px;
-    border-color: #cd7f32;
+.podium-item.rank-1 .podium-avatar { border-color: var(--accent-gold); }
+.podium-item.rank-2 .podium-avatar { border-color: #cbd5e1; }
+.podium-item.rank-3 .podium-avatar { border-color: #f97316; }
+
+.podium-name {
+  font-weight: 800;
+  font-size: 0.95rem;
+  color: #ffffff;
+  margin-bottom: 2px;
 }
 
-.podium-item.bronze img {
-    border-color: #cd7f32;
+.podium-role {
+  font-size: 0.65rem;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: var(--radius-full);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  display: inline-block;
+  background: rgba(99, 102, 241, 0.12);
+  color: var(--accent-indigo-light);
+  border: 1px solid rgba(99, 102, 241, 0.25);
 }
 
-.rank-badge {
-    text-align: center;
-    width: 30px;
-    height: 30px;
-    border-radius: 50%;
-    background: #333;
-    color: white;
-    font-weight: bold;
-    line-height: 30px;
-    margin-bottom: 10px;
+.podium-role.role-admin {
+  background: rgba(239, 68, 68, 0.14);
+  color: #ef4444;
+  border-color: rgba(239, 68, 68, 0.3);
+}
+.podium-role.role-vip {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--accent-gold);
+  border-color: rgba(245, 158, 11, 0.3);
 }
 
-.podium-item.gold .rank-badge { background: #ffd700; color: #000; }
-.podium-item.silver .rank-badge { background: #c0c0c0; color: #000; }
-.podium-item.bronze .rank-badge { background: #cd7f32; color: #000; }
-
-.crown {
-    position: absolute;
-    top: -25px;
-    color: #ffd700;
-    font-size: 24px;
-    animation: float 2s infinite ease-in-out;
+.podium-score {
+  font-size: 0.82rem;
+  font-weight: 800;
+  font-family: var(--font-mono);
+  color: var(--accent-cyan-light);
 }
 
-@keyframes float {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-5px); }
+/* ─── LEADERBOARD TABLE ───────────────────────────── */
+.leaderboard-table-wrapper {
+  background: var(--bg-surface-1);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
 }
 
-.player-name {
-    color: white;
-    font-weight: 600;
-    margin-bottom: 5px;
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
 }
 
-.player-score {
-    color: #e98a22;
-    font-size: 0.9rem;
+.leaderboard-table th {
+  background: var(--bg-surface-2);
+  padding: 14px 20px;
+  font-size: 0.74rem;
+  font-weight: 800;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Ranking List */
-.ranking-list {
-    background: #1e1e1e;
-    border-radius: 12px;
-    overflow: hidden;
+.leaderboard-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 0.88rem;
+  color: var(--text-secondary);
 }
 
-.rank-item {
-    display: flex;
-    align-items: center;
-    padding: 15px 20px;
-    border-bottom: 1px solid #333;
-    transition: background 0.2s;
+.leaderboard-table tr:hover {
+  background: var(--bg-surface-2);
 }
 
-.rank-item:last-child {
-    border-bottom: none;
+.player-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 700;
+  color: #ffffff;
 }
 
-.rank-item:hover {
-    background: #252525;
+.player-cell img {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--border-subtle);
 }
 
-.rank-number {
-    width: 40px;
-    color: #888;
-    font-weight: bold;
-    font-size: 1.1rem;
-}
-
-.rank-user {
-    display: flex;
-    align-items: center;
-    flex: 1;
-    gap: 15px;
-}
-
-.rank-user img {
-    width: 40px;
-    height: 40px;
-    border-radius: 8px;
-}
-
-.rank-details {
-    display: flex;
-    flex-direction: column;
-}
-
-.rank-username {
-    color: white;
-    font-weight: 500;
-}
-
-.rank-guild {
-    color: #666;
-    font-size: 0.8rem;
-}
-
-.rank-stat {
-    color: #e98a22;
-    font-weight: 600;
+/* ─── RESPONSIVE ──────────────────────────────────── */
+@media (max-width: 768px) {
+  .podium-container {
+    gap: 8px;
+    padding-top: 14px;
+    margin-bottom: 24px;
+  }
+  .podium-item {
+    width: 32%;
+    padding: 12px 6px;
+  }
+  .podium-item.rank-1 { height: 200px; }
+  .podium-item.rank-2 { height: 180px; }
+  .podium-item.rank-3 { height: 165px; }
+  .podium-avatar { width: 42px; height: 42px; }
+  .podium-name { font-size: 0.78rem; text-align: center; }
+  .podium-score { font-size: 0.72rem; }
 }

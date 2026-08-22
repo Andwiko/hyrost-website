@@ -14,3 +14,15 @@ build/
 package-lock.json
 .env.local
 .env.production
+
+# Local secure data (backups, uploads, fallback store)
+data/store/
+data/uploads/
+data/backups/
+data/cache/
+uploads/
+
+# Google Drive service account (secret)
+credentials/google-drive-service-account.json
+credentials/*.json
+!credentials/google-drive.example.json

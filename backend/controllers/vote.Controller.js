@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Vote = require('../models/Vote');
 const Thread = require('../models/Thread');
 const Suggestion = require('../models/Suggestion');
@@ -15,7 +16,7 @@ exports.castVote = async (req, res) => {
         if (existingVote) {
             // Jika vote sama dengan sebelumnya, hapus vote
             if (existingVote.value === req.body.value) {
-                await existingVote.remove();
+                await existingVote.deleteOne();
                 return res.json({ message: 'Vote dihapus' });
             }
             // Jika vote berbeda, update vote

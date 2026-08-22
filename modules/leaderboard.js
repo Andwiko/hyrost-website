@@ -1,89 +1,173 @@
-const mockPlayers = [
-    { name: "TopPlayer", level: 50, wealth: 1000000, quests: 120, guild: "Kings" },
-    { name: "PlayerTwo", level: 48, wealth: 850000, quests: 110, guild: "Knights" },
-    { name: "PlayerThree", level: 45, wealth: 720000, quests: 95, guild: "Mages" },
-    { name: "Miner99", level: 42, wealth: 600000, quests: 80, guild: "Miners" },
-    { name: "PvPGod", level: 41, wealth: 550000, quests: 75, guild: "Warriors" },
-    { name: "TraderJoe", level: 40, wealth: 900000, quests: 50, guild: "Merchants" },
-    { name: "ExplorerX", level: 38, wealth: 300000, quests: 150, guild: "Scouts" },
-    { name: "NoobMaster", level: 20, wealth: 50000, quests: 10, guild: "None" },
-    { name: "BuilderBob", level: 35, wealth: 450000, quests: 60, guild: "Builders" },
-    { name: "RedstonePro", level: 39, wealth: 480000, quests: 85, guild: "Engineers" }
-];
+const API_URL = '/api';
 
 document.addEventListener('DOMContentLoaded', () => {
     const tabs = document.querySelectorAll('.filter-tab');
     const rankingList = document.getElementById('rankingList');
     
     // Initial Render
-    renderLeaderboard('wealth');
+    fetchLeaderboard('wealth');
 
     // Tab Switching
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
             tabs.forEach(t => t.classList.remove('active'));
             tab.classList.add('active');
-            renderLeaderboard(tab.dataset.filter);
+            fetchLeaderboard(tab.dataset.filter);
         });
     });
 
-    function renderLeaderboard(criteria) {
-        // Sort players
-        let sortedPlayers = [...mockPlayers].sort((a, b) => b[criteria] - a[criteria]);
+    async function fetchLeaderboard(criteria) {
+        if (rankingList) {
+            rankingList.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:24px; color:#9ca3af;"><i class="fas fa-spinner fa-spin"></i> Memuat data leaderboard...</td></tr>';
+        }
 
-        // Update Podium (Top 3)
-        // Note: For simplicity we update text content of existing podium elements
-        // In a real expanded app, we might re-render these dynamically too if structure differs
-        updatePodium(sortedPlayers.slice(0, 3), criteria);
+        let registeredUsers = [];
+        try {
+            const res = await fetch(`${API_URL}/users/leaderboard?type=${criteria}`);
+            if (res.ok) {
+                const data = await res.json();
+                if (Array.isArray(data) && data.length > 0) {
+                    registeredUsers = data;
+                }
+            }
+        } catch (e) {}
 
-        // Render List (Rank 4+)
+        // Show empty state when API has no data
+        if (registeredUsers.length === 0) {
+            updatePodium([], criteria);
+            if (rankingList) {
+                rankingList.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:24px; color:#9ca3af;"><i class="fas fa-info-circle"></i> Belum ada data leaderboard.</td></tr>';
+            }
+            return;
+        }
+
+        const uniqueUsersMap = new Map();
+        registeredUsers.forEach(p => {
+            const nameKey = (p.name || p.username || '').toLowerCase().trim();
+            if (nameKey && !uniqueUsersMap.has(nameKey)) {
+                uniqueUsersMap.set(nameKey, {
+                    id: p.id,
+                    name: p.name || p.username || 'User',
+                    role: p.role || 'Member',
+                    wealth: parseInt(p.wealth || 0),
+                    level: p.level || 1,
+                    quests: p.quests || 0,
+                    avatar_url: p.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name || 'User')}&background=6366f1&color=fff`
+                });
+            }
+        });
+
+        const finalUsersList = Array.from(uniqueUsersMap.values());
+
+        // Sort dynamically based on selected criteria
+        finalUsersList.sort((a, b) => {
+            if (criteria === 'wealth') return (b.wealth || 0) - (a.wealth || 0);
+            if (criteria === 'level') return (b.level || 1) - (a.level || 1);
+            if (criteria === 'quests') return (b.quests || 0) - (a.quests || 0);
+            return (b.wealth || 0) - (a.wealth || 0);
+        });
+
+        updatePodium(finalUsersList.slice(0, 3), criteria);
+        renderRankingTable(finalUsersList, criteria);
+    }
+
+    function renderRankingTable(players, criteria) {
+        if (!rankingList) return;
         rankingList.innerHTML = '';
-        sortedPlayers.slice(3).forEach((player, index) => {
-            const rank = index + 4;
-            const item = document.createElement('div');
-            item.className = 'rank-item';
+        const listPlayers = players.slice(3);
+        if (listPlayers.length === 0) {
+            rankingList.innerHTML = '<tr><td colspan="4" style="text-align:center; padding:20px; color:#6b7280; font-size:0.85rem;"><i class="fas fa-info-circle"></i> Belum ada pemain tambahan di luar 3 Besar Podium.</td></tr>';
+            return;
+        }
+
+        listPlayers.forEach((player, index) => {
+            const rank = 4 + index;
+            const row = document.createElement('tr');
             
             let statDisplay = '';
-            if (criteria === 'wealth') statDisplay = `$${player.wealth.toLocaleString()}`;
-            if (criteria === 'level') statDisplay = `Lvl ${player.level}`;
-            if (criteria === 'quests') statDisplay = `${player.quests} Quests`;
+            if (criteria === 'wealth') statDisplay = `${parseInt(player.wealth || 0).toLocaleString()} Koin`;
+            else if (criteria === 'level') statDisplay = `Level ${player.level || 1}`;
+            else if (criteria === 'quests') statDisplay = `${player.quests || 0} Quests`;
 
-            item.innerHTML = `
-                <div class="rank-number">#${rank}</div>
-                <div class="rank-user">
-                    <img src="https://cravatar.eu/avatar/${player.name}/40.png" alt="${player.name}">
-                    <div class="rank-details">
-                        <span class="rank-username">${player.name}</span>
-                        <span class="rank-guild">${player.guild}</span>
+            const userRole = player.role || 'Member';
+            let roleBadgeStyle = 'background: rgba(99, 102, 241, 0.15); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3);';
+            if (userRole.toLowerCase() === 'admin') {
+                roleBadgeStyle = 'background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);';
+            } else if (userRole.toLowerCase() === 'vip') {
+                roleBadgeStyle = 'background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3);';
+            }
+
+            const avatar = player.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name || 'P')}&background=6366f1&color=fff`;
+
+            row.innerHTML = `
+                <td style="font-weight:700; color:var(--text-dim, #9ca3af);">#${rank}</td>
+                <td>
+                    <div class="player-cell">
+                        <img src="${avatar}" alt="${player.name}" onerror="this.src='https://ui-avatars.com/api/?name=${encodeURIComponent(player.name || 'P')}&background=6366f1&color=fff'">
+                        <div style="display:flex; flex-direction:column; gap:2px;">
+                            <span style="font-weight:700; color:#fff;">${player.name}</span>
+                            <span style="font-size:0.75rem; color:#9ca3af; font-weight:600;">${userRole}</span>
+                        </div>
                     </div>
-                </div>
-                <div class="rank-stat">${statDisplay}</div>
+                </td>
+                <td>
+                    <span style="font-size:0.72rem; font-weight:800; padding:3px 10px; border-radius:6px; text-transform:uppercase; ${roleBadgeStyle}">
+                        ${userRole}
+                    </span>
+                </td>
+                <td style="font-weight:700; color:var(--accent-gold, #f59e0b);">${statDisplay}</td>
             `;
-            rankingList.appendChild(item);
+            rankingList.appendChild(row);
         });
     }
 
     function updatePodium(top3, criteria) {
-        // Map criteria to display text
         const getStat = (p) => {
-            if (criteria === 'wealth') return `$${p.wealth.toLocaleString()}`;
-            if (criteria === 'level') return `Level ${p.level}`;
-            if (criteria === 'quests') return `${p.quests} Quests`;
+            if (criteria === 'wealth') return `${parseInt(p.wealth || 0).toLocaleString()} Koin`;
+            if (criteria === 'level') return `Level ${p.level || 1}`;
+            if (criteria === 'quests') return `${p.quests || 0} Quests`;
         };
 
-        // Selectors for podium items (assuming order: silver(1), gold(0), bronze(2) in DOM is actually 2, 1, 3 physically but lets match by class)
-        const gold = document.querySelector('.podium-item.gold');
-        const silver = document.querySelector('.podium-item.silver');
-        const bronze = document.querySelector('.podium-item.bronze');
+        const gold = document.querySelector('.podium-item.rank-1');
+        const silver = document.querySelector('.podium-item.rank-2');
+        const bronze = document.querySelector('.podium-item.rank-3');
 
-        if (top3[0]) updatePodiumCard(gold, top3[0], getStat(top3[0]));
-        if (top3[1]) updatePodiumCard(silver, top3[1], getStat(top3[1]));
-        if (top3[2]) updatePodiumCard(bronze, top3[2], getStat(top3[2]));
+        if (gold) updatePodiumCard(gold, top3[0], getStat);
+        if (silver) updatePodiumCard(silver, top3[1], getStat);
+        if (bronze) updatePodiumCard(bronze, top3[2], getStat);
     }
 
-    function updatePodiumCard(card, player, stat) {
-        card.querySelector('.player-name').textContent = player.name;
-        card.querySelector('.player-score').textContent = stat;
-        card.querySelector('img').src = `https://cravatar.eu/avatar/${player.name}/80.png`;
+    function updatePodiumCard(card, player, getStatFn) {
+        if (!card) return;
+        if (!player) {
+            card.style.opacity = '0.3';
+            const nameEl = card.querySelector('.podium-name');
+            const scoreEl = card.querySelector('.podium-score');
+            if (nameEl) nameEl.textContent = 'Kosong';
+            if (scoreEl) scoreEl.textContent = '-';
+            return;
+        }
+        card.style.opacity = '1';
+
+        const nameEl = card.querySelector('.podium-name');
+        const roleEl = card.querySelector('.podium-role');
+        const scoreEl = card.querySelector('.podium-score');
+        const img = card.querySelector('img');
+
+        if (nameEl) nameEl.textContent = player.name;
+        if (scoreEl) scoreEl.textContent = getStatFn(player);
+
+        const userRole = player.role || 'Member';
+        if (roleEl) {
+            roleEl.textContent = userRole;
+            roleEl.className = 'podium-role';
+            if (userRole.toLowerCase() === 'admin') roleEl.classList.add('role-admin');
+            else if (userRole.toLowerCase() === 'vip') roleEl.classList.add('role-vip');
+        }
+
+        if (img) {
+            img.src = player.avatar_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=6366f1&color=fff`;
+            img.onerror = () => { img.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(player.name)}&background=6366f1&color=fff`; };
+        }
     }
 });

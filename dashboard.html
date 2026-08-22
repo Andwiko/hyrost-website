@@ -1,407 +1,515 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost - Dashboard</title>
-    <link rel="stylesheet" href="dashboard.css">
+    <title>Hyrost — Portal Komunitas & Member Realm</title>
+    <meta name="description" content="Dashboard resmi komunitas Hyrost Realm. Kelola koin, rank perks, inventaris, forum, dan lihat status server Minecraft.">
+    <meta name="theme-color" content="#090c14">
+
+    <!-- Favicon & PWA Manifest -->
+    <link rel="icon" type="image/png" href="assets/images/hyrost.png">
+    <link rel="shortcut icon" href="favicon.ico">
+    <link rel="manifest" href="manifest.json">
+
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="dashboard.css?v=50">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar">
+        <!-- Sidebar Backdrop Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
+        <!-- ══════════════════════════════════════════
+             SIDEBAR NAVIGATION
+             ══════════════════════════════════════════ -->
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="assets/images/hyrost.png" alt="Logo">
-                <h2>Hyrost</h2>
+                <img src="assets/images/hyrost.png" alt="Hyrost Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <div class="brand-text">
+                    <h2>Hyrost</h2>
+                    <span>Member Realm</span>
+                </div>
             </div>
             
+            <div class="nav-section-label">Navigasi Utama</div>
             <nav class="sidebar-nav">
-                <a href="#" class="nav-item active">
-            <i class="fas fa-home"></i>
-            <span>Home</span>
-          </a>
-          <a href="account/index.html" class="nav-item">
-            <i class="fas fa-user-circle"></i>
-            <span>Profile</span>
-          </a>
-          <a href="question/index.html" class="nav-item">
-            <i class="fas fa-globe-asia"></i>
-            <span>World</span>
-          </a>
-          <a href="modules/forum.html" class="nav-item">
-            <i class="fas fa-comments"></i>
-            <span>Forum</span>
-          </a>
-          <a href="modules/leaderboard.html" class="nav-item">
-            <i class="fas fa-trophy"></i>
-            <span>Leaderboard</span>
-          </a>
-          <a href="inventory/inventory.html" class="nav-item">
-            <i class="fas fa-briefcase"></i>
-            <span>Storage</span>
-          </a>
-          <a href="marketplace/shop.html" class="nav-item">
-            <i class="fas fa-shopping-bag"></i>
-            <span>Shop</span>
-          </a>
-          <a href="marketplace/auction.html" class="nav-item">
-            <i class="fas fa-gavel"></i>
-            <span>Auction</span>
-          </a>
-          <a href="modules/role_shop.html" class="nav-item">
-            <i class="fas fa-user-tag"></i>
-            <span>Role Shop</span>
-          </a>
-          <a href="modules/rewards.html" class="nav-item">
-            <i class="fas fa-calendar-check"></i>
-            <span>Daily Rewards</span>
-          </a>
-          <a href="modules/wiki.html" class="nav-item">
-            <i class="fas fa-book"></i>
-            <span>Wiki</span>
-          </a>
-          <a href="modules/social.html" class="nav-item">
-            <i class="fas fa-users"></i>
-            <span>Social</span>
-          </a>
-          <a href="modules/support.html" class="nav-item">
-            <i class="fas fa-headset"></i>
-            <span>Support</span>
-          </a>
-          <a href="#" class="nav-item">
-            <i class="fas fa-info-circle"></i>
-            <span>Info</span>
-          </a>
+                <a href="dashboard.html" class="nav-item active">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="account/index.html" class="nav-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="modules/store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
+                </a>
+                <a href="modules/forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="modules/leaderboard.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventaris</span>
+                </a>
+                <a href="marketplace/index.html" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="modules/rewards.html" class="nav-item">
+                    <i class="fas fa-gift"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="modules/wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki & Guide</span>
+                </a>
+                <a href="modules/social.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pertemanan</span>
+                </a>
+                <a href="modules/support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Pusat Bantuan</span>
+                </a>
+                <a href="verify-user.html" class="nav-item">
+                    <i class="fab fa-discord" style="color:#5865F2;"></i>
+                    <span>Verifikasi Discord</span>
+                </a>
+
+                <div class="nav-divider"></div>
+                <div class="nav-section-label nav-section-admin">Admin Panel</div>
+                <a href="modules/admin.html" class="nav-item nav-admin">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Panel</span>
+                </a>
             </nav>
 
-        <!-- Server Status Widget -->
-        <div class="sidebar-widget server-status-widget">
-            <div class="widget-header">
-                <h3>Status Server</h3>
-                <span class="status-dot online"></span>
+            <!-- Server Status Widget & PWA Trigger -->
+            <div class="sidebar-bottom">
+                <button class="btn-header-action btn-primary-action" id="btnInstallPwa" onclick="promptPWAInstall()" style="width:100%; justify-content:center; margin-bottom:10px; font-size:0.8rem; padding:8px 12px; border-radius:var(--radius-sm);">
+                    <i class="fas fa-mobile-alt"></i> Install App Hyrost
+                </button>
+                <div class="sidebar-server-pill">
+                    <div class="server-pill-row">
+                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
+                        <span class="status-dot online"></span>
+                    </div>
+                    <div class="server-pill-ip" data-mc-server-ip id="sidebarServerIp">play.hyrost.net</div>
+                    <div class="server-pill-players">
+                        <i class="fas fa-users"></i> <span id="sidebarOnlinePlayers" data-mc-player-count>--</span> Pemain Online
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:center; gap:8px; font-size:0.74rem; margin-top:10px; color:var(--text-dim);">
+                    <a href="terms.html" style="color:var(--text-muted); text-decoration:none;">Terms</a>
+                    <span>•</span>
+                    <a href="privacy.html" style="color:var(--text-muted); text-decoration:none;">Privacy</a>
+                    <span>•</span>
+                    <a href="index.html" style="color:var(--text-muted); text-decoration:none;">Home</a>
+                </div>
             </div>
-            <div class="widget-content">
-                <p class="server-ip">play.hyrost.net</p>
-                <p class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</p>
-            </div>
-        </div>
+        </aside>
 
-
-      </aside>
-
-        <!-- Mobile Header -->
+        <!-- ══════════════════════════════════════════
+             MOBILE TOPBAR
+             ══════════════════════════════════════════ -->
         <div class="mobile-header">
-            <button id="sidebarToggle" class="icon-btn">
+            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Buka Menu" style="padding:8px 12px;">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="mobile-logo">
-                <img src="assets/images/hyrost_logo.png" alt="Logo">
+                <img src="assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
                 <h2>Hyrost</h2>
             </div>
+            <button class="btn-header-action" onclick="logout()" title="Keluar" style="padding:8px 12px;">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
         </div>
 
-        <!-- Main Content Area -->
+        <!-- ══════════════════════════════════════════
+             MAIN CONTENT DASHBOARD
+             ══════════════════════════════════════════ -->
         <main class="main-content">
-            <!-- Filter System -->
-            <div class="filter-system">
-                <!-- Desktop Filter Bar -->
-                <div class="filter-bar desktop-filter">
-                    <div class="filter-group">
-                        <label for="categoryFilter">Category:</label>
-                        <select id="categoryFilter" class="filter-select">
-                            <option value="all">All Categories</option>
-                            <option value="community">Community</option>
-                            <option value="management">Management</option>
-                            <option value="information">Information</option>
-                        </select>
+            <!-- Top Player Hero Card -->
+            <div class="top-user-banner">
+                <div class="user-profile-summary">
+                    <div class="user-avatar-wrapper">
+                        <img id="userAvatar" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="Avatar" class="user-avatar">
+                        <span class="user-status-indicator"></span>
                     </div>
-                    <div class="filter-group">
-                        <label for="statusFilter">Status:</label>
-                        <select id="statusFilter" class="filter-select">
-                            <option value="all">All Status</option>
-                            <option value="online">Online</option>
-                            <option value="offline">Offline</option>
-                            <option value="maintenance">Maintenance</option>
-                        </select>
+                    <div class="user-details">
+                        <h2>
+                            <span id="displayUsername">Memuat profil...</span>
+                            <span id="displayRole" class="role-tag">Member</span>
+                        </h2>
+                        <p id="displayEmail">user@hyrost.net</p>
                     </div>
-                    <div class="filter-group">
-                        <label for="sortFilter">Sort by:</label>
-                        <select id="sortFilter" class="filter-select">
-                            <option value="name">Name</option>
-                            <option value="popularity">Popularity</option>
-                            <option value="recent">Most Recent</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <input type="text" id="searchFilter" class="filter-search" placeholder="Search modules...">
-                        <button class="filter-clear" id="clearFilters">Clear</button>
-                    </div>
+                    <script>
+                        (function() {
+                            try {
+                                const uStr = localStorage.getItem('currentUser');
+                                if (uStr) {
+                                    const u = JSON.parse(uStr);
+                                    const name = u.username || u.name || u.user_name || u.user || (u.email ? u.email.split('@')[0] : 'User');
+                                    const email = u.email || '-';
+                                    const role = u.role || 'Member';
+                                    const avatar = u.avatarUrl || u.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(name) + '&background=6366f1&color=fff';
+
+                                    const elName = document.getElementById('displayUsername');
+                                    const elEmail = document.getElementById('displayEmail');
+                                    const elRole = document.getElementById('displayRole');
+                                    const elAvatar = document.getElementById('userAvatar');
+
+                                    if (elName) elName.textContent = name;
+                                    if (elEmail) elEmail.textContent = email;
+                                    if (elRole) {
+                                        elRole.textContent = role;
+                                        if (role.toLowerCase() === 'admin') {
+                                            elRole.style.background = 'rgba(239, 68, 68, 0.16)';
+                                            elRole.style.color = '#ef4444';
+                                            elRole.style.borderColor = 'rgba(239, 68, 68, 0.35)';
+                                        }
+                                    }
+                                    if (elAvatar) elAvatar.src = avatar;
+                                    if (role.toLowerCase() === 'admin') document.body.classList.add('is-admin');
+                                }
+                            } catch(e) {}
+                        })();
+                    </script>
                 </div>
 
-                <!-- Mobile Filter Toggle -->
-                <div class="mobile-filter-toggle">
-                    <button id="mobileFilterToggle" class="filter-toggle-btn">
-                        <i class="fas fa-filter"></i>
-                        <span>Filters</span>
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <!-- Metallic Coin Badges -->
+                    <div class="currency-bar">
+                        <div class="coin-item coin-bronze" title="Bronze Coins">
+                            <i class="fas fa-coins"></i>
+                            <span id="coinBronze">0</span>
+                        </div>
+                        <div class="coin-item coin-silver" title="Silver Coins">
+                            <i class="fas fa-coins"></i>
+                            <span id="coinSilver">0</span>
+                        </div>
+                        <div class="coin-item coin-gold" title="Gold Coins">
+                            <i class="fas fa-coins"></i>
+                            <span id="coinGold">0</span>
+                        </div>
+                    </div>
+
+                    <a href="account/index.html" class="btn-header-action" title="Pengaturan Akun">
+                        <i class="fas fa-cog"></i>
+                        <span>Pengaturan</span>
+                    </a>
+                    <button onclick="logout()" class="btn-header-action" style="color:#ef4444; border-color:rgba(239, 68, 68, 0.25);">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <span>Keluar</span>
                     </button>
-                    <input type="text" id="mobileSearch" class="mobile-search" placeholder="Search...">
                 </div>
+            </div>
 
-                <!-- Mobile Filter Panel -->
-                <div class="mobile-filter-panel" id="mobileFilterPanel">
-                    <div class="mobile-filter-header">
-                        <h3>Filters</h3>
-                        <button id="closeMobileFilters" class="close-mobile-filters">
-                            <i class="fas fa-times"></i>
+            <!-- Quick Overview Hub (Server Status & Daily Reward) -->
+            <div class="quick-dashboard-grid">
+                <!-- Daily Reward Claim Card -->
+                <div class="widget-card daily-reward-card">
+                    <div class="widget-title" style="color: var(--accent-gold);">
+                        <i class="fas fa-gift"></i>
+                        <span>Hadiah Harian Gratis</span>
+                    </div>
+                    <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 18px; line-height: 1.5;">
+                        Klaim bonus <strong>2 – 20 Koin Bronze</strong> gratis setiap 24 jam untuk berbelanja nametag, badge, dan kosmetik realm.
+                    </p>
+                    <div style="display: flex; align-items: center; gap: 14px; flex-wrap: wrap;">
+                        <button id="btnClaimDaily" class="btn-header-action" style="background: linear-gradient(135deg, var(--accent-gold), #d97706); color: #000; font-weight: 800; border: none;" onclick="claimDailyReward()">
+                            <i class="fas fa-hand-holding-usd"></i>
+                            <span>KLAIM SEKARANG</span>
                         </button>
-                    </div>
-                    <div class="mobile-filter-content">
-                        <div class="filter-group">
-                            <label for="mobileCategoryFilter">Category:</label>
-                            <select id="mobileCategoryFilter" class="filter-select">
-                                <option value="all">All Categories</option>
-                                <option value="community">Community</option>
-                                <option value="management">Management</option>
-                                <option value="information">Information</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="mobileStatusFilter">Status:</label>
-                            <select id="mobileStatusFilter" class="filter-select">
-                                <option value="all">All Status</option>
-                                <option value="online">Online</option>
-                                <option value="offline">Offline</option>
-                                <option value="maintenance">Maintenance</option>
-                            </select>
-                        </div>
-                        <div class="filter-group">
-                            <label for="mobileSortFilter">Sort by:</label>
-                            <select id="mobileSortFilter" class="filter-select">
-                                <option value="name">Name</option>
-                                <option value="popularity">Popularity</option>
-                                <option value="recent">Most Recent</option>
-                            </select>
-                        </div>
-                        <button class="filter-clear mobile-clear" id="mobileClearFilters">Clear All Filters</button>
+                        <span id="claimTimer" style="font-size: 0.82rem; color: var(--text-muted); font-family: var(--font-mono); font-weight: 600;">Siap diklaim!</span>
                     </div>
                 </div>
-            </div>
 
-            <!-- Filter Results Info -->
-            <div class="filter-results">
-                <span id="resultsCount">8 modules found</span>
-                <span id="activeFilters" class="active-filters"></span>
-            </div>
-
-            <header class="content-header">
-                <div class="header-title-row">
-                    <h1>Dashboard</h1>
-                    <!-- Notification System -->
-                    <div class="notification-wrapper">
-                        <button class="icon-btn notification-btn" id="notificationBtn">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge" id="notificationBadge">0</span>
-                        </button>
-                        <div class="notification-dropdown" id="notificationDropdown">
-                            <div class="dropdown-header">
-                                <h3>Notifications</h3>
-                                <button class="mark-read-btn">Mark all as read</button>
-                            </div>
-                            <div class="notification-list" id="notificationList">
-                                <!-- Items inserted by JS -->
-                            </div>
-                            <div class="dropdown-footer">
-                                <a href="#">View All</a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <p>Welcome back! Here's what's happening in your realm.</p>
-            </header>
-
-            <!-- Content Grid -->
-            <div class="content-grid" id="contentGrid">
-                <!-- Forum Module -->
-                <div class="module-card" data-category="community" data-status="online" data-popularity="high" data-name="forum" onclick="window.location.href='modules/forum.html'">
-                    <div class="module-icon">
-                        <i class="fas fa-comments"></i>
-                    </div>
-                    <h3>Forum</h3>
-                    <p>Discuss with the community</p>
-                    <div class="module-status online">Active</div>
-                </div>
-
-                <!-- Members Module -->
-                <div class="module-card" data-category="community" data-status="online" data-popularity="medium" data-name="members" onclick="openModule('members')">
-                    <div class="module-icon">
-                        <i class="fas fa-users"></i>
-                    </div>
-                    <h3>Members</h3>
-                    <p>See who's online</p>
-                    <div class="module-status online">Active</div>
-                </div>
-
-                <!-- Vote Module -->
-                <div class="module-card" data-category="community" data-status="online" data-popularity="high" data-name="vote" onclick="openModule('vote')">
-                    <div class="module-icon">
-                        <i class="fas fa-vote-yea"></i>
-                    </div>
-                    <h3>Vote</h3>
-                    <p>Vote for our server</p>
-                    <div class="module-status online">Active</div>
-                </div>
-
-                <!-- Rules Module -->
-                <div class="module-card" data-category="information" data-status="online" data-popularity="low" data-name="rules" onclick="openModule('rules')">
-                    <div class="module-icon">
-                        <i class="fas fa-scroll"></i>
-                    </div>
-                    <h3>Rules</h3>
-                    <p>Read the server rules</p>
-                    <div class="module-status online">Active</div>
-                </div>
-
-                <!-- Status Module -->
-                <div class="module-card" data-category="information" data-status="online" data-popularity="high" data-name="status" onclick="openModule('status')">
-                    <div class="module-icon">
-                        <i class="fas fa-server"></i>
-                    </div>
-                    <h3>Status</h3>
-                    <p>Check server status</p>
-                    <div class="module-status online">Active</div>
-                </div>
-            </div>
-
-            <!-- Additional Content Area with Filterable Items -->
-            <div class="additional-content">
-                <div class="content-header">
-                    <h2>Recent Activity</h2>
-                    <p>Latest updates and content from your realm</p>
-                </div>
-                
-                <!-- Filterable Content Items -->
-                <div class="content-items" id="contentItems">
-                    <!-- Forum Post Item -->
-                    <div class="content-item" data-category="community" data-status="online" data-popularity="high" data-name="forum-post" data-type="post" data-date="2024-01-15">
-                        <div class="item-icon">
-                            <i class="fas fa-comment-dots"></i>
-                        </div>
-                        <div class="item-content">
-                            <h4>New Forum Discussion</h4>
-                            <p>Player guidelines updated for better community experience</p>
-                            <div class="item-meta">
-                                <span class="item-date">2 hours ago</span>
-                                <span class="item-status online">Active</span>
-                            </div>
-                        </div>
-                    </div>
-                
-                    <!-- Server Update Item -->
-                    <div class="content-item" data-category="information" data-status="online" data-popularity="high" data-name="server-update" data-type="update" data-date="2024-01-14">
-                        <div class="item-icon">
+                <!-- Minecraft Server Realtime Status Card -->
+                <div class="widget-card mc-server-card" id="mcServerWidget">
+                    <div class="widget-title" style="color: var(--accent-cyan); display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+                        <span style="display:flex; align-items:center; gap:8px;">
                             <i class="fas fa-server"></i>
-                        </div>
-                        <div class="item-content">
-                            <h4>Server Maintenance Complete</h4>
-                            <p>All systems are now running smoothly with latest updates</p>
-                            <div class="item-meta">
-                                <span class="item-date">1 day ago</span>
-                                <span class="item-status online">Active</span>
-                            </div>
-                        </div>
+                            <span>Server Hyrost Realm</span>
+                        </span>
+                        <span class="mc-live-badge is-online" id="mcServerWidgetBadge">ONLINE</span>
                     </div>
-                
-                    <!-- Staff Announcement Item -->
-                    <div class="content-item" data-category="management" data-status="online" data-popularity="medium" data-name="staff-announcement" data-type="announcement" data-date="2024-01-13">
-                        <div class="item-icon">
-                            <i class="fas fa-bullhorn"></i>
-                        </div>
-                        <div class="item-content">
-                            <h4>New Staff Member</h4>
-                            <p>Welcome our newest moderator to the team!</p>
-                            <div class="item-meta">
-                                <span class="item-date">2 days ago</span>
-                                <span class="item-status online">Active</span>
-                            </div>
-                        </div>
+                    <div id="mcServerWidgetIp" class="mc-server-ip-display" data-mc-server-ip>play.hyrost.net</div>
+                    <div class="mc-server-port-line" id="mcServerWidgetPort">Port 25565 • Java &amp; Bedrock Compatible</div>
+                    <div class="mc-server-meta">
+                        <span><i class="fas fa-users" style="margin-right:4px;"></i> <strong id="mcServerWidgetPlayers" data-mc-player-count>--</strong> / <span data-mc-player-max>500</span> Pemain Aktif</span>
+                        <span class="status-dot online" id="mcServerWidgetDot" title="Server Normal"></span>
                     </div>
-                
-                    <!-- Vote Reminder Item -->
-                    <div class="content-item" data-category="community" data-status="online" data-popularity="high" data-name="vote-reminder" data-type="reminder" data-date="2024-01-12">
-                        <div class="item-icon">
-                            <i class="fas fa-vote-yea"></i>
-                        </div>
-                        <div class="item-content">
-                            <h4>Daily Vote Reminder</h4>
-                            <p>Don't forget to vote for our server today!</p>
-                            <div class="item-meta">
-                                <span class="item-date">3 days ago</span>
-                                <span class="item-status online">Active</span>
-                            </div>
-                        </div>
+                    <div class="mc-progress-bar">
+                        <div class="mc-progress-fill" style="width: 28%;"></div>
                     </div>
-                
-                    <!-- Resource Update Item -->
-                    <div class="content-item" data-category="management" data-status="online" data-popularity="low" data-name="resource-update" data-type="resource" data-date="2024-01-11">
-                        <div class="item-icon">
-                            <i class="fas fa-folder-open"></i>
-                        </div>
-                        <div class="item-content">
-                            <h4>Resource Pack Updated</h4>
-                            <p>New textures and sounds added to enhance gameplay</p>
-                            <div class="item-meta">
-                                <span class="item-date">4 days ago</span>
-                                <span class="item-status online">Active</span>
-                            </div>
-                        </div>
+                    <div style="display:flex; gap:10px; margin-top:12px;">
+                        <button type="button" class="btn-header-action" style="flex:1; justify-content:center; font-size:0.82rem;" onclick="copyIP()">
+                            <i class="far fa-copy"></i>
+                            <span id="copyIpText">Salin IP Server</span>
+                        </button>
                     </div>
-                
-                    <!-- Rule Change Item -->
-                    <div class="content-item" data-category="information" data-status="online" data-popularity="medium" data-name="rule-change" data-type="rule" data-date="2024-01-10">
-                        <div class="item-icon">
-                            <i class="fas fa-gavel"></i>
-                        </div>
-                        <div class="item-content">
-                            <h4>Rule Amendment</h4>
-                            <p>Building regulations updated for creative world</p>
-                            <div class="item-meta">
-                                <span class="item-date">5 days ago</span>
-                                <span class="item-status online">Active</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Load More Button -->
-                <div class="load-more-container">
-                    <button class="load-more-btn" id="loadMoreBtn">Load More Content</button>
                 </div>
             </div>
+
+            <!-- ══════════════════════════════════════════
+                 MODUL REALM & LAYANAN KOMUNITAS
+                 ══════════════════════════════════════════ -->
+            <div class="section-header-block">
+                <div class="section-title">
+                    <i class="fas fa-layer-group" style="color:var(--accent-indigo);"></i>
+                    <span>Modul &amp; Layanan Komunitas</span>
+                </div>
+                <div class="section-subtitle">Akses cepat seluruh fitur ekosistem Hyrost</div>
+            </div>
+
+            <div class="module-grid">
+                <!-- 1. Toko Pangkat -->
+                <a href="modules/store.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-gold);">
+                            <i class="fas fa-crown"></i>
+                        </div>
+                        <span class="module-tag tag-gold">Rank Perks</span>
+                    </div>
+                    <h3>Toko Pangkat</h3>
+                    <p>Upgrade rank ke VIP, MVP, hingga TITAN untuk klaim kit eksklusif dan perk realm.</p>
+                    <div class="module-box-link">Buka Toko <i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <!-- 2. Marketplace -->
+                <a href="marketplace/index.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-cyan);">
+                            <i class="fas fa-shopping-bag"></i>
+                        </div>
+                        <span class="module-tag tag-cyan">Toko Koin</span>
+                    </div>
+                    <h3>Marketplace</h3>
+                    <p>Beli dan tukarkan koin Anda untuk Nametag warna, Badge profil, dan item langka.</p>
+                    <div class="module-box-link">Jelajahi Item <i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <!-- 3. Forum Komunitas -->
+                <a href="modules/forum.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-indigo);">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <span class="module-tag tag-indigo">Komunitas</span>
+                    </div>
+                    <h3>Forum Komunitas</h3>
+                    <p>Buat thread diskusi, bagikan tutorial, feedback server, dan ikuti voting postingan.</p>
+                    <div class="module-box-link">Lihat Diskusi <i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <!-- 4. Leaderboard -->
+                <a href="modules/leaderboard.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-emerald);">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <span class="module-tag tag-emerald">Top Rank</span>
+                    </div>
+                    <h3>Leaderboard</h3>
+                    <p>Pantau daftar peringkat pemain dengan kekayaan koin dan level tertinggi di realm.</p>
+                    <div class="module-box-link">Cek Peringkat <i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <!-- 5. Inventaris -->
+                <a href="inventory/inventory.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-purple);">
+                            <i class="fas fa-box-open"></i>
+                        </div>
+                        <span class="module-tag tag-purple">Storage</span>
+                    </div>
+                    <h3>Storage Inventaris</h3>
+                    <p>Pasang dan atur nametag kosmetik serta item yang Anda miliki pada profil.</p>
+                    <div class="module-box-link">Buka Tas <i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <!-- 6. Daily Rewards -->
+                <a href="modules/rewards.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-gold);">
+                            <i class="fas fa-calendar-check"></i>
+                        </div>
+                        <span class="module-tag tag-gold">Streak</span>
+                    </div>
+                    <h3>Daily Rewards</h3>
+                    <p>Cek kalender streak klaim koin harian untuk meraih milestone bonus mingguan.</p>
+                    <div class="module-box-link">Lihat Streak <i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <!-- 7. Pertemanan -->
+                <a href="modules/social.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-blue);">
+                            <i class="fas fa-user-friends"></i>
+                        </div>
+                        <span class="module-tag tag-blue">Sosial</span>
+                    </div>
+                    <h3>Pertemanan</h3>
+                    <p>Temukan sesama pemain realm, kirim permintaan teman, dan lihat status bermain.</p>
+                    <div class="module-box-link">Daftar Teman <i class="fas fa-arrow-right"></i></div>
+                </a>
+
+                <!-- 8. Wiki & Support -->
+                <a href="modules/wiki.html" class="module-box">
+                    <div class="module-box-top">
+                        <div class="module-icon-badge" style="color:var(--accent-rose);">
+                            <i class="fas fa-book-open"></i>
+                        </div>
+                        <span class="module-tag tag-rose">Panduan</span>
+                    </div>
+                    <h3>Wiki &amp; Bantuan</h3>
+                    <p>Panduan lengkap sistem ekonomi realm, aturan bermain, serta tiket pusat bantuan.</p>
+                    <div class="module-box-link">Baca Panduan <i class="fas fa-arrow-right"></i></div>
+                </a>
+            </div>
+
+            <!-- ══════════════════════════════════════════
+                 INTERACTIVE REALM SYSTEMS GRID
+                 ══════════════════════════════════════════ -->
+            <div class="section-header-block">
+                <div class="section-title">
+                    <i class="fas fa-bolt" style="color:var(--accent-cyan);"></i>
+                    <span>Aktivitas Realm Real-Time</span>
+                </div>
+                <div class="section-subtitle">Live sync interaktif pemain dan misi</div>
+            </div>
+
+            <div class="interactive-hub-grid">
+                <!-- Widget 1: Online Player List -->
+                <div class="widget-card">
+                    <div class="widget-title" style="color: var(--accent-emerald);">
+                        <i class="fas fa-users-viewfinder"></i>
+                        <span>Pemain di Realm</span>
+                    </div>
+                    <div id="livePlayersList">
+                        <span style="color:var(--text-dim); font-size:0.82rem;">Memuat daftar pemain online...</span>
+                    </div>
+                </div>
+
+                <!-- Widget 2: Daily Quests & Achievements -->
+                <div class="widget-card">
+                    <div class="widget-title" style="color: var(--accent-gold);">
+                        <i class="fas fa-scroll"></i>
+                        <span>Misi Harian</span>
+                    </div>
+                    <div id="questsListContainer">
+                        <span style="color:var(--text-dim); font-size:0.82rem;">Memuat daftar misi...</span>
+                    </div>
+                </div>
+
+                <!-- Widget 3: Community Web Live Chatbox -->
+                <div class="widget-card">
+                    <div class="widget-title" style="color: var(--accent-cyan);">
+                        <i class="fas fa-comment-dots"></i>
+                        <span>Live Chat Komunitas</span>
+                    </div>
+                    <div id="liveChatMessages">
+                        <span style="color:var(--text-dim); font-size:0.82rem;">Menghubungkan ke chat realm...</span>
+                    </div>
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="liveChatInput" placeholder="Ketik pesan komunitas..." onkeydown="if(event.key==='Enter') sendLiveChat()" />
+                        <button class="btn-header-action btn-primary-action" style="padding:8px 14px;" onclick="sendLiveChat()" aria-label="Kirim Pesan">
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Live Realm Activity Feed -->
+            <div class="widget-card" style="margin-bottom: 24px;">
+                <div class="widget-title">
+                    <i class="fas fa-broadcast-tower" style="color: var(--accent-cyan);"></i>
+                    <span>Feed Aktivitas Realm (Live)</span>
+                </div>
+                <div id="liveRealmActivityFeed">
+                    <div style="color:var(--text-dim); font-size:0.82rem;">Memuat siaran aktivitas...</div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Stream -->
+            <div class="widget-card">
+                <div class="widget-title">
+                    <i class="fas fa-history" style="color: var(--accent-indigo);"></i>
+                    <span>Aktivitas Terbaru Akun</span>
+                </div>
+                <div id="activityList" class="activity-list">
+                    <div class="activity-item">
+                        <span class="activity-desc">Sistem memuat aktivitas akun Anda...</span>
+                        <span class="activity-time">-</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dashboard Footer -->
+            <footer style="margin-top: 48px; padding: 24px 0; border-top: 1px solid var(--border-subtle); text-align: center;">
+                <div style="display: flex; justify-content: center; gap: 20px; font-size: 0.84rem; margin-bottom: 12px; flex-wrap: wrap;">
+                    <a href="index.html" style="color: var(--text-muted); text-decoration: none;">Home</a>
+                    <a href="modules/store.html" style="color: var(--text-muted); text-decoration: none;">Toko Pangkat</a>
+                    <a href="modules/forum.html" style="color: var(--text-muted); text-decoration: none;">Forum</a>
+                    <a href="terms.html" style="color: var(--text-muted); text-decoration: none;">Terms of Service</a>
+                    <a href="privacy.html" style="color: var(--text-muted); text-decoration: none;">Privacy Policy</a>
+                    <a href="modules/support.html" style="color: var(--text-muted); text-decoration: none;">Pusat Bantuan</a>
+                </div>
+                <p style="font-size: 0.78rem; color: var(--text-dim); margin: 0;">
+                    &copy; 2026 <strong style="color: var(--accent-indigo-light);">Hyrost Realm</strong>. Crafted for our community.
+                </p>
+            </footer>
+        </main>
     </div>
 
-    <!-- Modal -->
-    <div id="moduleModal" class="modal">
+    <!-- ══════════════════════════════════════════
+         PWA INSTALL MODAL
+         ══════════════════════════════════════════ -->
+    <div class="modal-overlay" id="pwaInstallModal">
         <div class="modal-content">
-            <span class="close">&times;</span>
-            <div id="moduleContent"></div>
+            <div style="display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border-subtle);">
+                <h3 style="margin:0; font-size:1.1rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-mobile-alt" style="color:var(--accent-indigo-light);"></i> Install Aplikasi Hyrost
+                </h3>
+                <button onclick="closePwaInstallModal()" style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); color:var(--text-muted); width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="padding:22px;">
+                <div style="text-align:center; margin-bottom:18px;">
+                    <img src="assets/images/hyrost.png" alt="Logo" style="width:64px; height:64px; border-radius:14px; border:1px solid var(--border-medium); margin-bottom:10px;" />
+                    <h4 style="color:#fff; margin:0; font-size:1.15rem; font-weight:800;">Hyrost Standalone App</h4>
+                    <p style="color:var(--text-muted); font-size:0.82rem; margin-top:4px;">Akses realm super cepat langsung dari desktop atau layar HP tanpa gangguan browser.</p>
+                </div>
+
+                <button id="btnDirectPwaInstall" onclick="executePwaInstall()" class="btn-header-action btn-primary-action" style="width:100%; padding:12px; justify-content:center; font-size:0.9rem; margin-bottom:14px;">
+                    <i class="fas fa-download"></i> Install Otomatis Sekarang
+                </button>
+
+                <div style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:14px; font-size:0.78rem; color:var(--text-secondary); line-height:1.6;">
+                    <div style="margin-bottom:6px;"><strong style="color:var(--accent-emerald);">💻 Desktop:</strong> Klik ikon Install di kolom URL browser.</div>
+                    <div><strong style="color:var(--accent-gold);">📱 HP:</strong> Buka menu browser lalu pilih 'Tambahkan ke Layar Utama'.</div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Overlay for mobile filters -->
-    <div class="filter-overlay" id="filterOverlay"></div>
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-
-    <script src="dashboard.js"></script>
-    <script src="assets/js/notifications.js"></script>
+    <!-- Scripts -->
+    <script src="assets/js/mcServerWidget.js?v=20"></script>
+    <script src="assets/js/liveHub.js?v=20"></script>
+    <script src="assets/js/pwa-init.js?v=20"></script>
+    <script src="dashboard.js?v=20"></script>
 </body>
-    <footer class="main-footer">
-        <p class="text-gray-400 text-sm">
-            © 2025 <span class="text-green-400 font-semibold">Hyro|ST</span>. All rights reserved on hyrost server
-        </p>
-    </footer>
 </html>
-<script src='assets/js/server_status.js'></script>

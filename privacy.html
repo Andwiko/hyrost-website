@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Privacy Policy (Kebijakan Privasi) - Hyrost Realm</title>
+    <meta name="description" content="Kebijakan Privasi Hyrost Realm mengenai pengumpulan, perlindungan, enkripsi, dan pengelolaan data pengguna dan privasi pemain.">
+    <meta name="theme-color" content="#06b6d4">
+    
+    <!-- OpenGraph Meta Tags -->
+    <meta property="og:title" content="Privacy Policy - Hyrost Realm">
+    <meta property="og:description" content="Kebijakan Privasi dan Perlindungan Data Pengguna Hyrost Realm & Bot Mei.">
+    <meta property="og:image" content="assets/images/hyrost.png">
+    <meta property="og:type" content="website">
+    
+    <!-- PWA Manifest & Favicon -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="assets/images/hyrost.png">
+    
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="styles.css?v=30">
+    <link rel="stylesheet" href="assets/css/legal.css?v=30">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="bg-glow" style="background: radial-gradient(circle at 80% 20%, rgba(6, 182, 212, 0.15), transparent 40%), radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.12), transparent 40%);"></div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="navbar-container">
+            <a href="index.html" class="navbar-logo">
+                <img src="assets/images/hyrost.png" alt="Hyrost Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <span>HYROST <span class="logo-badge" style="background: rgba(6, 182, 212, 0.2); color: #22d3ee; border-color: rgba(6, 182, 212, 0.4);">PRIVACY</span></span>
+            </a>
+            
+            <div class="nav-links-container" id="navLinksContainer">
+                <div class="navbar-menu">
+                    <a href="index.html" class="nav-link">Home</a>
+                    <a href="dashboard.html" class="nav-link">Dashboard</a>
+                    <a href="bot/index.html" class="nav-link" style="color: #FF3385; font-weight: 700;"><i class="fab fa-discord" style="color:#5865F2;"></i> Bot Mei</a>
+                    <a href="modules/forum.html" class="nav-link">Forum</a>
+                    <a href="modules/leaderboard.html" class="nav-link">Leaderboard</a>
+                    <a href="marketplace/index.html" class="nav-link">Marketplace</a>
+                    <a href="modules/wiki.html" class="nav-link">Wiki</a>
+                </div>
+                <div class="navbar-buttons">
+                    <a href="auth/login.html" class="btn-secondary">Masuk</a>
+                    <a href="dashboard.html" class="btn-primary">
+                        <span>Dashboard</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Header / Hero Section -->
+    <header class="legal-header" style="background: radial-gradient(circle at 50% 0%, rgba(6, 182, 212, 0.18), transparent 70%);">
+        <div class="container">
+            <div class="legal-breadcrumb" style="justify-content: center;">
+                <a href="index.html"><i class="fas fa-home"></i> Beranda</a>
+                <span class="separator">/</span>
+                <span>Legalitas</span>
+                <span class="separator">/</span>
+                <span style="color: #ffffff;">Privacy Policy</span>
+            </div>
+
+            <div class="legal-badge" style="background: rgba(6, 182, 212, 0.1); border-color: rgba(6, 182, 212, 0.3); color: var(--accent-cyan);">
+                <i class="fas fa-user-shield"></i> Perlindungan Data Pribadi
+            </div>
+            <h1 class="hero-title" style="font-size: 2.8rem; margin-bottom: 12px;">
+                Kebijakan <span class="gradient-text" style="background: linear-gradient(135deg, #06b6d4, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">Privasi</span>
+            </h1>
+            <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 650px; margin: 0 auto;">
+                Kami memprioritaskan keamanan dan privasi data pribadi Anda dengan standar enkripsi industri modern dan transparansi penuh.
+            </p>
+
+            <div class="legal-meta">
+                <div class="legal-meta-item">
+                    <i class="fas fa-calendar-check" style="color: var(--accent-cyan);"></i>
+                    <span>Terakhir Diperbarui: <strong>19 Agustus 2026</strong></span>
+                </div>
+                <div class="legal-meta-item">
+                    <i class="fas fa-lock" style="color: var(--accent-cyan);"></i>
+                    <span>Protokol Enkripsi: <strong>Bcrypt &amp; TLS 1.3</strong></span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Legal Layout -->
+    <div class="legal-layout">
+        <!-- Sticky Table of Contents -->
+        <aside class="legal-sidebar">
+            <div class="toc-title">
+                <i class="fas fa-shield-alt" style="color: var(--accent-cyan);"></i>
+                <span>Navigasi Privasi</span>
+            </div>
+            <nav class="toc-nav">
+                <a href="#section-1" class="toc-link active"><span class="toc-number">1.</span> Komitmen Privasi</a>
+                <a href="#section-2" class="toc-link"><span class="toc-number">2.</span> Informasi yang Dikumpulkan</a>
+                <a href="#section-3" class="toc-link"><span class="toc-number">3.</span> Penggunaan Informasi</a>
+                <a href="#section-4" class="toc-link"><span class="toc-number">4.</span> Enkripsi &amp; Keamanan</a>
+                <a href="#section-5" class="toc-link"><span class="toc-number">5.</span> Layanan Pihak Ketiga</a>
+                <a href="#section-6" class="toc-link"><span class="toc-number">6.</span> Cookie &amp; Local Storage</a>
+                <a href="#section-7" class="toc-link"><span class="toc-number">7.</span> Hak &amp; Kontrol Pengguna</a>
+                <a href="#section-8" class="toc-link"><span class="toc-number">8.</span> Privasi Anak &amp; Usia</a>
+                <a href="#section-9" class="toc-link"><span class="toc-number">9.</span> Kontak Petugas Privasi</a>
+            </nav>
+
+            <div class="sidebar-actions">
+                <a href="terms.html" class="btn-sidebar-action secondary">
+                    <i class="fas fa-file-contract"></i>
+                    <span>Terms of Service</span>
+                </a>
+                <a href="account/index.html" class="btn-sidebar-action secondary">
+                    <i class="fas fa-user-cog"></i>
+                    <span>Pengaturan Akun</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Legal Content -->
+        <main class="legal-content">
+            <!-- Alert Callout -->
+            <div class="legal-alert success">
+                <i class="fas fa-check-circle"></i>
+                <div>
+                    <strong style="color: #fff; display: block; margin-bottom: 4px;">Jaminan Tanpa Penjualan Data:</strong>
+                    <p>
+                        Hyrost Realm <strong>TIDAK AKAN PERNAH</strong> menjual, menyewakan, atau memonetisasi data pribadi, alamat email, atau riwayat interaksi Anda kepada pihak ketiga pengiklan mana pun.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Section 1 -->
+            <section id="section-1" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">1</div>
+                    <h2>Komitmen Privasi Pengguna</h2>
+                </div>
+                <p>
+                    Kebijakan Privasi ini menjelaskan bagaimana <strong>Hyrost Realm Network</strong> ("Kami") mengumpulkan, menggunakan, menyimpan, dan melindungi informasi pribadi Anda saat menggunakan website kami, bergabung dengan bot komunitas Discord (Bot Mei), atau mengakses server permainan Minecraft.
+                </p>
+                <p>
+                    Kami berkomitmen mematuhi prinsip-prinsip perlindungan data yang ketat guna memastikan kenyamanan, keamanan, dan kebebasan berekspresi seluruh anggota komunitas kami.
+                </p>
+            </section>
+
+            <!-- Section 2 -->
+            <section id="section-2" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">2</div>
+                    <h2>Informasi yang Kami Kumpulkan</h2>
+                </div>
+                <p>
+                    Kami hanya mengumpulkan informasi yang esensial untuk pengoperasian sistem dan autentikasi akun Anda:
+                </p>
+                <ul>
+                    <li><strong>Informasi Pendaftaran Akun:</strong> Username unik, alamat email aktif, dan kata sandi yang telah di-hash secara aman menggunakan algoritma Bcrypt dengan cost factor tinggi.</li>
+                    <li><strong>Data Akun Minecraft:</strong> Mojang In-Game Name (IGN), Minecraft UUID resmi atau offline, riwayat waktu bermain, level quest, inventaris in-game, dan saldo koin virtual.</li>
+                    <li><strong>Data Integrasi Discord (Bot Mei):</strong> Discord User ID, username tag, avatar, role server, dan status verifikasi guild.</li>
+                    <li><strong>Log Teknis &amp; Keamanan:</strong> Alamat IP, user-agent browser, timestamp login, dan log aktivitas API untuk pencegahan spam, proteksi brute-force, dan mitigasi DDoS.</li>
+                    <li><strong>Data Transaksi Donasi:</strong> ID transaksi, nominal donasi, metode pembayaran yang dipilih (kami <em>tidak</em> menyimpan data kartu kredit atau PIN e-wallet Anda; seluruh pemrosesan dilakukan langsung oleh gateway berlisensi).</li>
+                </ul>
+            </section>
+
+            <!-- Section 3 -->
+            <section id="section-3" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">3</div>
+                    <h2>Bagaimana Kami Menggunakan Informasi Anda</h2>
+                </div>
+                <p>
+                    Data yang terkumpul dimanfaatkan secara eksklusif untuk tujuan-tujuan berikut:
+                </p>
+                <ul>
+                    <li>Mengautentikasi login Anda dan memverifikasi hak akses pada Dashboard, Forum, dan Toko Rank.</li>
+                    <li>Menyinkronkan saldo koin, kosmetik, dan paket rank dari web ke server Minecraft secara instan melalui backend bridge.</li>
+                    <li>Mengirimkan notifikasi penting seperti reset password, tiket bantuan support, pengumuman maintenance server, atau event giveaway.</li>
+                    <li>Mendeteksi serta memblokir aksi kecurangan (anti-cheat log), multi-akun terlarang, dan upaya peretasan akun.</li>
+                    <li>Menyajikan papan peringkat (Leaderboard) publik berupa statistik kompetitif game pemain.</li>
+                </ul>
+            </section>
+
+            <!-- Section 4 -->
+            <section id="section-4" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">4</div>
+                    <h2>Enkripsi, Penyimpanan, dan Keamanan Data</h2>
+                </div>
+                <p>
+                    Kami menerapkan standar keamanan multi-lapis guna memastikan data Anda terlindungi dari kebocoran maupun akses tanpa hak:
+                </p>
+                <div class="legal-alert info">
+                    <i class="fas fa-lock"></i>
+                    <div>
+                        <strong style="color: #fff;">Prinsip Zero-Knowledge Password:</strong>
+                        <p>Kata sandi Anda tidak pernah disimpan dalam bentuk teks biasa (plain-text). Tim staf maupun admin Hyrost tidak dapat melihat kata sandi asli Anda.</p>
+                    </div>
+                </div>
+                <ul>
+                    <li><strong>Enkripsi Password:</strong> Password dienkripsi satu arah menggunakan modul Bcrypt salt rounds.</li>
+                    <li><strong>Otorisasi Token:</strong> Sesi pengguna dilindungi menggunakan JSON Web Token (JWT) terenkripsi dengan masa kedaluwarsa otomatis.</li>
+                    <li><strong>Enkripsi Transit (HTTPS/TLS):</strong> Seluruh pertukaran data antara browser Anda dan server kami dienkripsi menggunakan protokol TLS 1.3 / SSL 256-bit.</li>
+                    <li><strong>Isolasi Database:</strong> Server database MySQL berjalan di lingkungan terisolasi di balik firewall internal dan dilindungi backup otomatis berkala.</li>
+                </ul>
+            </section>
+
+            <!-- Section 5 -->
+            <section id="section-5" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">5</div>
+                    <h2>Integrasi dan Layanan Pihak Ketiga</h2>
+                </div>
+                <p>
+                    Untuk menyajikan fungsionalitas optimal, kami berinteraksi dengan API pihak ketiga yang tepercaya:
+                </p>
+                <ul>
+                    <li><strong>Google OAuth:</strong> Memfasilitasi pendaftaran dan login cepat dengan akun Google. Kami hanya menerima email dan nama profil publik Anda.</li>
+                    <li><strong>Mojang / Crafatar API:</strong> Menampilkan skin karakter dan kepala 3D Minecraft berdasarkan username publik Anda.</li>
+                    <li><strong>Discord API:</strong> Digunakan oleh Bot Mei untuk sinkronisasi role komunitas dan verifikasi ID member Discord.</li>
+                    <li><strong>Payment Gateway:</strong> Memproses konfirmasi transaksi secara otomatis melalui webhook terenkripsi tanpa menyimpan informasi kredensial perbankan Anda.</li>
+                </ul>
+            </section>
+
+            <!-- Section 6 -->
+            <section id="section-6" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">6</div>
+                    <h2>Cookie dan Penyimpanan Lokal (Local Storage)</h2>
+                </div>
+                <p>
+                    Website kami menggunakan cookie dan browser <code>localStorage</code> untuk kebutuhan fungsional esensial:
+                </p>
+                <ul>
+                    <li><strong>Token Sesi:</strong> Menyimpan token autentikasi login sehingga Anda tidak perlu login berulang kali di setiap pergantian halaman.</li>
+                    <li><strong>Preferensi Pengguna:</strong> Mengingat pengaturan tema tampilan gelap (dark mode), volume audio player, dan status notifikasi.</li>
+                    <li>Kami <strong>tidak</strong> menyematkan cookie pelacak periklanan pihak ketiga (third-party tracking cookies).</li>
+                </ul>
+            </section>
+
+            <!-- Section 7 -->
+            <section id="section-7" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">7</div>
+                    <h2>Hak dan Kontrol Pengguna atas Data</h2>
+                </div>
+                <p>
+                    Anda memiliki kendali penuh atas data pribadi Anda dalam platform kami:
+                </p>
+                <ul>
+                    <li><strong>Hak Akses &amp; Pembaruan:</strong> Anda dapat meninjau dan mengubah informasi profil, email, maupun password kapan saja di halaman <a href="account/index.html" style="color: var(--accent-cyan);">Pengaturan Akun</a>.</li>
+                    <li><strong>Hak Penghapusan (Right to be Forgotten):</strong> Anda berhak mengajukan permohonan penutupan akun dan penghapusan data identitas permanen melalui tiket bantuan staf.</li>
+                    <li><strong>Hak Pelepasan Tautan Akun:</strong> Anda dapat memutuskan tautan Discord atau Minecraft dari akun web Anda sewaktu-waktu.</li>
+                </ul>
+            </section>
+
+            <!-- Section 8 -->
+            <section id="section-8" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">8</div>
+                    <h2>Perlindungan Privasi Pengguna di Bawah Umur</h2>
+                </div>
+                <p>
+                    Layanan kami ditujukan untuk komunitas pemain umum. Kami tidak secara sengaja mengumpulkan data pribadi sensitif dari anak-anak di bawah usia 13 tahun tanpa persetujuan orang tua atau wali hukum.
+                </p>
+                <p>
+                    Jika orang tua atau wali mendapati bahwa anak mereka telah memberikan data pribadi tanpa persetujuan, silakan hubungi tim kami untuk segera kami tindak lanjuti dan hapus dari sistem.
+                </p>
+            </section>
+
+            <!-- Section 9 -->
+            <section id="section-9" class="legal-section">
+                <div class="section-header">
+                    <div class="section-num" style="background: rgba(6, 182, 212, 0.15); color: var(--accent-cyan); border-color: rgba(6, 182, 212, 0.3);">9</div>
+                    <h2>Kontak Petugas Perlindungan Data</h2>
+                </div>
+                <p>
+                    Apabila Anda memiliki pertanyaan, keluhan, atau ingin menggunakan hak privasi Anda, silakan hubungi Tim Keamanan Data Hyrost:
+                </p>
+                <ul>
+                    <li><strong>Tiket Privasi &amp; Bantuan:</strong> <a href="modules/support.html" style="color: var(--accent-cyan);">hyrost.net/modules/support.html</a></li>
+                    <li><strong>Email Keamanan Data:</strong> <code style="color: var(--accent-cyan); background: rgba(0,0,0,0.4); padding: 2px 8px; border-radius: 4px;">privacy@hyrost.net</code></li>
+                    <li><strong>Komunitas Discord:</strong> <a href="bot/index.html" style="color: var(--accent-cyan);">Discord Support Hub (Bot Mei)</a></li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <!-- Floating Back to Top -->
+    <button class="btn-back-to-top" id="backToTop" aria-label="Kembali ke atas" style="background: var(--accent-cyan);">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="container footer-content">
+            <div class="footer-links">
+                <a href="index.html" class="footer-link">Home</a>
+                <a href="dashboard.html" class="footer-link">Dashboard</a>
+                <a href="bot/index.html" class="footer-link" style="color: #FF3385;"><i class="fab fa-discord"></i> Bot Mei</a>
+                <a href="modules/forum.html" class="footer-link">Forum</a>
+                <a href="modules/support.html" class="footer-link">Support</a>
+                <a href="terms.html" class="footer-link">Terms of Service</a>
+                <a href="privacy.html" class="footer-link" style="color: var(--accent-cyan); font-weight: 700;">Privacy Policy</a>
+            </div>
+            <p class="footer-text">
+                &copy; 2026 <strong style="color: var(--accent-indigo);">Hyrost Server</strong>. All rights reserved.
+            </p>
+        </div>
+    </footer>
+
+    <!-- Interactive Scripts -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile Menu Toggle
+            const hamburger = document.getElementById('hamburger');
+            const navLinksContainer = document.getElementById('navLinksContainer');
+            if (hamburger && navLinksContainer) {
+                hamburger.addEventListener('click', () => {
+                    hamburger.classList.toggle('active');
+                    navLinksContainer.classList.toggle('active');
+                });
+            }
+
+            // ScrollSpy & Back to Top
+            const sections = document.querySelectorAll('.legal-section');
+            const navLinks = document.querySelectorAll('.toc-link');
+            const backToTop = document.getElementById('backToTop');
+
+            window.addEventListener('scroll', () => {
+                let current = '';
+                sections.forEach(section => {
+                    const sectionTop = section.offsetTop - 150;
+                    if (window.scrollY >= sectionTop) {
+                        current = section.getAttribute('id');
+                    }
+                });
+
+                navLinks.forEach(link => {
+                    link.classList.remove('active');
+                    if (link.getAttribute('href') === `#${current}`) {
+                        link.classList.add('active');
+                    }
+                });
+
+                // Toggle Back to Top Button
+                if (backToTop) {
+                    if (window.scrollY > 400) {
+                        backToTop.classList.add('visible');
+                    } else {
+                        backToTop.classList.remove('visible');
+                    }
+                }
+            });
+
+            if (backToTop) {
+                backToTop.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+        });
+    </script>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme-light.css">
+</body>
+</html>

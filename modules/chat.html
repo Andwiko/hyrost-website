@@ -23,18 +23,19 @@
                 <h2>Hyrost</h2>
             </div>
             
+            <div class="nav-section-label">Navigasi Utama</div>
             <nav class="sidebar-nav">
                 <a href="../dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
                 </a>
                 <a href="../account/index.html" class="nav-item">
                     <i class="fas fa-user-circle"></i>
-                    <span>Profile</span>
+                    <span>Profil Saya</span>
                 </a>
-                <a href="../question/index.html" class="nav-item">
-                    <i class="fas fa-globe-asia"></i>
-                    <span>World</span>
+                <a href="store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
                 </a>
                 <a href="forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
@@ -48,17 +49,9 @@
                     <i class="fas fa-briefcase"></i>
                     <span>Storage</span>
                 </a>
-                <a href="../marketplace/shop.html" class="nav-item">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Shop</span>
-                </a>
-                <a href="../marketplace/auction.html" class="nav-item">
-                    <i class="fas fa-gavel"></i>
-                    <span>Auction</span>
-                </a>
-                <a href="role_shop.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>
-                    <span>Role Shop</span>
+                <a href="../marketplace/index.html" class="nav-item">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span>Marketplace</span>
                 </a>
                 <a href="rewards.html" class="nav-item">
                     <i class="fas fa-calendar-check"></i>
@@ -93,77 +86,52 @@
                 <div class="search-chat">
                     <input type="text" placeholder="Cari percakapan...">
                 </div>
-                <div class="conversation-list">
-                    <div class="conversation active">
-                        <img src="https://ui-avatars.com/api/?name=Steve+Craft&background=random" alt="User">
-                        <div class="conv-info">
-                            <h4>SteveCraft</h4>
-                            <p>Login kapan bro?</p>
-                        </div>
-                        <span class="time">10m</span>
-                    </div>
-                    <div class="conversation unread">
-                        <img src="https://ui-avatars.com/api/?name=Admin+Hyrost&background=random" alt="User">
-                        <div class="conv-info">
-                            <h4>Admin Hyrost</h4>
-                            <p>Tiket support Anda telah...</p>
-                        </div>
-                        <span class="badge">1</span>
-                    </div>
+                <div class="conversation-list" id="conversation-list">
+                    <!-- Dynamic conversation items loaded here -->
                 </div>
                 <div class="back-to-social">
                     <a href="social.html"><i class="fas fa-arrow-left"></i> Kembali ke Social Hub</a>
                 </div>
             </div>
 
-            <div class="chat-main">
+            <div class="chat-main" id="chat-main-area" style="display: none;">
                 <div class="chat-user-header">
                     <div class="user-details">
-                        <img src="https://ui-avatars.com/api/?name=Steve+Craft&background=random" alt="User">
+                        <img id="active-chat-avatar" src="https://ui-avatars.com/api/?name=User&background=random" alt="User">
                         <div>
-                            <h3>SteveCraft</h3>
-                            <span class="status online">Online</span>
+                            <h3 id="active-chat-name">SteveCraft</h3>
+                            <span class="status online" id="active-chat-status">Online</span>
                         </div>
                     </div>
                     <div class="chat-actions">
-                        <button><i class="fas fa-phone"></i></button>
-                        <button><i class="fas fa-video"></i></button>
-                        <button><i class="fas fa-ellipsis-v"></i></button>
+                        <button id="btn-block-active" title="Blokir Pengguna"><i class="fas fa-ban" style="color: #ef4444;"></i></button>
                     </div>
                 </div>
 
                 <div class="messages-area" id="messagesArea">
-                    <div class="message received">
-                        <p>Bro, nanti malam war clan jam berapa?</p>
-                        <span class="msg-time">19:30</span>
-                    </div>
-                    <div class="message sent">
-                        <p>Jam 8 malam bro, jangan telat ya!</p>
-                        <span class="msg-time">19:32</span>
-                    </div>
-                    <div class="message received">
-                        <p>Siap, gue siapin pot dulu.</p>
-                        <span class="msg-time">19:33</span>
-                    </div>
-                    <div class="message sent">
-                        <p>Oke mantap.</p>
-                        <span class="msg-time">19:35</span>
-                    </div>
-                     <div class="message received">
-                        <p>Login kapan bro?</p>
-                        <span class="msg-time">20:01</span>
-                    </div>
+                    <!-- Messages render here -->
                 </div>
 
                 <div class="message-input-area">
-                    <button class="attach-btn"><i class="fas fa-paperclip"></i></button>
                     <input type="text" id="msgInput" placeholder="Ketik pesan...">
                     <button class="send-btn" id="sendBtn"><i class="fas fa-paper-plane"></i></button>
                 </div>
             </div>
+            
+            <div class="chat-main" id="chat-placeholder-area" style="flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; color: rgba(255,255,255,0.35);">
+                <i class="fas fa-comments" style="font-size: 4rem; margin-bottom: 16px; opacity: 0.15;"></i>
+                <p style="font-weight: 500;">Pilih teman di bilah kiri untuk memulai percakapan</p>
+            </div>
         </main>
     </div>
 
-    <script src="social.js"></script>
+    <!-- Global Toast Toast Notification System -->
+    <div id="global-toast" class="toast-notification">
+        <i id="toast-icon" class="fas fa-info-circle"></i>
+        <span id="toast-message">Notifikasi</span>
+    </div>
+
+    <script src="../assets/js/mobileLayout.js"></script>
+    <script src="chat.js?v=2"></script>
 </body>
 </html>

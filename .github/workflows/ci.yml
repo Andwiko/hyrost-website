@@ -1,0 +1,22 @@
+name: Hyrost CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - run: npm install
+      - run: node -c backend/server.js
+      - run: node -c backend/app.js
+      - run: node -c backend/utils/localFileStore.js
+      - run: node -c backend/utils/googleDriveBackup.js
+      - run: node -c backend/controllers/paymentController.js

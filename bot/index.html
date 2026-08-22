@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mei Labs — Bot Discord Multifungsi &amp; Asisten AI Cerdas</title>
+  <meta name="description" content="Portofolio resmi Bot Discord Mei Labs (Mei). Asisten virtual cerdas bertenaga Google Gemini AI, sistem Leveling, Ekonomi RPG, Lavalink Music HQ, Master Setup Dashboard, dan integrasi Minecraft.">
+  <meta name="keywords" content="Discord Bot, Mei Labs, Asisten AI, Bot Musik Discord, Bot Moderasi, Leveling Card, Ekonomi Discord, Minecraft Bot">
+  <meta name="theme-color" content="#5865F2">
+
+  <!-- OpenGraph Meta Tags for Social Media -->
+  <meta property="og:title" content="Mei Labs — Bot Discord Multifungsi &amp; Asisten AI Cerdas">
+  <meta property="og:description" content="Asisten virtual cerdas bertenaga Gemini AI, sistem Leveling, Ekonomi RPG, Lavalink Music HQ, Master Setup Dashboard, dan integrasi server Minecraft.">
+  <meta property="og:image" content="assets/images/mei-banner.jpg">
+  <meta property="og:type" content="website">
+  <meta name="twitter:card" content="summary_large_image">
+
+  <!-- Favicon & Fonts -->
+  <link rel="icon" type="image/jpeg" href="assets/images/mei-avatar.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css?v=30">
+</head>
+<body>
+
+  <!-- Ambient Animated Light Overlay -->
+  <div class="bg-ambient-lights" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="bot-navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-avatar-wrapper">
+          <img src="assets/images/mei-avatar.jpg" alt="Mei Labs Avatar" class="brand-avatar" onerror="this.src='https://ui-avatars.com/api/?name=M&background=5865f2&color=fff'">
+          <span class="online-dot" title="Bot Online"></span>
+        </div>
+        <span class="brand-name">
+          Mei Labs <span class="brand-badge">v1.2.0</span>
+        </span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="botNavMenu">
+          <li><a href="#hero" class="nav-link active"><i class="fas fa-home"></i> Beranda</a></li>
+          <li><a href="#chat-demo" class="nav-link"><i class="fas fa-comments"></i> AI Chat</a></li>
+          <li><a href="#features" class="nav-link"><i class="fas fa-cubes"></i> Fitur</a></li>
+          <li><a href="#setup-dashboard" class="nav-link"><i class="fas fa-sliders-h"></i> !setup</a></li>
+          <li><a href="#switchboard" class="nav-link"><i class="fas fa-toggle-on"></i> Saklar (23)</a></li>
+          <li><a href="#rank-generator" class="nav-link"><i class="fas fa-id-card"></i> Rank Card</a></li>
+          <li><a href="#commands" class="nav-link"><i class="fas fa-terminal"></i> Perintah (197+)</a></li>
+          <li><a href="#embed-builder" class="nav-link"><i class="fas fa-palette"></i> Embed Builder</a></li>
+          <li><a href="../index.html" class="nav-link" style="color: var(--mei-cyan);"><i class="fas fa-arrow-left"></i> Web Hyrost</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-mei-primary open-invite-modal">
+          <i class="fab fa-discord"></i>
+          <span>Undang Bot</span>
+        </button>
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <!-- =========================================================================
+         HERO SECTION
+         ========================================================================= -->
+    <section class="hero-section" id="hero">
+      <div class="container">
+        <div class="hero-grid">
+          
+          <!-- Hero Content Left -->
+          <div class="hero-text-col">
+            <div class="hero-pill-badge">
+              <span class="pulse-indicator"></span>
+              <span>Online 24/7 ⚡ (v1.2.0 • Prefix: !)</span>
+            </div>
+            
+            <h1 class="hero-title">
+              Asisten Virtual Cerdas &amp; <br>
+              <span class="gradient-text-mei">Sahabat Komunitas</span> Discord
+            </h1>
+
+            <p class="hero-subtitle">
+              Temui <strong>Mei</strong>, bot Discord all-in-one bertenaga <strong>Google Gemini AI</strong>. Dilengkapi sistem leveling interaktif, ekonomi RPG (Mancing, Berburu, Kebun, AI Dungeon), Lavalink musik HQ 320kbps, Master Dashboard <code>!setup</code> (14 Kategori), dan jembatan Realm Minecraft Hyrost.
+            </p>
+
+            <div class="hero-cta-group">
+              <button class="btn-mei-magenta open-invite-modal">
+                <i class="fab fa-discord"></i>
+                <span>Undang Mei ke Server</span>
+              </button>
+              <a href="#chat-demo" class="btn-mei-glass">
+                <i class="fas fa-sparkles" style="color: var(--mei-magenta);"></i>
+                <span>Coba AI Chat Simulator</span>
+              </a>
+              <a href="#commands" class="btn-mei-glass">
+                <i class="fas fa-code"></i>
+                <span>Lihat 197+ Command</span>
+              </a>
+            </div>
+
+            <!-- Fast Performance Metrics Ticker -->
+            <div class="hero-quick-specs">
+              <div class="spec-item">
+                <span class="spec-value" id="liveBotPing" style="color: var(--mei-emerald);">18ms</span>
+                <span class="spec-label">Latensi WebSocket Discord</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-value" id="liveBotMemory" style="color: var(--mei-cyan);">45.2 MB</span>
+                <span class="spec-label">Pemakaian Memori RAM</span>
+              </div>
+              <div class="spec-item">
+                <span class="spec-value" style="color: var(--mei-gold);">99.98%</span>
+                <span class="spec-label">Uptime Ketersediaan</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Hero Character Visual Right -->
+          <div class="hero-character-col">
+            <div class="character-hero-card">
+              <div class="character-media-wrapper">
+                <img src="assets/images/mei-banner.jpg" alt="Mei Character Visual" class="character-media-img" onerror="this.src='assets/images/mei-avatar.jpg'">
+                <div class="character-overlay-gradient"></div>
+
+                <!-- Interactive Clickable Quote Bubble -->
+                <div class="character-quote-bubble" id="characterQuoteBubble" title="Klik untuk dengarkan kutipan lain!">
+                  <img src="assets/images/mei-avatar.jpg" alt="Mei Mini" class="quote-avatar-mini">
+                  <div class="quote-content">
+                    <div class="quote-header">
+                      <span>Mei • Asisten Virtual</span>
+                      <span class="quote-tap-hint"><i class="fas fa-sync-alt"></i> Klik quote</span>
+                    </div>
+                    <div class="quote-text" id="meiQuoteText">
+                      "Halo kak! Aku Mei, mahasiswi 18 tahun sekaligus asisten resmi server Discord Mei Labs! ✨"
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         1. LIVE AI CHAT SIMULATOR (Google Gemini Engine)
+         ========================================================================= -->
+    <section class="section" id="chat-demo">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">POWERED BY GOOGLE GEMINI AI</span>
+          <h2 class="section-title">Coba Simulator Obrolan AI Langsung</h2>
+          <p class="section-subtitle">
+            Rasakan kecerdasan persona Mei dalam merespon pesan secara kontekstual, ramah, dan solutif.
+          </p>
+        </div>
+
+        <div class="chat-simulator-wrapper">
+          <!-- Quick Prompt Buttons -->
+          <div class="quick-prompts-bar">
+            <span class="prompt-hint">💡 Klik contoh pertanyaan cepat:</span>
+            <button class="quick-prompt-btn" data-prompt="Halo Mei! Kamu bisa bantu apa saja di server Discord?">✨ Fitur Utama</button>
+            <button class="quick-prompt-btn" data-prompt="Bagaimana cara main game ekonomi dan RPG di server?">💰 Ekonomi &amp; RPG</button>
+            <button class="quick-prompt-btn" data-prompt="Jelaskan sistem leveling dan tema rank card kamu!">📈 Sistem Leveling</button>
+            <button class="quick-prompt-btn" data-prompt="Gimana cara konfigurasi bot pakai command !setup?">🎛️ Master !setup</button>
+            <button class="quick-prompt-btn" data-prompt="Ceritain lelucon lucu dong Mei!">😂 Cerita Lelucon</button>
+            <button class="quick-prompt-btn" data-prompt="Cek status server Minecraft Hyrost!">⛏️ Status Minecraft</button>
+          </div>
+
+          <!-- Chat Window Box -->
+          <div class="discord-chat-window">
+            <div class="chat-window-header">
+              <div class="channel-info">
+                <i class="fas fa-hashtag channel-icon"></i>
+                <span class="channel-name">tanya-mei</span>
+                <span class="channel-topic">| Obrolan langsung dengan AI Assistant Mei Labs</span>
+              </div>
+              <div class="header-status-badge">
+                <i class="fas fa-robot"></i> Simulasi Discord Auto-Chat
+              </div>
+            </div>
+
+            <!-- Message Area -->
+            <div class="chat-messages-area" id="chatMessagesArea">
+              <div class="discord-msg">
+                <img src="assets/images/mei-avatar.jpg" alt="Mei" class="msg-avatar" onerror="this.src='assets/images/mei-avatar.jpg'">
+                <div class="msg-body">
+                  <div class="msg-header">
+                    <span class="msg-author" style="color: #FF3385;">Mei</span>
+                    <span class="msg-bot-tag">BOT</span>
+                    <span class="msg-time">Hari ini</span>
+                  </div>
+                  <div class="msg-text">
+                    Halo kak! ✨ Selamat datang di channel simulasi Mei Labs! Kakak bisa tanya apa saja seputar fitur bot, cara setting <code>!setup</code>, grinding XP &amp; koin, dengerin joke, atau tes respon AI Mei di sini. Mau coba tanya apa nih? 😊
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Typing Indicator -->
+            <div class="typing-indicator" id="typingIndicator" style="display: none;">
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <div class="typing-dot"></div>
+              <span>Mei sedang mengetik balasan...</span>
+            </div>
+
+            <!-- Chat Input Bar -->
+            <div class="chat-input-bar">
+              <input type="text" class="chat-input" id="chatUserInput" placeholder="Ketik pesan untuk Mei... (tekan Enter untuk kirim)" autocomplete="off">
+              <button class="chat-send-btn" id="chatSendBtn" aria-label="Kirim Pesan">
+                <i class="fas fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         2. FEATURE PLAYGROUND TABS (Music, RPG, Moderation, Tickets, Minecraft)
+         ========================================================================= -->
+    <section class="section" id="features">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">MODULAR ARCHITECTURE (23 FITUR)</span>
+          <h2 class="section-title">Fitur Komprehensif Tanpa Batas</h2>
+          <p class="section-subtitle">
+            Didesain modular untuk memenuhi seluruh kebutuhan server gaming, komunitas edukasi, maupun tongkrongan santai.
+          </p>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="feature-tabs-nav">
+          <button class="tab-btn active" data-tab="music">
+            <i class="fas fa-music"></i> <span>Music Lavalink HQ</span>
+          </button>
+          <button class="tab-btn" data-tab="economy">
+            <i class="fas fa-coins"></i> <span>Ekonomi &amp; 5 Sistem RPG</span>
+          </button>
+          <button class="tab-btn" data-tab="moderation">
+            <i class="fas fa-shield-alt"></i> <span>Moderasi &amp; Anti-Raid</span>
+          </button>
+          <button class="tab-btn" data-tab="tickets">
+            <i class="fas fa-ticket-alt"></i> <span>Sistem Tiket Support</span>
+          </button>
+          <button class="tab-btn" data-tab="minecraft">
+            <i class="fas fa-cube"></i> <span>Minecraft Realm Bridge</span>
+          </button>
+        </div>
+
+        <!-- Tab 1: Music HQ -->
+        <div class="feature-tab-content active" id="tab-music">
+          <div class="tab-showcase-box">
+            <div class="tab-info-col">
+              <h3>🎵 Audio Berkualitas Tinggi 24/7 (3 Node Lavalink)</h3>
+              <p>
+                Ditenagai cluster multi-node <strong>Lavalink v2.10</strong> (MilloHost &amp; Serenetia SSL) dengan pemutaran tanpa jeda (gapless playback), filter audio 8D, bassboost, equalizer, dan kontrol <code>!volume</code> 0-200%.
+              </p>
+              <ul class="tab-feature-bullets">
+                <li><i class="fas fa-check-circle"></i> Mendukung YouTube, Spotify, SoundCloud, dan direct audio streams.</li>
+                <li><i class="fas fa-check-circle"></i> Filter audio: <code>!8d</code>, <code>!filter bassboost</code>, <code>!filter nightcore</code>, <code>!volume</code>.</li>
+                <li><i class="fas fa-check-circle"></i> Node failover otomatis: <code>lava-v4.millohost.my.id</code> &amp; <code>lavalinkv4.serenetia.com</code>.</li>
+              </ul>
+              <button class="btn-mei-primary" onclick="copyCommand('!play Lofi Beats')">
+                <i class="fas fa-play"></i> <span>Coba Command !play</span>
+              </button>
+            </div>
+
+            <!-- Music Player Interactive Mockup -->
+            <div class="tab-visual-col">
+              <div class="mockup-music-card">
+                <div class="music-now-playing">
+                  <img src="assets/images/mei-avatar.jpg" alt="Track Cover" class="music-cover-art" onerror="this.src='assets/images/mei-avatar.jpg'">
+                  <div class="music-track-info">
+                    <h5>Lofi Girl — Beats to Relax / Study to</h5>
+                    <p id="musicTrackStatus">Sedang Memutar • MilloHost-v4-SSL (320kbps)</p>
+                  </div>
+                  <!-- Equalizer -->
+                  <div class="audio-equalizer">
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                    <div class="eq-bar"></div>
+                  </div>
+                </div>
+
+                <div class="music-progress-bar-wrap">
+                  <div class="music-progress-fill"></div>
+                </div>
+
+                <div class="music-controls-row">
+                  <i class="fas fa-random" title="Shuffle"></i>
+                  <i class="fas fa-step-backward" title="Previous"></i>
+                  <button class="play-pause-btn" id="musicPlayBtn" title="Play/Pause">
+                    <i class="fas fa-pause"></i>
+                  </button>
+                  <i class="fas fa-step-forward" title="Next"></i>
+                  <i class="fas fa-redo" title="Repeat"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Economy & 5 RPG Systems -->
+        <div class="feature-tab-content" id="tab-economy">
+          <div class="tab-showcase-box">
+            <div class="tab-info-col">
+              <h3>💰 Ekosistem Ekonomi, Toko &amp; 5 Sistem RPG</h3>
+              <p>
+                Bangun kekayaan virtual di server! Kerja harian <code>!work</code>, memancing ikan langka <code>!fish</code>, berkebun <code>!farm</code>, berburu monster <code>!hunt</code>, atau bertualang di AI Dungeon <code>!adventure</code>.
+              </p>
+              <ul class="tab-feature-bullets">
+                <li><i class="fas fa-check-circle"></i> <strong>5 Game RPG:</strong> Fishing Pier, Hunting Camp, Virtual Farm, AI Dungeon, dan Skill Tree.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Katalog Toko Mewah:</strong> Laptop, Phone, Mobil, Rumah, Private Jet, Yacht, dan Gaming PC.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Market P2P &amp; Mini-Games:</strong> Slots 3-baris, Coinflip, Bet, Gamble, dan Lelang Komunitas.</li>
+              </ul>
+              <button class="btn-mei-primary" onclick="copyCommand('!daily')">
+                <i class="fas fa-coins"></i> <span>Klaim Saldo !daily</span>
+              </button>
+            </div>
+
+            <div class="tab-visual-col">
+              <div style="background:var(--bg-surface-2, #121827); border:1px solid var(--border-subtle); border-radius:var(--radius-lg); padding:20px;">
+                <div style="display:flex; justify-content:space-between; margin-bottom:14px; border-bottom:1px solid rgba(255,255,255,0.06); padding-bottom:10px;">
+                  <span style="font-weight:700; color:var(--mei-gold);"><i class="fas fa-gamepad"></i> 5 Game RPG Interaktif</span>
+                  <span style="font-weight:800; color:#fff;">💰 Saldo: 1,450,000 MC</span>
+                </div>
+                <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:10px;">
+                  <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
+                    <div style="font-size:1.2rem;">🎣</div>
+                    <div style="font-weight:700; font-size:0.85rem;">Fishing Pier</div>
+                    <div style="font-size:0.75rem; color:var(--mei-cyan);">!fish &bull; 4 Zona Ikan</div>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
+                    <div style="font-size:1.2rem;">🏹</div>
+                    <div style="font-weight:700; font-size:0.85rem;">Hunting Camp</div>
+                    <div style="font-size:0.75rem; color:var(--mei-gold);">!hunt &bull; Monster Loot</div>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
+                    <div style="font-size:1.2rem;">🌾</div>
+                    <div style="font-weight:700; font-size:0.85rem;">Virtual Farm</div>
+                    <div style="font-size:0.75rem; color:var(--mei-emerald);">!farm &bull; Panen Bibit</div>
+                  </div>
+                  <div style="background:rgba(255,255,255,0.03); padding:10px; border-radius:8px; border:1px solid var(--border-subtle);">
+                    <div style="font-size:1.2rem;">🏰</div>
+                    <div style="font-weight:700; font-size:0.85rem;">AI Dungeon RPG</div>
+                    <div style="font-size:0.75rem; color:var(--mei-magenta);">!adventure &bull; Bos AI</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Moderation -->
+        <div class="feature-tab-content" id="tab-moderation">
+          <div class="tab-showcase-box">
+            <div class="tab-info-col">
+              <h3>🛡️ Keamanan &amp; Perlindungan Server Tangguh</h3>
+              <p>
+                Lindungi komunitas dari serbuan bot jahat (raid), link berbahaya, spam massal, dan toxic chat dengan sistem auto-mod &amp; verifikasi captcha canggih.
+              </p>
+              <ul class="tab-feature-bullets">
+                <li><i class="fas fa-check-circle"></i> Captcha button verification (Math &amp; Emoji) untuk anggota baru.</li>
+                <li><i class="fas fa-check-circle"></i> Audit logging otomatis untuk pesan terhapus, diedit, dan voice log.</li>
+                <li><i class="fas fa-check-circle"></i> Command cepat: Kick, Ban, Softban, Hackban, Mute, Clear, Lock &amp; Slowmode.</li>
+              </ul>
+              <button class="btn-mei-primary" onclick="copyCommand('!warn @user spamming')">
+                <i class="fas fa-shield-alt"></i> <span>Tes Command Moderasi</span>
+              </button>
+            </div>
+
+            <div class="tab-visual-col">
+              <div style="background:var(--bg-surface-2, #121827); border:1px solid rgba(231,76,60,0.4); border-radius:var(--radius-lg); padding:20px;">
+                <div style="display:flex; align-items:center; gap:8px; margin-bottom:14px; color:var(--mei-danger); font-weight:700;">
+                  <i class="fas fa-shield-virus"></i> Auto-Moderation Alert System
+                </div>
+                <div style="background:rgba(0,0,0,0.3); border-left:3px solid var(--mei-danger); padding:10px 14px; border-radius:4px; font-size:0.85rem; margin-bottom:10px;">
+                  <strong>[Auto-Mod]</strong> Deteksi spam link mencurigakan dari <span style="color:#ED4245">@BadActor</span> &bull; Pesan otomatis dihapus &amp; member di-mute 10 menit.
+                </div>
+                <div style="background:rgba(0,0,0,0.3); border-left:3px solid var(--mei-emerald); padding:10px 14px; border-radius:4px; font-size:0.85rem;">
+                  <strong>[Verification]</strong> Member baru berhasil menyelesaikan Math Captcha &bull; Role <span style="color:#57F287">@Verified</span> diberikan otomatis.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 4: Tickets -->
+        <div class="feature-tab-content" id="tab-tickets">
+          <div class="tab-showcase-box">
+            <div class="tab-info-col">
+              <h3>🎫 Sistem Tiket Bantuan (Discohook Style)</h3>
+              <p>
+                Kelola keluhan, donasi, dan bug report secara profesional melalui channel privat otomatis menggunakan komponen modern Discord Dropdown &amp; Button.
+              </p>
+              <ul class="tab-feature-bullets">
+                <li><i class="fas fa-check-circle"></i> Kategori tiket: 🎫 General Support, 💵 Buycraft / Store, 🐛 Bug Report.</li>
+                <li><i class="fas fa-check-circle"></i> Transcript HTML otomatis dikirim ke log saat tiket ditutup.</li>
+                <li><i class="fas fa-check-circle"></i> Tombol Claim tiket untuk staf dan rating kepuasan 1-5 bintang.</li>
+              </ul>
+              <button class="btn-mei-primary" onclick="copyCommand('!ticket')">
+                <i class="fas fa-ticket-alt"></i> <span>Setup Tiket !ticket</span>
+              </button>
+            </div>
+
+            <div class="tab-visual-col">
+              <div style="background:#2B2D31; border-radius:var(--radius-md); padding:18px; border-left:4px solid var(--mei-primary);">
+                <h5 style="color:#fff; margin-bottom:6px;">🎫 Mei Tickets — Pusat Bantuan</h5>
+                <p style="font-size:0.85rem; color:#DBDEE1; margin-bottom:14px;">
+                  Pilih kategori bantuan dari menu dropdown di bawah ini:<br>
+                  🎫 General Support &bull; 💵 Buycraft Store &bull; 🐛 Bug Report
+                </p>
+                <div style="background:#1E1F22; border:1px solid #3F4147; padding:10px 14px; border-radius:4px; display:flex; justify-content:space-between; align-items:center; font-size:0.85rem; color:#fff;">
+                  <span>🎫 Pilih Kategori Tiket...</span>
+                  <i class="fas fa-chevron-down" style="color:#949BA4;"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 5: Minecraft Integration -->
+        <div class="feature-tab-content" id="tab-minecraft">
+          <div class="tab-showcase-box">
+            <div class="tab-info-col">
+              <h3>⛏️ Jembatan Komunitas Minecraft Realm</h3>
+              <p>
+                Terhubung langsung dengan server Minecraft Hyrost! Pantau status server secara live, cek skin &amp; UUID pemain, dan sinkronkan rank game ke role Discord secara otomatis.
+              </p>
+              <ul class="tab-feature-bullets">
+                <li><i class="fas fa-check-circle"></i> Status ping &amp; player count server Hyrost real-time (Interval: 5 Menit).</li>
+                <li><i class="fas fa-check-circle"></i> Lookup pemain Java &amp; Bedrock Edition dalam 1 detik.</li>
+                <li><i class="fas fa-check-circle"></i> Auto role sync dengan data akun Hyrost Web.</li>
+              </ul>
+              <button class="btn-mei-primary" onclick="copyCommand('!mcstatus')">
+                <i class="fas fa-server"></i> <span>Cek Status Server !mcstatus</span>
+              </button>
+            </div>
+
+            <div class="tab-visual-col">
+              <div style="background:var(--bg-surface-2, #121827); border:1px solid var(--border-glow); border-radius:var(--radius-lg); padding:24px;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+                  <div>
+                    <h5 style="font-size:1.1rem; font-weight:800; color:#fff;">Hyrost Realm Minecraft</h5>
+                    <p style="font-size:0.8rem; color:var(--text-muted);">Java &amp; Bedrock &bull; play.hyrost.net</p>
+                  </div>
+                  <span style="background:rgba(87,242,135,0.15); color:var(--mei-emerald); padding:4px 10px; border-radius:var(--radius-full); font-size:0.75rem; font-weight:800;">
+                    ONLINE 🟢
+                  </span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                  <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:8px;">
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Pemain Online</div>
+                    <div style="font-size:1.2rem; font-weight:800; color:var(--mei-cyan);">128 / 500</div>
+                  </div>
+                  <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:8px;">
+                    <div style="font-size:0.75rem; color:var(--text-muted);">Versi Game</div>
+                    <div style="font-size:1.2rem; font-weight:800; color:#fff;">1.20.x - 1.21.x</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         3. MASTER SERVER SETUP DASHBOARD SIMULATOR (!setup - 14 Categories)
+         ========================================================================= -->
+    <section class="section" id="setup-dashboard">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">MASTER CONTROL PANEL (14 KATEGORI)</span>
+          <h2 class="section-title">Master Server Setup Dashboard <span class="gradient-text-discord">(!setup)</span></h2>
+          <p class="section-subtitle">
+            Kelola seluruh ekosistem bot di server Discord Anda hanya dengan satu perintah interaktif <code>!setup</code>.
+          </p>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-glow); border-radius: var(--radius-xl); padding: 28px; backdrop-filter: blur(16px);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 14px;">
+            <div>
+              <h3 id="setupDashboardTitle" style="font-size: 1.25rem; font-weight: 800; color: #fff;">⚙️ Master Server Setup Dashboard</h3>
+              <p id="setupDashboardDesc" style="font-size: 0.85rem; color: var(--text-dim);">Pilih kategori pengaturan untuk melihat status dan channel routing server.</p>
+            </div>
+            <div>
+              <label for="setupCategorySelect" style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Pilih 1 dari 14 Kategori Pengaturan:</label>
+              <select id="setupCategorySelect" class="control-input" style="min-width: 260px; cursor: pointer;">
+                <option value="home">🏠 1. Beranda (Overview Status)</option>
+                <option value="features">⚙️ 2. Saklar Fitur Modular (23 Fitur)</option>
+                <option value="rpg">🎣 3. RPG &amp; Minigames Channel</option>
+                <option value="market">⚖️ 4. Market &amp; Lelang Komunitas</option>
+                <option value="voice_music">🔊 5. Voice &amp; Music System Setup</option>
+                <option value="categories">📁 6. Category &amp; Channel Routing</option>
+                <option value="welcome">👋 7. Welcome &amp; Leave System</option>
+                <option value="community">📢 8. Community Channels</option>
+                <option value="takerole">🎭 9. Take Role (Self-Roles)</option>
+                <option value="moderation">🛡️ 10. Moderation &amp; Security</option>
+                <option value="utility">🛠️ 11. Utility &amp; Features</option>
+                <option value="minecraft">🎮 12. Minecraft Realm &amp; Stats</option>
+                <option value="verification">✅ 13. Verification Captcha</option>
+                <option value="ui">🎨 14. UI &amp; Embed Settings</option>
+              </select>
+            </div>
+          </div>
+
+          <div id="setupDashboardGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 20px;">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 16px; flex-wrap: wrap; gap: 10px;">
+            <span style="font-size: 0.82rem; color: var(--text-muted);"><i class="fas fa-info-circle" style="color: var(--mei-cyan);"></i> Jalankan <code>!setup</code> atau <code>/setup</code> di server Discord Anda untuk membuka panel live ini.</span>
+            <button class="btn-mei-primary" onclick="copyCommand('!setup')">
+              <i class="fas fa-sliders-h"></i> <span>Salin Command !setup</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         4. 23 MODULAR FEATURE SWITCHBOARD (!features)
+         ========================================================================= -->
+    <section class="section" id="switchboard">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">INTERACTIVE SWITCHBOARD</span>
+          <h2 class="section-title">Saklar 23 Fitur Modular <span class="gradient-text-mei">(!features)</span></h2>
+          <p class="section-subtitle">
+            Coba simulasi saklar kendali interaktif untuk mengaktifkan atau menonaktifkan fitur bot per server.
+          </p>
+        </div>
+
+        <div style="background: var(--bg-card); border: 1px solid var(--border-subtle); border-radius: var(--radius-xl); padding: 28px; backdrop-filter: blur(16px);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <h3 style="font-size: 1.2rem; font-weight: 800; color: #fff;">🎛️ Switchboard Fitur Server</h3>
+              <p style="font-size: 0.85rem; color: var(--text-muted);">Klik tombol status pada kartu fitur untuk menguji saklar on/off real-time.</p>
+            </div>
+            <span id="switchboardActiveCount" style="background: rgba(87,242,135,0.15); color: var(--mei-emerald); padding: 4px 12px; border-radius: var(--radius-full); font-size: 0.82rem; font-weight: 800;">
+              23 / 23 Fitur Aktif
+            </span>
+          </div>
+
+          <div id="featureSwitchboardGrid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 10px; margin-bottom: 18px;">
+            <!-- Rendered by JS -->
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border-subtle); padding-top: 14px; flex-wrap: wrap; gap: 10px;">
+            <span style="font-size: 0.82rem; color: var(--text-muted);"><i class="fas fa-terminal" style="color: var(--mei-primary);"></i> Ketik <code>!features</code> di server Discord untuk membuka dashboard saklar ini.</span>
+            <button class="btn-mei-primary" onclick="copyCommand('!features')">
+              <i class="fas fa-toggle-on"></i> <span>Salin Command !features</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         5. LIVE RANK CARD GENERATOR & CUSTOMIZER
+         ========================================================================= -->
+    <section class="section" id="rank-generator">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">CANVAS &amp; DOM GENERATOR</span>
+          <h2 class="section-title">Kustomisasi <span class="gradient-text-mei">Rank Card Leveling</span></h2>
+          <p class="section-subtitle">
+            Coba generator kartu profil Discord secara langsung! Menggunakan tema resmi <code>cyber</code>, <code>discord</code>, dan <code>emerald</code> dengan gelar level dinamis.
+          </p>
+        </div>
+
+        <div class="rank-card-showcase-grid">
+          <!-- Controls Column -->
+          <div class="rank-controls-col">
+            <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 8px;">Pengaturan Kartu</h3>
+
+            <div class="control-group">
+              <label class="control-label" for="rankInputName">Nama Pengguna (Username):</label>
+              <input type="text" id="rankInputName" class="control-input" value="Iko Dev">
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="rankInputTag">Tag Discriminator:</label>
+              <input type="text" id="rankInputTag" class="control-input" value="#0001">
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+              <div class="control-group">
+                <label class="control-label" for="rankInputLevel">Level (1-999):</label>
+                <input type="number" id="rankInputLevel" class="control-input" value="48" min="1" max="999">
+              </div>
+              <div class="control-group">
+                <label class="control-label" for="rankInputXP">Progres XP (%):</label>
+                <input type="number" id="rankInputXP" class="control-input" value="72" min="1" max="100">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label">Pilih Tema Kartu Resmi:</label>
+              <div class="color-theme-picker">
+                <div class="color-swatch active" data-theme="cyber" style="background: linear-gradient(135deg, #a855f7, #ec4899);" title="Cyber Theme (Default)"></div>
+                <div class="color-swatch" data-theme="discord" style="background: #5865F2;" title="Discord Blue Theme"></div>
+                <div class="color-swatch" data-theme="emerald" style="background: #10b981;" title="Emerald Green Theme"></div>
+                <div class="color-swatch" data-theme="gold" style="background: #FEE75C;" title="Gold Economy Theme"></div>
+              </div>
+            </div>
+
+            <div style="font-size: 0.8rem; color: var(--text-muted); margin-top: 4px;">
+              Ganti tema di Discord: <code>!rank cyber</code> &bull; <code>!rank discord</code> &bull; <code>!rank emerald</code>
+            </div>
+
+            <button class="btn-mei-primary" style="margin-top: 10px;" onclick="copyCommand('!rank')">
+              <i class="fas fa-terminal"></i> <span>Gunakan di Discord: !rank</span>
+            </button>
+          </div>
+
+          <!-- Live Card Preview Column -->
+          <div class="rank-card-preview-wrapper">
+            <div class="rank-card-canvas-box" id="rankCardCanvas">
+              <div class="rank-card-inner-grid">
+                <!-- Avatar -->
+                <div class="rank-avatar-box">
+                  <img src="assets/images/mei-avatar.jpg" alt="User Avatar" class="rank-avatar-img" id="cardAvatarImg" onerror="this.src='assets/images/mei-avatar.jpg'">
+                  <span class="rank-avatar-badge" id="cardRankNum">#4</span>
+                </div>
+
+                <!-- User Info & XP Bar -->
+                <div class="rank-user-info">
+                  <div class="rank-top-row">
+                    <div>
+                      <span class="rank-username" id="cardUsername">Iko Dev</span>
+                      <span class="rank-tag" id="cardTag">#0001</span>
+                      <span id="cardTitleBadge" style="display:inline-block; font-size: 0.72rem; background: rgba(255,255,255,0.12); padding: 1px 8px; border-radius: 999px; margin-left: 6px; color: var(--mei-gold);">🔥 Skilled</span>
+                    </div>
+                    <div class="rank-scores">
+                      LEVEL <strong id="cardLevelNum">48</strong>
+                    </div>
+                  </div>
+
+                  <!-- Progress bar -->
+                  <div class="rank-progress-container">
+                    <div class="rank-progress-bar" id="cardProgressBar"></div>
+                  </div>
+
+                  <div class="rank-xp-text">
+                    <span id="cardXpCurrent">34,560</span> / <span id="cardXpTarget">48,000</span> XP
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center;">
+              <i class="fas fa-magic"></i> Pratinjau visual kartu yang dirender bot pada channel Discord saat menjalankan <code>!rank</code>.
+            </p>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         6. INSTANT COMMAND EXPLORER (197+ Real Commands)
+         ========================================================================= -->
+    <section class="section" id="commands">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">COMPLETE CATALOG (197 PERINTAH)</span>
+          <h2 class="section-title">Eksplorasi 197+ Perintah Bot</h2>
+          <p class="section-subtitle">
+            Cari dan salin seluruh perintah modular bot Mei Labs yang aktif di Discord.
+          </p>
+        </div>
+
+        <div class="command-explorer-container">
+          <!-- Search Bar -->
+          <div class="command-search-bar-wrap">
+            <i class="fas fa-search search-icon"></i>
+            <input type="text" class="command-search-input" id="commandSearchInput" placeholder="Cari nama command, alias, atau deskripsi (misal: setup, embed, play, hunt, fish, rank, verify)..." autocomplete="off">
+            <span class="search-badge-hint">Tekan / untuk fokus</span>
+          </div>
+
+          <!-- Category Chips -->
+          <div class="category-filter-chips">
+            <button class="category-chip active" data-cat="all"><i class="fas fa-th-large"></i> Semua (197+)</button>
+            <button class="category-chip" data-cat="General"><i class="fas fa-bookmark"></i> General (47)</button>
+            <button class="category-chip" data-cat="AI"><i class="fas fa-brain"></i> AI Assistant</button>
+            <button class="category-chip" data-cat="Economy"><i class="fas fa-coins"></i> Economy &amp; RPG (25)</button>
+            <button class="category-chip" data-cat="Leveling"><i class="fas fa-chart-line"></i> Leveling (15)</button>
+            <button class="category-chip" data-cat="Moderation"><i class="fas fa-shield-alt"></i> Moderation &amp; Setup (37)</button>
+            <button class="category-chip" data-cat="Music"><i class="fas fa-music"></i> Music HQ (16)</button>
+            <button class="category-chip" data-cat="Utility"><i class="fas fa-tools"></i> Utility (20)</button>
+            <button class="category-chip" data-cat="Fun"><i class="fas fa-gamepad"></i> Fun &amp; Games (17)</button>
+            <button class="category-chip" data-cat="Image"><i class="fas fa-image"></i> Image (11)</button>
+            <button class="category-chip" data-cat="Plugin"><i class="fas fa-plug"></i> Plugin &amp; Mgmt (9)</button>
+          </div>
+
+          <!-- Total Count Badge -->
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <span id="commandsCountBadge" style="font-size: 0.85rem; font-weight: 700; color: var(--mei-cyan);">Memuat perintah...</span>
+            <span style="font-size: 0.8rem; color: var(--text-muted);">Klik ikon salin pada kartu untuk menyalin nama command</span>
+          </div>
+
+          <!-- Commands Grid (Rendered via JS) -->
+          <div class="commands-grid" id="commandsGrid">
+            <!-- Dynamic Command Cards -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================================
+         7. DISCORD EMBED BUILDER WITH REAL PRESETS
+         ========================================================================= -->
+    <section class="section" id="embed-builder">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-badge">INTERACTIVE EMBED BUILDER</span>
+          <h2 class="section-title">Discord Embed Builder &amp; Presets <span class="gradient-text-discord">(!embed)</span></h2>
+          <p class="section-subtitle">
+            Gunakan preset resmi (Announcement, Rules, Partner, Giveaway, VIP) atau buat pesan kaya kustom Anda sendiri.
+          </p>
+        </div>
+
+        <div class="embed-builder-grid">
+          <!-- Embed Settings Form -->
+          <div style="display: flex; flex-direction: column; gap: 14px;">
+            <h3 style="font-size: 1.25rem; font-weight: 800;">Pilih Preset / Edit Konten</h3>
+
+            <!-- Preset Buttons -->
+            <div style="display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px;">
+              <button class="category-chip embed-preset-btn active" data-preset="announcement">📢 Announcement</button>
+              <button class="category-chip embed-preset-btn" data-preset="rules">📜 Rules</button>
+              <button class="category-chip embed-preset-btn" data-preset="partner">🤝 Partner</button>
+              <button class="category-chip embed-preset-btn" data-preset="giveaway">🎉 Giveaway</button>
+              <button class="category-chip embed-preset-btn" data-preset="vip">💎 VIP Benefit</button>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="embedInputAuthor">Nama Author / Pengirim:</label>
+              <input type="text" id="embedInputAuthor" class="control-input" value="📢 Mei Labs • Official Announcement">
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="embedInputTitle">Judul Embed (Title):</label>
+              <input type="text" id="embedInputTitle" class="control-input" value="📢 PENGUMUMAN RESMI KOMUNITAS">
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="embedInputDesc">Deskripsi Pesan:</label>
+              <textarea id="embedInputDesc" class="control-input" rows="4" style="resize: vertical;">Halo semuanya! Ada informasi penting yang perlu diperhatikan oleh seluruh member server mengenai pembaruan fitur bot v1.2.0 dan event mingguan.</textarea>
+            </div>
+
+            <div class="control-group">
+              <label class="control-label" for="embedInputColor">Warna Garis Samping (Hex Color):</label>
+              <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="color" id="embedInputColor" value="#5865F2" style="background:none; border:none; width:44px; height:40px; cursor:pointer;">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">Pilih warna embed kustom sesuai kategori</span>
+              </div>
+            </div>
+
+            <button class="btn-mei-primary" onclick="copyCommand('!embed')">
+              <i class="fas fa-paper-plane"></i> <span>Gunakan di Discord: !embed</span>
+            </button>
+          </div>
+
+          <!-- Discord Mockup Preview Box -->
+          <div>
+            <h3 style="font-size: 1.25rem; font-weight: 800; margin-bottom: 12px;">Live Discord Embed Preview</h3>
+            <div class="discord-embed-card" id="discordEmbedCard">
+              <div class="embed-author" id="previewEmbedAuthor">
+                <img src="assets/images/mei-avatar.jpg" alt="Author" style="width:20px;height:20px;border-radius:50%;" onerror="this.src='assets/images/mei-avatar.jpg'">
+                <span>📢 Mei Labs • Official Announcement</span>
+              </div>
+              <h4 class="embed-title" id="previewEmbedTitle">📢 PENGUMUMAN RESMI KOMUNITAS</h4>
+              <p class="embed-desc" id="previewEmbedDesc">
+                Halo semuanya! Ada informasi penting yang perlu diperhatikan oleh seluruh member server mengenai pembaruan fitur bot v1.2.0 dan event mingguan.
+              </p>
+              <div class="embed-footer" id="previewEmbedFooter">
+                <span>Official Server Announcement • Mei Labs</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Discord Invite Modal -->
+  <div class="invite-modal-overlay" id="inviteModalOverlay">
+    <div class="invite-modal-box">
+      <div class="invite-modal-header">
+        <h3><i class="fab fa-discord"></i> Undang Mei Labs ke Server</h3>
+        <button class="close-modal-btn" id="closeInviteModal">&times;</button>
+      </div>
+      <div class="invite-modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+          Pilih izin hak akses yang ingin diberikan kepada Mei Labs di server Discord Anda:
+        </p>
+
+        <div class="perm-options-list">
+          <div class="perm-option-item selected" data-perm="8">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Administrator (Rekomendasi)</h5>
+              <p>Memberikan akses penuh otomatis untuk auto-mod, ticketing, voice generator, dan setup.</p>
+            </div>
+          </div>
+
+          <div class="perm-option-item" data-perm="277025508352">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Standard Moderation &amp; Music</h5>
+              <p>Izin mengelola pesan, mengusir pelanggar, memutar audio di voice channel, dan leveling.</p>
+            </div>
+          </div>
+
+          <div class="perm-option-item" data-perm="37088256">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Basic / Mini-Games Only</h5>
+              <p>Hanya izin mengirim pesan teks, embed, reaksi, dan obrolan AI.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">URL Undangan Resmi:</label>
+          <input type="text" id="generatedInviteLink" class="control-input" readonly value="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands">
+        </div>
+      </div>
+      <div class="invite-modal-footer">
+        <a href="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener" class="btn-mei-magenta" id="generateInviteBtn" style="width: 100%; text-align: center;">
+          <i class="fab fa-discord"></i> Buka Otorisasi Discord
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="background: var(--bg-surface-1, #0d121f); border-top: 1px solid var(--border-subtle); padding: 40px 0 30px; text-align: center; margin-top: 60px;">
+    <div class="container">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <img src="assets/images/mei-avatar.jpg" alt="Logo" style="width: 32px; height: 32px; border-radius: 50%;" onerror="this.src='assets/images/mei-avatar.jpg'">
+        <span style="font-weight: 800; font-size: 1.1rem; color: #fff;">Mei Labs <span style="font-size: 0.75rem; color: var(--mei-magenta); background: rgba(255,51,133,0.15); padding: 2px 8px; border-radius: 99px;">v1.2.0</span></span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 600px; margin: 0 auto 16px;">
+        Asisten Discord Multifungsi &amp; AI Bot Komunitas Resmi Hyrost Realm Network. Ditenagai Node.js, Discord.js, Lavalink HQ Audio, dan Google Gemini AI.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 18px; font-size: 0.85rem;">
+        <a href="../index.html" style="color: var(--mei-cyan); text-decoration: none;"><i class="fas fa-globe"></i> Portal Hyrost</a>
+        <a href="../verify-user.html" style="color: var(--text-dim); text-decoration: none;"><i class="fab fa-discord"></i> Discord Linked Roles</a>
+        <a href="../terms.html" style="color: var(--text-dim); text-decoration: none;">Ketentuan Layanan</a>
+        <a href="../privacy.html" style="color: var(--text-dim); text-decoration: none;">Privasi</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js?v=20"></script>
+</body>
+</html>

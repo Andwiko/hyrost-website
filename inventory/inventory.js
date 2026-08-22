@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', function() {
+    window.scrollTo(0, 0);
     checkAuthentication();
     setupSidebar();
     
     // Listen for updates from other scripts
     window.addEventListener('userProfileUpdated', () => {
         checkAuthentication();
+        renderMinecraftConnectionStatus();
     });
     loadInventory();
+    renderMinecraftConnectionStatus();
     checkGlobalSettings();
 });
 
@@ -23,6 +26,12 @@ function checkAuthentication() {
             const currentUser = JSON.parse(currentUserStr);
             console.log('User loaded:', currentUser);
             
+            if (currentUser && currentUser.role && currentUser.role.toString().toLowerCase() === 'admin') {
+                document.body.classList.add('is-admin');
+            } else {
+                document.body.classList.remove('is-admin');
+            }
+
             // Update UI with user info
             const userNameEl = document.getElementById('userName');
             const userRoleEl = document.getElementById('userRole');
@@ -56,104 +65,583 @@ function checkAuthentication() {
     }
 }
 
-// Sidebar Functionality
+// Sidebar Functionality & Mobile Drawer Management
 function setupSidebar() {
+    if (window.HyrostMobileLayout) {
+        HyrostMobileLayout.init();
+        return;
+    }
     const sidebar = document.querySelector('.sidebar');
-    const sidebarToggle = document.getElementById('sidebarToggle');
-    const sidebarOverlay = document.getElementById('sidebarOverlay');
+    if (!sidebar) return;
 
-    if (sidebarToggle) {
-        sidebarToggle.addEventListener('click', () => {
-            sidebar.classList.toggle('active');
-            if (sidebarOverlay) sidebarOverlay.classList.toggle('active');
-        });
+    // Check / Inject mobile header if missing in the page
+    let mobileHeader = document.querySelector('.mobile-header');
+    if (!mobileHeader) {
+        const container = document.querySelector('.dashboard-container') || document.body;
+        mobileHeader = document.createElement('div');
+        mobileHeader.className = 'mobile-header';
+        const isSubdir = window.location.pathname.toLowerCase().includes('/modules/') || window.location.pathname.toLowerCase().includes('/account/') || window.location.pathname.toLowerCase().includes('/inventory/') || window.location.pathname.toLowerCase().includes('/marketplace/');
+        const logoPath = isSubdir ? '../assets/images/hyrost.png' : 'assets/images/hyrost.png';
+        mobileHeader.innerHTML = `
+            <button id="sidebarToggle" class="btn-header-action" aria-label="Toggle Navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="${logoPath}" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+            </div>
+            <button class="btn-header-action" onclick="if(typeof logout === 'function') logout(); else { localStorage.clear(); window.location.href='/index.html'; }" title="Keluar">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        `;
+        container.insertBefore(mobileHeader, container.firstChild);
     }
 
-    if (sidebarOverlay) {
-        sidebarOverlay.addEventListener('click', () => {
-            sidebar.classList.remove('active');
-            sidebarOverlay.classList.remove('active');
-        });
+    // Ensure overlay exists
+    let overlay = document.getElementById('sidebarOverlay');
+    if (!overlay) {
+        overlay = document.createElement('div');
+        overlay.id = 'sidebarOverlay';
+        overlay.className = 'sidebar-overlay';
+        document.body.appendChild(overlay);
     }
+
+    // Toggle sidebar function
+    const toggleSidebar = (e) => {
+        if (e) e.stopPropagation();
+        const isOpen = sidebar.classList.contains('active') || sidebar.classList.contains('open');
+        if (isOpen) {
+            sidebar.classList.remove('active', 'open');
+            overlay.classList.remove('active');
+            document.body.style.overflow = '';
+        } else {
+            sidebar.classList.add('active', 'open');
+            overlay.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    };
+
+    window.toggleMobileSidebar = toggleSidebar;
+
+    // Bind all hamburger / toggle buttons
+    const toggleBtns = document.querySelectorAll('#sidebarToggle, .sidebar-toggle, .hamburger, [data-toggle="sidebar"], .mobile-header .btn-header-action');
+    
+    toggleBtns.forEach(btn => {
+        if (btn.getAttribute('data-bound')) return;
+        btn.setAttribute('data-bound', 'true');
+        btn.addEventListener('click', toggleSidebar);
+    });
+
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active', 'open');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    });
+
+    // Close drawer when clicking any navigation link on mobile
+    const navItems = sidebar.querySelectorAll('.nav-item, a');
+    navItems.forEach(item => {
+        item.addEventListener('click', () => {
+            if (window.innerWidth <= 992) {
+                sidebar.classList.remove('active', 'open');
+                overlay.classList.remove('active');
+                document.body.style.overflow = '';
+            }
+        });
+    });
 }
 
-// Comprehensive Sidebar Management
+// Comprehensive Sidebar Management (Matching Admin Design)
 function refreshSidebar(role) {
-    const nav = document.querySelector('.sidebar-nav');
+    const sidebar = document.querySelector('.sidebar');
+    if (!sidebar) return;
+
+    const path = window.location.pathname.toLowerCase().replace(/\\/g, '/');
+    const isSubdir = path.includes('/account/') || path.includes('/modules/') || path.includes('/inventory/') || path.includes('/marketplace/') || path.includes('/auth/');
+    const logoSrc = isSubdir ? '../assets/images/hyrost.png' : 'assets/images/hyrost.png';
+
+    // Upgrade header branding to match admin sidebar header
+    let header = sidebar.querySelector('.sidebar-header');
+    if (header) {
+        header.className = 'sidebar-header';
+        header.innerHTML = `
+            <img src="${logoSrc}" alt="Hyrost Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+            <div class="brand-text">
+                <h2>Hyrost</h2>
+                <span>Member Realm</span>
+            </div>
+        `;
+    }
+
+    const nav = sidebar.querySelector('.sidebar-nav');
     if (!nav) return;
 
-    const currentPath = window.location.pathname;
-    
-    // Define all standard links and their requirements
+    if (role && role.toString().toLowerCase() === 'admin') {
+        document.body.classList.add('is-admin');
+    } else {
+        document.body.classList.remove('is-admin');
+    }
+
     const links = [
-        { name: 'Beranda', icon: 'fa-home', href: '/dashboard.html', altHrefs: ['/index.html', '/'] },
-        { name: 'Profil Saya', icon: 'fa-user-circle', href: '/account/index.html' },
-        { name: 'World', icon: 'fa-globe-asia', href: '/question/index.html' },
-        { name: 'Forum', icon: 'fa-comments', href: '/modules/forum.html' },
-        { name: 'Storage', icon: 'fa-briefcase', href: '/inventory/inventory.html' },
-        { name: 'Shop (Market)', icon: 'fa-shopping-bag', href: '/marketplace/shop.html' },
-        { name: 'Role Shop', icon: 'fa-store', href: '/modules/role_shop.html', color: '#e98a22' },
-        { name: 'Info', icon: 'fa-info-circle', href: '#' },
-        { name: 'Admin Panel', icon: 'fa-user-shield', href: '/modules/admin.html', color: '#ff4d4d', adminOnly: true }
+        { name: 'Dashboard', icon: 'fa-chart-pie', href: '/dashboard.html', pageKey: 'dashboard' },
+        { name: 'Profil Saya', icon: 'fa-user-circle', href: '/account/index.html', pageKey: 'account' },
+        { name: 'Toko Pangkat', icon: 'fa-crown', href: '/modules/store.html', pageKey: 'store', iconStyle: 'color:var(--accent-gold);' },
+        { name: 'Forum', icon: 'fa-comments', href: '/modules/forum.html', pageKey: 'forum' },
+        { name: 'Leaderboard', icon: 'fa-trophy', href: '/modules/leaderboard.html', pageKey: 'leaderboard' },
+        { name: 'Inventaris', icon: 'fa-box', href: '/inventory/inventory.html', pageKey: 'inventory' },
+        { name: 'Marketplace', icon: 'fa-store', href: '/marketplace/index.html', pageKey: 'marketplace' },
+        { name: 'Daily Rewards', icon: 'fa-gift', href: '/modules/rewards.html', pageKey: 'rewards' },
+        { name: 'Wiki & Guide', icon: 'fa-book', href: '/modules/wiki.html', pageKey: 'wiki' },
+        { name: 'Pertemanan', icon: 'fa-users', href: '/modules/social.html', pageKey: 'social' },
+        { name: 'Pusat Bantuan', icon: 'fa-headset', href: '/modules/support.html', pageKey: 'support' },
+        { name: 'Admin Panel', icon: 'fa-user-shield', href: '/modules/admin.html', pageKey: 'admin', adminOnly: true }
     ];
 
-    // Clear and rebuild to ensure consistency and order
     nav.innerHTML = '';
-    
+
+    // Determine active menu key
+    let activeKey = 'dashboard';
+    if (path.includes('/account/')) activeKey = 'account';
+    else if (path.includes('/marketplace/')) activeKey = 'marketplace';
+    else if (path.includes('/inventory/')) activeKey = 'inventory';
+    else if (path.includes('store')) activeKey = 'store';
+    else if (path.includes('forum')) activeKey = 'forum';
+    else if (path.includes('leaderboard')) activeKey = 'leaderboard';
+    else if (path.includes('rewards')) activeKey = 'rewards';
+    else if (path.includes('social')) activeKey = 'social';
+    else if (path.includes('support')) activeKey = 'support';
+    else if (path.includes('admin')) activeKey = 'admin';
+    else if (path.includes('wiki')) activeKey = 'wiki';
+
+    let hasAdminSection = false;
+
     links.forEach(link => {
-        // Check permissions
-        if (link.adminOnly && (!role || role.toLowerCase() !== 'admin')) return;
-        
+        if (link.adminOnly) {
+            if (!role || role.toLowerCase() !== 'admin') return;
+            if (!hasAdminSection) {
+                const label = document.createElement('div');
+                label.className = 'nav-section-label';
+                label.style.marginTop = '12px';
+                label.textContent = 'ADMIN PANEL';
+                nav.appendChild(label);
+                hasAdminSection = true;
+            }
+        }
+
+        let relativeHref = link.href;
+        if (isSubdir) {
+            if (link.href.startsWith('/')) relativeHref = '..' + link.href;
+        } else {
+            if (link.href.startsWith('/')) relativeHref = link.href.substring(1);
+        }
+
         const a = document.createElement('a');
-        a.href = link.href;
+        a.href = relativeHref;
         a.className = 'nav-item';
-        
-        // Active state detection
-        const isCurrent = (link.href !== '#' && currentPath.endsWith(link.href)) || 
-                          (link.altHrefs && link.altHrefs.some(alt => currentPath.endsWith(alt))) ||
-                          (currentPath === '/' && link.href === '/dashboard.html');
-        
-        if (isCurrent) a.classList.add('active');
-        
+        if (link.adminOnly) a.classList.add('nav-admin');
+        if (link.pageKey === activeKey) a.classList.add('active');
+
         a.innerHTML = `
-            <i class="fas ${link.icon}" style="${link.color ? `color: ${link.color};` : ''}"></i>
+            <i class="fas ${link.icon}" ${link.iconStyle ? `style="${link.iconStyle}"` : ''}></i>
             <span>${link.name}</span>
         `;
         nav.appendChild(a);
     });
+
+    // Upgrade bottom server status widget to match admin design
+    let serverWidget = sidebar.querySelector('.server-status-widget, .sidebar-bottom');
+    if (!serverWidget) {
+        serverWidget = document.createElement('div');
+        sidebar.appendChild(serverWidget);
+    }
+    serverWidget.className = 'sidebar-bottom';
+    serverWidget.innerHTML = `
+        <div class="sidebar-server-pill">
+            <div class="server-pill-row">
+                <span><i class="fas fa-server" style="margin-right:5px; color:var(--accent-cyan);"></i>Status Server</span>
+                <span class="status-dot" id="sidebarStatusDot"></span>
+            </div>
+            <div class="server-pill-ip">play.hyrost.net</div>
+            <div class="server-pill-players">
+                <i class="fas fa-users"></i> <span id="sidebarOnlinePlayers">128</span> Online
+            </div>
+        </div>
+    `;
 }
 
-// Mock Inventory Loading
-function loadInventory() {
-    const inventoryGrid = document.getElementById('inventoryGrid');
-    if (!inventoryGrid) return;
+// Comprehensive Inventory Data & State Management
+let userInventoryItems = [];
+let activeCategory = 'all';
 
-    // Simulate fetching items
-    const items = [
-        { name: "Iron Sword", desc: "A trusty weapon.", icon: "fa-khanda", type: "weapon" },
-        { name: "Golden Apple", desc: "Restores health.", icon: "fa-apple-alt", type: "food" },
-        { name: "Diamond Pickaxe", desc: "Mines everything.", icon: "fa-hammer", type: "tool" },
-        { name: "Mystic Potion", desc: "Unknown effects.", icon: "fa-flask", type: "potion" },
-        { name: "Ancient Scroll", desc: "Contains wisdom.", icon: "fa-scroll", type: "quest" },
-        { name: "Shield", desc: "Blocks attacks.", icon: "fa-shield-alt", type: "armor" },
-    ];
+function getCurrentUserId() {
+    try {
+        const userStr = localStorage.getItem('currentUser');
+        if (userStr) {
+            const user = JSON.parse(userStr);
+            return user.id || user.username || 'default_user';
+        }
+    } catch(e) {}
+    return 'default_user';
+}
 
-    inventoryGrid.innerHTML = ''; // Clear loading/placeholder
+function loadUserInventoryFromStorage() {
+    // Legacy localStorage removed — inventory is server-side only
+    userInventoryItems = [];
+}
 
-    items.forEach(item => {
-        const itemCard = document.createElement('div');
-        itemCard.className = 'inventory-item';
-        itemCard.innerHTML = `
-            <div class="item-visual">
-                <i class="fas ${item.icon}"></i>
-            </div>
-            <h3>${item.name}</h3>
-            <p>${item.desc}</p>
-            <button class="btn-use">Use</button>
-        `;
-        inventoryGrid.appendChild(itemCard);
+async function loadInventoryFromAPI() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) {
+        userInventoryItems = [];
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/inventory', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+            userInventoryItems = await res.json();
+        } else {
+            userInventoryItems = [];
+        }
+    } catch (e) {
+        console.error('Failed to load inventory:', e);
+        userInventoryItems = [];
+    }
+}
+
+function saveUserInventoryToStorage() {
+    // No-op: inventory persisted on server
+}
+
+async function loadInventory() {
+    await loadInventoryFromAPI();
+    setupCategoryTabs();
+    filterInventoryItems();
+}
+
+function setupCategoryTabs() {
+    const tabs = document.querySelectorAll('.inv-tab-btn');
+    tabs.forEach(tab => {
+        tab.onclick = () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            activeCategory = tab.getAttribute('data-cat');
+            filterInventoryItems();
+        };
     });
 }
+
+function filterInventoryItems() {
+    const grid = document.getElementById('inventoryGrid');
+    if (!grid) return;
+
+    const searchInput = document.getElementById('invSearchInput');
+    const query = (searchInput?.value || '').toLowerCase().trim();
+    const sortVal = document.getElementById('invSortSelect')?.value || 'newest';
+
+    const rarityOrder = { mythic: 5, legendary: 4, epic: 3, rare: 2, common: 1 };
+
+    let filtered = userInventoryItems.filter(item => {
+        const matchesCat = (activeCategory === 'all') || (item.type === activeCategory);
+        const matchesQuery = item.name.toLowerCase().includes(query) || (item.desc || '').toLowerCase().includes(query);
+        return matchesCat && matchesQuery;
+    });
+
+    // Sorting
+    if (sortVal === 'rarity-desc') {
+        filtered.sort((a, b) => (rarityOrder[b.rarity] || 0) - (rarityOrder[a.rarity] || 0));
+    } else if (sortVal === 'name-asc') {
+        filtered.sort((a, b) => a.name.localeCompare(b.name));
+    } else if (sortVal === 'qty-desc') {
+        filtered.sort((a, b) => b.qty - a.qty);
+    }
+
+    renderInventoryGrid(filtered);
+    updateStorageStats();
+}
+
+function getMcClaimButtonHtml(item) {
+    const status = item.mcClaimStatus || 'none';
+    if (status === 'queued') {
+        return `<button class="btn-equip" style="flex:1; opacity:0.7; cursor:not-allowed; background:#f59e0b33; border-color:#f59e0b;" disabled>
+            <i class="fas fa-clock"></i> Antrean MC
+        </button>`;
+    }
+    if (status === 'delivered') {
+        return `<button class="btn-equip" style="flex:1; opacity:0.6; cursor:not-allowed; background:#6b728033;" disabled>
+            <i class="fas fa-check"></i> Sudah Diklaim
+        </button>`;
+    }
+    return `<button class="btn-equip" style="flex:1; background: linear-gradient(135deg, #84cc16, #65a30d); border-color:#84cc16;" onclick="claimItemToMinecraft(${item.id})">
+        <i class="fas fa-cube"></i> Claim MC
+    </button>`;
+}
+
+function renderInventoryGrid(items) {
+    const grid = document.getElementById('inventoryGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+
+    if (items.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align:center; padding: 40px 20px; background: rgba(18, 24, 38, 0.6); border-radius: 20px; border: 1px dashed rgba(99, 102, 241, 0.4);">
+                <i class="fas fa-box-open" style="font-size:3.5rem; color:#6366f1; margin-bottom:14px;"></i>
+                <h3 style="color:#fff; margin:0 0 6px; font-weight:800;">Inventaris Anda Masih Kosong</h3>
+                <p style="color:#9ca3af; font-size:0.9rem; max-width:480px; margin:0 auto 20px;">
+                    Item muncul di sini setelah Anda membeli dari toko admin atau marketplace user lain.
+                </p>
+                <a href="../marketplace/shop.html" class="btn-equip" style="display:inline-flex; max-width:320px; margin:0 auto; padding:12px 24px; font-size:0.95rem; background: linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-weight:800; text-decoration:none; border-radius:12px; justify-content:center; gap:8px;">
+                    <i class="fas fa-store"></i> Buka Toko Kosmetik
+                </a>
+            </div>
+        `;
+        return;
+    }
+
+    items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = `inventory-item rarity-${item.rarity || 'common'}`;
+        
+        const equippedHtml = item.equipped ? `<span class="equipped-badge"><i class="fas fa-check"></i> TERPASANG</span>` : '';
+
+        const claimBtnHtml = getMcClaimButtonHtml(item);
+
+        card.innerHTML = `
+            ${equippedHtml}
+            <div class="item-visual" onclick="openItemDetailModal(${item.id})">
+                <i class="fas ${item.icon}"></i>
+            </div>
+            <span class="rarity-badge ${item.rarity || 'common'}">${(item.rarity || 'common').toUpperCase()}</span>
+            <h3 class="item-title" style="margin-top:6px;">${item.name}</h3>
+            <div class="item-category">${item.type} • Qty: ${item.qty}x • ${item.pluginId || 'hyrost_bridge'}</div>
+            <div style="display:flex; gap:8px; width:100%; margin-top:12px;">
+                <button class="btn-equip" style="flex:1;" onclick="openItemDetailModal(${item.id})">
+                    <i class="fas fa-info-circle"></i> Detail
+                </button>
+                ${claimBtnHtml}
+            </div>
+        `;
+        grid.appendChild(card);
+    });
+}
+
+function updateStorageStats() {
+    const totalSlots = 50;
+    const usedSlots = userInventoryItems.length;
+    const percentage = Math.min(100, Math.round((usedSlots / totalSlots) * 100));
+
+    const capacityText = document.getElementById('slotCapacityText');
+    if (capacityText) capacityText.textContent = `${usedSlots} / ${totalSlots} Slot`;
+
+    const progressFill = document.getElementById('slotProgressBar');
+    if (progressFill) progressFill.style.width = `${percentage}%`;
+
+    const equippedCount = userInventoryItems.filter(i => i.equipped).length;
+    const equippedText = document.getElementById('equippedCountText');
+    if (equippedText) equippedText.textContent = `${equippedCount} Item Aktif`;
+
+    const totalVal = userInventoryItems.reduce((acc, curr) => acc + (curr.value * curr.qty), 0);
+    const totalValText = document.getElementById('totalValueText');
+    if (totalValText) totalValText.textContent = `~ ${totalVal.toLocaleString('id-ID')} Koin`;
+}
+
+function openItemDetailModal(id) {
+    const item = userInventoryItems.find(i => i.id === id);
+    if (!item) return;
+
+    const modal = document.getElementById('itemDetailModal');
+    if (!modal) return;
+
+    document.getElementById('modalItemVisual').innerHTML = `<i class="fas ${item.icon}"></i>`;
+    document.getElementById('modalItemRarity').className = `rarity-badge ${item.rarity || 'common'}`;
+    document.getElementById('modalItemRarity').textContent = (item.rarity || 'common').toUpperCase();
+    document.getElementById('modalItemName').textContent = item.name;
+    document.getElementById('modalItemCategory').textContent = `Tipe: ${item.type.toUpperCase()}`;
+    document.getElementById('modalItemDesc').textContent = item.desc;
+    document.getElementById('modalItemQty').textContent = `${item.qty}x Unit`;
+    document.getElementById('modalItemCode').textContent = item.itemCode;
+    
+    const equippedStatus = document.getElementById('modalItemEquippedStatus');
+    if (equippedStatus) {
+        equippedStatus.textContent = item.equipped ? "Terpasang (Aktif)" : "Belum Terpasang";
+        equippedStatus.style.color = item.equipped ? "#10b981" : "#9ca3af";
+    }
+
+    const btnEquip = document.getElementById('btnModalEquip');
+    if (btnEquip) {
+        btnEquip.innerHTML = item.equipped ? '<i class="fas fa-times"></i> Lepas Kosmetik' : '<i class="fas fa-tshirt"></i> Pasang Kosmetik';
+        btnEquip.onclick = async () => {
+            const token = localStorage.getItem('hyrostToken');
+            if (!token) return alert('Silakan login terlebih dahulu');
+            try {
+                const res = await fetch(`/api/inventory/${item.id}/equip`, {
+                    method: 'PATCH',
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                if (res.ok) {
+                    item.equipped = !item.equipped;
+                    openItemDetailModal(id);
+                    filterInventoryItems();
+                    if (typeof showToast === 'function') {
+                        showToast(item.equipped ? `Berhasil memasang ${item.name}` : `Berhasil melepas ${item.name}`, 'success');
+                    }
+                }
+            } catch (e) {
+                alert('Gagal memperbarui item');
+            }
+        };
+    }
+
+    const btnClaim = document.getElementById('btnModalClaimMC');
+    if (btnClaim) {
+        btnClaim.onclick = () => {
+            claimItemToMinecraft(item.id);
+            closeItemDetailModal();
+        };
+    }
+
+    modal.classList.add('active');
+}
+
+function closeItemDetailModal() {
+    const modal = document.getElementById('itemDetailModal');
+    if (modal) modal.classList.remove('active');
+}
+window.openItemDetailModal = openItemDetailModal;
+window.closeItemDetailModal = closeItemDetailModal;
+
+async function checkMinecraftLinkStatus() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return null;
+    try {
+        const res = await fetch('/api/minecraft/link-status', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            return data.isLinked ? data : null;
+        }
+    } catch (e) {}
+    return null;
+}
+
+async function renderMinecraftConnectionStatus() {
+    const statusData = await checkMinecraftLinkStatus();
+    const bannerContainer = document.querySelector('.top-user-banner');
+    if (!bannerContainer) return;
+
+    let linkBadge = document.getElementById('mcLinkStatusBadge');
+    if (!linkBadge) {
+        linkBadge = document.createElement('div');
+        linkBadge.id = 'mcLinkStatusBadge';
+        linkBadge.style.marginTop = '6px';
+        bannerContainer.querySelector('div')?.appendChild(linkBadge);
+    }
+
+    if (statusData && statusData.isLinked) {
+        linkBadge.innerHTML = `
+            <span style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; background:rgba(16,185,129,0.15); color:#10b981; border:1px solid rgba(16,185,129,0.3); padding:4px 10px; border-radius:9999px;">
+                <i class="fas fa-cube"></i> Terhubung ke MC: <strong>${statusData.mcUsername}</strong>
+            </span>
+        `;
+    } else {
+        linkBadge.innerHTML = `
+            <a href="../account/index.html" style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:4px 10px; border-radius:9999px; text-decoration:none;">
+                <i class="fas fa-exclamation-triangle"></i> Akun MC Belum Ditautkan • Klik untuk Tautkan
+            </a>
+        `;
+    }
+}
+
+async function claimAllItemsToMinecraft() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return alert("Silakan login terlebih dahulu!");
+
+    const mcStatus = await checkMinecraftLinkStatus();
+    if (!mcStatus || !mcStatus.isLinked) {
+        if (confirm("⚠️ Akun Minecraft Anda belum ditautkan!\nApakah Anda ingin membuka Halaman Profil untuk menautkan Username Minecraft sekarang?")) {
+            window.location.href = '../account/index.html';
+        }
+        return;
+    }
+
+    if (userInventoryItems.length === 0) {
+        return alert("Inventaris Anda kosong. Tidak ada item yang bisa diklaim.");
+    }
+
+    if (!confirm(`Apakah Anda yakin ingin mengklaim seluruh (${userInventoryItems.length}) item ke server Minecraft (${mcStatus.mcUsername})?`)) return;
+
+    try {
+        let successCount = 0;
+        const remainingItems = [];
+
+        for (const item of userInventoryItems) {
+            if (!item.canClaimToMc && item.mcClaimStatus !== 'none') continue;
+            const res = await fetch(`/api/inventory/${item.id}/claim-mc`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (res.ok) {
+                successCount++;
+            } else {
+                remainingItems.push(item);
+            }
+        }
+
+        userInventoryItems = remainingItems;
+        await loadInventoryFromAPI();
+        filterInventoryItems();
+
+        alert(`✅ Sukses mengirim ${successCount} paket item ke antrean /claim server Minecraft (${mcStatus.mcUsername})!`);
+    } catch (err) {
+        alert(`Gagal memproses klaim massal: ${err.message}`);
+    }
+}
+window.claimAllItemsToMinecraft = claimAllItemsToMinecraft;
+
+async function claimItemToMinecraft(id) {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return alert("Silakan login terlebih dahulu!");
+
+    const mcStatus = await checkMinecraftLinkStatus();
+    if (!mcStatus || !mcStatus.isLinked) {
+        if (confirm("⚠️ Akun Minecraft Anda belum ditautkan!\nApakah Anda ingin membuka Halaman Profil untuk menautkan Username Minecraft Anda sekarang?")) {
+            window.location.href = '../account/index.html';
+        }
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/inventory/${id}/claim-mc`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            await loadInventoryFromAPI();
+            filterInventoryItems();
+            alert(`✅ ${data.message}`);
+        } else {
+            alert(`⚠️ ${data.message || "Gagal memproses klaim."}`);
+        }
+    } catch (err) {
+        alert(`Error: ${err.message}`);
+    }
+}
+window.claimItemToMinecraft = claimItemToMinecraft;
+window.filterInventoryItems = filterInventoryItems;
+
 
 // Sync User Profile with Server
 async function syncUserProfile() {
@@ -206,26 +694,48 @@ async function checkGlobalSettings() {
         // 2. Global Announcement Banner
         if (settings.announcement && settings.announcement.trim() !== '') {
             const banner = document.createElement('div');
+            banner.id = 'hyrostGlobalAnnouncementBanner';
             banner.style.cssText = `
-                background: linear-gradient(90deg, #e98a22, #d07a1e);
-                color: white;
+                background: linear-gradient(90deg, rgba(99, 102, 241, 0.95), rgba(6, 182, 212, 0.95));
+                backdrop-filter: blur(10px);
+                color: #ffffff;
                 text-align: center;
-                padding: 10px;
-                font-weight: bold;
+                padding: 7px 16px;
+                font-size: 0.85rem;
+                font-weight: 700;
                 position: fixed;
                 top: 0; left: 0; right: 0;
                 z-index: 9999;
-                box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+                border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+                transition: opacity 0.5s ease, transform 0.5s ease;
+                opacity: 1;
+                transform: translateY(0);
             `;
             banner.innerHTML = `<i class="fas fa-bullhorn"></i> ${settings.announcement}`;
             
             document.body.appendChild(banner);
             
-            // Adjust sidebar or main content if necessary to not hide behind banner
+            // Adjust sidebar or main content
             const sidebar = document.querySelector('.sidebar');
-            if (sidebar) sidebar.style.top = '40px';
-            const mainContent = document.querySelector('.main-content') || document.querySelector('.dashboard-container');
-            if (mainContent) mainContent.style.marginTop = '40px';
+            if (sidebar) sidebar.style.top = '34px';
+            const mainContent = document.querySelector('.main-content');
+            if (mainContent) mainContent.style.marginTop = '34px';
+
+            // Auto hide banner 5 seconds after entering
+            setTimeout(() => {
+                banner.style.opacity = '0';
+                banner.style.transform = 'translateY(-100%)';
+
+                if (sidebar) sidebar.style.top = '0px';
+                if (mainContent) mainContent.style.marginTop = '0px';
+
+                setTimeout(() => {
+                    if (banner && banner.parentNode) {
+                        banner.parentNode.removeChild(banner);
+                    }
+                }, 500);
+            }, 5000);
         }
 
     } catch (err) {

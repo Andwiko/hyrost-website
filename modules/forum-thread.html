@@ -3,257 +3,165 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detail Thread - Forum Minecraft</title>
-    <link rel="stylesheet" href="../dashboard.css">
-    <link rel="stylesheet" href="forum-styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <title>Hyrost — Thread Forum</title>
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    <link rel="stylesheet" href="forum_dashboard.css?v=50">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body style="background: #0f0f0f">
-    <div class="dashboard-container">
-        <!-- Sidebar -->
-        <aside class="sidebar" id="mainSidebar">
-            <div class="sidebar-header">
-                <img src="../assets/images/hyrost.png" alt="Logo">
-                <h2>Hyrost</h2>
-            </div>
-            
-            <nav class="sidebar-nav">
-                <a href="../dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
-                </a>
-                <a href="../account/index.html" class="nav-item">
-                    <i class="fas fa-user-circle"></i>
-                    <span>Profile</span>
-                </a>
-                <a href="../question/index.html" class="nav-item">
-                    <i class="fas fa-globe-asia"></i>
-                    <span>World</span>
-                </a>
-                <a href="forum.html" class="nav-item active">
-                    <i class="fas fa-comments"></i>
-                    <span>Forum</span>
-                </a>
-                <a href="leaderboard.html" class="nav-item">
-                    <i class="fas fa-trophy"></i>
-                    <span>Leaderboard</span>
-                </a>
-                <a href="../inventory/inventory.html" class="nav-item">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Storage</span>
-                </a>
-                <a href="../marketplace/shop.html" class="nav-item">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Shop</span>
-                </a>
-                <a href="../marketplace/auction.html" class="nav-item">
-                    <i class="fas fa-gavel"></i>
-                    <span>Auction</span>
-                </a>
-                <a href="role_shop.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>
-                    <span>Role Shop</span>
-                </a>
-                <a href="rewards.html" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
-                    <span>Daily Rewards</span>
-                </a>
-                <a href="wiki.html" class="nav-item">
-                    <i class="fas fa-book"></i>
-                    <span>Wiki</span>
-                </a>
-                <a href="social.html" class="nav-item">
-                    <i class="fas fa-users"></i>
-                    <span>Social</span>
-                </a>
-                <a href="support.html" class="nav-item">
-                    <i class="fas fa-headset"></i>
-                    <span>Support</span>
-                </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Info</span>
-                </a>
-            </nav>
-        </aside>
+<body>
+<div class="dashboard-container">
+    <aside class="sidebar" id="mainSidebar">
+        <div class="sidebar-header">
+            <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+            <h2>Hyrost</h2>
+        </div>
+        <div class="nav-section-label">Navigasi Utama</div>
+        <nav class="sidebar-nav">
+            <a href="../dashboard.html" class="nav-item"><i class="fas fa-chart-pie"></i><span>Dashboard</span></a>
+            <a href="../account/index.html" class="nav-item"><i class="fas fa-user-circle"></i><span>Profil Saya</span></a>
+            <a href="store.html" class="nav-item"><i class="fas fa-crown" style="color:var(--accent-gold);"></i><span>Toko Pangkat</span></a>
+            <a href="forum.html" class="nav-item active"><i class="fas fa-comments"></i><span>Forum</span></a>
+            <a href="leaderboard.html" class="nav-item"><i class="fas fa-trophy"></i><span>Leaderboard</span></a>
+            <a href="../inventory/inventory.html" class="nav-item"><i class="fas fa-box"></i><span>Inventaris</span></a>
+            <a href="../marketplace/index.html" class="nav-item"><i class="fas fa-store"></i><span>Marketplace</span></a>
+            <a href="rewards.html" class="nav-item"><i class="fas fa-gift"></i><span>Daily Rewards</span></a>
+            <a href="wiki.html" class="nav-item"><i class="fas fa-book"></i><span>Wiki &amp; Guide</span></a>
+            <a href="social.html" class="nav-item"><i class="fas fa-users"></i><span>Pertemanan</span></a>
+            <a href="support.html" class="nav-item"><i class="fas fa-headset"></i><span>Pusat Bantuan</span></a>
+            <div class="nav-divider"></div>
+            <div class="nav-section-label nav-section-admin">Admin Panel</div>
+            <a href="admin.html" class="nav-item nav-admin"><i class="fas fa-user-shield"></i><span>Admin Panel</span></a>
+        </nav>
+        <div class="server-status-widget">
+            <div class="widget-header"><span>Status Server</span><span class="status-dot online"></span></div>
+            <div class="server-ip">play.hyrost.net</div>
+        </div>
+    </aside>
+    <div class="mobile-header">
+        <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu"><i class="fas fa-bars"></i></button>
+        <div class="mobile-logo"><img src="../assets/images/hyrost.png" alt="Logo" style="width:28px; height:28px; border-radius:6px;" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'"><h2 style="font-size:1.1rem; color:#fff; font-weight:800; margin:0;">Hyrost</h2></div>
+    </div>
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
 
-        <!-- Main Content -->
-        <main class="main-content">
-            <div class="forum-container">
-            <nav aria-label="Breadcrumb" class="forum-breadcrumb">
-                <ol>
-                    <li><a href="../dashboard.html">Home</a></li>
-                    <li><a href="forum.html">Forum</a></li>
-                    <li id="breadcrumb-title">Loading...</li>
-                </ol>
-            </nav>
+    <main class="main-content">
+        <div class="thread-breadcrumb">
+            <a href="forum.html"><i class="fas fa-comments"></i> Forum</a>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem; color:#6b7280;"></i>
+            <span id="breadcrumbCategory" class="breadcrumb-cat">General</span>
+            <i class="fas fa-chevron-right" style="font-size:0.7rem; color:#6b7280;"></i>
+            <span id="breadcrumbTitle" style="color:#d1d5db; font-size:0.85rem;">Thread</span>
+        </div>
 
-            <div class="forum-header">
-                <h1 class="forum-title" id="thread-title-header">
-                    Loading...
-                </h1>
-            </div>
-
-            <div class="forum-content">
-                <div class="forum-main">
-                    <!-- Thread Post -->
-                    <div class="post-card original-post" id="original-post">
-                        <div class="post-sidebar">
-                            <img src="https://cravatar.eu/helmavatar/Steve/64.png" alt="User Avatar" class="user-avatar" id="op-avatar">
-                            <span class="user-name" id="op-username">...</span>
-                            <span class="user-rank" id="op-rank">Member</span>
-                        </div>
-                        <div class="post-content">
-                            <div class="post-meta">
-                                <span class="post-date" id="op-date">...</span>
-                            </div>
-                            <div class="post-body" id="op-content">
-                                Loading content...
-                            </div>
-                            <div class="post-footer">
-                                <button class="btn-action"><i class="fas fa-thumbs-up"></i> Like</button>
-                                <button class="btn-action"><i class="fas fa-reply"></i> Quote</button>
-                            </div>
-                        </div>
+        <div class="thread-detail-grid">
+            <div class="thread-detail-main">
+                <div class="thread-detail-card">
+                    <div class="thread-detail-header">
+                        <div class="thread-category-pill" id="threadCategoryPill">General</div>
+                        <div id="threadPinnedBadge" style="display:none;" class="thread-pinned-badge"><i class="fas fa-thumbtack"></i> DIPIN</div>
+                        <div class="thread-detail-actions" id="threadDetailActions"></div>
                     </div>
-
-                    <!-- Replies -->
-                    <div id="replies-container">
-                        <!-- Replies will be loaded here -->
-                    </div>
-
-                    <!-- Reply Form -->
-                    <div class="reply-section">
-                        <h3>Balas Thread Ini</h3>
-                        <div class="forum-form">
-                            <textarea id="reply-content" placeholder="Tulis balasan Anda..."></textarea>
-                            <button class="btn-primary" id="btn-submit-reply">Kirim Balasan</button>
+                    <h1 class="thread-detail-title" id="threadDetailTitle">Memuat thread...</h1>
+                    <div id="threadTagsWrap" class="thread-tags-row" style="display:none;"></div>
+                    <div class="thread-author-row">
+                        <img id="threadAuthorAvatar" src="https://cravatar.eu/helmavatar/Steve/64.png" alt="Avatar" class="thread-author-avatar">
+                        <div class="thread-author-info">
+                            <div style="display:flex; align-items:center; gap:8px;">
+                                <span id="threadAuthorName" class="thread-author-name">Memuat...</span>
+                                <span id="threadAuthorBadge" class="author-role-badge"></span>
+                            </div>
+                            <span id="threadDate" class="thread-author-date">—</span>
                         </div>
+                        <div class="thread-view-count"><i class="fas fa-eye"></i> <span id="threadViews">0</span> dilihat</div>
+                    </div>
+                    <div id="threadBody" class="thread-detail-body">
+                        <div class="loading-spinner"><i class="fas fa-spinner fa-spin"></i> Memuat konten...</div>
+                    </div>
+                    <div id="threadImageWrap" style="display:none; margin-top:20px;">
+                        <img id="threadDetailImage" style="max-width:100%; border-radius:12px; border:1px solid rgba(255,255,255,0.08);" alt="Thread image">
+                    </div>
+                    <div class="thread-vote-row">
+                        <button class="vote-btn upvote" id="btnUpvote" onclick="voteThread('up')"><i class="fas fa-arrow-up"></i> <span id="voteScore">0</span></button>
+                        <button class="vote-btn downvote" id="btnDownvote" onclick="voteThread('down')"><i class="fas fa-arrow-down"></i></button>
+                        <div class="vote-divider"></div>
+                        <button class="share-btn" onclick="copyLink()"><i class="fas fa-share-alt"></i> Share</button>
+                        <span id="replyCountBadge" class="reply-count-badge"><i class="fas fa-comment-alt"></i> <span id="replyCount">0</span> Balasan</span>
                     </div>
                 </div>
 
-                <div class="forum-sidebar">
-                    <div class="sidebar-section">
-                        <button class="btn-primary full-width" onclick="window.location.href='forum.html'">Kembali ke Forum</button>
+                <div class="replies-section">
+                    <div class="replies-header">
+                        <h2><i class="fas fa-comment-alt"></i> Balasan</h2>
+                        <span id="replyCountLabel">0 balasan</span>
+                    </div>
+                    <div id="repliesList"></div>
+
+                    <div class="reply-form-card" id="replyFormCard">
+                        <div class="reply-form-header">
+                            <img id="replyUserAvatar" src="https://cravatar.eu/helmavatar/Steve/64.png" alt="Avatar" class="reply-form-avatar">
+                            <div>
+                                <div id="replyUserName" style="font-weight:700; color:#fff; font-size:0.9rem;">Anda</div>
+                                <div style="font-size:0.75rem; color:#9ca3af;">Tulis balasan</div>
+                            </div>
+                        </div>
+                        <div id="replyLoginPrompt" style="display:none; text-align:center; padding:20px;">
+                            <p style="color:#9ca3af; margin-bottom:12px;">Login untuk membalas thread ini</p>
+                            <a href="../auth/login.html" class="btn-create-thread" style="display:inline-block; text-decoration:none; font-size:0.85rem;"><i class="fas fa-sign-in-alt"></i> Login</a>
+                        </div>
+                        <form id="replyForm" style="display:none;">
+                            <div class="rich-editor-toolbar reply-toolbar">
+                                <button type="button" data-action="bold" title="Bold"><i class="fas fa-bold"></i></button>
+                                <button type="button" data-action="italic" title="Italic"><i class="fas fa-italic"></i></button>
+                                <button type="button" data-action="code" title="Code"><i class="fas fa-code"></i></button>
+                                <button type="button" data-action="quote" title="Quote"><i class="fas fa-quote-left"></i></button>
+                                <button type="button" data-action="link" title="Link"><i class="fas fa-link"></i></button>
+                            </div>
+                            <textarea id="replyContent" class="form-control forum-editor" rows="4" placeholder="Tulis balasan... (Markdown didukung)" required></textarea>
+                            <div class="reply-image-upload">
+                                <button type="button" class="btn-attach-image" onclick="document.getElementById('replyImageInput').click()"><i class="fas fa-image"></i> Lampirkan Gambar</button>
+                                <input type="file" id="replyImageInput" accept="image/*" style="display:none;" onchange="handleReplyImageUpload(event)">
+                                <span id="replyImageName" style="font-size:0.8rem; color:#9ca3af; margin-left:8px;"></span>
+                            </div>
+                            <div id="replyImagePreviewWrap" style="display:none; margin-top:8px;">
+                                <img id="replyImagePreview" style="max-width:100%; max-height:150px; border-radius:8px;">
+                                <button type="button" class="btn-remove-image" onclick="removeReplyImage()"><i class="fas fa-trash"></i> Hapus</button>
+                            </div>
+                            <div class="reply-form-footer">
+                                <button type="submit" class="btn-create-thread" style="padding:10px 24px;"><i class="fas fa-paper-plane"></i> Kirim Balasan</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
+            </div>
+
+            <div class="thread-detail-sidebar">
+                <div class="forum-widget">
+                    <div class="forum-widget-header"><i class="fas fa-info-circle"></i> INFO THREAD</div>
+                    <div class="forum-widget-body thread-info-list">
+                        <div class="thread-info-item"><span class="thread-info-label"><i class="fas fa-eye"></i> Dilihat</span><span id="sidebarViews">0</span></div>
+                        <div class="thread-info-item"><span class="thread-info-label"><i class="fas fa-comment-alt"></i> Balasan</span><span id="sidebarReplies">0</span></div>
+                        <div class="thread-info-item"><span class="thread-info-label"><i class="fas fa-arrow-up"></i> Votes</span><span id="sidebarVotes">0</span></div>
+                        <div class="thread-info-item"><span class="thread-info-label"><i class="fas fa-calendar-alt"></i> Dibuat</span><span id="sidebarDate">—</span></div>
+                        <div class="thread-info-item"><span class="thread-info-label"><i class="fas fa-folder"></i> Kategori</span><span id="sidebarCategory">—</span></div>
+                    </div>
+                </div>
+                <div class="forum-widget">
+                    <div class="forum-widget-header"><i class="fas fa-user"></i> PENULIS</div>
+                    <div class="forum-widget-body author-card">
+                        <img id="authorCardAvatar" src="https://cravatar.eu/helmavatar/Steve/64.png" alt="Avatar" class="author-card-avatar">
+                        <div id="authorCardName" class="author-card-name">—</div>
+                        <div id="authorCardBadge" class="author-card-badge"></div>
+                    </div>
+                </div>
+                <a href="forum.html" class="btn-back-forum"><i class="fas fa-arrow-left"></i> Kembali ke Forum</a>
             </div>
         </div>
-        </main>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const threadId = urlParams.get('id');
-
-            if (!threadId) {
-                alert('Thread ID tidak ditemukan');
-                window.location.href = 'forum.html';
-                return;
-            }
-
-            loadThreadDetail(threadId);
-
-            document.getElementById('btn-submit-reply').addEventListener('click', () => {
-                submitReply(threadId);
-            });
-        });
-
-        function loadThreadDetail(threadId) {
-            // Mock data fetch for now - replace with actual API fetch
-            // fetch(`/api/forum/thread/${threadId}`)
-            
-            // NOTE: In real implementation, this would be a fetch call.
-            // Since we are fixing the "missing" parts, I will implement the fetch assuming backend exists.
-            
-            fetch(`/api/forum/thread?id=${threadId}`) // Adjust route as per backend check specific routes.
-            // Backend routes/forum.js: router.get('/threads', forumController.listThreads); 
-            // It seems there isn't a route for single thread detail in what I saw in step 26?
-            // Wait, step 26 showed:
-            // router.post('/thread', forumController.createThread);
-            // router.post('/reply', forumController.replyThread);
-            // router.get('/threads', forumController.listThreads);
-            // router.get('/categories', forumController.listCategories);
-            
-            // THERE IS NO SINGLE THREAD GET ROUTE!
-            // I need to add that to backend if I want this to work.
-            // OR I can use listThreads and filter client side (bad practice but works for small app).
-            // For now, let's try to fetch all threads and find the one.
-            
-            fetch('/api/forum/threads')
-                .then(res => res.json())
-                .then(threads => {
-                    const thread = threads.find(t => t._id === threadId);
-                    if (thread) {
-                        displayThread(thread);
-                    } else {
-                        document.getElementById('op-content').innerText = 'Thread tidak ditemukan.';
-                    }
-                })
-                .catch(err => console.error(err));
-        }
-
-        function displayThread(thread) {
-             document.getElementById('breadcrumb-title').innerText = thread.title;
-             document.getElementById('thread-title-header').innerText = thread.title;
-             
-             document.getElementById('op-username').innerText = thread.userId?.username || 'Anonymous';
-             document.getElementById('op-date').innerText = new Date(thread.createdAt).toLocaleString();
-             document.getElementById('op-content').innerHTML = thread.content.replace(/\n/g, '<br>');
-             
-             // Avatar logic if user has avatar field, else default
-             
-             const repliesContainer = document.getElementById('replies-container');
-             repliesContainer.innerHTML = '';
-             
-             if (thread.replies && thread.replies.length > 0) {
-                 thread.replies.forEach(reply => {
-                     const replyHtml = `
-                         <div class="post-card reply">
-                            <div class="post-sidebar">
-                                <img src="https://cravatar.eu/helmavatar/${reply.userId?.username || 'Steve'}/64.png" class="user-avatar">
-                                <span class="user-name">${reply.userId?.username || 'Anonymous'}</span>
-                            </div>
-                            <div class="post-content">
-                                <div class="post-meta">
-                                    <span class="post-date">${new Date(reply.createdAt || Date.now()).toLocaleString()}</span>
-                                </div>
-                                <div class="post-body">
-                                    ${reply.content}
-                                </div>
-                            </div>
-                        </div>
-                     `;
-                     repliesContainer.innerHTML += replyHtml;
-                 });
-             } else {
-                 repliesContainer.innerHTML = '<p style="padding:20px; color:#aaa;">Belum ada balasan.</p>';
-             }
-        }
-
-        function submitReply(threadId) {
-            const content = document.getElementById('reply-content').value;
-            if(!content) return alert('Isi balasan Anda!');
-
-            fetch('/api/forum/reply', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                     'Authorization': 'Bearer ' + localStorage.getItem('token')
-                },
-                body: JSON.stringify({ threadId, content })
-            })
-            .then(res => res.json())
-            .then(data => {
-                // Reload thread
-                loadThreadDetail(threadId);
-                document.getElementById('reply-content').value = '';
-            })
-            .catch(err => alert('Gagal mengirim balasan'));
-        }
-    </script>
+    </main>
+</div>
+<div id="toastContainer"></div>
+<script src="../inventory/inventory.js"></script>
+<script src="forum-thread.js?v=1"></script>
 </body>
 </html>
-
-<script src='../assets/js/server_status.js'></script>

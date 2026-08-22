@@ -1,13 +1,395 @@
-/* Account Page Logic */
-import { updateProfile } from '../auth.js?v=2';
-
 console.log("DEBUG: Account Script Loaded");
+
+document.addEventListener('DOMContentLoaded', () => {
+    loadUserProfile();
+    setupEventListeners();
+    refreshLinkedAccountsUI();
+});
+
+// Global Mobile Sidebar Toggle
+function toggleMobileSidebar() {
+    const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar') || document.querySelector('.admin-sidebar');
+    const overlay = document.querySelector('.sidebar-overlay') || document.getElementById('sidebarOverlay');
+    if (sidebar) {
+        sidebar.classList.toggle('active');
+        sidebar.classList.toggle('open');
+        sidebar.classList.toggle('mobile-open');
+    }
+    if (overlay) {
+        overlay.classList.toggle('active');
+    }
+}
+window.toggleMobileSidebar = toggleMobileSidebar;
+
+function showAccountToast(msg, type = 'info') {
+    const existing = document.getElementById('accountToast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.id = 'accountToast';
+    toast.style.cssText = `
+        position: fixed; bottom: 24px; right: 24px; z-index: 99999;
+        background: ${type === 'error' ? '#ef4444' : type === 'success' ? '#10b981' : '#6366f1'};
+        color: #fff; padding: 12px 20px; border-radius: 12px;
+        font-weight: 700; font-size: 0.9rem; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        transition: all 0.3s ease;
+    `;
+    toast.textContent = msg;
+    document.body.appendChild(toast);
+
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+window.showAccountToast = showAccountToast;
+if (typeof window.showToast !== 'function') window.showToast = showAccountToast;
+
+async function loadUserProfile() {
+    const token = localStorage.getItem('hyrostToken');
+    const localUserStr = localStorage.getItem('currentUser');
+
+    if (!token && !localUserStr) {
+        window.location.href = '../auth/login.html';
+        return;
+    }
+
+    function applyAvatarToUI(avatarUrl, username) {
+        const av = avatarUrl || `https://ui-avatars.com/api/?name=${encodeURIComponent(username || 'U')}&background=6366f1&color=fff`;
+        const ids = ['bannerAvatar', 'userAvatarHeader', 'userAvatar', 'editAvatarPreview'];
+        ids.forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.src = av;
+        });
+        return av;
+    }
+
+    if (localUserStr) {
+        try {
+            const localUser = JSON.parse(localUserStr);
+            applyAvatarToUI(localUser.avatarUrl || localUser.avatar, localUser.username);
+        } catch (e) {}
+    }
+
+    if (!token) return;
+
+    try {
+        const res = await fetch('/api/users/me', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (!res.ok) {
+            if (res.status === 401) {
+                localStorage.removeItem('hyrostToken');
+                localStorage.removeItem('currentUser');
+                window.location.href = '../auth/login.html';
+            }
+            return;
+        }
+
+        const userData = await res.json();
+        const user = {
+            id: userData.id,
+            username: userData.username,
+            email: userData.email,
+            role: userData.role,
+            avatarUrl: userData.avatarUrl,
+            createdAt: userData.createdAt,
+            coinBronze: userData.coins?.bronze || 0,
+            coinSilver: userData.coins?.silver || 0,
+            coinGold: userData.coins?.gold || 0,
+        };
+        localStorage.setItem('currentUser', JSON.stringify(user));
+
+        const bannerUsername = document.getElementById('bannerUsername');
+        const displayUsername = document.getElementById('displayUsername');
+        const bannerEmail = document.getElementById('bannerEmail');
+        const displayEmail = document.getElementById('displayEmail');
+        const displayRole = document.getElementById('displayRole');
+        const coinBronze = document.getElementById('coinBronze');
+        const coinSilver = document.getElementById('coinSilver');
+        const coinGold = document.getElementById('coinGold');
+        const adminBtnContainer = document.getElementById('adminPanelBtnContainer');
+
+        if (bannerUsername) bannerUsername.textContent = user.username || 'User';
+        if (displayUsername) displayUsername.textContent = user.username || 'User';
+        if (bannerEmail) bannerEmail.textContent = user.email || '';
+        if (displayEmail) displayEmail.textContent = user.email || '';
+
+        if (displayRole) {
+            displayRole.textContent = user.role || 'Member';
+            if (user.role === 'Admin' || user.role === 'SuperAdmin') {
+                displayRole.style.background = 'rgba(239, 68, 68, 0.2)';
+                displayRole.style.color = '#ef4444';
+            }
+        }
+
+        applyAvatarToUI(user.avatarUrl, user.username);
+
+        if (coinBronze) coinBronze.textContent = user.coinBronze;
+        if (coinSilver) coinSilver.textContent = user.coinSilver;
+        if (coinGold) coinGold.textContent = user.coinGold;
+
+        if (adminBtnContainer && (user.role === 'Admin' || user.role === 'SuperAdmin')) {
+            adminBtnContainer.style.display = 'block';
+        }
+
+        if (typeof loadActivities === 'function') loadActivities();
+    } catch (err) {
+        console.error('Failed to load user profile:', err);
+    }
+}
+window.loadUserProfile = loadUserProfile;
+
+function switchProfileTab(tabId) {
+    console.log("Switching profile tab to:", tabId);
+    const tabs = document.querySelectorAll('.account-tabs .tab-btn');
+    tabs.forEach(t => {
+        if (t.getAttribute('data-tab') === tabId) {
+            t.classList.add('active');
+        } else {
+            t.classList.remove('active');
+        }
+    });
+
+    const contents = document.querySelectorAll('.tab-content');
+    contents.forEach(c => {
+        if (c.id === `tab-${tabId}`) {
+            c.classList.add('active');
+            c.style.display = 'block';
+        } else {
+            c.classList.remove('active');
+            c.style.display = 'none';
+        }
+    });
+
+    if (tabId === 'sessions' && typeof loadActiveSessions === 'function') {
+        loadActiveSessions();
+    } else if (tabId === 'security' && typeof loadSecurityStatus === 'function') {
+        loadSecurityStatus();
+    } else if (tabId === 'activity' && typeof loadActivities === 'function') {
+        loadActivities(true);
+    } else if (tabId === 'minecraft' && typeof loadMinecraftLinkStatus === 'function') {
+        loadMinecraftLinkStatus();
+    }
+}
+window.switchProfileTab = switchProfileTab;
+
+function setupEventListeners() {
+    const toggleBtns = document.querySelectorAll('#sidebarToggle, .sidebar-toggle');
+    toggleBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleMobileSidebar();
+        });
+    });
+
+    const overlay = document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
+    if (overlay) {
+        overlay.addEventListener('click', () => {
+            toggleMobileSidebar();
+        });
+    }
+
+    const tabBtns = document.querySelectorAll('.account-tabs .tab-btn');
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            const tabId = btn.getAttribute('data-tab');
+            if (tabId) {
+                switchProfileTab(tabId);
+            }
+        });
+    });
+
+    const btnDiscord = document.getElementById('btnDiscordLink');
+    if (btnDiscord) btnDiscord.addEventListener('click', handleDiscordConnect);
+
+    const btnMojang = document.getElementById('btnMojangLink');
+    if (btnMojang) btnMojang.addEventListener('click', handleMojangConnect);
+}
+window.setupEventListeners = setupEventListeners;
+
+// Bank / Exchange Modal Handlers
+function openExchangeModal() {
+    const modal = document.getElementById('exchangeModal');
+    if (modal) modal.style.display = 'flex';
+}
+function closeExchangeModal() {
+    const modal = document.getElementById('exchangeModal');
+    if (modal) modal.style.display = 'none';
+}
+function updateExchangePreview() {
+    const amount = parseInt(document.getElementById('exAmount')?.value || '0', 10);
+    const preview = document.getElementById('exPreview');
+    if (preview) {
+        preview.textContent = `Hasil Estimasi: ${amount} koin`;
+    }
+}
+async function submitExchange() {
+    const from = document.getElementById('exFrom')?.value;
+    const to = document.getElementById('exTo')?.value;
+    const amount = parseInt(document.getElementById('exAmount')?.value || '0', 10);
+
+    if (!amount || amount <= 0) {
+        return showAccountToast("Masukkan jumlah koin yang valid", "error");
+    }
+
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return showAccountToast("Silakan login terlebih dahulu", "error");
+
+    try {
+        const res = await fetch('/api/economy/exchange', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+            body: JSON.stringify({ fromCurrency: from, toCurrency: to, amount })
+        });
+        const data = await res.json();
+        if (data.success) {
+            showAccountToast("Tukar koin berhasil!", "success");
+            closeExchangeModal();
+            loadUserProfile();
+        } else {
+            showAccountToast(data.message || "Gagal melakukan penukaran", "error");
+        }
+    } catch (err) {
+        showAccountToast("Error: " + err.message, "error");
+    }
+}
+window.openExchangeModal = openExchangeModal;
+window.closeExchangeModal = closeExchangeModal;
+window.updateExchangePreview = updateExchangePreview;
+window.submitExchange = submitExchange;
+
+async function redeemVoucherCode() {
+    const input = document.getElementById('voucherCodeInput');
+    const code = input ? input.value.trim() : '';
+    if (!code) {
+        return showAccountToast("Silakan masukkan kode voucher!", "error");
+    }
+
+    const token = localStorage.getItem('hyrostToken');
+    try {
+        const res = await fetch('/api/vouchers/claim', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ code })
+        });
+        const data = await res.json();
+
+        if (res.ok && data.success) {
+            showAccountToast(data.message || "Voucher berhasil diklaim!", "success");
+            if (input) input.value = '';
+            if (typeof loadUserProfile === 'function') loadUserProfile();
+        } else {
+            showAccountToast(data.message || "Gagal mengklaim voucher", "error");
+        }
+    } catch (e) {
+        showAccountToast("Error: " + e.message, "error");
+    }
+}
+window.redeemVoucherCode = redeemVoucherCode;
+
+// Connection Action Handlers
+async function handleDiscordConnect() {
+    const token = localStorage.getItem('hyrostToken');
+    const discordStatusEl = document.getElementById('discordLinkStatus');
+    const isLinked = discordStatusEl && discordStatusEl.textContent.includes('Terhubung');
+
+    if (isLinked) {
+        if (!confirm("Yakin ingin melepaskan akun Discord?")) return;
+        try {
+            const res = await fetch('/api/users/unlink-discord', {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAccountToast("Akun Discord berhasil dilepas.", "success");
+                refreshLinkedAccountsUI();
+            } else {
+                showAccountToast(data.message || "Gagal melepas Discord", "error");
+            }
+        } catch (e) {
+            showAccountToast("Error: " + e.message, "error");
+        }
+    } else {
+        const discordTag = prompt("Masukkan Username / Tag Discord Anda:");
+        if (!discordTag) return;
+        try {
+            const res = await fetch('/api/users/link-discord', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ discord_username: discordTag })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAccountToast("Akun Discord berhasil dihubungkan!", "success");
+                refreshLinkedAccountsUI();
+            } else {
+                showAccountToast(data.message || "Gagal menghubungkan Discord", "error");
+            }
+        } catch (e) {
+            showAccountToast("Error: " + e.message, "error");
+        }
+    }
+}
+
+async function handleMojangConnect() {
+    const token = localStorage.getItem('hyrostToken');
+    const mojangStatusEl = document.getElementById('mojangLinkStatus');
+    const isLinked = mojangStatusEl && mojangStatusEl.textContent.includes('Terhubung');
+
+    if (isLinked) {
+        if (!confirm("Yakin ingin melepaskan akun Mojang / Minecraft?")) return;
+        try {
+            const res = await fetch('/api/minecraft/unlink-mojang', {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAccountToast("Tautan akun Mojang berhasil dilepas.", "success");
+                refreshLinkedAccountsUI();
+            } else {
+                showAccountToast(data.message || "Gagal melepas Mojang", "error");
+            }
+        } catch (e) {
+            showAccountToast("Error: " + e.message, "error");
+        }
+    } else {
+        const username = prompt("Masukkan Username Resmi Minecraft Mojang Anda:");
+        if (!username) return;
+        try {
+            const res = await fetch('/api/minecraft/link-mojang', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ mojang_username: username })
+            });
+            const data = await res.json();
+            if (data.success) {
+                showAccountToast(`Akun Mojang ${data.mojang_username} berhasil terhubung!`, "success");
+                refreshLinkedAccountsUI();
+            } else {
+                showAccountToast(data.message || "Gagal menghubungkan Mojang", "error");
+            }
+        } catch (e) {
+            showAccountToast("Error: " + e.message, "error");
+        }
+    }
+}
+window.handleDiscordConnect = handleDiscordConnect;
+window.handleMojangConnect = handleMojangConnect;
 
 // Initialize
 function init() {
     console.log("DEBUG: Init running check...");
     loadUserProfile();
     setupEventListeners();
+    refreshLinkedAccountsUI();
 }
 
 if (document.readyState === 'loading') {
@@ -28,127 +410,297 @@ if (document.readyState === 'loading') {
     window.createNewRole = createNewRole;
     window.assignRoleToUser = assignRoleToUser;
 
-    async function loadUserProfile() {
-        console.log("DEBUG: Loading User Profile...");
-        
-        // Define UI Elements inside function scope so try/catch can see them
-        const bannerAvatar = document.getElementById('bannerAvatar');
-        const bannerUsername = document.getElementById('bannerUsername');
-        const displayUser = document.getElementById('displayUsername');
-            
-        const token = localStorage.getItem('hyrostToken');
-        if (!token) {
-            window.location.href = '../auth/login.html'; // No token? Go to login
-            return; 
+    // --- LIVE PASSWORD STRENGTH VALIDATOR ---
+    function validatePasswordStrength(pwd) {
+        const seg1 = document.getElementById('pwdSeg1');
+        const seg2 = document.getElementById('pwdSeg2');
+        const seg3 = document.getElementById('pwdSeg3');
+        const txt = document.getElementById('pwdStrengthText');
+
+        if (!seg1 || !seg2 || !seg3 || !txt) return;
+
+        seg1.className = 'password-meter-segment';
+        seg2.className = 'password-meter-segment';
+        seg3.className = 'password-meter-segment';
+
+        if (!pwd || pwd.trim() === '') {
+            txt.textContent = 'Ketik password baru...';
+            txt.style.color = '#9ca3af';
+            return;
         }
 
+        let score = 0;
+        if (pwd.length >= 6) score++;
+        if (pwd.length >= 8 && /[A-Z]/.test(pwd) && /[0-9]/.test(pwd)) score++;
+        if (pwd.length >= 10 && /[^A-Za-z0-9]/.test(pwd)) score++;
+
+        if (pwd.length < 6 || score === 0) {
+            seg1.classList.add('active-weak');
+            txt.textContent = 'Kekuatan: Sangat Lemah (Minimal 6+ karakter)';
+            txt.style.color = '#ef4444';
+        } else if (score === 1) {
+            seg1.classList.add('active-weak');
+            txt.textContent = 'Kekuatan: Lemah (Gunakan minimal 8+ karakter dengan angka & huruf kapital)';
+            txt.style.color = '#ef4444';
+        } else if (score === 2) {
+            seg1.classList.add('active-medium');
+            seg2.classList.add('active-medium');
+            txt.textContent = 'Kekuatan: Sedang (Bagus! Tambahkan karakter simbol untuk lebih aman)';
+            txt.style.color = '#f59e0b';
+        } else if (score >= 3) {
+            seg1.classList.add('active-strong');
+            seg2.classList.add('active-strong');
+            seg3.classList.add('active-strong');
+            txt.textContent = 'Kekuatan: Sangat Kuat! 🛡️';
+            txt.style.color = '#10b981';
+        }
+    }
+    window.validatePasswordStrength = validatePasswordStrength;
+
+    // --- DYNAMIC SECURITY SCORE CALCULATOR ---
+    function updateDynamicSecurityScore(scoreValue) {
+        const is2FAActive = localStorage.getItem('hyrost_2fa_active') === 'true';
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const isLinked = currentUser.google_id || currentUser.discord_id || currentUser.mc_username;
+
+        let score = scoreValue;
+        if (score === undefined || score === null) {
+            score = 45; // Base score for email verified
+            if (is2FAActive) score += 35;
+            if (isLinked) score += 20;
+        }
+
+        const scoreEl = document.getElementById('bannerSecurityScore');
+        const scoreCircle = document.getElementById('securityScoreCircle');
+        const fillBar = document.getElementById('securityProgressBar');
+
+        const text = `${score}%`;
+        if (scoreEl) scoreEl.textContent = text;
+        if (scoreCircle) scoreCircle.textContent = text;
+        if (fillBar) fillBar.style.width = text;
+    }
+
+    // --- SECURITY DATA FETCHING ---
+    async function loadSecurityStatus() {
+        updateDynamicSecurityScore();
+        const token = localStorage.getItem('hyrostToken');
+        if (!token) return;
+
         try {
-            // Fetch fresh data from API
-            const res = await fetch('/api/users/me', {
+            const res = await fetch('/api/users/security-status', {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
-            
-            if (res.status === 401) {
-                throw new Error("401 Unauthorized");
+            if (!res.ok) return;
+
+            const data = await res.json();
+            if (data && typeof data.score === 'number') {
+                updateDynamicSecurityScore(data.score);
             }
-            if (!res.ok) throw new Error("Failed to fetch profile");
-
-            const userData = await res.json();
-            
-            // ... (rest of processing) ...
-            
-            // UI Update Logic (Simplified for replacement context)
-            const user = {
-                username: userData.username,
-                email: userData.email,
-                role: userData.role,
-                avatarUrl: userData.avatarUrl,
-                createdAt: userData.createdAt
-            };
-            localStorage.setItem('currentUser', JSON.stringify(user));
-
-            // Elements
-            const bannerEmail = document.getElementById('bannerEmail');
-            const bannerJoinDate = document.getElementById('bannerJoinDate');
-            const displayEmail = document.getElementById('displayEmail');
-            const displayRole = document.getElementById('displayRole');
-            const displayCreatedAt = document.getElementById('displayCreatedAt');
-            const coinBronze = document.getElementById('coinBronze');
-            const coinSilver = document.getElementById('coinSilver');
-            const coinGold = document.getElementById('coinGold');
-            const inputUser = document.getElementById('username');
-            const inputEmail = document.getElementById('email');
-
-            // Format Date
-            const dateStr = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : '-';
-
-            // Updates
-            if (bannerUsername) bannerUsername.textContent = user.username;
-            if (bannerEmail) bannerEmail.textContent = user.email;
-            if (bannerJoinDate) bannerJoinDate.textContent = dateStr;
-            if (displayUser) displayUser.textContent = user.username;
-            if (displayEmail) displayEmail.textContent = user.email;
-            if (displayRole) displayRole.textContent = user.role;
-            if (displayCreatedAt) displayCreatedAt.textContent = dateStr;
-            if (inputUser) inputUser.value = user.username;
-            if (inputEmail) inputEmail.value = user.email;
-
-            // Update Coins
-            if (userData.coins) {
-                if (coinBronze) coinBronze.textContent = userData.coins.bronze || 0;
-                if (coinSilver) coinSilver.textContent = userData.coins.silver || 0;
-                if (coinGold) coinGold.textContent = userData.coins.gold || 0;
-            }
-
-            // Update Avatar
-            const avatarSrc = user.avatarUrl || `https://cravatar.eu/avatar/${user.username}/128.png`;
-            if (bannerAvatar) bannerAvatar.src = avatarSrc;
-            const sidebarAvatar = document.getElementById('userAvatar');
-            if (sidebarAvatar) sidebarAvatar.src = user.avatarUrl || `https://cravatar.eu/avatar/${user.username}/64.png`;
-
-            loadActivities();
-
-            const adminBtn = document.getElementById('adminPanelBtnContainer');
-            if (adminBtn) {
-                if (user.role && user.role.toLowerCase() === 'admin') adminBtn.style.display = 'block';
-                else adminBtn.style.display = 'none';
-            }
-
         } catch (err) {
-            console.error("Profile Load Error:", err);
-            
-            if (bannerUsername) bannerUsername.textContent = "Session Expired";
-            if (displayUser) displayUser.textContent = "Relogin Required";
-            
-            // Handle 401 specifically
-             if (err.message.includes("401")) {
-                 console.warn("Token invalid. Clearing and redirecting.");
-                 localStorage.removeItem('hyrostToken');
-                 localStorage.removeItem('currentUser');
-                 alert("Sesi Anda telah berakhir. Silakan login kembali.");
-                 window.location.href = '../auth/login.html';
-             }
+            console.warn("Load security error optional fallback:", err);
         }
     }
 
-    async function loadActivities() {
+    async function loadActiveSessions() {
+        const container = document.getElementById('activeSessionsContainer');
+        if (!container) return;
+
+        const token = localStorage.getItem('hyrostToken');
+        try {
+            const res = await fetch('/api/users/sessions', {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!res.ok) return;
+
+            const data = await res.json();
+            if (!data.sessions || data.sessions.length === 0) {
+                container.innerHTML = '<p style="color:#9ca3af;">Tidak ada sesi aktif lain.</p>';
+                return;
+            }
+
+            container.innerHTML = data.sessions.map(s => `
+                <div class="session-item">
+                  <div style="display:flex; align-items:center; gap:14px;">
+                    <div class="session-icon"><i class="fas ${s.device.includes('Mobile') ? 'fa-mobile-alt' : 'fa-desktop'}"></i></div>
+                    <div class="session-details">
+                      <h4>${s.device} (${s.browser})</h4>
+                      <p>IP: ${s.ip} • Aktif sekarang</p>
+                    </div>
+                  </div>
+                  <span class="badge-current"><i class="fas fa-circle" style="font-size:0.5rem; vertical-align:middle; margin-right:4px;"></i> Sesi Ini</span>
+                </div>
+            `).join('');
+        } catch (err) {
+            console.error("Load sessions error:", err);
+        }
+    }
+
+    async function handleRevokeSessions() {
+        const token = localStorage.getItem('hyrostToken');
+        try {
+            const res = await fetch('/api/users/revoke-sessions', {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            showToast(data.message || "Semua sesi lain telah dikeluarkan.", "success");
+            loadActiveSessions();
+        } catch (err) {
+            showToast("Gagal mengeluarkan sesi.", "error");
+        }
+    }
+    window.handleRevokeSessions = handleRevokeSessions;
+
+    function handle2FAToggle(checked) {
+        const desc = document.getElementById('twoFactorStatusDesc');
+        localStorage.setItem('hyrost_2fa_active', checked ? 'true' : 'false');
+        if (checked) {
+            if (desc) desc.textContent = "2FA Aktif! Kode OTP akan diminta saat login.";
+            showToast("Perlindungan 2FA berhasil diaktifkan!", "success");
+        } else {
+            if (desc) desc.textContent = "Perlindungan ganda dengan kode OTP saat login.";
+            showToast("Perlindungan 2FA dinonaktifkan.", "info");
+        }
+        if (typeof updateDynamicSecurityScore === 'function') {
+            updateDynamicSecurityScore();
+        }
+    }
+    window.handle2FAToggle = handle2FAToggle;
+
+// ─── PROFILE UPDATE & HEAD SYSTEM ────────────────────────────────────────────
+let profileHeadsData = { catalog: [], ownedKeys: [], activeAvatarUrl: null };
+let selectedHeadKey = null;
+
+async function updateProfile(updates) {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return { success: false, message: 'Silakan login terlebih dahulu' };
+
+    try {
+        const res = await fetch('/api/users/update', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(updates),
+        });
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+            return { success: false, message: data.message || 'Gagal memperbarui profil' };
+        }
+
+        const cur = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        const merged = { ...cur, ...updates };
+        if (data.user) {
+            merged.avatarUrl = data.user.avatarUrl || merged.avatarUrl;
+            merged.email = data.user.email || merged.email;
+        }
+        localStorage.setItem('currentUser', JSON.stringify(merged));
+        await loadUserProfile();
+        return { success: true, message: data.message || 'Profil berhasil diperbarui!' };
+    } catch (e) {
+        return { success: false, message: e.message || 'Gagal terhubung ke server' };
+    }
+}
+window.updateProfile = updateProfile;
+
+async function loadProfileHeadsUI() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return;
+
+    try {
+        const res = await fetch('/api/users/profile-heads', {
+            headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        profileHeadsData = await res.json();
+
+        document.querySelectorAll('.avatar-head-card.avatar-option').forEach((card) => {
+            const url = card.dataset.url;
+            const entry = profileHeadsData.catalog.find((c) => c.url === url);
+            if (!entry) return;
+
+            card.dataset.headKey = entry.key;
+            card.dataset.unlockCost = entry.unlockCostBronze || 0;
+
+            let lockOverlay = card.querySelector('.head-lock-overlay');
+            if (entry.locked) {
+                card.classList.add('head-locked');
+                if (!lockOverlay) {
+                    lockOverlay = document.createElement('div');
+                    lockOverlay.className = 'head-lock-overlay';
+                    lockOverlay.innerHTML = `<i class="fas fa-lock"></i><span>${entry.unlockCostBronze || 0} 🪙</span>`;
+                    card.appendChild(lockOverlay);
+                }
+            } else {
+                card.classList.remove('head-locked');
+                if (lockOverlay) lockOverlay.remove();
+            }
+        });
+
+        if (profileHeadsData.activeAvatarUrl) {
+            selectedAvatarUrl = profileHeadsData.activeAvatarUrl;
+        }
+    } catch (e) {
+        console.warn('Profile heads load failed:', e.message);
+    }
+}
+
+async function unlockProfileHead(headKey) {
+    const token = localStorage.getItem('hyrostToken');
+    const entry = profileHeadsData.catalog.find((c) => c.key === headKey);
+    if (!entry) return;
+
+    if (!confirm(`Buka head "${entry.name}" seharga ${entry.unlockCostBronze} Koin Bronze?`)) return;
+
+    const res = await fetch('/api/users/unlock-head', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ headKey }),
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+        showAccountToast(data.message, 'success');
+        await loadProfileHeadsUI();
+        loadUserProfile();
+    } else {
+        showAccountToast(data.message || 'Gagal membuka head', 'error');
+    }
+}
+window.unlockProfileHead = unlockProfileHead;
+
+    let currentLogs = []; // Store logs globally for toggle
+
+    async function loadActivities(showAll = false) {
         const container = document.getElementById('activityLogsContainer');
         if (!container) return;
         
         const token = localStorage.getItem('hyrostToken');
         try {
-            const res = await fetch('/api/users/activities', {
-                headers: { 'Authorization': `Bearer ${token}` }
-            });
-            const logs = await res.json();
+            // Fetch only if needed or first load (optimization)
+            if (currentLogs.length === 0) {
+                 const res = await fetch('/api/users/activities', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                currentLogs = await res.json();
+            }
+
+            const logs = currentLogs;
             
             if (logs.length === 0) {
                 container.innerHTML = '<p class="text-muted">No recent activity.</p>';
                 return;
             }
             
+            // Determine items to show
+            const itemsToShow = showAll ? logs : logs.slice(0, 3);
+            
             let html = '<ul class="activity-list">';
-            logs.forEach(log => {
+            itemsToShow.forEach(log => {
                 const date = new Date(log.created_at).toLocaleDateString() + ' ' + new Date(log.created_at).toLocaleTimeString();
                 html += `
                     <li>
@@ -162,9 +714,40 @@ if (document.readyState === 'loading') {
                 `;
             });
             html += '</ul>';
+
+            // Add "Show More" button if hidden items exist
+            if (!showAll && logs.length > 3) {
+                html += `
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button id="btnLoadMoreActivity" class="btn-small btn-secondary" style="width: 100%; border: 1px dashed #444;">
+                            <i class="fas fa-chevron-down"></i> Lihat Lebih Lengkap
+                        </button>
+                    </div>
+                `;
+            } else if (showAll && logs.length > 3) {
+                 html += `
+                    <div style="text-align: center; margin-top: 10px;">
+                        <button id="btnCollapseActivity" class="btn-small btn-secondary" style="width: 100%; border: 1px dashed #444;">
+                            <i class="fas fa-chevron-up"></i> Perkecil
+                        </button>
+                    </div>
+                `;
+            }
+
             container.innerHTML = html;
 
+            // Attach Event Listener
+            const btnLoadMore = document.getElementById('btnLoadMoreActivity');
+            if (btnLoadMore) {
+                btnLoadMore.addEventListener('click', () => loadActivities(true));
+            }
+            const btnCollapse = document.getElementById('btnCollapseActivity');
+            if (btnCollapse) {
+                btnCollapse.addEventListener('click', () => loadActivities(false));
+            }
+
         } catch (err) {
+            console.error(err);
             container.innerHTML = '<p class="text-danger">Failed to load activity.</p>';
         }
     }
@@ -382,36 +965,151 @@ async function saveUserProfile() {
 
 // Variables for Modal Logic
 let selectedAvatarUrl = null;
+let selectedAvatarName = "Steve";
+let selectedAvatarType = "Head Minecraft Default";
+
+function updateAvatarModalPreview(url, name, type) {
+    const previewImg = document.getElementById('avatarModalPreviewImg');
+    const previewName = document.getElementById('avatarModalPreviewName');
+    const previewType = document.getElementById('avatarModalPreviewType');
+
+    if (previewImg) previewImg.src = url;
+    if (previewName) previewName.textContent = name || "Head Selected";
+    if (previewType) previewType.textContent = type || "Custom Avatar";
+}
 
 function handleAvatarChange() {
     const modal = document.getElementById('avatarModal');
     if (modal) {
         modal.classList.add('active');
-        resetModal();
+        loadProfileHeadsUI().then(() => resetModal());
     }
 }
+window.handleAvatarChange = handleAvatarChange;
 
 function resetModal() {
-    // Reset selection
     selectedAvatarUrl = null;
+    selectedHeadKey = null;
     document.querySelectorAll('.avatar-option').forEach(opt => opt.classList.remove('selected'));
-    document.getElementById('customAvatarInput').value = '';
-    document.getElementById('fileName').textContent = "Tidak ada file dipilih";
-    document.getElementById('uploadError').textContent = "";
     
-    // Select current if matches one of the presets
+    const fileInput = document.getElementById('customAvatarInput');
+    if (fileInput) fileInput.value = '';
+    
+    const fileNameDisplay = document.getElementById('fileName');
+    if (fileNameDisplay) fileNameDisplay.textContent = "Tidak ada file dipilih";
+    
+    const errorMsg = document.getElementById('uploadError');
+    if (errorMsg) errorMsg.textContent = "";
+
+    const searchInput = document.getElementById('mcUsernameSearchInput');
+    if (searchInput) searchInput.value = '';
+
+    const searchResult = document.getElementById('mcHeadSearchResult');
+    if (searchResult) searchResult.style.display = 'none';
+
+    // Reset Subtabs to 'all'
+    switchAvatarSubtab('all');
+    
+    // Select current avatar from saved profile
+    const activeUrl = profileHeadsData.activeAvatarUrl;
     const currentUserStr = localStorage.getItem('currentUser');
-    if (currentUserStr) {
-        const user = JSON.parse(currentUserStr);
-        if (user.avatarUrl) {
-            const match = document.querySelector(`.avatar-option[data-url="${user.avatarUrl}"]`);
-            if (match) {
-                match.classList.add('selected');
-                selectedAvatarUrl = user.avatarUrl;
-            }
+    const userAvatar = activeUrl || (currentUserStr ? JSON.parse(currentUserStr).avatarUrl : null);
+
+    if (userAvatar) {
+        const match = document.querySelector(`.avatar-option[data-url="${userAvatar}"]`);
+        if (match && !match.classList.contains('head-locked')) {
+            match.classList.add('selected');
+            selectedAvatarUrl = userAvatar;
+            selectedHeadKey = match.dataset.headKey || null;
+            selectedAvatarName = match.dataset.name || 'Head';
+            selectedAvatarType = match.dataset.tag || 'Preset';
+            updateAvatarModalPreview(selectedAvatarUrl, selectedAvatarName, selectedAvatarType);
+            return;
         }
+        selectedAvatarUrl = userAvatar;
+        selectedHeadKey = null;
+        updateAvatarModalPreview(userAvatar, 'Avatar Aktif', 'Head / Custom Tersimpan');
+        return;
+    }
+
+    // Default Fallback
+    selectedAvatarUrl = "https://cravatar.eu/helmavatar/Steve/128.png";
+    updateAvatarModalPreview(selectedAvatarUrl, "Steve", "Classic Hero");
+}
+
+function switchAvatarSubtab(subtab) {
+    const navBtns = document.querySelectorAll('.avatar-nav-btn');
+    navBtns.forEach(btn => {
+        if (btn.getAttribute('data-subtab') === subtab) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+
+    const gridPanel = document.getElementById('avatarPanelGrid');
+    const searchPanel = document.getElementById('avatarPanelSearch');
+    const uploadPanel = document.getElementById('avatarPanelUpload');
+    const cards = document.querySelectorAll('.avatar-head-card');
+
+    if (subtab === 'mcsearch') {
+        if (gridPanel) gridPanel.style.display = 'none';
+        if (searchPanel) searchPanel.style.display = 'block';
+        if (uploadPanel) uploadPanel.style.display = 'none';
+    } else if (subtab === 'custom') {
+        if (gridPanel) gridPanel.style.display = 'none';
+        if (searchPanel) searchPanel.style.display = 'none';
+        if (uploadPanel) uploadPanel.style.display = 'block';
+    } else {
+        if (gridPanel) gridPanel.style.display = 'block';
+        if (searchPanel) searchPanel.style.display = 'none';
+        if (uploadPanel) uploadPanel.style.display = 'none';
+
+        // Filter cards in grid
+        cards.forEach(card => {
+            if (subtab === 'all' || card.dataset.category === subtab) {
+                card.style.display = 'flex';
+            } else {
+                card.style.display = 'none';
+            }
+        });
     }
 }
+window.switchAvatarSubtab = switchAvatarSubtab;
+
+function fetchCustomMcHead() {
+    const input = document.getElementById('mcUsernameSearchInput');
+    const username = input?.value.trim();
+    if (!username) {
+        showAccountToast("Masukkan username Minecraft terlebih dahulu!", "error");
+        return;
+    }
+
+    const headUrl = `https://cravatar.eu/helmavatar/${encodeURIComponent(username)}/128.png`;
+    const resultBox = document.getElementById('mcHeadSearchResult');
+    const foundImg = document.getElementById('foundHeadImg');
+    const foundName = document.getElementById('foundHeadName');
+
+    if (foundImg) foundImg.src = headUrl;
+    if (foundName) foundName.textContent = username;
+    if (resultBox) resultBox.style.display = 'block';
+
+    const btnApply = document.getElementById('btnApplyFoundHead');
+    if (btnApply) {
+        btnApply.onclick = () => {
+            selectedAvatarUrl = headUrl;
+            selectedHeadKey = null;
+            selectedAvatarName = username;
+            selectedAvatarType = "Custom IGN Head";
+            updateAvatarModalPreview(headUrl, username, "Mojang Verified IGN Head");
+            
+            // Clear preset selection
+            document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
+            showAccountToast(`Head ${username} terpilih! Klik Simpan Avatar untuk menerapkan.`, "info");
+        };
+    }
+}
+window.fetchCustomMcHead = fetchCustomMcHead;
 
 function setupEventListeners() {
     // Form Submit
@@ -423,12 +1121,21 @@ function setupEventListeners() {
         });
     }
 
-    // Avatar Change Button
-    const btnChangeAvatar = document.querySelector('.change-avatar-btn');
-    if (btnChangeAvatar) {
-        btnChangeAvatar.addEventListener('click', handleAvatarChange);
-    }
+    // Avatar Change Buttons
+    const btnChangeAvatars = document.querySelectorAll('.change-avatar-btn, .change-avatar-btn-mini');
+    btnChangeAvatars.forEach(btn => {
+        btn.addEventListener('click', handleAvatarChange);
+    });
     
+    // Subtab Event Listeners
+    const subtabBtns = document.querySelectorAll('.avatar-nav-btn');
+    subtabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const subtab = btn.getAttribute('data-subtab');
+            if (subtab) switchAvatarSubtab(subtab);
+        });
+    });
+
     // Modal Event Listeners
     const modal = document.getElementById('avatarModal');
     const closeBtn = document.getElementById('closeAvatarModal');
@@ -442,18 +1149,30 @@ function setupEventListeners() {
         if (closeBtn) closeBtn.addEventListener('click', closeModal);
         if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
         
-        // Preset Selection
+        // Preset Selection (20 Head Cards)
         document.querySelectorAll('.avatar-option').forEach(opt => {
             opt.addEventListener('click', () => {
-                // Clear file input
+                const headKey = opt.dataset.headKey;
+                if (opt.classList.contains('head-locked') && headKey) {
+                    unlockProfileHead(headKey);
+                    return;
+                }
+
                 if (fileInput) fileInput.value = '';
-                document.getElementById('fileName').textContent = "Tidak ada file dipilih";
-                document.getElementById('uploadError').textContent = "";
+                const fileNameDisplay = document.getElementById('fileName');
+                if (fileNameDisplay) fileNameDisplay.textContent = "Tidak ada file dipilih";
+                const errorMsg = document.getElementById('uploadError');
+                if (errorMsg) errorMsg.textContent = "";
                 
-                // UI Update
                 document.querySelectorAll('.avatar-option').forEach(o => o.classList.remove('selected'));
                 opt.classList.add('selected');
+                
                 selectedAvatarUrl = opt.dataset.url;
+                selectedHeadKey = headKey || null;
+                selectedAvatarName = opt.dataset.name || "Head Minecraft";
+                selectedAvatarType = opt.dataset.tag || "Preset Head";
+                
+                updateAvatarModalPreview(selectedAvatarUrl, selectedAvatarName, selectedAvatarType);
             });
         });
         
@@ -469,7 +1188,8 @@ function setupEventListeners() {
                     saveNewAvatar(selectedAvatarUrl);
                     closeModal();
                 } else {
-                    document.getElementById('uploadError').textContent = "Pilih avatar atau upload foto terlebih dahulu.";
+                    const errorMsg = document.getElementById('uploadError');
+                    if (errorMsg) errorMsg.textContent = "Pilih avatar atau upload foto terlebih dahulu.";
                 }
             });
         }
@@ -480,7 +1200,68 @@ function setupEventListeners() {
         });
     }
 
-    // --- NEW: Interactivity Logic ---
+    // --- NEW: Integrated Security & Form Listeners ---
+    const profileEditForm = document.getElementById('profileEditForm');
+    if (profileEditForm) {
+        profileEditForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const usernameInput = document.getElementById('username');
+            const emailInput = document.getElementById('email');
+
+            showToast('Menyimpan profil...', 'info');
+            const result = await updateProfile({
+                email: emailInput.value
+            });
+
+            if (result.success) {
+                showToast('Profil berhasil diperbarui!', 'success');
+                loadUserProfile();
+            } else {
+                showToast(result.message || 'Gagal memperbarui profil', 'error');
+            }
+        });
+    }
+
+    const changePasswordForm = document.getElementById('changePasswordForm');
+    if (changePasswordForm) {
+        changePasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const curPass = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confPass = document.getElementById('confirmPassword').value;
+
+            if (newPass !== confPass) {
+                showToast('Konfirmasi password baru tidak cocok!', 'error');
+                return;
+            }
+
+            const token = localStorage.getItem('hyrostToken');
+            showToast('Memproses pembaruan password...', 'info');
+
+            try {
+                const res = await fetch('/api/users/change-password', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({ currentPassword: curPass, newPassword: newPass })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(data.message || 'Password berhasil diperbarui!', 'success');
+                    changePasswordForm.reset();
+                    validatePasswordStrength('');
+                    loadSecurityStatus();
+                } else {
+                    showToast(data.message || 'Gagal memperbarui password', 'error');
+                }
+            } catch (err) {
+                showToast('Gagal menghubungi server.', 'error');
+            }
+        });
+    }
 
     // 0. Actions Menu & Logout
     const menuToggle = document.getElementById('profileMenuToggle');
@@ -521,30 +1302,164 @@ function setupEventListeners() {
         });
     }
 
-    // 1. Google Link Logic (PURE SIMULATION)
+    // 1. Google Link Button Handler
     const btnGoogleLink = document.getElementById('btnGoogleLink');
     if (btnGoogleLink) {
-        btnGoogleLink.addEventListener('click', (e) => {
-            e.preventDefault(); // Stop any default behavior
-            
-            const isLinked = btnGoogleLink.textContent.trim() === 'Unlink';
-            
+        btnGoogleLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('hyrostToken');
+            const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+            const isLinked = currentUser.google_id || currentUser.googleId;
+
             if (isLinked) {
-                // Simulate Unlink
-                if (confirm('Simulasi: Putuskan koneksi Google?')) {
-                     updateUserLinkStatus(false);
-                     showToast('Akun Google diputus (Simulasi)!', 'info');
+                if (confirm('Apakah Anda yakin ingin memutuskan tautan akun Google?')) {
+                    delete currentUser.google_id;
+                    delete currentUser.googleId;
+                    localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                    localStorage.removeItem('googleUser');
+                    showToast('Tautan akun Google diputus', 'info');
+                    refreshLinkedAccountsUI();
                 }
             } else {
-                // Simulate Link
-                btnGoogleLink.textContent = 'Connecting...';
-                btnGoogleLink.disabled = true;
-                
-                setTimeout(() => {
-                    updateUserLinkStatus(true);
-                    showToast('Akun Google berhasil di-link (Simulasi)!', 'success');
-                    btnGoogleLink.disabled = false;
-                }, 1500);
+                if (typeof google !== 'undefined' && google.accounts && google.accounts.id) {
+                    google.accounts.id.prompt();
+                } else {
+                    const email = prompt('Masukkan Email Google Anda untuk dihubungkan:');
+                    if (email) {
+                        try {
+                            const res = await fetch('/api/auth/google', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ payload: { email, sub: `g_${Date.now()}` } })
+                            });
+                            const data = await res.json();
+                            if (res.ok && data.user) {
+                                currentUser.google_id = data.user.googleId || `g_${Date.now()}`;
+                                localStorage.setItem('currentUser', JSON.stringify(currentUser));
+                                showToast('Akun Google berhasil dihubungkan!', 'success');
+                                refreshLinkedAccountsUI();
+                            }
+                        } catch (err) {
+                            showToast('Gagal menghubungkan Google', 'error');
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+    // 2. Discord Link Button Handler
+    const btnDiscordLink = document.getElementById('btnDiscordLink');
+    if (btnDiscordLink) {
+        btnDiscordLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('hyrostToken');
+            if (!token) return showToast('Silakan login terlebih dahulu', 'error');
+
+            const isLinked = btnDiscordLink.textContent.trim() === 'Putuskan';
+
+            if (isLinked) {
+                if (confirm('Apakah Anda yakin ingin memutuskan tautan Discord?')) {
+                    try {
+                        const res = await fetch('/api/users/unlink-discord', {
+                            method: 'DELETE',
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            showToast(data.message || 'Koneksi Discord diputus', 'info');
+                            refreshLinkedAccountsUI();
+                        }
+                    } catch (err) {
+                        showToast('Gagal memutuskan Discord', 'error');
+                    }
+                }
+            } else {
+                const username = prompt('Masukkan Username / Tag Discord Anda (Contoh: Alex#1234 atau alex_hyrost):');
+                if (username) {
+                    try {
+                        const res = await fetch('/api/users/link-discord', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ discordUsername: username })
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            showToast(data.message, 'success');
+                            refreshLinkedAccountsUI();
+                        } else {
+                            showToast(data.message || 'Gagal menghubungkan Discord', 'error');
+                        }
+                    } catch (err) {
+                        showToast('Gagal menghubungi server', 'error');
+                    }
+                }
+            }
+        });
+    }
+
+    // 3. Mojang / Minecraft Link Button Handler
+    const btnMojangLink = document.getElementById('btnMojangLink');
+    if (btnMojangLink) {
+        btnMojangLink.addEventListener('click', async (e) => {
+            e.preventDefault();
+            const token = localStorage.getItem('hyrostToken');
+            if (!token) return showToast('Silakan login terlebih dahulu', 'error');
+
+            const isLinked = btnMojangLink.textContent.trim() === 'Putuskan';
+
+            if (isLinked) {
+                if (confirm('Apakah Anda yakin ingin memutuskan tautan akun Mojang/Minecraft?')) {
+                    try {
+                        const res = await fetch('/api/minecraft/unlink-mojang', {
+                            method: 'DELETE',
+                            headers: { Authorization: `Bearer ${token}` }
+                        });
+                        const data = await res.json();
+                        if (res.ok) {
+                            showToast(data.message || 'Tautan Mojang diputus', 'info');
+                            refreshLinkedAccountsUI();
+                            if (typeof loadMinecraftLinkStatus === 'function') loadMinecraftLinkStatus();
+                        }
+                    } catch (err) {
+                        showToast('Gagal memutuskan tautan Mojang', 'error');
+                    }
+                }
+            } else {
+                const mcUsername = prompt('Masukkan Username Resmi Mojang / Minecraft Java Edition Anda:');
+                if (mcUsername) {
+                    try {
+                        btnMojangLink.disabled = true;
+                        btnMojangLink.textContent = 'Mencari Mojang...';
+
+                        const res = await fetch('/api/minecraft/link-mojang', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                Authorization: `Bearer ${token}`
+                            },
+                            body: JSON.stringify({ mcUsername })
+                        });
+                        const data = await res.json();
+                        btnMojangLink.disabled = false;
+
+                        if (res.ok && data.success) {
+                            showToast(data.message, 'success');
+                            refreshLinkedAccountsUI();
+                            if (typeof loadMinecraftLinkStatus === 'function') loadMinecraftLinkStatus();
+                        } else {
+                            showToast(data.message || 'Gagal menghubungkan akun Mojang', 'error');
+                            btnMojangLink.textContent = 'Hubungkan Mojang';
+                        }
+                    } catch (err) {
+                        btnMojangLink.disabled = false;
+                        btnMojangLink.textContent = 'Hubungkan Mojang';
+                        showToast('Gagal memverifikasi ke API Mojang', 'error');
+                    }
+                }
             }
         });
     }
@@ -683,9 +1598,12 @@ function handleFileUpload(e) {
             // Success
             errorMsg.textContent = "";
             selectedAvatarUrl = compressedDataUrl;
+            selectedHeadKey = null;
+            selectedAvatarName = file.name;
+            selectedAvatarType = "Custom Upload Photo";
             
+            updateAvatarModalPreview(compressedDataUrl, file.name, "Unggahan Gambar Custom");
             console.log(`DEBUG: Image compressed. Original: ${event.target.result.length}, Compressed: ${compressedDataUrl.length}`);
-            // Optional: Preview could be shown here
         };
         img.src = event.target.result;
     };
@@ -693,26 +1611,46 @@ function handleFileUpload(e) {
 }
 
 async function saveNewAvatar(url) {
-    showToast('Mengubah Avatar...', 'info');
-    
-    const result = await updateProfile({ avatarUrl: url });
-    
-    if (result.success) {
-        showToast("Avatar berhasil diubah!", "success");
-        loadUserProfile();
-        
-        // Also update sidebar avatar if exists
-        const sidebarAvatar = document.getElementById('userAvatar');
-        if (sidebarAvatar) sidebarAvatar.src = url;
+    showToast('Menyimpan avatar...', 'info');
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return showToast('Silakan login terlebih dahulu', 'error');
 
-        // Update Banner Avatar
-        const bannerAvatar = document.getElementById('bannerAvatar');
-        if (bannerAvatar) bannerAvatar.src = url;
-        
-        // Dispatch event so other components know user data changed
+    const body = selectedHeadKey
+        ? { headKey: selectedHeadKey }
+        : { avatarUrl: url, headName: selectedAvatarName || 'Custom Head' };
+
+    try {
+        const res = await fetch('/api/users/select-head', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(body),
+        });
+        const data = await res.json();
+
+        if (!res.ok || !data.success) {
+            showToast(data.message || 'Gagal menyimpan avatar', 'error');
+            return;
+        }
+
+        const savedUrl = data.avatarUrl || url;
+        const cur = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        cur.avatarUrl = savedUrl;
+        localStorage.setItem('currentUser', JSON.stringify(cur));
+
+        showToast('Avatar berhasil disimpan!', 'success');
+        await loadUserProfile();
+
+        ['editAvatarPreview', 'userAvatar', 'bannerAvatar'].forEach((id) => {
+            const el = document.getElementById(id);
+            if (el) el.src = savedUrl;
+        });
+
         window.dispatchEvent(new Event('userProfileUpdated'));
-    } else {
-        showToast("Gagal mengubah avatar: " + result.message, "error");
+    } catch (err) {
+        showToast('Gagal menyimpan avatar: ' + err.message, 'error');
     }
 }
 
@@ -746,23 +1684,160 @@ function showToast(message, type = 'info') {
 
 // Helper: Update Link Status in Storage
 function updateUserLinkStatus(linked) {
-    const currentUserStr = localStorage.getItem('currentUser');
-    if (!currentUserStr) return;
-    
-    const user = JSON.parse(currentUserStr);
-    
-    // Toggle logic
-    if (linked) {
-        user.googleId = "mock-google-id-123";
-        user.linkedAt = new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-    } else {
-        delete user.googleId;
-        delete user.linkedAt;
+    if (typeof refreshLinkedAccountsUI === 'function') {
+        refreshLinkedAccountsUI();
     }
-    
-    // Save to session and DB
-    localStorage.setItem('currentUser', JSON.stringify(user));
-    
-    // Refresh UI
-    loadUserProfile();
+    if (linked && typeof loadUserProfile === 'function') {
+        loadUserProfile();
+    }
 }
+
+// ─── MINECRAFT ACCOUNT LINKING ───────────────────────────────────────────────
+
+async function loadMinecraftLinkStatus() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return;
+
+    try {
+        const res  = await fetch('/api/minecraft/link-status', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        const linkedWrap   = document.getElementById('mcLinkedState');
+        const unlinkedWrap = document.getElementById('mcUnlinkedState');
+
+        if (data.linked) {
+            if (linkedWrap)   linkedWrap.style.display   = 'block';
+            if (unlinkedWrap) unlinkedWrap.style.display = 'none';
+
+            document.getElementById('mcLinkedUsername').textContent = data.mcUsername || 'Player';
+            document.getElementById('mcLinkedUuid').textContent     = `UUID: ${data.mcUuid || '-'}`;
+            document.getElementById('mcHeadAvatar').src = `https://cravatar.eu/helmavatar/${encodeURIComponent(data.mcUsername || 'Steve')}/64.png`;
+        } else {
+            if (linkedWrap)   linkedWrap.style.display   = 'none';
+            if (unlinkedWrap) unlinkedWrap.style.display = 'block';
+        }
+    } catch (err) {
+        console.error("Minecraft link status error:", err);
+    }
+}
+window.loadMinecraftLinkStatus = loadMinecraftLinkStatus;
+
+async function requestMinecraftLinkCode() {
+    const token = localStorage.getItem('hyrostToken');
+    if (!token) return showAccountToast("Silakan login terlebih dahulu", "error");
+
+    const btn = document.getElementById('btnGenMcCode');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...'; }
+
+    try {
+        const res  = await fetch('/api/minecraft/link-request', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (data.success) {
+            document.getElementById('mcCodeDisplay').style.display = 'block';
+            document.getElementById('mcGeneratedCode').textContent = data.linkCode;
+            document.getElementById('mcFullCommand').textContent   = `/link ${data.linkCode}`;
+            document.getElementById('mcCommandSample').textContent = `/link ${data.linkCode}`;
+            showAccountToast("Kode verifikasi berhasil dibuat! Ketik di server Minecraft.", "success");
+        } else {
+            showAccountToast(data.message || "Gagal membuat kode", "error");
+        }
+    } catch (err) {
+        showAccountToast("Error: " + err.message, "error");
+    } finally {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Buat Kode Verifikasi Baru'; }
+    }
+}
+window.requestMinecraftLinkCode = requestMinecraftLinkCode;
+
+async function unlinkMinecraftAccount() {
+    if (!confirm("Yakin ingin melepas tautan akun Minecraft dari profil ini?")) return;
+    const token = localStorage.getItem('hyrostToken');
+
+    try {
+        const res  = await fetch('/api/minecraft/unlink', {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        const data = await res.json();
+        if (data.success) {
+            showAccountToast("Tautan akun Minecraft berhasil dilepas.", "success");
+            loadMinecraftLinkStatus();
+        } else {
+            showAccountToast(data.message || "Gagal", "error");
+        }
+    } catch (err) {
+        showAccountToast("Error: " + err.message, "error");
+    }
+}
+window.unlinkMinecraftAccount = unlinkMinecraftAccount;
+
+// ─── REFRESH LINKED ACCOUNTS UI (GOOGLE, DISCORD, MOJANG) ─────────────────────
+async function refreshLinkedAccountsUI() {
+    const token = localStorage.getItem('hyrostToken');
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+
+    // 1. Google UI
+    const googleStatusEl = document.getElementById('googleLinkStatus');
+    const btnGoogle = document.getElementById('btnGoogleLink');
+    const isGoogleLinked = currentUser.google_id || currentUser.googleId;
+    if (googleStatusEl) {
+        googleStatusEl.textContent = isGoogleLinked ? `Terhubung (${currentUser.email || 'Google'})` : 'Belum Terhubung';
+        googleStatusEl.style.color = isGoogleLinked ? '#10b981' : '#9ca3af';
+    }
+    if (btnGoogle) {
+        btnGoogle.textContent = isGoogleLinked ? 'Putuskan' : 'Hubungkan';
+    }
+
+    if (!token) return;
+
+    // 2. Discord UI
+    try {
+        const res = await fetch('/api/users/discord-status', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const discordStatusEl = document.getElementById('discordLinkStatus');
+            const btnDiscord = document.getElementById('btnDiscordLink');
+            if (discordStatusEl) {
+                discordStatusEl.textContent = data.linked ? `Terhubung (${data.discordUsername})` : 'Belum Terhubung';
+                discordStatusEl.style.color = data.linked ? '#10b981' : '#9ca3af';
+            }
+            if (btnDiscord) {
+                btnDiscord.textContent = data.linked ? 'Putuskan' : 'Hubungkan';
+            }
+        }
+    } catch (e) {}
+
+    // 3. Mojang UI
+    try {
+        const res = await fetch('/api/minecraft/link-status', {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            const mojangStatusEl = document.getElementById('mojangLinkStatus');
+            const btnMojang = document.getElementById('btnMojangLink');
+            const mojangAvatarContainer = document.getElementById('mojangAvatarContainer');
+
+            if (mojangStatusEl) {
+                mojangStatusEl.textContent = data.linked ? `Terhubung (${data.mcUsername})` : 'Belum Terhubung';
+                mojangStatusEl.style.color = data.linked ? '#10b981' : '#9ca3af';
+            }
+            if (btnMojang) {
+                btnMojang.textContent = data.linked ? 'Putuskan' : 'Hubungkan Mojang';
+            }
+            if (mojangAvatarContainer && data.linked && data.mcUsername) {
+                mojangAvatarContainer.innerHTML = `<img src="https://mc-heads.net/avatar/${encodeURIComponent(data.mcUsername)}/64" style="width:36px; height:36px; border-radius:6px;">`;
+            }
+        }
+    } catch (e) {}
+}
+window.refreshLinkedAccountsUI = refreshLinkedAccountsUI;
+

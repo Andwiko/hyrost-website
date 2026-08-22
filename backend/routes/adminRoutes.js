@@ -42,4 +42,35 @@ router.get('/cosmetics', adminController.getAllCosmetics);
 router.post('/cosmetic', adminController.createCosmetic);
 router.delete('/cosmetic/:id', adminController.deleteCosmetic);
 
+// Backup & Restore
+router.get('/backup', adminController.exportBackup);
+router.post('/restore', adminController.restoreBackup);
+
+// Mass Broadcast
+router.post('/broadcast', adminController.sendMassBroadcast);
+
+// Wiki CMS Manager
+router.get('/wiki', adminController.getWikiArticles);
+router.post('/wiki', adminController.createWikiArticle);
+router.delete('/wiki/:id', adminController.deleteWikiArticle);
+
+const voucherController = require('../controllers/voucherController');
+
+// IP Blacklist Manager
+router.get('/ip-blacklist', adminController.getIPBlacklist);
+router.post('/ip-blacklist', adminController.blockIP);
+router.delete('/ip-blacklist/:ip', adminController.unblockIP);
+
+// Payment Gateways Config & Methods (Admin)
+router.get('/payment-settings', adminController.getPaymentSettings);
+router.post('/payment-settings', adminController.updatePaymentSettings);
+router.get('/payment-methods', adminController.getAllPaymentMethods);
+router.post('/payment-method', adminController.savePaymentMethod);
+router.delete('/payment-method/:key', adminController.deletePaymentMethod);
+
+// Voucher & Promo Code Manager (Admin)
+router.get('/vouchers', adminController.getPromoVouchers);
+router.post('/voucher', adminController.createPromoVoucher);
+router.delete('/voucher/:id', adminController.deletePromoVoucher);
+
 module.exports = router;

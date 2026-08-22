@@ -1,13 +1,16 @@
+/* ========== AUTHENTICATION PAGES MODERN STYLES ========== */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
 :root {
-  --primary-gold: #d4af37;
-  --primary-gold-hover: #b5952f;
-  --dark-bg: #0a0a0a;
-  --card-bg: #1a1a1a;
-  --text-color: #e0e0e0;
-  --input-bg: #2d2d2d;
-  --border-color: #333;
-  --font-heading: "Cinzel", serif;
-  --font-body: "Inter", sans-serif;
+  --primary-accent: #6366f1;
+  --secondary-accent: #06b6d4;
+  --dark-bg: #07090e;
+  --card-bg: rgba(15, 20, 31, 0.85);
+  --text-color: #f3f4f6;
+  --text-muted: #9ca3af;
+  --input-bg: rgba(0, 0, 0, 0.4);
+  --border-color: rgba(255, 255, 255, 0.1);
+  --font-body: 'Plus Jakarta Sans', sans-serif;
 }
 
 * {
@@ -17,11 +20,9 @@
 body {
   font-family: var(--font-body);
   background-color: var(--dark-bg);
-  background-image: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)),
-    url("../assets/images/background.jpg"); /* Fallback or placeholder */
-  background-size: cover;
-  background-position: center;
-  background-attachment: fixed;
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.12) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(6, 182, 212, 0.12) 0%, transparent 40%);
   margin: 0;
   min-height: 100vh;
   display: flex;
@@ -38,19 +39,18 @@ body {
 }
 
 .register-card {
-  background: rgba(26, 26, 26, 0.95);
-  backdrop-filter: blur(10px);
-  border: 1px solid var(--primary-gold);
-  border-radius: 12px;
+  background: var(--card-bg);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
   padding: 40px;
   width: 100%;
-  max-width: 450px;
-  box-shadow: 0 0 30px rgba(212, 175, 55, 0.15);
+  max-width: 440px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
   position: relative;
   overflow: hidden;
 }
 
-/* Decorative line */
 .register-card::before {
   content: "";
   position: absolute;
@@ -58,58 +58,54 @@ body {
   left: 0;
   width: 100%;
   height: 3px;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--primary-gold),
-    transparent
-  );
+  background: linear-gradient(90deg, var(--primary-accent), var(--secondary-accent));
 }
 
 .card-header {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 28px;
 }
 
 .back-link {
   position: absolute;
   top: 20px;
   left: 20px;
-  color: #888;
+  color: var(--text-muted);
   text-decoration: none;
-  font-size: 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   transition: color 0.3s;
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 6px;
 }
 
 .back-link:hover {
-  color: var(--primary-gold);
+  color: var(--secondary-accent);
 }
 
 .logo-area {
-  margin-top: 20px;
+  margin-top: 15px;
 }
 
 .logo-img {
-  height: 60px;
+  height: 56px;
   margin-bottom: 10px;
-  filter: drop-shadow(0 0 5px rgba(212, 175, 55, 0.5));
+  filter: drop-shadow(0 0 12px rgba(99, 102, 241, 0.4));
 }
 
 .card-header h1 {
-  font-family: var(--font-heading);
-  color: var(--primary-gold);
+  font-weight: 800;
+  color: #ffffff;
   margin: 5px 0;
-  letter-spacing: 2px;
-  font-size: 2rem;
+  font-size: 1.8rem;
+  letter-spacing: -0.5px;
 }
 
 .card-header p {
-  color: #888;
-  margin: 0;
-  font-size: 0.95rem;
+  color: var(--text-muted);
+  margin: 4px 0 0;
+  font-size: 0.9rem;
 }
 
 .form-group {
@@ -119,34 +115,36 @@ body {
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  color: var(--primary-gold);
-  font-size: 0.9rem;
-  font-weight: 500;
+  color: var(--text-color);
+  font-size: 0.85rem;
+  font-weight: 600;
 }
 
 .form-group label i {
   width: 20px;
   text-align: center;
-  margin-right: 5px;
+  margin-right: 6px;
+  color: var(--primary-accent);
 }
 
 .form-group input {
   width: 100%;
-  padding: 12px 15px;
-  padding-right: 45px; /* Space for eye icon */
+  padding: 12px 16px;
+  padding-right: 45px;
   background: var(--input-bg);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: 12px;
   color: white;
   font-family: var(--font-body);
-  font-size: 1rem;
+  font-size: 0.95rem;
   transition: all 0.3s;
 }
 
 .form-group input:focus {
   outline: none;
-  border-color: var(--primary-gold);
-  box-shadow: 0 0 10px rgba(212, 175, 55, 0.2);
+  border-color: var(--primary-accent);
+  box-shadow: 0 0 14px rgba(99, 102, 241, 0.3);
+  background: rgba(0, 0, 0, 0.6);
 }
 
 .password-input-wrapper {
@@ -160,62 +158,61 @@ body {
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
-  color: #666;
+  color: var(--text-muted);
   transition: color 0.3s;
   z-index: 10;
 }
 
 .toggle-password:hover {
-  color: var(--primary-gold);
+  color: var(--secondary-accent);
 }
 
 .register-btn {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, var(--primary-gold), #b5952f);
+  background: linear-gradient(135deg, var(--primary-accent), #4f46e5);
   border: none;
-  border-radius: 6px;
-  color: #1a1a1a;
-  font-family: var(--font-heading);
+  border-radius: 9999px;
+  color: #ffffff;
+  font-family: var(--font-body);
   font-weight: 700;
-  font-size: 1rem;
+  font-size: 0.95rem;
   cursor: pointer;
   transition: all 0.3s;
-  margin-top: 10px;
+  margin-top: 12px;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: 10px;
-  letter-spacing: 1px;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
 }
 
 .register-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 5px 15px rgba(212, 175, 55, 0.3);
+  box-shadow: 0 8px 25px rgba(99, 102, 241, 0.5);
 }
 
 .card-footer {
   text-align: center;
-  margin-top: 25px;
-  padding-top: 20px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  font-size: 0.9rem;
-  color: #888;
+  margin-top: 24px;
+  padding-top: 18px;
+  border-top: 1px solid var(--border-color);
+  font-size: 0.88rem;
+  color: var(--text-muted);
 }
 
 .card-footer a {
-  color: var(--primary-gold);
+  color: var(--secondary-accent);
   text-decoration: none;
-  font-weight: 600;
+  font-weight: 700;
   transition: color 0.3s;
 }
 
 .card-footer a:hover {
-  color: #fff;
+  color: #ffffff;
   text-decoration: underline;
 }
 
-/* Response for small screens */
 @media (max-width: 480px) {
   .register-card {
     padding: 30px 20px;

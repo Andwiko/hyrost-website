@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             alert('Terima kasih! Pesanan Anda telah diterima. Kami akan memprosesnya segera.');
             localStorage.removeItem('cart');
-            window.location.href = '/marketplace/shop.html';
+            window.location.href = '/marketplace/index.html';
         });
 
         renderOrderSummary();
@@ -246,21 +246,45 @@ document.addEventListener('DOMContentLoaded', () => {
         uploadForm.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            // Ambil elemen untuk menampilkan pesan
             const messageDiv = document.createElement('div');
             messageDiv.style.marginTop = '1rem';
             messageDiv.style.textAlign = 'center';
             messageDiv.style.fontWeight = '600';
             uploadForm.appendChild(messageDiv);
 
-            // Buat FormData dari form
-            const formData = new FormData(uploadForm);
+            const token = localStorage.getItem('hyrostToken');
+            if (!token) {
+                messageDiv.textContent = 'Silakan login terlebih dahulu.';
+                messageDiv.style.color = 'red';
+                return;
+            }
+
+            const itemName = formDataGet(uploadForm, 'name') || formDataGet(uploadForm, 'itemName');
+            const itemPrice = parseInt(formDataGet(uploadForm, 'price') || formDataGet(uploadForm, 'itemPrice') || '0', 10);
+            const itemDesc = formDataGet(uploadForm, 'description') || formDataGet(uploadForm, 'itemDesc') || '';
+            const priceType = formDataGet(uploadForm, 'priceType') || 'bronze';
+            const itemType = formDataGet(uploadForm, 'category') || formDataGet(uploadForm, 'itemType') || 'general';
+
+            if (!itemName || !itemPrice) {
+                messageDiv.textContent = 'Nama item dan harga wajib diisi.';
+                messageDiv.style.color = 'red';
+                return;
+            }
 
             try {
-                // Ganti URL dengan URL backend Anda
-                const response = await fetch('http://localhost:5000/api/products', {
+                const response = await fetch('/api/marketplace/listings', {
                     method: 'POST',
-                    body: formData
+                    headers: {
+                        'Content-Type': 'application/json',
+                        Authorization: `Bearer ${token}`,
+                    },
+                    body: JSON.stringify({
+                        itemName,
+                        description: itemDesc,
+                        priceCoin: itemPrice,
+                        priceType,
+                        itemType,
+                    }),
                 });
 
                 const result = await response.json();
@@ -268,23 +292,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (response.ok) {
                     messageDiv.textContent = 'Item berhasil diupload!';
                     messageDiv.style.color = 'green';
-                    
                     uploadForm.reset();
-
                     setTimeout(() => {
-                        window.location.href = '/marketplace/shop.html';
+                        window.location.href = '/marketplace/index.html';
                     }, 2000);
-
                 } else {
                     throw new Error(result.message || 'Gagal mengupload item');
                 }
-
             } catch (error) {
                 console.error('Error:', error);
                 messageDiv.textContent = `Error: ${error.message}`;
                 messageDiv.style.color = 'red';
             }
         });
+    }
+
+    function formDataGet(form, fieldName) {
+        const el = form.querySelector(`[name="${fieldName}"]`);
+        return el ? el.value.trim() : '';
     }
     
 });

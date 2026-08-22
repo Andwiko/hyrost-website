@@ -3,38 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost - Support Center</title>
+    <title>Hyrost — Pusat Bantuan &amp; Tiket Support</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css">
-    <link rel="stylesheet" href="support.css">
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    <link rel="stylesheet" href="support.css?v=50">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        .support-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px;
+            border-bottom: 1px solid var(--border-subtle);
+            padding-bottom: 10px;
+        }
+
+        .tab-btn {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: var(--radius-full);
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-btn.active {
+            background: var(--bg-surface-2);
+            color: #ffffff;
+            border: 1px solid var(--border-subtle);
+        }
+
+        .tab-btn .badge {
+            background: rgba(99, 102, 241, 0.15);
+            color: var(--accent-indigo-light);
+            padding: 2px 7px;
+            border-radius: var(--radius-full);
+            font-size: 0.72rem;
+            font-weight: 800;
+        }
+    </style>
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <img src="../assets/images/hyrost.png" alt="Logo">
-                <h2>Hyrost</h2>
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <div class="brand-text">
+                    <h2>Hyrost</h2>
+                    <span>Member Realm</span>
+                </div>
             </div>
             
+            <div class="nav-section-label">Navigasi Utama</div>
             <nav class="sidebar-nav">
                 <a href="../dashboard.html" class="nav-item">
-                    <i class="fas fa-home"></i>
-                    <span>Home</span>
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
                 </a>
                 <a href="../account/index.html" class="nav-item">
                     <i class="fas fa-user-circle"></i>
-                    <span>Profile</span>
+                    <span>Profil Saya</span>
                 </a>
-                <a href="../question/index.html" class="nav-item">
-                    <i class="fas fa-globe-asia"></i>
-                    <span>World</span>
+                <a href="store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
                 </a>
                 <a href="forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
@@ -45,132 +92,167 @@
                     <span>Leaderboard</span>
                 </a>
                 <a href="../inventory/inventory.html" class="nav-item">
-                    <i class="fas fa-briefcase"></i>
-                    <span>Storage</span>
+                    <i class="fas fa-box"></i>
+                    <span>Inventaris</span>
                 </a>
-                <a href="../marketplace/shop.html" class="nav-item">
-                    <i class="fas fa-shopping-bag"></i>
-                    <span>Shop</span>
-                </a>
-                <a href="../marketplace/auction.html" class="nav-item">
-                    <i class="fas fa-gavel"></i>
-                    <span>Auction</span>
-                </a>
-                <a href="role_shop.html" class="nav-item">
-                    <i class="fas fa-user-tag"></i>
-                    <span>Role Shop</span>
+                <a href="../marketplace/index.html" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
                 </a>
                 <a href="rewards.html" class="nav-item">
-                    <i class="fas fa-calendar-check"></i>
+                    <i class="fas fa-gift"></i>
                     <span>Daily Rewards</span>
                 </a>
                 <a href="wiki.html" class="nav-item">
                     <i class="fas fa-book"></i>
-                    <span>Wiki</span>
+                    <span>Wiki & Guide</span>
                 </a>
                 <a href="social.html" class="nav-item">
                     <i class="fas fa-users"></i>
-                    <span>Social</span>
+                    <span>Pertemanan</span>
                 </a>
                 <a href="support.html" class="nav-item active">
                     <i class="fas fa-headset"></i>
-                    <span>Support</span>
+                    <span>Pusat Bantuan</span>
                 </a>
-                <a href="#" class="nav-item">
-                    <i class="fas fa-info-circle"></i>
-                    <span>Info</span>
+                <a href="../verify-user.html" class="nav-item">
+                    <i class="fab fa-discord" style="color:#5865F2;"></i>
+                    <span>Verifikasi Discord</span>
+                </a>
+                <div class="nav-divider"></div>
+                <div class="nav-section-label nav-section-admin">Admin Panel</div>
+                <a href="admin.html" class="nav-item nav-admin">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Panel</span>
                 </a>
             </nav>
 
-            <!-- Server Status Widget -->
-            <div class="sidebar-widget server-status-widget">
-                <div class="widget-header">
-                    <h3>Status Server</h3>
-                    <span class="status-dot online"></span>
-                </div>
-                <div class="widget-content">
-                    <p class="server-ip">play.hyrost.net</p>
-                    <p class="player-count"><i class="fas fa-users"></i> <span id="onlinePlayers">...</span> Online</p>
+            <div class="sidebar-bottom">
+                <div class="sidebar-server-pill">
+                    <div class="server-pill-row">
+                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
+                        <span class="status-dot online"></span>
+                    </div>
+                    <div class="server-pill-ip">play.hyrost.net</div>
                 </div>
             </div>
         </aside>
 
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu" style="padding:8px 12px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+            </div>
+        </div>
+
         <!-- Main Content -->
         <main class="main-content">
-            <header class="content-header">
-                <div class="header-title-row">
-                    <h1>Pusat Bantuan</h1>
-                     <!-- Notification System -->
-                     <div class="notification-wrapper">
-                        <button class="icon-btn notification-btn" id="notificationBtn">
-                            <i class="fas fa-bell"></i>
-                            <span class="notification-badge" id="notificationBadge">0</span>
-                        </button>
-                        <div class="notification-dropdown" id="notificationDropdown">
-                            <div class="dropdown-header">
-                                <h3>Notifications</h3>
-                                <button class="mark-read-btn">Mark all as read</button>
-                            </div>
-                            <div class="notification-list" id="notificationList">
-                                <!-- Items inserted by JS -->
-                            </div>
-                            <div class="dropdown-footer">
-                                <a href="#">View All</a>
-                            </div>
-                        </div>
+            <div class="top-user-banner">
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                        <i class="fas fa-headset" style="color:var(--accent-rose);"></i>
+                        <span>Pusat Bantuan &amp; Tiket Support</span>
+                    </h1>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Laporkan kendala in-game, pembayaran rank, atau hubungi tim moderator server.</p>
+                </div>
+                <a href="../dashboard.html" class="btn-header-action">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Dashboard</span>
+                </a>
+            </div>
+
+            <!-- Support Tabs -->
+            <div class="support-tabs">
+                <button class="tab-btn active" onclick="switchSupportTab('tickets')">
+                    <i class="fas fa-ticket-alt"></i> Tiket Saya <span class="badge" id="myTicketsCount">0</span>
+                </button>
+                <button class="tab-btn" onclick="switchSupportTab('new')">
+                    <i class="fas fa-plus"></i> Buka Tiket Baru
+                </button>
+                <button class="tab-btn" onclick="switchSupportTab('faq')">
+                    <i class="fas fa-question-circle"></i> Pertanyaan Umum (FAQ)
+                </button>
+            </div>
+
+            <!-- Tab 1: Ticket List -->
+            <div id="tab-tickets" class="support-view-tab active">
+                <div class="widget-card">
+                    <div class="widget-title">
+                        <i class="fas fa-inbox" style="color:var(--accent-indigo);"></i>
+                        <span>Daftar Tiket Kendala Anda</span>
+                    </div>
+                    <div id="ticketsListContainer">
+                        <!-- Loaded dynamically by support.js -->
                     </div>
                 </div>
-                <p>Laporkan masalah atau ajukan pertanyaan kepada tim kami.</p>
-            </header>
+            </div>
 
-            <div class="support-container">
-                <!-- Create Ticket Form -->
+            <!-- Tab 2: New Ticket Form -->
+            <div id="tab-new" class="support-view-tab" style="display:none;">
                 <div class="ticket-form-card">
-                    <h2><i class="fas fa-plus-circle"></i> Buat Tiket Baru</h2>
-                    <form id="createTicketForm">
-                        <div class="form-group">
-                            <label>Judul Masalah</label>
-                            <input type="text" id="ticketSubject" placeholder="Contoh: Tidak bisa login ke server" required>
-                        </div>
-                        
+                    <h2><i class="fas fa-paper-plane" style="color:var(--accent-indigo);"></i> Buat Tiket Kendala Baru</h2>
+                    <form id="newTicketForm" onsubmit="handleCreateTicket(event)">
                         <div class="form-row">
                             <div class="form-group">
-                                <label>Kategori</label>
-                                <select id="ticketCategory">
-                                    <option value="General">Umum</option>
-                                    <option value="Account">Masalah Akun</option>
-                                    <option value="Bug">Laporan Bug</option>
-                                    <option value="Payment">Pembayaran/Donasi</option>
-                                    <option value="Report">Lapor Pemain</option>
+                                <label for="ticketCategory">Kategori Masalah</label>
+                                <select id="ticketCategory" required>
+                                    <option value="payment">Pembayaran &amp; Rank Store</option>
+                                    <option value="account">Akun &amp; Verifikasi Discord</option>
+                                    <option value="gameplay">Kendala Gameplay &amp; Bug</option>
+                                    <option value="report">Laporkan Pemain (Rule Breaker)</option>
+                                    <option value="other">Lainnya</option>
                                 </select>
                             </div>
                             <div class="form-group">
-                                <label>Prioritas</label>
+                                <label for="ticketPriority">Prioritas</label>
                                 <select id="ticketPriority">
-                                    <option value="Low">Low (Rendah)</option>
-                                    <option value="Medium" selected>Medium (Sedang)</option>
-                                    <option value="High">High (Tinggi)</option>
+                                    <option value="low">Rendah (Pertanyaan Umum)</option>
+                                    <option value="medium" selected>Sedang</option>
+                                    <option value="high">Tinggi (Darurat / Transaksi)</option>
                                 </select>
                             </div>
                         </div>
 
                         <div class="form-group">
-                            <label>Deskripsi Detail</label>
-                            <textarea id="ticketMessage" rows="5" placeholder="Jelaskan masalahmu sedetail mungkin..." required></textarea>
+                            <label for="ticketSubject">Judul Kendala</label>
+                            <input type="text" id="ticketSubject" placeholder="Contoh: Koin rank belum masuk setelah pembayaran" required />
                         </div>
 
-                        <button type="submit" class="btn-submit-ticket">Kirim Tiket</button>
+                        <div class="form-group">
+                            <label for="ticketMessage">Deskripsi Masalah</label>
+                            <textarea id="ticketMessage" rows="5" placeholder="Jelaskan detail kendala Anda secara lengkap..." required></textarea>
+                        </div>
+
+                        <button type="submit" class="btn-submit-ticket">
+                            <i class="fas fa-paper-plane" style="margin-right:8px;"></i> Kirim Tiket Sekarang
+                        </button>
                     </form>
                 </div>
+            </div>
 
-                <!-- Ticket History -->
-                <div class="ticket-history">
-                    <h2><i class="fas fa-history"></i> Riwayat Tiket</h2>
-                    <div class="ticket-list" id="ticketList">
-                        <!-- JS will populate this -->
-                        <div class="empty-state">
-                            <i class="fas fa-ticket-alt"></i>
-                            <p>Belum ada tiket yang dibuat.</p>
+            <!-- Tab 3: FAQ -->
+            <div id="tab-faq" class="support-view-tab" style="display:none;">
+                <div class="widget-card">
+                    <div class="widget-title">
+                        <i class="fas fa-question-circle" style="color:var(--accent-cyan);"></i>
+                        <span>Pertanyaan yang Sering Diajukan</span>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:14px;">
+                        <div style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); padding:16px 20px; border-radius:var(--radius-md);">
+                            <h4 style="color:#fff; margin:0 0 6px; font-size:0.95rem; font-weight:800;">Berapa lama rank akan aktif setelah pembayaran?</h4>
+                            <p style="color:var(--text-muted); margin:0; font-size:0.84rem; line-height:1.5;">Rank akan aktif secara otomatis dalam 10 - 60 detik setelah pembayaran terverifikasi oleh gateway.</p>
+                        </div>
+                        <div style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); padding:16px 20px; border-radius:var(--radius-md);">
+                            <h4 style="color:#fff; margin:0 0 6px; font-size:0.95rem; font-weight:800;">Bagaimana cara menghubungkan akun Discord?</h4>
+                            <p style="color:var(--text-muted); margin:0; font-size:0.84rem; line-height:1.5;">Buka menu <strong>Verifikasi Discord</strong> pada sidebar, lalu login menggunakan akun Discord Anda untuk otomatis mendapatkan Linked Roles.</p>
+                        </div>
+                        <div style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); padding:16px 20px; border-radius:var(--radius-md);">
+                            <h4 style="color:#fff; margin:0 0 6px; font-size:0.95rem; font-weight:800;">IP server Minecraft Hyrost apa?</h4>
+                            <p style="color:var(--text-muted); margin:0; font-size:0.84rem; line-height:1.5;">Gunakan IP <code>play.hyrost.net</code> dengan Port default <code>25565</code>. Kompatibel dengan Java &amp; Bedrock Edition.</p>
                         </div>
                     </div>
                 </div>
@@ -178,10 +260,8 @@
         </main>
     </div>
 
-    <script src="support.js"></script>
-    <script src="../assets/js/notifications.js"></script>
-    <script src="../assets/js/server_status.js"></script>
+    <!-- Scripts -->
+    <script src="../dashboard.js"></script>
+    <script src="support.js?v=20"></script>
 </body>
 </html>
-
-<script src='../assets/js/server_status.js'></script>
