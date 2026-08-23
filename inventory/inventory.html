@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyrost — Storage &amp; Inventaris</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css?v=50">
-    <link rel="stylesheet" href="inventory.css?v=50">
+    <link rel="stylesheet" href="../dashboard.css?v=52">
+    <link rel="stylesheet" href="inventory.css?v=52">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +17,7 @@
 <body>
     <div class="dashboard-container">
         <!-- Sidebar Overlay for Mobile -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar(event)"></div>
 
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
@@ -100,13 +100,16 @@
 
         <!-- Mobile Header -->
         <div class="mobile-header">
-            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu" style="padding:8px 12px;">
+            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar(event)" aria-label="Menu" style="padding:8px 12px;">
                 <i class="fas fa-bars"></i>
             </button>
             <div class="mobile-logo">
                 <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
                 <h2>Hyrost</h2>
             </div>
+            <button class="btn-header-action mobile-logout-btn" onclick="localStorage.clear(); window.location.href='../index.html';" title="Keluar" style="padding:8px 12px;">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
         </div>
 
         <!-- Main Content -->
@@ -212,7 +215,7 @@
     </div>
 
     <!-- Scripts -->
-    <script src="../assets/js/mobileLayout.js"></script>
-    <script src="inventory.js?v=21"></script>
+    <script src="../assets/js/mobileLayout.js?v=52"></script>
+    <script src="inventory.js?v=25"></script>
 </body>
 </html>

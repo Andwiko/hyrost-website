@@ -1111,6 +1111,17 @@ body.is-admin div.nav-section-admin {
     .sidebar.active, .sidebar.open, .sidebar.mobile-open {
         transform: translateX(0) !important;
         box-shadow: 6px 0 30px rgba(0, 0, 0, 0.8) !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        display: flex !important;
+        z-index: 9999 !important;
+    }
+
+    .sidebar-overlay.active, .sidebar-overlay.open {
+        display: block !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        z-index: 9998 !important;
     }
 
     .main-content {

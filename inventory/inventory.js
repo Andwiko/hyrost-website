@@ -228,6 +228,10 @@ function refreshSidebar(role) {
         nav.appendChild(a);
     });
 
+    if (window.HyrostMobileLayout && typeof window.HyrostMobileLayout.bindNavItems === 'function') {
+        window.HyrostMobileLayout.bindNavItems(sidebar);
+    }
+
     // Upgrade bottom server status widget to match admin design
     let serverWidget = sidebar.querySelector('.server-status-widget, .sidebar-bottom');
     if (!serverWidget) {
