@@ -327,6 +327,11 @@ exports.markNotificationsRead = async (req, res) => {
       );
     }
     res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+};
+
 exports.grantAchievement = grantAchievement;
 
 exports.getBotInfo = async (req, res) => {

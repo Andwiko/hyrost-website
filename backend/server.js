@@ -781,10 +781,11 @@ const initDB = async () => {
   }
 };
 
-// Start Server - Always listen IMMEDIATELY so Nginx 502 never happens
-const PORT = process.env.PORT || 3044;
-const httpServer = app.listen(PORT, () => {
-  console.log(`✅ Server running on port ${PORT}`);
+// Start Server - Always listen IMMEDIATELY on 0.0.0.0 so Nginx reverse proxy never fails
+const PORT = parseInt(process.env.PORT, 10) || 3044;
+const HOST = process.env.HOST || '0.0.0.0';
+const httpServer = app.listen(PORT, HOST, () => {
+  console.log(`✅ Server running on http://${HOST}:${PORT}`);
 });
 
 // Init DB and background tasks asynchronously (non-blocking)
