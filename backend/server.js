@@ -11,10 +11,10 @@ if (dotenv) {
   dotenv.config({ path: path.join(__dirname, "../.env") });
 }
 
-// Default Env Vars
-if (!process.env.JWT_SECRET) {
-  process.env.JWT_SECRET = 'hyrost_realm_master_secret_jwt_key_2026_auth';
-}
+// Security & Default Env Vars
+const { getJwtSecret } = require("./utils/security");
+process.env.JWT_SECRET = getJwtSecret();
+
 if (!process.env.PORT) {
   process.env.PORT = '3044';
 }

@@ -92,6 +92,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 };
                 localStorage.setItem('currentUser', JSON.stringify(userData));
                 localStorage.setItem('hyrostToken', data.token);
+                if (data.refreshToken) {
+                    localStorage.setItem('hyrostRefreshToken', data.refreshToken);
+                }
                 
                 setTimeout(() => {
                     window.location.href = '../dashboard.html';
@@ -144,6 +147,9 @@ window.handleCredentialResponse = async function(response) {
 
     if (resObj.ok && data.token) {
         localStorage.setItem('hyrostToken', data.token);
+        if (data.refreshToken) {
+            localStorage.setItem('hyrostRefreshToken', data.refreshToken);
+        }
         
         const user = data.user || {};
         const userData = {

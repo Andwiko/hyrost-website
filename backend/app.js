@@ -6,39 +6,59 @@ const errorHandler = require('./middleware/errorHandler');
 // Initialize app
 const app = express();
 
-// Security Headers & CORS
+// Security Headers & Hardening
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+
+  // Enforce HSTS on HTTPS / production proxy
+  if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
+    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+  }
+
+  res.removeHeader('X-Powered-By');
   next();
 });
 
-const allowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim()) 
-  : [
-      'https://hyrost.web.id',
-      'https://www.hyrost.web.id',
-      'http://hyrost.web.id',
-      'http://localhost:3000',
-      'http://localhost:3044',
-      'http://127.0.0.1:3044'
-    ];
+// Strict CORS Whitelist Configuration
+const explicitAllowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim().toLowerCase()) 
+  : [];
+
+const TRUSTED_DOMAIN_REGEX = /^https?:\/\/([a-zA-Z0-9-]+\.)*(hyrost\.web\.id|hyrost\.net)(:[0-9]+)?$/i;
+const LOCALHOST_REGEX = /^http:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/i;
 
 app.use(cors({
   origin: function (origin, callback) {
+    // Non-browser / server-to-server requests
     if (!origin) return callback(null, true);
-    if (
-      origin.includes('hyrost.web.id') ||
-      origin.includes('localhost') ||
-      origin.includes('127.0.0.1') ||
-      allowedOrigins.includes(origin)
-    ) {
+
+    const lowerOrigin = origin.toLowerCase();
+
+    // 1. Primary trusted domains & all subdomains
+    if (TRUSTED_DOMAIN_REGEX.test(lowerOrigin)) {
       return callback(null, true);
     }
-    return callback(null, true); // Permissive in production for subdomain flexibility
+
+    // 2. Explicit origins in .env
+    if (explicitAllowedOrigins.includes(lowerOrigin)) {
+      return callback(null, true);
+    }
+
+    // 3. Localhost in development mode only
+    if (process.env.NODE_ENV !== 'production' && LOCALHOST_REGEX.test(lowerOrigin)) {
+      return callback(null, true);
+    }
+
+    // Block unknown / unauthorized origins
+    return callback(new Error(`CORS Blocked: Origin '${origin}' is not authorized`));
   },
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-admin-2fa', 'x-minecraft-bridge-key']
 }));
 
 app.use(express.json({

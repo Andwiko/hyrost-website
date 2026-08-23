@@ -1140,5 +1140,17 @@ exports.deletePromoVoucher = async (req, res) => {
     }
 };
 
+const { getRecentAuditLogs } = require('../utils/securityAudit');
+
+exports.getAuditLogs = async (req, res) => {
+    try {
+        const limit = parseInt(req.query.limit || '50', 10);
+        const logs = getRecentAuditLogs(limit);
+        res.json({ success: true, logs });
+    } catch (err) {
+        res.status(500).json({ success: false, message: "Gagal mengambil security audit logs" });
+    }
+};
+
 
 
