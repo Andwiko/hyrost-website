@@ -965,29 +965,29 @@ function initSetupDashboardSimulator() {
  * 10. 23 MODULAR FEATURE SWITCHBOARD SIMULATOR (!features)
  * -------------------------------------------------------------------------- */
 const MODULAR_FEATURES = [
-  { key: 'fishing', name: 'Sistem Mancing (Fishing Pier)', icon: '🎣', active: true },
-  { key: 'hunting', name: 'Sistem Berburu (Hunting Camp)', icon: '🏹', active: true },
-  { key: 'farm', name: 'Perkebunan Virtual (Farm)', icon: '🌾', active: true },
-  { key: 'dungeon', name: 'AI Dungeon Master RPG', icon: '🏰', active: true },
-  { key: 'skills', name: 'RPG Skill Tree & Mastery', icon: '⚡', active: true },
-  { key: 'economy', name: 'Ekonomi, Toko & Kasino', icon: '💰', active: true },
-  { key: 'auction', name: 'Pasar Lelang Komunitas P2P', icon: '⚖️', active: true },
-  { key: 'bounty', name: 'Sistem Buronan (Bounty)', icon: '🎯', active: true },
-  { key: 'leveling', name: 'Sistem Leveling & XP Card', icon: '📈', active: true },
-  { key: 'music', name: 'Lavalink Music HQ 320kbps', icon: '🎵', active: true },
-  { key: 'tempvoice', name: 'Auto Temp-Voice Generator', icon: '🔊', active: true },
-  { key: 'ticket', name: 'Sistem Tiket Bantuan', icon: '🎫', active: true },
-  { key: 'verification', name: 'Verifikasi Keamanan Captcha', icon: '✅', active: true },
-  { key: 'aichannel', name: 'Google Gemini AI Auto-Chat', icon: '🤖', active: true },
-  { key: 'welcome', name: 'Pesan Sambutan & Goodbye', icon: '👋', active: true },
-  { key: 'moderation', name: 'Perangkat Moderasi & Log', icon: '🛡️', active: true },
-  { key: 'automod', name: 'Auto-Mod & Anti-Raid Shield', icon: '🛑', active: true },
-  { key: 'giveaway', name: 'Event Giveaway & Undian', icon: '🎉', active: true },
+  { key: 'fishing', name: 'Sistem Mancing', icon: '🎣', active: true },
+  { key: 'hunting', name: 'Sistem Berburu', icon: '🏹', active: true },
+  { key: 'farm', name: 'Perkebunan Virtual', icon: '🌾', active: true },
+  { key: 'dungeon', name: 'AI Dungeon RPG', icon: '🏰', active: true },
+  { key: 'skills', name: 'RPG Skill Tree', icon: '⚡', active: true },
+  { key: 'economy', name: 'Ekonomi & Toko', icon: '💰', active: true },
+  { key: 'auction', name: 'Pasar Lelang P2P', icon: '⚖️', active: true },
+  { key: 'bounty', name: 'Sistem Buronan', icon: '🎯', active: true },
+  { key: 'leveling', name: 'Leveling & XP Card', icon: '📈', active: true },
+  { key: 'music', name: 'Lavalink Music HQ', icon: '🎵', active: true },
+  { key: 'tempvoice', name: 'Temp-Voice Auto', icon: '🔊', active: true },
+  { key: 'ticket', name: 'Tiket Bantuan', icon: '🎫', active: true },
+  { key: 'verification', name: 'Verifikasi Captcha', icon: '✅', active: true },
+  { key: 'aichannel', name: 'Gemini AI Auto-Chat', icon: '🤖', active: true },
+  { key: 'welcome', name: 'Penyambutan Member', icon: '👋', active: true },
+  { key: 'moderation', name: 'Alat Moderasi & Log', icon: '🛡️', active: true },
+  { key: 'automod', name: 'Auto-Mod & Shield', icon: '🛑', active: true },
+  { key: 'giveaway', name: 'Event Giveaway', icon: '🎉', active: true },
   { key: 'minecraft', name: 'Minecraft Realm Status', icon: '⛏️', active: true },
-  { key: 'analytics', name: 'Statistik & Analitik Server', icon: '📊', active: true },
-  { key: 'invites', name: 'Pelacak Undangan (Invite Tracker)', icon: '📨', active: true },
-  { key: 'social', name: 'Pernikahan & Reputasi Sosial', icon: '💍', active: true },
-  { key: 'minigames', name: 'Game Santai & Mini-Trivia', icon: '🎲', active: true }
+  { key: 'analytics', name: 'Statistik Server', icon: '📊', active: true },
+  { key: 'invites', name: 'Pelacak Undangan', icon: '📨', active: true },
+  { key: 'social', name: 'Pernikahan & Reputasi', icon: '💍', active: true },
+  { key: 'minigames', name: 'Game & Mini-Trivia', icon: '🎲', active: true }
 ];
 
 function initFeatureSwitchboardSimulator() {
@@ -1002,14 +1002,15 @@ function initFeatureSwitchboardSimulator() {
     }
 
     container.innerHTML = MODULAR_FEATURES.map((feat, idx) => `
-      <div style="background: var(--bg-surface-2, #121827); border: 1px solid ${feat.active ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.06)'}; border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s ease;">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 1.1rem;">${feat.icon}</span>
-          <span style="font-size: 0.85rem; font-weight: 700; color: ${feat.active ? '#fff' : 'var(--text-dim, #64748b)'};">${feat.name}</span>
+      <div class="switchboard-card ${feat.active ? 'active' : 'inactive'}" onclick="toggleSwitchboardFeature(${idx})" role="button" tabindex="0" title="Klik untuk saklar on/off">
+        <div class="switch-left-col">
+          <span class="switch-icon">${feat.icon}</span>
+          <span class="switch-label">${feat.name}</span>
         </div>
-        <button onclick="toggleSwitchboardFeature(${idx})" style="background: ${feat.active ? 'var(--accent-emerald, #10b981)' : 'rgba(255,255,255,0.1)'}; color: #fff; border: none; padding: 4px 10px; border-radius: 99px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: all 0.2s ease;">
-          ${feat.active ? 'AKTIF ⚡' : 'MATI ❌'}
-        </button>
+        <div class="switch-toggle-pill ${feat.active ? 'on' : 'off'}">
+          <span class="switch-pill-dot"></span>
+          <span class="switch-pill-text">${feat.active ? 'AKTIF' : 'NONAKTIF'}</span>
+        </div>
       </div>
     `).join('');
   }

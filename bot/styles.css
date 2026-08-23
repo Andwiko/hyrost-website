@@ -1862,14 +1862,102 @@ body {
   }
 }
 
+/* Switchboard Cards & Toggles */
+.switchboard-card {
+  background: var(--bg-surface-2, #121827);
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 10px;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.switchboard-card:hover {
+  border-color: rgba(99, 102, 241, 0.45);
+  background: rgba(18, 24, 39, 0.95);
+  transform: translateY(-1px);
+}
+
+.switchboard-card.active {
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+.switchboard-card.inactive {
+  opacity: 0.65;
+  border-color: rgba(255, 255, 255, 0.04);
+}
+
+.switch-left-col {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+
+.switch-icon {
+  font-size: 1.15rem;
+  flex-shrink: 0;
+}
+
+.switch-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.switchboard-card.inactive .switch-label {
+  color: var(--text-dim, #64748b);
+}
+
+.switch-toggle-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.7rem;
+  font-weight: 800;
+  letter-spacing: 0.4px;
+  flex-shrink: 0;
+  transition: all 0.2s ease;
+}
+
+.switch-toggle-pill.on {
+  background: rgba(87, 242, 135, 0.16);
+  border: 1px solid rgba(87, 242, 135, 0.4);
+  color: var(--mei-emerald, #57F287);
+}
+
+.switch-toggle-pill.off {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-muted, #94a3b8);
+}
+
+.switch-pill-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
 @media (max-width: 1180px) {
   .bot-navbar {
-    height: 68px;
+    height: 66px;
   }
 
   .nav-container {
     padding: 0 16px;
-    height: 68px;
+    height: 66px;
   }
 
   .brand-name {
@@ -1881,22 +1969,24 @@ body {
     height: 38px;
   }
 
+  /* 1. Mobile Nav Drawer - Sleek Full-Width Touch Navigation */
   .nav-menu {
     display: none;
     position: fixed;
-    top: 68px;
+    top: 66px;
     left: 0;
-    width: 100%;
-    height: calc(100vh - 68px);
-    background: rgba(9, 12, 20, 0.98);
+    width: 100vw;
+    height: calc(100vh - 66px);
+    background: rgba(8, 10, 20, 0.98);
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     flex-direction: column;
-    padding: 20px 16px 40px;
+    padding: 16px 14px 40px;
     overflow-y: auto;
     border-bottom: 1px solid var(--border-subtle);
-    gap: 8px;
+    gap: 6px;
     z-index: 9999;
+    box-sizing: border-box;
   }
 
   .nav-menu.open {
@@ -1904,13 +1994,44 @@ body {
     animation: navDrawerFade 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
   }
 
-  .nav-link {
+  .nav-menu li {
     width: 100%;
-    padding: 12px 14px;
+    list-style: none;
+  }
+
+  .nav-menu .nav-link {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
     border-radius: var(--radius-md);
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    font-size: 0.95rem;
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    font-size: 0.92rem;
+    font-weight: 700;
+    color: #E2E8F0;
+    box-sizing: border-box;
+    transition: all 0.2s ease;
+  }
+
+  .nav-menu .nav-link i {
+    width: 22px;
+    font-size: 1.05rem;
+    color: var(--mei-primary);
+    text-align: center;
+  }
+
+  .nav-menu .nav-link:hover,
+  .nav-menu .nav-link.active {
+    background: linear-gradient(135deg, rgba(88, 101, 242, 0.22), rgba(255, 51, 133, 0.16));
+    border-color: rgba(99, 102, 241, 0.5);
+    color: #FFFFFF;
+    transform: none;
+  }
+
+  .nav-menu .nav-link::after {
+    display: none;
   }
 
   .mobile-nav-toggle {
@@ -1929,10 +2050,21 @@ body {
 }
 
 @media (max-width: 768px) {
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+    position: relative;
+  }
+
+  .container {
+    padding: 0 12px;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
 
   .hero-section {
-    padding-top: 100px;
-    padding-bottom: 40px;
+    padding-top: 80px;
+    padding-bottom: 30px;
   }
 
   .hero-title {
@@ -1941,7 +2073,7 @@ body {
   }
 
   .hero-subtitle {
-    font-size: 0.92rem;
+    font-size: 0.9rem;
   }
 
   .hero-cta-group {
@@ -1974,13 +2106,16 @@ body {
     width: 100%;
   }
 
+  /* Quick Prompts Bar Horizontal Scroll */
   .quick-prompts-bar {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 10px;
+    scrollbar-width: thin;
+    padding-bottom: 8px;
     gap: 8px;
+    width: 100%;
   }
 
   .quick-prompt-btn {
@@ -1988,63 +2123,219 @@ body {
     flex-shrink: 0;
   }
 
+  /* Feature Tabs Navigation Horizontal Scroll */
   .feature-tabs-nav {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 10px;
+    scrollbar-width: thin;
+    padding-bottom: 8px;
     justify-content: flex-start;
     gap: 8px;
+    width: 100%;
   }
 
   .tab-btn {
     white-space: nowrap;
     flex-shrink: 0;
-    padding: 10px 16px;
-    font-size: 0.85rem;
+    padding: 8px 14px;
+    font-size: 0.82rem;
   }
 
+  /* 4. Feature Showcase Box & Music / Lavalink UI Bug Fix */
   .tab-showcase-box {
-    padding: 20px 16px;
+    grid-template-columns: 1fr;
+    padding: 18px 14px;
     border-radius: var(--radius-lg);
+    gap: 20px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
   }
 
+  .tab-info-col h3 {
+    font-size: 1.2rem;
+    line-height: 1.35;
+    word-break: break-word;
+    margin-bottom: 10px;
+  }
+
+  .tab-info-col p {
+    font-size: 0.88rem;
+    line-height: 1.55;
+    margin-bottom: 16px;
+  }
+
+  .tab-feature-bullets {
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-left: 0;
+  }
+
+  .tab-feature-bullets li {
+    font-size: 0.84rem;
+    line-height: 1.45;
+    word-break: break-word;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .tab-feature-bullets code {
+    word-break: break-all;
+    white-space: normal;
+    font-size: 0.78rem;
+  }
+
+  .tab-visual-col {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .mockup-music-card {
+    padding: 14px 12px;
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    overflow: hidden;
+  }
+
+  .music-now-playing {
+    gap: 10px;
+    margin-bottom: 14px;
+    width: 100%;
+  }
+
+  .music-cover-art {
+    width: 46px;
+    height: 46px;
+    flex-shrink: 0;
+  }
+
+  .music-track-info {
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  .music-track-info h5 {
+    font-size: 0.88rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .music-track-info p {
+    font-size: 0.74rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .audio-equalizer {
+    height: 22px;
+    gap: 2px;
+    flex-shrink: 0;
+  }
+
+  .music-controls-row {
+    gap: 16px;
+    font-size: 1.05rem;
+  }
+
+  .play-pause-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 0.95rem;
+  }
+
+  /* 3. Category Filter Chips Horizontal Scroll with Visible Indicators */
   .category-filter-chips {
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
-    padding-bottom: 10px;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(99, 102, 241, 0.4) transparent;
+    padding: 4px 2px 10px 2px;
     gap: 8px;
+    width: 100%;
+    margin-bottom: 16px;
+  }
+
+  .category-filter-chips::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .category-filter-chips::-webkit-scrollbar-thumb {
+    background: rgba(99, 102, 241, 0.35);
+    border-radius: 4px;
   }
 
   .category-chip {
     white-space: nowrap;
     flex-shrink: 0;
+    padding: 7px 13px;
+    font-size: 0.8rem;
+  }
+
+  .command-explorer-container {
+    padding: 18px 14px;
+    border-radius: var(--radius-lg);
   }
 
   .commands-grid {
     grid-template-columns: 1fr;
+    gap: 10px;
+  }
+
+  /* 2. Switchboard on Mobile (Compact Single Column Grid) */
+  #featureSwitchboardGrid {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+
+  .switchboard-card {
+    padding: 10px 12px;
+  }
+
+  .switch-label {
+    font-size: 0.82rem;
+  }
+
+  .rank-card-showcase-grid {
+    grid-template-columns: 1fr;
+    padding: 18px 14px;
+    gap: 20px;
   }
 
   .rank-card-canvas-box {
     padding: 16px 12px;
+    max-width: 100%;
   }
 
   .rank-card-inner-grid {
-    flex-direction: column;
-    text-align: center;
+    grid-template-columns: 70px 1fr;
+    gap: 12px;
   }
 
   .rank-avatar-box {
-    margin: 0 auto;
+    width: 70px;
+    height: 70px;
   }
 
   .rank-top-row {
     flex-direction: column;
-    gap: 6px;
-    align-items: center;
+    gap: 4px;
+    align-items: flex-start;
+  }
+
+  .embed-builder-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
   }
 
   .stats-bento-grid {
@@ -2064,4 +2355,18 @@ body {
   .nav-actions .btn-mei-primary {
     padding: 8px 12px;
   }
+
+  .rank-card-inner-grid {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+
+  .rank-avatar-box {
+    margin: 0 auto;
+  }
+
+  .rank-top-row {
+    align-items: center;
+  }
 }
+
