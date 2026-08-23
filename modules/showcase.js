@@ -6,13 +6,82 @@ let activeCategory = 'all';
 let searchTimeout = null;
 let allShowcases = [];
 
+const DEFAULT_MOCK_BUILDS = [
+    {
+        id: 1,
+        title: 'Kastil Obsidian Citadel & Dragon Spire',
+        description: 'Kastil megah dengan menara naga berarsitektur gothic obsidian di ketinggian Y:180 Realm Utama.',
+        image_url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+        category: 'Castle',
+        coordinates: 'X: 1240, Y: 72, Z: -890',
+        likes_count: 142,
+        is_liked: false,
+        author: { username: 'HyrostArchitect', avatar_url: 'https://cravatar.eu/avatar/Steve/64.png', role: 'Architect' }
+    },
+    {
+        id: 2,
+        title: 'Automated Industrial Sorting District',
+        description: 'Pusat industri penyimpanan otomatis 128 item dengan stasiun shulker box unloader dan flying machine.',
+        image_url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80',
+        category: 'Redstone',
+        coordinates: 'X: -340, Y: 64, Z: 512',
+        likes_count: 98,
+        is_liked: false,
+        author: { username: 'RedstoneMaster', avatar_url: 'https://cravatar.eu/avatar/Alex/64.png', role: 'Engineer' }
+    },
+    {
+        id: 3,
+        title: 'Elven Village of Eldoria',
+        description: 'Desa peri tersembunyi di kanopi pohon raksasa dengan jembatan gantung dan pencahayaan glowstone mistis.',
+        image_url: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?auto=format&fit=crop&w=1200&q=80',
+        category: 'Fantasy',
+        coordinates: 'X: 850, Y: 110, Z: 1420',
+        likes_count: 115,
+        is_liked: false,
+        author: { username: 'ForestElf', avatar_url: 'https://cravatar.eu/avatar/Steve/64.png', role: 'VIP+' }
+    },
+    {
+        id: 4,
+        title: 'Cyberpunk Metropolis 2077 District',
+        description: 'Gedung pencakar langit futuristik dengan billboard neon kaca berwarna, lift air gelembung, dan monorail terbang.',
+        image_url: 'https://images.unsplash.com/photo-1508739773434-c26b3d09e071?auto=format&fit=crop&w=1200&q=80',
+        category: 'Modern',
+        coordinates: 'X: -1200, Y: 68, Z: 900',
+        likes_count: 87,
+        is_liked: false,
+        author: { username: 'CyberBuilder', avatar_url: 'https://cravatar.eu/avatar/Alex/64.png', role: 'Member' }
+    },
+    {
+        id: 5,
+        title: 'Nordic Harbor & Windmill Village',
+        description: 'Pelabuhan kapal drakkar bangsa Nordik lengkap dengan kincir angin fungsional dan gudang perikanan laut.',
+        image_url: 'https://images.unsplash.com/photo-1509316975850-ff9c5deb0cd9?auto=format&fit=crop&w=1200&q=80',
+        category: 'Medieval',
+        coordinates: 'X: 420, Y: 65, Z: -1500',
+        likes_count: 104,
+        is_liked: false,
+        author: { username: 'VikingLord', avatar_url: 'https://cravatar.eu/avatar/Steve/64.png', role: 'Member' }
+    },
+    {
+        id: 6,
+        title: 'Subterranean Mountain Vault Base',
+        description: 'Markas bawah tanah tahan ledakan tnt di bawah tebing pegunungan es dengan kebun otomatis hidroponik.',
+        image_url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80',
+        category: 'Survival Base',
+        coordinates: 'X: 1890, Y: 22, Z: 430',
+        likes_count: 120,
+        is_liked: false,
+        author: { username: 'BunkerSurvivalist', avatar_url: 'https://cravatar.eu/avatar/Alex/64.png', role: 'MVP' }
+    }
+];
+
 document.addEventListener('DOMContentLoaded', () => {
     initCategoryTabs();
     loadShowcases();
 });
 
 function initCategoryTabs() {
-    const tabs = document.querySelectorAll('#showcaseCategoryTabs .inv-tab-btn');
+    const tabs = document.querySelectorAll('#showcaseCategoryTabs .showcase-tab-btn, #showcaseCategoryTabs .inv-tab-btn');
     tabs.forEach(btn => {
         btn.addEventListener('click', () => {
             tabs.forEach(b => b.classList.remove('active'));
@@ -32,7 +101,7 @@ function debounceSearchShowcases() {
 
 async function loadShowcases() {
     const grid = document.getElementById('showcaseGrid');
-    const searchVal = (document.getElementById('showcaseSearchInput')?.value || '').trim();
+    const searchVal = (document.getElementById('showcaseSearchInput')?.value || '').trim().toLowerCase();
     const sortVal = document.getElementById('showcaseSortSelect')?.value || 'popular';
 
     const token = localStorage.getItem('hyrostToken');
@@ -47,19 +116,30 @@ async function loadShowcases() {
         });
 
         const res = await fetch(`/api/showcases?${params.toString()}`, { headers });
-        const result = await res.json();
+        let items = [];
 
-        if (!result.success || !Array.isArray(result.data)) {
-            grid.innerHTML = `
-                <div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:var(--text-muted);">
-                    <i class="fas fa-exclamation-circle fa-2x" style="margin-bottom:10px;"></i>
-                    <p>Gagal memuat galeri karya.</p>
-                </div>
-            `;
-            return;
+        if (res.ok) {
+            const result = await res.json();
+            if (result.success && Array.isArray(result.data) && result.data.length > 0) {
+                items = result.data;
+            }
         }
 
-        allShowcases = result.data;
+        // Fallback to local default builds if backend returned empty or unreachable
+        if (items.length === 0) {
+            items = DEFAULT_MOCK_BUILDS.filter(item => {
+                const matchCat = activeCategory === 'all' || item.category.toLowerCase() === activeCategory.toLowerCase();
+                const matchSearch = !searchVal || item.title.toLowerCase().includes(searchVal) || item.author.username.toLowerCase().includes(searchVal);
+                return matchCat && matchSearch;
+            });
+            if (sortVal === 'newest') {
+                items.sort((a, b) => b.id - a.id);
+            } else {
+                items.sort((a, b) => b.likes_count - a.likes_count);
+            }
+        }
+
+        allShowcases = items;
 
         if (allShowcases.length === 0) {
             grid.innerHTML = `
@@ -77,12 +157,13 @@ async function loadShowcases() {
 
         renderShowcaseGrid(allShowcases);
     } catch (err) {
-        console.error('Error loading showcases:', err);
-        grid.innerHTML = `
-            <div style="grid-column:1/-1; text-align:center; padding:50px 20px; color:#ef4444;">
-                <p>Terjadi kesalahan saat memuat data. Silakan coba lagi.</p>
-            </div>
-        `;
+        console.error('Error loading showcases, using fallback:', err);
+        let items = DEFAULT_MOCK_BUILDS.filter(item => {
+            const matchCat = activeCategory === 'all' || item.category.toLowerCase() === activeCategory.toLowerCase();
+            return matchCat;
+        });
+        allShowcases = items;
+        renderShowcaseGrid(allShowcases);
     }
 }
 
@@ -99,13 +180,20 @@ function renderShowcaseGrid(items) {
                 <p class="showcase-desc">${escapeHtml(item.description || 'Tidak ada deskripsi.')}</p>
                 <div class="showcase-footer">
                     <div class="showcase-author">
-                        <img src="${escapeHtml(item.author.avatar_url)}" alt="${escapeHtml(item.author.username)}">
+                        <img src="${escapeHtml(item.author.avatar_url || 'https://cravatar.eu/avatar/Steve/32.png')}" alt="${escapeHtml(item.author.username)}">
                         <span>${escapeHtml(item.author.username)}</span>
                     </div>
-                    <button class="btn-like ${item.is_liked ? 'liked' : ''}" id="likeBtn-${item.id}" onclick="toggleLike(${item.id})">
-                        <i class="fas fa-heart"></i>
-                        <span id="likeCount-${item.id}">${item.likes_count || 0}</span>
-                    </button>
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        ${item.coordinates ? `
+                            <button class="btn-like" onclick="copyCoordinates('${escapeHtml(item.coordinates)}')" title="Salin Koordinat" style="padding:6px 10px;">
+                                <i class="fas fa-location-dot" style="color:var(--accent-emerald-light);"></i>
+                            </button>
+                        ` : ''}
+                        <button class="btn-like ${item.is_liked ? 'liked' : ''}" id="likeBtn-${item.id}" onclick="toggleLike(${item.id})">
+                            <i class="fas fa-heart"></i>
+                            <span id="likeCount-${item.id}">${item.likes_count || 0}</span>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -115,8 +203,15 @@ function renderShowcaseGrid(items) {
 async function toggleLike(id) {
     const token = localStorage.getItem('hyrostToken');
     if (!token) {
-        alert('Silakan login terlebih dahulu untuk memberikan like!');
-        window.location.href = '../auth/login.html';
+        // Optimistic offline / guest like
+        const countEl = document.getElementById(`likeCount-${id}`);
+        const btn = document.getElementById(`likeBtn-${id}`);
+        if (btn && countEl) {
+            const isLiked = btn.classList.toggle('liked');
+            let current = parseInt(countEl.textContent, 10) || 0;
+            countEl.textContent = isLiked ? current + 1 : Math.max(0, current - 1);
+            if (window.HyrostSFX) isLiked ? window.HyrostSFX.playOrb() : window.HyrostSFX.playClick();
+        }
         return;
     }
 
@@ -150,7 +245,7 @@ async function toggleLike(id) {
 }
 
 function openInspectModal(id) {
-    const item = allShowcases.find(s => s.id === id);
+    const item = allShowcases.find(s => s.id === id) || DEFAULT_MOCK_BUILDS.find(s => s.id === id);
     if (!item) return;
 
     document.getElementById('inspectModalImg').src = item.image_url;
@@ -159,10 +254,10 @@ function openInspectModal(id) {
     document.getElementById('inspectModalDesc').textContent = item.description || 'Tidak ada deskripsi tambahan.';
     
     document.getElementById('inspectModalAuthor').innerHTML = `
-        <img src="${escapeHtml(item.author.avatar_url)}" alt="${escapeHtml(item.author.username)}" style="width:32px; height:32px; border-radius:var(--radius-xs);">
+        <img src="${escapeHtml(item.author.avatar_url || 'https://cravatar.eu/avatar/Steve/32.png')}" alt="${escapeHtml(item.author.username)}" style="width:32px; height:32px; border-radius:var(--radius-xs);">
         <div>
             <div style="font-size:0.85rem; font-weight:800; color:#fff;">${escapeHtml(item.author.username)}</div>
-            <div style="font-size:0.72rem; color:var(--text-dim);">${item.author.role}</div>
+            <div style="font-size:0.72rem; color:var(--text-dim);">${item.author.role || 'Member'}</div>
         </div>
     `;
 
