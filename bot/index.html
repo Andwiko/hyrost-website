@@ -23,7 +23,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Custom Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=33">
+  <link rel="stylesheet" href="styles.css?v=34">
 </head>
 <body>
 
@@ -170,15 +170,20 @@
         </div>
 
         <div class="chat-simulator-wrapper">
-          <!-- Quick Prompt Buttons -->
-          <div class="quick-prompts-bar">
-            <span class="prompt-hint">💡 Klik contoh pertanyaan cepat:</span>
-            <button class="quick-prompt-btn" data-prompt="Halo Mei! Kamu bisa bantu apa saja di server Discord?">✨ Fitur Utama</button>
-            <button class="quick-prompt-btn" data-prompt="Bagaimana cara main game ekonomi dan RPG di server?">💰 Ekonomi &amp; RPG</button>
-            <button class="quick-prompt-btn" data-prompt="Jelaskan sistem leveling dan tema rank card kamu!">📈 Sistem Leveling</button>
-            <button class="quick-prompt-btn" data-prompt="Gimana cara konfigurasi bot pakai command !setup?">🎛️ Master !setup</button>
-            <button class="quick-prompt-btn" data-prompt="Ceritain lelucon lucu dong Mei!">😂 Cerita Lelucon</button>
-            <button class="quick-prompt-btn" data-prompt="Cek status server Minecraft Hyrost!">⛏️ Status Minecraft</button>
+          <!-- Quick Prompt Header & Horizontal Scroll Bar -->
+          <div class="quick-prompts-wrapper">
+            <div class="prompt-hint-row">
+              <span class="prompt-hint"><i class="fas fa-lightbulb" style="color: var(--mei-gold);"></i> Klik contoh pertanyaan cepat:</span>
+              <span class="prompt-scroll-hint"><i class="fas fa-arrows-alt-h"></i> Geser opsi</span>
+            </div>
+            <div class="quick-prompts-bar">
+              <button class="quick-prompt-btn" data-prompt="Halo Mei! Kamu bisa bantu apa saja di server Discord?">✨ Fitur Utama</button>
+              <button class="quick-prompt-btn" data-prompt="Bagaimana cara main game ekonomi dan RPG di server?">💰 Ekonomi &amp; RPG</button>
+              <button class="quick-prompt-btn" data-prompt="Jelaskan sistem leveling dan tema rank card kamu!">📈 Sistem Leveling</button>
+              <button class="quick-prompt-btn" data-prompt="Gimana cara konfigurasi bot pakai command !setup?">🎛️ Master !setup</button>
+              <button class="quick-prompt-btn" data-prompt="Ceritain lelucon lucu dong Mei!">😂 Cerita Lelucon</button>
+              <button class="quick-prompt-btn" data-prompt="Cek status server Minecraft Hyrost!">⛏️ Status Minecraft</button>
+            </div>
           </div>
 
           <!-- Chat Window Box -->
@@ -246,22 +251,24 @@
         </div>
 
         <!-- Navigation Tabs -->
-        <div class="feature-tabs-nav">
-          <button class="tab-btn active" data-tab="music">
-            <i class="fas fa-music"></i> <span>Music Lavalink HQ</span>
-          </button>
-          <button class="tab-btn" data-tab="economy">
-            <i class="fas fa-coins"></i> <span>Ekonomi &amp; 5 Sistem RPG</span>
-          </button>
-          <button class="tab-btn" data-tab="moderation">
-            <i class="fas fa-shield-alt"></i> <span>Moderasi &amp; Anti-Raid</span>
-          </button>
-          <button class="tab-btn" data-tab="tickets">
-            <i class="fas fa-ticket-alt"></i> <span>Sistem Tiket Support</span>
-          </button>
-          <button class="tab-btn" data-tab="minecraft">
-            <i class="fas fa-cube"></i> <span>Minecraft Realm Bridge</span>
-          </button>
+        <div class="feature-tabs-wrapper">
+          <div class="feature-tabs-nav">
+            <button class="tab-btn active" data-tab="music">
+              <i class="fas fa-music"></i> <span>Music Lavalink HQ</span>
+            </button>
+            <button class="tab-btn" data-tab="economy">
+              <i class="fas fa-coins"></i> <span>Ekonomi &amp; RPG</span>
+            </button>
+            <button class="tab-btn" data-tab="moderation">
+              <i class="fas fa-shield-alt"></i> <span>Moderasi &amp; Shield</span>
+            </button>
+            <button class="tab-btn" data-tab="tickets">
+              <i class="fas fa-ticket-alt"></i> <span>Tiket Support</span>
+            </button>
+            <button class="tab-btn" data-tab="minecraft">
+              <i class="fas fa-cube"></i> <span>Minecraft Bridge</span>
+            </button>
+          </div>
         </div>
 
         <!-- Tab 1: Music HQ -->
