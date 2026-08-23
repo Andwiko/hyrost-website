@@ -107,3 +107,45 @@ self.addEventListener('fetch', (event) => {
     })
   );
 });
+
+// Push Notification Event Listener
+self.addEventListener('push', (event) => {
+  let data = {};
+  try {
+    data = event.data ? event.data.json() : {};
+  } catch (e) {
+    data = { title: 'Hyrost Realm', body: event.data ? event.data.text() : 'Pemberitahuan baru dari server.' };
+  }
+
+  const title = data.title || 'Hyrost Realm';
+  const options = {
+    body: data.body || 'Ada aktivitas baru di Hyrost Realm!',
+    icon: data.icon || '/assets/images/hyrost.png',
+    badge: '/assets/images/hyrost.png',
+    data: {
+      url: data.url || '/dashboard.html'
+    }
+  };
+
+  event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// Notification Click Event Listener
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+  const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/dashboard.html';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      for (const client of clientList) {
+        if (client.url.includes(targetUrl) && 'focus' in client) {
+          return client.focus();
+        }
+      }
+      if (clients.openWindow) {
+        return clients.openWindow(targetUrl);
+      }
+    })
+  );
+});
+

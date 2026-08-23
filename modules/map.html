@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost — Live Realm Map &amp; Warps</title>
+    
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../dashboard.css?v=52">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        .map-wrapper {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            background: #080c14;
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            margin-bottom: 24px;
+        }
+
+        .map-iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        .map-overlay-controls {
+            position: absolute;
+            top: 16px;
+            left: 16px;
+            display: flex;
+            gap: 8px;
+            z-index: 10;
+            flex-wrap: wrap;
+        }
+
+        .map-control-btn {
+            background: rgba(13, 18, 31, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-subtle);
+            color: #fff;
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            font-size: 0.8rem;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition);
+        }
+
+        .map-control-btn:hover, .map-control-btn.active {
+            background: var(--accent-indigo);
+            border-color: var(--accent-indigo);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .map-telemetry-badge {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(13, 18, 31, 0.88);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-subtle);
+            padding: 10px 16px;
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #fff;
+            z-index: 10;
+        }
+
+        .warp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .warp-card {
+            background: var(--bg-surface-1);
+            border: 1px solid var(--border-subtle);
+            border-radius: var(--radius-md);
+            padding: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            transition: var(--transition);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .warp-card:hover {
+            border-color: var(--accent-cyan);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .warp-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: var(--radius-sm);
+            background: var(--bg-surface-2);
+            border: 1px solid var(--border-subtle);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            margin-right: 14px;
+        }
+
+        .warp-info {
+            flex: 1;
+        }
+
+        .warp-info h4 {
+            margin: 0 0 4px;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #fff;
+        }
+
+        .warp-info span {
+            font-size: 0.78rem;
+            color: var(--text-dim);
+            font-family: var(--font-mono);
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar(event)"></div>
+
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <div class="brand-text">
+                    <h2>Hyrost</h2>
+                    <span>Member Realm</span>
+                </div>
+            </div>
+            
+            <div class="nav-section-label">Navigasi Utama</div>
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../account/index.html" class="nav-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
+                </a>
+                <a href="forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="showcase.html" class="nav-item">
+                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan);"></i>
+                    <span>Galeri Build</span>
+                </a>
+                <a href="map.html" class="nav-item active">
+                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
+                    <span>Live Map</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="../inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventaris</span>
+                </a>
+                <a href="../marketplace/index.html" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="rewards.html" class="nav-item">
+                    <i class="fas fa-gift"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki & Guide</span>
+                </a>
+                <a href="social.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pertemanan</span>
+                </a>
+                <a href="support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Pusat Bantuan</span>
+                </a>
+                <div class="nav-divider"></div>
+                <div class="nav-section-label nav-section-admin">Admin Panel</div>
+                <a href="admin.html" class="nav-item nav-admin">
+                    <i class="fas fa-user-shield"></i>
+                    <span>Admin Panel</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-bottom">
+                <div class="sidebar-server-pill">
+                    <div class="server-pill-row">
+                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
+                        <span class="status-dot online"></span>
+                    </div>
+                    <div class="server-pill-ip">play.hyrost.net</div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar(event)" aria-label="Menu" style="padding:8px 12px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+            </div>
+            <button class="btn-header-action mobile-logout-btn" onclick="localStorage.clear(); window.location.href='../index.html';" title="Keluar" style="padding:8px 12px;">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="top-user-banner">
+                <div>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                        <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
+                        <span>Live Realm Server Map &amp; Navigation</span>
+                    </h1>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Pantau dunia Hyrost Realm secara real-time, temukan landmark kota, dan koordinat warp penting.</p>
+                </div>
+                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+                    <button class="btn-header-action" onclick="toggleMapFullscreen()">
+                        <i class="fas fa-expand"></i>
+                        <span>Layar Penuh</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-wrapper" id="mapWrapper">
+                <!-- Overlay Dimension Controls -->
+                <div class="map-overlay-controls">
+                    <button class="map-control-btn active" onclick="switchDimension('overworld', this)">
+                        <i class="fas fa-earth-americas" style="color:var(--accent-emerald-light);"></i> Overworld
+                    </button>
+                    <button class="map-control-btn" onclick="switchDimension('nether', this)">
+                        <i class="fas fa-fire" style="color:#ef4444;"></i> Nether
+                    </button>
+                    <button class="map-control-btn" onclick="switchDimension('end', this)">
+                        <i class="fas fa-dragon" style="color:var(--accent-purple-light);"></i> The End
+                    </button>
+                </div>
+
+                <!-- Live Map Telemetry -->
+                <div class="map-telemetry-badge">
+                    <div><i class="fas fa-microchip" style="color:var(--accent-cyan); margin-right:4px;"></i> TPS: <span id="mapTps" style="color:var(--accent-emerald-light);">20.0</span></div>
+                    <div><i class="fas fa-users" style="color:var(--accent-gold); margin-right:4px;"></i> <span id="mapOnlineCount">128</span> Pemain</div>
+                    <div><i class="fas fa-signal" style="color:var(--accent-indigo-light); margin-right:4px;"></i> 14ms</div>
+                </div>
+
+                <!-- Dynamic Map Frame -->
+                <div id="mapInteractiveArea" style="width:100%; height:100%; display:flex; align-items:center; justify-content:center; flex-direction:column; background:radial-gradient(circle at center, #111827 0%, #030712 100%);">
+                    <div style="text-align:center; padding:30px;">
+                        <i class="fas fa-compass fa-4x" style="color:var(--accent-cyan); margin-bottom:18px; animation:spin 20s linear infinite;"></i>
+                        <h3 style="color:#fff; font-size:1.3rem; margin:0 0 8px; font-weight:800;" id="dimensionTitle">Dunia Overworld Realm</h3>
+                        <p style="color:var(--text-muted); font-size:0.88rem; max-width:480px; margin:0 auto 20px; line-height:1.6;">
+                            Peta live terhubung ke server <code>play.hyrost.net</code>. Jelajahi landmark, koordinat kota, dan base survival di bawah ini.
+                        </p>
+                        <button class="btn-header-action btn-primary-action" onclick="copyCoordinates('/warp spawn')">
+                            <i class="fas fa-cube"></i> Salin Perintah Teleport (/warp spawn)
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Landmark & Quick Warp Directory -->
+            <div class="nav-section-label" style="margin-bottom:14px; font-size:0.85rem;">DIREKTORI LANDMARK &amp; QUICK WARPS</div>
+            <div class="warp-grid">
+                <div class="warp-card">
+                    <div style="display:flex; align-items:center;">
+                        <div class="warp-icon" style="color:var(--accent-gold);"><i class="fas fa-landmark"></i></div>
+                        <div class="warp-info">
+                            <h4>Hyrost Grand Spawn</h4>
+                            <span>X: 0, Y: 75, Z: 0</span>
+                        </div>
+                    </div>
+                    <button class="btn-header-action" onclick="copyCoordinates('/warp spawn')" title="Salin Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="warp-card">
+                    <div style="display:flex; align-items:center;">
+                        <div class="warp-icon" style="color:var(--accent-emerald-light);"><i class="fas fa-shopping-cart"></i></div>
+                        <div class="warp-info">
+                            <h4>Central Marketplace</h4>
+                            <span>X: 240, Y: 68, Z: -120</span>
+                        </div>
+                    </div>
+                    <button class="btn-header-action" onclick="copyCoordinates('/warp market')" title="Salin Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="warp-card">
+                    <div style="display:flex; align-items:center;">
+                        <div class="warp-icon" style="color:#ef4444;"><i class="fas fa-swords"></i></div>
+                        <div class="warp-info">
+                            <h4>Colosseum PvP Arena</h4>
+                            <span>X: -512, Y: 64, Z: 340</span>
+                        </div>
+                    </div>
+                    <button class="btn-header-action" onclick="copyCoordinates('/warp pvp')" title="Salin Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="warp-card">
+                    <div style="display:flex; align-items:center;">
+                        <div class="warp-icon" style="color:var(--accent-cyan);"><i class="fas fa-pickaxe"></i></div>
+                        <div class="warp-info">
+                            <h4>Resource Mining World</h4>
+                            <span>X: 1000, Y: 65, Z: 1000</span>
+                        </div>
+                    </div>
+                    <button class="btn-header-action" onclick="copyCoordinates('/warp mining')" title="Salin Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="warp-card">
+                    <div style="display:flex; align-items:center;">
+                        <div class="warp-icon" style="color:var(--accent-purple-light);"><i class="fas fa-dungeon"></i></div>
+                        <div class="warp-info">
+                            <h4>Nether Highway Hub</h4>
+                            <span>X: 0, Y: 120, Z: 0</span>
+                        </div>
+                    </div>
+                    <button class="btn-header-action" onclick="copyCoordinates('/warp nether')" title="Salin Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+
+                <div class="warp-card">
+                    <div style="display:flex; align-items:center;">
+                        <div class="warp-icon" style="color:var(--accent-gold);"><i class="fas fa-star"></i></div>
+                        <div class="warp-info">
+                            <h4>Seasonal Event Plaza</h4>
+                            <span>X: 750, Y: 80, Z: -420</span>
+                        </div>
+                    </div>
+                    <button class="btn-header-action" onclick="copyCoordinates('/warp event')" title="Salin Command">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="../assets/js/sfx.js"></script>
+    <script src="../assets/js/mobileLayout.js?v=52"></script>
+    <script src="map.js?v=1"></script>
+</body>
+</html>

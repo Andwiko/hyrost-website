@@ -127,6 +127,10 @@
                         <i class="fas fa-cubes"></i>
                         <span>Klaim ke Minecraft</span>
                     </button>
+                    <button class="btn-header-action" onclick="openInventory3DSkinModal()">
+                        <i class="fas fa-cube" style="color:var(--accent-cyan);"></i>
+                        <span>Preview Karakter 3D</span>
+                    </button>
                     <a href="../marketplace/index.html" class="btn-header-action btn-primary-action">
                         <i class="fas fa-shopping-bag"></i>
                         <span>Marketplace</span>
@@ -214,8 +218,35 @@
         </div>
     </div>
 
+    <!-- 3D Skin Viewer Modal in Inventory -->
+    <div class="modal-overlay" id="skinPreviewModal" onclick="if(event.target === this) closeInventory3DSkinModal()">
+        <div class="modal-content" style="max-width:540px; width:92%; padding:0; overflow:hidden;">
+            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border-subtle); background:var(--bg-surface-2);">
+                <h3 style="margin:0; font-size:1.1rem; color:#fff; font-weight:800; display:flex; align-items:center; gap:8px;">
+                    <i class="fas fa-cube" style="color:var(--accent-cyan);"></i> Preview Karakter 3D Minecraft
+                </h3>
+                <button class="close-modal" onclick="closeInventory3DSkinModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div style="padding:20px;">
+                <div id="invSkinContainer" style="position:relative; width:100%; height:340px; background:radial-gradient(circle at center, #1e1b4b 0%, #080c14 100%); border-radius:var(--radius-md); border:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:center; overflow:hidden;">
+                    <canvas id="invSkinCanvas" style="width:100%; height:100%; cursor:grab;"></canvas>
+                </div>
+                <div style="display:flex; justify-content:center; gap:8px; margin-top:16px;">
+                    <button class="btn-action-outline" onclick="if(window.HyrostSkinViewer) window.HyrostSkinViewer.setAnimation('invSkinCanvas', 'idle')" style="padding:6px 14px; font-size:0.8rem;"><i class="fas fa-person"></i> Diam</button>
+                    <button class="btn-action-outline" onclick="if(window.HyrostSkinViewer) window.HyrostSkinViewer.setAnimation('invSkinCanvas', 'walk')" style="padding:6px 14px; font-size:0.8rem;"><i class="fas fa-person-walking"></i> Jalan</button>
+                    <button class="btn-action-outline" onclick="if(window.HyrostSkinViewer) window.HyrostSkinViewer.setAnimation('invSkinCanvas', 'wave')" style="padding:6px 14px; font-size:0.8rem;"><i class="fas fa-hand"></i> Lambaikan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
+    <script src="../assets/js/sfx.js"></script>
+    <script src="../assets/js/skinViewer.js"></script>
+    <script src="../assets/js/notifications.js"></script>
     <script src="../assets/js/mobileLayout.js?v=52"></script>
-    <script src="inventory.js?v=25"></script>
+    <script src="inventory.js?v=26"></script>
 </body>
 </html>

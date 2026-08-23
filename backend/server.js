@@ -747,6 +747,60 @@ const initDB = async () => {
       )
     `);
 
+    // --- 5. BUILD SHOWCASE & REFERRAL TABLES ---
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS build_showcases (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+        image_url LONGTEXT NOT NULL,
+        category VARCHAR(50) DEFAULT 'Survival Base',
+        coordinates VARCHAR(100) DEFAULT '',
+        likes_count INT DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      )
+    `);
+
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS showcase_likes (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        showcase_id INT NOT NULL,
+        user_id INT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (showcase_id) REFERENCES build_showcases(id) ON DELETE CASCADE,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_showcase_like (showcase_id, user_id)
+      )
+    `);
+
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS referrals (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        referrer_id INT NOT NULL,
+        referred_user_id INT NOT NULL,
+        status VARCHAR(30) DEFAULT 'completed',
+        reward_claimed TINYINT(1) DEFAULT 0,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (referrer_id) REFERENCES users(id) ON DELETE CASCADE,
+        FOREIGN KEY (referred_user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_referral (referred_user_id)
+      )
+    `);
+
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS referral_claims (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT NOT NULL,
+        milestone_tier INT NOT NULL,
+        reward_details VARCHAR(255) NOT NULL,
+        claimed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+        UNIQUE KEY unique_user_milestone (user_id, milestone_tier)
+      )
+    `);
+
     const { migrateFeatureTables } = require('./utils/featureMigration');
     await migrateFeatureTables(pool);
 
@@ -761,6 +815,10 @@ const initDB = async () => {
     const userColNames2 = userCols2.map((c) => c.Field);
     if (!userColNames2.includes("streak_count"))
       await pool.execute("ALTER TABLE users ADD COLUMN streak_count INT DEFAULT 0");
+    if (!userColNames2.includes("referral_code"))
+      await pool.execute("ALTER TABLE users ADD COLUMN referral_code VARCHAR(32) DEFAULT NULL");
+    if (!userColNames2.includes("referred_by"))
+      await pool.execute("ALTER TABLE users ADD COLUMN referred_by INT DEFAULT NULL");
 
     // --- CLEANUP: Remove all non-essential / test users permanently ---
     // Only keeps the designated Admin account 'Ikoo'. All other accounts

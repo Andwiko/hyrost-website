@@ -133,7 +133,51 @@ const inMemoryStore = {
     settings: [
         { setting_key: 'announcement', setting_value: 'Selamat datang di Hyrost Realm!' },
         { setting_key: 'maintenance', setting_value: 'false' }
-    ]
+    ],
+    build_showcases: [
+        {
+            id: 1,
+            user_id: 1,
+            username: 'HyrostArchitect',
+            avatar_url: 'https://cravatar.eu/avatar/Steve/64.png',
+            title: 'Kastil Obsidian Citadel & Dragon Spire',
+            description: 'Kastil megah dengan menara naga berarsitektur gothic obsidian di ketinggian Y:180 Realm Utama.',
+            image_url: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?auto=format&fit=crop&w=1200&q=80',
+            category: 'Castle',
+            coordinates: 'X: 1240, Y: 72, Z: -890',
+            likes_count: 142,
+            created_at: new Date()
+        },
+        {
+            id: 2,
+            user_id: 1,
+            username: 'RedstoneMaster',
+            avatar_url: 'https://cravatar.eu/avatar/Alex/64.png',
+            title: 'Automated Industrial Sorting District',
+            description: 'Pusat industri penyimpanan otomatis 128 item dengan stasiun shulker box unloader dan flying machine.',
+            image_url: 'https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?auto=format&fit=crop&w=1200&q=80',
+            category: 'Redstone',
+            coordinates: 'X: -340, Y: 64, Z: 512',
+            likes_count: 98,
+            created_at: new Date()
+        },
+        {
+            id: 3,
+            user_id: 1,
+            username: 'ForestElf',
+            avatar_url: 'https://cravatar.eu/avatar/Steve/64.png',
+            title: 'Elven Village of Eldoria',
+            description: 'Desa peri tersembunyi di kanopi pohon raksasa dengan jembatan gantung dan pencahayaan glowstone mistis.',
+            image_url: 'https://images.unsplash.com/photo-1511447333015-45b65e60f6d5?auto=format&fit=crop&w=1200&q=80',
+            category: 'Fantasy',
+            coordinates: 'X: 850, Y: 110, Z: 1420',
+            likes_count: 115,
+            created_at: new Date()
+        }
+    ],
+    showcase_likes: [],
+    referrals: [],
+    referral_claims: []
 };
 
 const poolWrapper = {

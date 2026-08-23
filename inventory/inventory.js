@@ -167,6 +167,8 @@ function refreshSidebar(role) {
         { name: 'Profil Saya', icon: 'fa-user-circle', href: '/account/index.html', pageKey: 'account' },
         { name: 'Toko Pangkat', icon: 'fa-crown', href: '/modules/store.html', pageKey: 'store', iconStyle: 'color:var(--accent-gold);' },
         { name: 'Forum', icon: 'fa-comments', href: '/modules/forum.html', pageKey: 'forum' },
+        { name: 'Galeri Build', icon: 'fa-cubes-stacked', href: '/modules/showcase.html', pageKey: 'showcase', iconStyle: 'color:var(--accent-cyan);' },
+        { name: 'Live Map', icon: 'fa-map-location-dot', href: '/modules/map.html', pageKey: 'map', iconStyle: 'color:var(--accent-emerald-light);' },
         { name: 'Leaderboard', icon: 'fa-trophy', href: '/modules/leaderboard.html', pageKey: 'leaderboard' },
         { name: 'Inventaris', icon: 'fa-box', href: '/inventory/inventory.html', pageKey: 'inventory' },
         { name: 'Marketplace', icon: 'fa-store', href: '/marketplace/index.html', pageKey: 'marketplace' },
@@ -186,6 +188,8 @@ function refreshSidebar(role) {
     else if (path.includes('/inventory/')) activeKey = 'inventory';
     else if (path.includes('store')) activeKey = 'store';
     else if (path.includes('forum')) activeKey = 'forum';
+    else if (path.includes('showcase')) activeKey = 'showcase';
+    else if (path.includes('map')) activeKey = 'map';
     else if (path.includes('leaderboard')) activeKey = 'leaderboard';
     else if (path.includes('rewards')) activeKey = 'rewards';
     else if (path.includes('social')) activeKey = 'social';
@@ -726,3 +730,41 @@ async function checkGlobalSettings() {
         console.error("Failed to load settings");
     }
 }
+
+// ─── 3D MINECRAFT SKIN VIEWER MODAL ──────────────────────────────────────────
+let invSkinViewerInitialized = false;
+
+function openInventory3DSkinModal() {
+    const modal = document.getElementById('skinPreviewModal');
+    if (!modal) return;
+    modal.classList.add('active');
+
+    if (window.HyrostSFX) window.HyrostSFX.playClick();
+
+    const canvas = document.getElementById('invSkinCanvas');
+    if (canvas && window.HyrostSkinViewer && !invSkinViewerInitialized) {
+        invSkinViewerInitialized = true;
+        const userStr = localStorage.getItem('currentUser');
+        let username = 'Steve';
+        if (userStr) {
+            try {
+                const u = JSON.parse(userStr);
+                username = u.mojang_username || u.username || 'Steve';
+            } catch (e) {}
+        }
+
+        window.HyrostSkinViewer.init(canvas, {
+            username: username,
+            height: 340,
+            animation: true
+        });
+    }
+}
+window.openInventory3DSkinModal = openInventory3DSkinModal;
+
+function closeInventory3DSkinModal() {
+    const modal = document.getElementById('skinPreviewModal');
+    if (modal) modal.classList.remove('active');
+}
+window.closeInventory3DSkinModal = closeInventory3DSkinModal;
+
