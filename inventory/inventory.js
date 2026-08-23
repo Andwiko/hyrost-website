@@ -71,33 +71,9 @@ function setupSidebar() {
         HyrostMobileLayout.init();
         return;
     }
-    const sidebar = document.querySelector('.sidebar');
+    const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar');
     if (!sidebar) return;
 
-    // Check / Inject mobile header if missing in the page
-    let mobileHeader = document.querySelector('.mobile-header');
-    if (!mobileHeader) {
-        const container = document.querySelector('.dashboard-container') || document.body;
-        mobileHeader = document.createElement('div');
-        mobileHeader.className = 'mobile-header';
-        const isSubdir = window.location.pathname.toLowerCase().includes('/modules/') || window.location.pathname.toLowerCase().includes('/account/') || window.location.pathname.toLowerCase().includes('/inventory/') || window.location.pathname.toLowerCase().includes('/marketplace/');
-        const logoPath = isSubdir ? '../assets/images/hyrost.png' : 'assets/images/hyrost.png';
-        mobileHeader.innerHTML = `
-            <button id="sidebarToggle" class="btn-header-action" aria-label="Toggle Navigation">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="mobile-logo">
-                <img src="${logoPath}" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <h2>Hyrost</h2>
-            </div>
-            <button class="btn-header-action" onclick="if(typeof logout === 'function') logout(); else { localStorage.clear(); window.location.href='/index.html'; }" title="Keluar">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-        `;
-        container.insertBefore(mobileHeader, container.firstChild);
-    }
-
-    // Ensure overlay exists
     let overlay = document.getElementById('sidebarOverlay');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -106,45 +82,49 @@ function setupSidebar() {
         document.body.appendChild(overlay);
     }
 
-    // Toggle sidebar function
+    let lastToggle = 0;
     const toggleSidebar = (e) => {
-        if (e) e.stopPropagation();
-        const isOpen = sidebar.classList.contains('active') || sidebar.classList.contains('open');
+        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+        const now = Date.now();
+        if (now - lastToggle < 180) return;
+        lastToggle = now;
+
+        const isOpen = sidebar.classList.contains('active') || sidebar.classList.contains('open') || sidebar.classList.contains('mobile-open');
         if (isOpen) {
-            sidebar.classList.remove('active', 'open');
-            overlay.classList.remove('active');
+            sidebar.classList.remove('active', 'open', 'mobile-open');
+            overlay.classList.remove('active', 'open');
             document.body.style.overflow = '';
         } else {
-            sidebar.classList.add('active', 'open');
-            overlay.classList.add('active');
+            sidebar.classList.add('active', 'open', 'mobile-open');
+            overlay.classList.add('active', 'open');
             document.body.style.overflow = 'hidden';
         }
     };
 
     window.toggleMobileSidebar = toggleSidebar;
 
-    // Bind all hamburger / toggle buttons
     const toggleBtns = document.querySelectorAll('#sidebarToggle, .sidebar-toggle, .hamburger, [data-toggle="sidebar"], .mobile-header .btn-header-action');
     
     toggleBtns.forEach(btn => {
+        if (btn.classList.contains('mobile-logout-btn') || btn.title === 'Keluar') return;
         if (btn.getAttribute('data-bound')) return;
         btn.setAttribute('data-bound', 'true');
         btn.addEventListener('click', toggleSidebar);
     });
 
-    overlay.addEventListener('click', () => {
-        sidebar.classList.remove('active', 'open');
-        overlay.classList.remove('active');
+    overlay.addEventListener('click', (e) => {
+        if (e) e.stopPropagation();
+        sidebar.classList.remove('active', 'open', 'mobile-open');
+        overlay.classList.remove('active', 'open');
         document.body.style.overflow = '';
     });
 
-    // Close drawer when clicking any navigation link on mobile
     const navItems = sidebar.querySelectorAll('.nav-item, a');
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             if (window.innerWidth <= 992) {
-                sidebar.classList.remove('active', 'open');
-                overlay.classList.remove('active');
+                sidebar.classList.remove('active', 'open', 'mobile-open');
+                overlay.classList.remove('active', 'open');
                 document.body.style.overflow = '';
             }
         });
