@@ -140,20 +140,27 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  height: 74px;
+  height: 72px;
+  max-width: 1360px;
+  margin: 0 auto;
+  padding: 0 20px;
+  gap: 16px;
 }
 
 .nav-brand {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 12px;
   text-decoration: none;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .brand-avatar-wrapper {
   position: relative;
-  width: 44px;
-  height: 44px;
+  width: 42px;
+  height: 42px;
+  flex-shrink: 0;
 }
 
 .brand-avatar {
@@ -178,44 +185,60 @@ body {
 }
 
 .brand-name {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  letter-spacing: -0.3px;
   color: var(--text-main);
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 8px;
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .brand-badge {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   font-weight: 700;
   text-transform: uppercase;
   background: linear-gradient(135deg, var(--mei-primary), var(--mei-magenta));
-  color: white;
-  padding: 2px 8px;
+  color: #FFFFFF;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
   letter-spacing: 0.5px;
+  display: inline-block;
+  white-space: nowrap;
+  flex-shrink: 0;
+  box-shadow: 0 0 12px rgba(255, 51, 133, 0.35);
 }
 
 .nav-menu {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: clamp(8px, 1.1vw, 16px);
   list-style: none;
+  margin: 0;
+  padding: 0;
+  flex-wrap: nowrap;
 }
 
 .nav-link {
   color: var(--text-dim);
   text-decoration: none;
-  font-size: 0.92rem;
+  font-size: 0.86rem;
   font-weight: 600;
   transition: var(--transition-fast);
   display: inline-flex;
   align-items: center;
-  gap: 6px;
+  gap: 5px;
   position: relative;
-  padding: 6px 0;
+  padding: 6px 4px;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.nav-link i {
+  font-size: 0.85rem;
+  opacity: 0.85;
 }
 
 .nav-link:hover, .nav-link.active {
@@ -242,6 +265,11 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  flex-shrink: 0;
+}
+
+.mobile-nav-toggle {
+  display: none;
 }
 
 /* Common Button Styles */
@@ -1834,7 +1862,7 @@ body {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1180px) {
   .bot-navbar {
     height: 68px;
   }
@@ -1845,12 +1873,12 @@ body {
   }
 
   .brand-name {
-    font-size: 1.05rem;
+    font-size: 1.1rem;
   }
 
   .brand-avatar-wrapper {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
   }
 
   .nav-menu {
@@ -1898,6 +1926,9 @@ body {
     cursor: pointer;
     font-size: 1.1rem;
   }
+}
+
+@media (max-width: 768px) {
 
   .hero-section {
     padding-top: 100px;
