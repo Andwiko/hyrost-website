@@ -1607,7 +1607,27 @@ function handleFileUpload(e) {
             selectedAvatarType = "Custom Upload Photo";
             
             updateAvatarModalPreview(compressedDataUrl, file.name, "Unggahan Gambar Custom");
-            console.log(`DEBUG: Image compressed. Original: ${event.target.result.length}, Compressed: ${compressedDataUrl.length}`);
+
+            // Upload directly to Hosting & Google Drive / MySQL backend
+            const token = localStorage.getItem('hyrostToken');
+            if (token) {
+                const formData = new FormData();
+                formData.append('avatar', file);
+                fetch('/api/upload/avatar', {
+                    method: 'POST',
+                    headers: { Authorization: `Bearer ${token}` },
+                    body: formData
+                })
+                .then(r => r.json())
+                .then(uploadRes => {
+                    if (uploadRes.success && uploadRes.avatarUrl) {
+                        selectedAvatarUrl = uploadRes.avatarUrl;
+                        const storageLabel = uploadRes.storage === 'gdrive' ? 'Tersimpan di Google Drive' : 'Tersimpan di MySQL & Hosting';
+                        updateAvatarModalPreview(uploadRes.avatarUrl, file.name, storageLabel);
+                    }
+                })
+                .catch(err => console.warn('Avatar cloud upload fallback to local:', err));
+            }
         };
         img.src = event.target.result;
     };

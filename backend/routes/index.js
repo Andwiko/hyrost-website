@@ -60,6 +60,7 @@ router.use('/marketplace', marketplaceRoutes);
 router.use('/plugin', pluginRoutes);
 router.use('/showcases', require('./showcaseRoutes'));
 router.use('/referrals', require('./referralRoutes'));
+router.use('/upload', require('./uploadRoutes'));
 
 router.use('/forum', forumRoutes);
 router.use('/chat', chatRoutes);

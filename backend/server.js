@@ -801,6 +801,22 @@ const initDB = async () => {
       )
     `);
 
+    await pool.execute(`
+      CREATE TABLE IF NOT EXISTS uploads (
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        user_id INT DEFAULT NULL,
+        original_name VARCHAR(255) NOT NULL,
+        stored_filename VARCHAR(255) NOT NULL,
+        mime_type VARCHAR(100) DEFAULT 'image/jpeg',
+        file_size INT DEFAULT 0,
+        storage_driver VARCHAR(30) DEFAULT 'local',
+        gdrive_file_id VARCHAR(255) DEFAULT NULL,
+        gdrive_view_link TEXT DEFAULT NULL,
+        direct_url TEXT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     const { migrateFeatureTables } = require('./utils/featureMigration');
     await migrateFeatureTables(pool);
 

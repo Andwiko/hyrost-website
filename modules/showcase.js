@@ -296,6 +296,106 @@ function closeSubmitBuildModal() {
     document.getElementById('submitBuildModal').classList.remove('active');
 }
 
+function setUploadSourceMode(mode) {
+    const tabFile = document.getElementById('tabUploadFile');
+    const tabUrl = document.getElementById('tabUploadUrl');
+    const dropzone = document.getElementById('dropzoneContainer');
+    const urlContainer = document.getElementById('urlInputContainer');
+
+    if (mode === 'file') {
+        tabFile.classList.add('active');
+        tabUrl.classList.remove('active');
+        dropzone.style.display = 'block';
+        urlContainer.style.display = 'none';
+    } else {
+        tabFile.classList.remove('active');
+        tabUrl.classList.add('active');
+        dropzone.style.display = 'none';
+        urlContainer.style.display = 'block';
+    }
+}
+
+async function handleFileSelected(event) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+        alert('Hanya file gambar (JPG, PNG, WEBP) yang diperbolehkan!');
+        return;
+    }
+
+    if (file.size > 10 * 1024 * 1024) {
+        alert('Ukuran file maksimal adalah 10MB!');
+        return;
+    }
+
+    const token = localStorage.getItem('hyrostToken');
+    const progressBar = document.getElementById('uploadProgressBar');
+    const progressFill = document.getElementById('uploadProgressFill');
+    const previewBox = document.getElementById('imagePreviewBox');
+    const previewImg = document.getElementById('imagePreviewImg');
+    const badge = document.getElementById('uploadStorageBadge');
+    const urlInput = document.getElementById('buildImageUrl');
+
+    if (progressBar && progressFill) {
+        progressBar.style.display = 'block';
+        progressFill.style.width = '30%';
+    }
+
+    // Local instant preview first
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        if (previewImg && previewBox) {
+            previewImg.src = e.target.result;
+            previewBox.style.display = 'block';
+        }
+    };
+    reader.readAsDataURL(file);
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    try {
+        const headers = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        if (progressFill) progressFill.style.width = '70%';
+
+        const res = await fetch('/api/upload', {
+            method: 'POST',
+            headers,
+            body: formData
+        });
+
+        const data = await res.json();
+        if (progressFill) progressFill.style.width = '100%';
+
+        if (data.success && data.url) {
+            if (urlInput) urlInput.value = data.url;
+            if (badge) {
+                const isGdrive = data.storage === 'gdrive';
+                badge.innerHTML = isGdrive 
+                    ? '<i class="fab fa-google-drive" style="color:#34d399;"></i> Tersimpan di Google Drive'
+                    : '<i class="fas fa-database" style="color:var(--accent-cyan);"></i> Tersimpan di MySQL &amp; Hosting';
+            }
+            if (window.HyrostSFX) window.HyrostSFX.playOrb();
+            setTimeout(() => {
+                if (progressBar) progressBar.style.display = 'none';
+            }, 600);
+        } else {
+            alert(data.message || 'Gagal mengunggah file.');
+            if (progressBar) progressBar.style.display = 'none';
+        }
+    } catch (err) {
+        console.error('Upload error:', err);
+        // If upload endpoint is unreachable in standalone client test, use data URL
+        if (urlInput && !urlInput.value) {
+            urlInput.value = previewImg.src;
+        }
+        if (progressBar) progressBar.style.display = 'none';
+    }
+}
+
 function previewBuildImage(url) {
     const box = document.getElementById('imagePreviewBox');
     const img = document.getElementById('imagePreviewImg');
@@ -317,6 +417,11 @@ async function handleBuildSubmit(e) {
     const coordinates = document.getElementById('buildCoordinates').value;
     const image_url = document.getElementById('buildImageUrl').value;
     const description = document.getElementById('buildDescription').value;
+
+    if (!image_url) {
+        alert('Harap pilih foto atau masukkan URL gambar karya Anda!');
+        return;
+    }
 
     try {
         const res = await fetch('/api/showcases', {

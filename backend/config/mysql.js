@@ -216,7 +216,8 @@ const inMemoryStore = {
     ],
     showcase_likes: [],
     referrals: [],
-    referral_claims: []
+    referral_claims: [],
+    uploads: []
 };
 
 const poolWrapper = {
@@ -715,6 +716,35 @@ const poolWrapper = {
                 claimed_at: new Date()
             });
             return [{ insertId: inMemoryStore.referral_claims.length, affectedRows: 1 }, []];
+        }
+
+        // UPLOADS TABLE
+        if (cleanSql.includes('INSERT INTO uploads')) {
+            const [user_id, original_name, stored_filename, mime_type, file_size, storage_driver, gdrive_file_id, gdrive_view_link, direct_url] = values;
+            const item = {
+                id: (inMemoryStore.uploads || []).length + 1,
+                user_id: user_id ? parseInt(user_id) : null,
+                original_name: original_name || 'file',
+                stored_filename: stored_filename || 'file.jpg',
+                mime_type: mime_type || 'image/jpeg',
+                file_size: file_size || 0,
+                storage_driver: storage_driver || 'local',
+                gdrive_file_id: gdrive_file_id || null,
+                gdrive_view_link: gdrive_view_link || null,
+                direct_url: direct_url || '',
+                created_at: new Date()
+            };
+            if (!inMemoryStore.uploads) inMemoryStore.uploads = [];
+            inMemoryStore.uploads.unshift(item);
+            return [{ insertId: item.id, affectedRows: 1 }, []];
+        }
+
+        if (cleanSql.includes('FROM uploads')) {
+            let list = [...(inMemoryStore.uploads || [])];
+            if (cleanSql.includes('WHERE user_id = ?')) {
+                list = list.filter(u => u.user_id === parseInt(values[0]));
+            }
+            return [list, []];
         }
 
         // Generic Fallback Insert / Update / Delete

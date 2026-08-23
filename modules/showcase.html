@@ -534,10 +534,40 @@
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:16px;">
-                    <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px;">Link Screenshot / Gambar *</label>
-                    <input type="url" id="buildImageUrl" placeholder="https://i.imgur.com/... atau URL gambar langsung" required oninput="previewBuildImage(this.value)" style="width:100%; background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px 14px; color:#fff; font-size:0.85rem;">
-                    <div id="imagePreviewBox" style="margin-top:10px; height:140px; background:#080c14; border-radius:var(--radius-sm); display:none; overflow:hidden; border:1px solid var(--border-subtle);">
+                    <label style="display:block; font-size:0.8rem; font-weight:700; color:var(--text-secondary); margin-bottom:6px;">Screenshot / Foto Karya *</label>
+                    
+                    <!-- Upload Mode Toggle -->
+                    <div style="display:flex; gap:8px; margin-bottom:10px;">
+                        <button type="button" class="btn-like active" id="tabUploadFile" onclick="setUploadSourceMode('file')" style="flex:1; justify-content:center; padding:8px;">
+                            <i class="fas fa-file-arrow-up" style="color:var(--accent-cyan);"></i> Upload dari HP/PC
+                        </button>
+                        <button type="button" class="btn-like" id="tabUploadUrl" onclick="setUploadSourceMode('url')" style="flex:1; justify-content:center; padding:8px;">
+                            <i class="fas fa-link" style="color:var(--accent-gold);"></i> Input Link URL
+                        </button>
+                    </div>
+
+                    <!-- File Dropzone -->
+                    <div id="dropzoneContainer" style="border: 2px dashed rgba(99, 102, 241, 0.35); border-radius: var(--radius-md, 10px); padding: 20px; text-align: center; background: rgba(20, 27, 45, 0.6); cursor: pointer; transition: all 0.2s ease;" onclick="document.getElementById('buildFileInput').click()">
+                        <input type="file" id="buildFileInput" accept="image/*" style="display:none;" onchange="handleFileSelected(event)">
+                        <i class="fas fa-cloud-arrow-up fa-2x" style="color:var(--accent-indigo); margin-bottom:8px;"></i>
+                        <div style="font-size:0.85rem; font-weight:700; color:#fff;">Klik atau Seret Foto Screenshot ke sini</div>
+                        <div style="font-size:0.75rem; color:var(--text-dim); margin-top:4px;">Mendukung JPG, PNG, WEBP hingga 10MB (Hosting MySQL &amp; GDrive)</div>
+                        <div id="uploadProgressBar" style="display:none; width:100%; height:6px; background:rgba(255,255,255,0.1); border-radius:3px; margin-top:12px; overflow:hidden;">
+                            <div id="uploadProgressFill" style="width:0%; height:100%; background:linear-gradient(90deg, var(--accent-cyan), var(--accent-indigo)); transition:width 0.3s ease;"></div>
+                        </div>
+                    </div>
+
+                    <!-- URL Input Box (hidden by default) -->
+                    <div id="urlInputContainer" style="display:none;">
+                        <input type="url" id="buildImageUrl" placeholder="https://i.imgur.com/... atau URL gambar langsung" oninput="previewBuildImage(this.value)" style="width:100%; background:var(--bg-surface-2); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); padding:10px 14px; color:#fff; font-size:0.85rem;">
+                    </div>
+
+                    <!-- Preview Thumbnail -->
+                    <div id="imagePreviewBox" style="margin-top:10px; height:140px; background:#080c14; border-radius:var(--radius-sm); display:none; overflow:hidden; border:1px solid var(--border-subtle); position:relative;">
                         <img id="imagePreviewImg" src="" alt="Preview" style="width:100%; height:100%; object-fit:cover;">
+                        <span id="uploadStorageBadge" style="position:absolute; bottom:8px; right:8px; background:rgba(0,0,0,0.75); color:var(--accent-emerald-light); font-size:0.7rem; font-weight:800; padding:3px 8px; border-radius:4px; border:1px solid rgba(255,255,255,0.1);">
+                            <i class="fas fa-check-circle"></i> Siap Diunggah
+                        </span>
                     </div>
                 </div>
                 <div class="form-group" style="margin-bottom:20px;">
