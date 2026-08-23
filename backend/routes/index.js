@@ -33,6 +33,7 @@ router.get('/live-hub/snapshot', liveHubController.getSnapshot);
 router.post('/live-hub/presence', liveHubController.postPresence);
 router.get('/live-hub/stream', liveHubController.streamEvents);
 router.get('/health', require('../controllers/featuresController').getHealth);
+router.get('/bot/info', require('../controllers/featuresController').getBotInfo); // Public bot info & version sync
 router.get('/notifications', verifyToken, adminController.getUserNotifications); // Logged in user notifications
 
 // Web Store & Ranks

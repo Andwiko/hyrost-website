@@ -9,6 +9,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   initNavbarScroll();
   initMobileNav();
+  initAutoVersionSync();
   initVoiceQuotes();
   initAIChatSimulator();
   initFeatureTabs();
@@ -1112,3 +1113,57 @@ function showToast(msg) {
     toast.classList.remove('show');
   }, 2800);
 }
+
+/* -----------------------------------------------------------------------------
+ * 14. DYNAMIC BOT VERSION AUTO-SYNC (Synchronize with Mei Labs Bot Core Engine)
+ * -------------------------------------------------------------------------- */
+async function initAutoVersionSync() {
+  let botData = null;
+
+  // 1. Try fetching from dynamic backend API endpoint
+  try {
+    const res = await fetch('/api/bot/info');
+    if (res.ok) {
+      const json = await res.json();
+      if (json && json.success && (json.displayVersion || json.version)) {
+        botData = json;
+      }
+    }
+  } catch {}
+
+  // 2. Fallback to static data/bot-info.json if API is unavailable
+  if (!botData) {
+    try {
+      const res = await fetch('data/bot-info.json');
+      if (res.ok) {
+        botData = await res.json();
+      }
+    } catch {}
+  }
+
+  if (botData) {
+    const vStr = botData.displayVersion || (botData.version ? (botData.version.startsWith('v') ? botData.version : `v${botData.version}`) : 'v2.54.5');
+    const prefixStr = botData.prefix || '!';
+
+    // Update all version tags on the page
+    document.querySelectorAll('.bot-version-text').forEach(el => {
+      el.textContent = vStr;
+    });
+
+    // Update prefix tags
+    document.querySelectorAll('.bot-prefix-text').forEach(el => {
+      el.textContent = prefixStr;
+    });
+
+    // Update embed builder default description if version matches
+    const embedDescInput = document.getElementById('embedInputDesc');
+    const previewDesc = document.getElementById('previewEmbedDesc');
+    if (embedDescInput && /v[0-9]+\.[0-9]+\.[0-9]+/i.test(embedDescInput.value)) {
+      embedDescInput.value = embedDescInput.value.replace(/v[0-9]+\.[0-9]+\.[0-9]+/g, vStr);
+      if (previewDesc) {
+        previewDesc.innerHTML = embedDescInput.value.replace(/\n/g, '<br>');
+      }
+    }
+  }
+}
+

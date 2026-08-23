@@ -327,9 +327,67 @@ exports.markNotificationsRead = async (req, res) => {
       );
     }
     res.json({ success: true });
+exports.grantAchievement = grantAchievement;
+
+exports.getBotInfo = async (req, res) => {
+  try {
+    let rawVersion = '2.54.5.1.1';
+    let displayVersion = 'v2.54.5';
+    let botName = 'Mei Labs';
+    let prefix = '!';
+    let commandsCount = 197;
+    let featuresCount = 23;
+
+    // Search for Bot package.json or bot-info.json
+    const searchPaths = [
+      path.join(__dirname, '../../../../A Mei Labs/package.json'),
+      path.join(process.cwd(), '../A Mei Labs/package.json'),
+      path.join(process.cwd(), '../../A Mei Labs/package.json'),
+      path.join(__dirname, '../../bot/data/bot-info.json'),
+      path.join(process.cwd(), 'bot/data/bot-info.json'),
+      path.join(process.cwd(), 'data/bot-info.json'),
+    ];
+
+    for (const p of searchPaths) {
+      if (fs.existsSync(p)) {
+        try {
+          const data = JSON.parse(fs.readFileSync(p, 'utf8'));
+          if (data.version) {
+            rawVersion = data.version;
+            const cleanVer = String(rawVersion).replace(/^v/i, '');
+            const parts = cleanVer.split('.');
+            displayVersion = `v${parts.slice(0, 3).join('.')}`;
+          }
+          if (data.displayVersion) displayVersion = data.displayVersion;
+          if (data.name) botName = data.name === 'mei-labs' ? 'Mei Labs' : data.name;
+          if (data.prefix) prefix = data.prefix;
+          if (data.commandsCount) commandsCount = data.commandsCount;
+          if (data.featuresCount) featuresCount = data.featuresCount;
+          break;
+        } catch {}
+      }
+    }
+
+    if (process.env.BOT_VERSION) {
+      rawVersion = process.env.BOT_VERSION;
+      const cleanVer = String(rawVersion).replace(/^v/i, '');
+      const parts = cleanVer.split('.');
+      displayVersion = `v${parts.slice(0, 3).join('.')}`;
+    }
+
+    res.json({
+      success: true,
+      name: botName,
+      version: rawVersion,
+      displayVersion: displayVersion,
+      prefix,
+      commandsCount,
+      featuresCount,
+      engine: 'Google Gemini AI & Lavalink HQ',
+      timestamp: new Date().toISOString()
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
 };
 
-exports.grantAchievement = grantAchievement;
