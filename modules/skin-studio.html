@@ -594,7 +594,6 @@
         let currentIGN = 'Steve';
 
         document.addEventListener('DOMContentLoaded', () => {
-            // Check URL query parameters (e.g. ?user=Notch&pose=samurai&angle=45)
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('user')) {
                 currentIGN = urlParams.get('user').trim();
@@ -604,13 +603,21 @@
             initSkinViewer(currentIGN);
 
             if (urlParams.get('pose')) {
-                setTimeout(() => applyPosePreset(urlParams.get('pose')), 400);
+                setTimeout(() => applyPosePreset(urlParams.get('pose')), 500);
             }
             if (urlParams.get('angle')) {
                 const ang = parseInt(urlParams.get('angle'), 10);
-                setTimeout(() => setCameraAngle(ang), 500);
+                setTimeout(() => setCameraAngle(ang), 600);
             }
         });
+
+        function getSkin() {
+            if (!viewer) return null;
+            if (viewer.playerObject && viewer.playerObject.skin) return viewer.playerObject.skin;
+            if (viewer.playerModel) return viewer.playerModel;
+            if (viewer.skin) return viewer.skin;
+            return null;
+        }
 
         function initSkinViewer(ign) {
             const canvas = document.getElementById('skin_container');
@@ -640,10 +647,10 @@
             orbitControl.enableZoom = true;
             orbitControl.enablePan = true;
 
-            // Default initial stance
+            // Apply default initial stance once model is ready
             setTimeout(() => {
                 applyPosePreset('idle');
-            }, 300);
+            }, 350);
         }
 
         function loadCustomSkinFromInput() {
@@ -670,39 +677,32 @@
         }
 
         function syncSlidersFromModel() {
-            if (!viewer || !viewer.playerModel) return;
-            const pm = viewer.playerModel;
-            setSlider('RightArm', toDeg(pm.rightArm.rotation.x));
-            setSlider('LeftArm', toDeg(pm.leftArm.rotation.x));
-            setSlider('RightLeg', toDeg(pm.rightLeg.rotation.x));
-            setSlider('LeftLeg', toDeg(pm.leftLeg.rotation.x));
-            setSlider('Head', toDeg(pm.head.rotation.x));
+            const skin = getSkin();
+            if (!skin) return;
+            setSlider('RightArm', toDeg(skin.rightArm.rotation.x));
+            setSlider('LeftArm', toDeg(skin.leftArm.rotation.x));
+            setSlider('RightLeg', toDeg(skin.rightLeg.rotation.x));
+            setSlider('LeftLeg', toDeg(skin.leftLeg.rotation.x));
+            setSlider('Head', toDeg(skin.head.rotation.x));
         }
 
         function clearAllAnimations() {
             if (!viewer) return;
-            if (viewer.animation) {
-                try { viewer.animation.resetAndKeep(); } catch(e){}
-                viewer.animation = null;
-            }
-            if (viewer.animations) {
-                viewer.animations.paused = true;
-                try { viewer.animations.resetAndKeep(); } catch(e){}
-            }
+            viewer.animation = null;
             activeAnimation = null;
             const btnRun = document.getElementById('btnRun');
             if (btnRun) btnRun.style.background = '';
         }
 
         function resetBones() {
-            if (!viewer || !viewer.playerModel) return;
-            const pm = viewer.playerModel;
-            pm.head.rotation.set(0, 0, 0);
-            pm.leftArm.rotation.set(0, 0, 0);
-            pm.rightArm.rotation.set(0, 0, 0);
-            pm.leftLeg.rotation.set(0, 0, 0);
-            pm.rightLeg.rotation.set(0, 0, 0);
-            pm.body.rotation.set(0, 0, 0);
+            const skin = getSkin();
+            if (!skin) return;
+            skin.head.rotation.set(0, 0, 0);
+            skin.leftArm.rotation.set(0, 0, 0);
+            skin.rightArm.rotation.set(0, 0, 0);
+            skin.leftLeg.rotation.set(0, 0, 0);
+            skin.rightLeg.rotation.set(0, 0, 0);
+            skin.body.rotation.set(0, 0, 0);
 
             ['RightArm', 'LeftArm', 'RightLeg', 'LeftLeg', 'Head'].forEach(part => {
                 setSlider(part, 0);
@@ -710,7 +710,6 @@
         }
 
         function applyPosePreset(pose, clickedBtn) {
-            // Update active button UI
             document.querySelectorAll('.pose-card-btn').forEach(b => {
                 if (b === clickedBtn || b.getAttribute('data-pose') === pose) {
                     b.classList.add('active');
@@ -719,196 +718,183 @@
                 }
             });
 
-            if (!viewer || !viewer.playerModel) return;
+            const skin = getSkin();
+            if (!skin) return;
             if (window.HyrostSFX) window.HyrostSFX.playClick();
 
             clearAllAnimations();
             resetBones();
 
-            const pm = viewer.playerModel;
-
             switch(pose) {
                 case 'samurai':
-                    // Katana battle stance
-                    pm.rightArm.rotation.x = toRad(-110);
-                    pm.rightArm.rotation.y = toRad(-35);
-                    pm.rightArm.rotation.z = toRad(45);
-                    pm.leftArm.rotation.x = toRad(30);
-                    pm.leftArm.rotation.z = toRad(-25);
-                    pm.rightLeg.rotation.x = toRad(-30);
-                    pm.leftLeg.rotation.x = toRad(25);
-                    pm.head.rotation.y = toRad(15);
-                    pm.head.rotation.x = toRad(10);
+                    skin.rightArm.rotation.x = toRad(-110);
+                    skin.rightArm.rotation.y = toRad(-35);
+                    skin.rightArm.rotation.z = toRad(45);
+                    skin.leftArm.rotation.x = toRad(30);
+                    skin.leftArm.rotation.z = toRad(-25);
+                    skin.rightLeg.rotation.x = toRad(-30);
+                    skin.leftLeg.rotation.x = toRad(25);
+                    skin.head.rotation.y = toRad(15);
+                    skin.head.rotation.x = toRad(10);
                     break;
 
                 case 'knight':
-                    // Shield & Sword block
-                    pm.leftArm.rotation.x = toRad(-85);
-                    pm.leftArm.rotation.y = toRad(40);
-                    pm.rightArm.rotation.x = toRad(-95);
-                    pm.rightArm.rotation.y = toRad(-20);
-                    pm.leftLeg.rotation.x = toRad(-20);
-                    pm.rightLeg.rotation.x = toRad(20);
+                    skin.leftArm.rotation.x = toRad(-85);
+                    skin.leftArm.rotation.y = toRad(40);
+                    skin.rightArm.rotation.x = toRad(-95);
+                    skin.rightArm.rotation.y = toRad(-20);
+                    skin.leftLeg.rotation.x = toRad(-20);
+                    skin.rightLeg.rotation.x = toRad(20);
                     break;
 
                 case 'archer':
-                    // Bow Draw Aim
-                    pm.leftArm.rotation.x = toRad(-85);
-                    pm.leftArm.rotation.y = toRad(25);
-                    pm.rightArm.rotation.x = toRad(-85);
-                    pm.rightArm.rotation.y = toRad(-45);
-                    pm.head.rotation.y = toRad(-25);
-                    pm.head.rotation.x = toRad(-5);
+                    skin.leftArm.rotation.x = toRad(-85);
+                    skin.leftArm.rotation.y = toRad(25);
+                    skin.rightArm.rotation.x = toRad(-85);
+                    skin.rightArm.rotation.y = toRad(-45);
+                    skin.head.rotation.y = toRad(-25);
+                    skin.head.rotation.x = toRad(-5);
                     break;
 
                 case 'ninja':
-                    // Stealth Low Crouch
-                    pm.body.rotation.x = toRad(25);
-                    pm.head.rotation.x = toRad(-25);
-                    pm.rightArm.rotation.x = toRad(45);
-                    pm.rightArm.rotation.z = toRad(50);
-                    pm.leftArm.rotation.x = toRad(45);
-                    pm.leftArm.rotation.z = toRad(-50);
-                    pm.rightLeg.rotation.x = toRad(-40);
-                    pm.leftLeg.rotation.x = toRad(30);
+                    skin.body.rotation.x = toRad(25);
+                    skin.head.rotation.x = toRad(-25);
+                    skin.rightArm.rotation.x = toRad(45);
+                    skin.rightArm.rotation.z = toRad(50);
+                    skin.leftArm.rotation.x = toRad(45);
+                    skin.leftArm.rotation.z = toRad(-50);
+                    skin.rightLeg.rotation.x = toRad(-40);
+                    skin.leftLeg.rotation.x = toRad(30);
                     break;
 
                 case 'elytra':
-                    // Gliding flight
-                    pm.body.rotation.x = toRad(75);
-                    pm.head.rotation.x = toRad(-65);
-                    pm.rightArm.rotation.x = toRad(15);
-                    pm.rightArm.rotation.z = toRad(35);
-                    pm.leftArm.rotation.x = toRad(15);
-                    pm.leftArm.rotation.z = toRad(-35);
-                    pm.rightLeg.rotation.x = toRad(10);
-                    pm.leftLeg.rotation.x = toRad(10);
+                    skin.body.rotation.x = toRad(75);
+                    skin.head.rotation.x = toRad(-65);
+                    skin.rightArm.rotation.x = toRad(15);
+                    skin.rightArm.rotation.z = toRad(35);
+                    skin.leftArm.rotation.x = toRad(15);
+                    skin.leftArm.rotation.z = toRad(-35);
+                    skin.rightLeg.rotation.x = toRad(10);
+                    skin.leftLeg.rotation.x = toRad(10);
                     break;
 
                 case 'running':
                     viewer.animation = new skinview3d.RunningAnimation();
                     viewer.animation.speed = 1.0;
-                    activeAnimation = viewer.animation;
                     break;
 
                 case 'walking':
                     viewer.animation = new skinview3d.WalkingAnimation();
                     viewer.animation.speed = 0.8;
-                    activeAnimation = viewer.animation;
-                    break;
-
-                case 'waving':
-                    viewer.animation = new skinview3d.WaveAnimation();
-                    activeAnimation = viewer.animation;
                     break;
 
                 case 'flying':
                     viewer.animation = new skinview3d.FlyingAnimation();
-                    activeAnimation = viewer.animation;
+                    viewer.animation.speed = 0.8;
+                    break;
+
+                case 'waving':
+                    viewer.animation = new skinview3d.FunctionAnimation((time) => {
+                        const s = getSkin();
+                        if (!s) return;
+                        s.rightArm.rotation.x = -Math.PI * 0.75;
+                        s.rightArm.rotation.z = Math.sin(time * 6) * 0.35 + 0.35;
+                        s.leftArm.rotation.x = 0.1;
+                        s.head.rotation.y = Math.sin(time * 2) * 0.15;
+                    });
                     break;
 
                 case 'sitting':
-                    // Sitting relaxed
-                    pm.rightLeg.rotation.x = toRad(-90);
-                    pm.leftLeg.rotation.x = toRad(-90);
-                    pm.rightArm.rotation.x = toRad(-25);
-                    pm.leftArm.rotation.x = toRad(-25);
-                    pm.head.rotation.x = toRad(-5);
+                    skin.rightLeg.rotation.x = toRad(-90);
+                    skin.leftLeg.rotation.x = toRad(-90);
+                    skin.rightArm.rotation.x = toRad(-25);
+                    skin.leftArm.rotation.x = toRad(-25);
+                    skin.head.rotation.x = toRad(-5);
                     break;
 
                 case 'mining':
-                    // Mining deepslate pickaxe swing
-                    pm.rightArm.rotation.x = toRad(-125);
-                    pm.rightArm.rotation.y = toRad(-20);
-                    pm.rightArm.rotation.z = toRad(15);
-                    pm.leftArm.rotation.x = toRad(20);
-                    pm.head.rotation.x = toRad(25);
-                    pm.rightLeg.rotation.x = toRad(-20);
-                    pm.leftLeg.rotation.x = toRad(15);
+                    skin.rightArm.rotation.x = toRad(-125);
+                    skin.rightArm.rotation.y = toRad(-20);
+                    skin.rightArm.rotation.z = toRad(15);
+                    skin.leftArm.rotation.x = toRad(20);
+                    skin.head.rotation.x = toRad(25);
+                    skin.rightLeg.rotation.x = toRad(-20);
+                    skin.leftLeg.rotation.x = toRad(15);
                     break;
 
                 case 'swimming':
-                    // Streamlined water dive
-                    pm.body.rotation.x = toRad(85);
-                    pm.head.rotation.x = toRad(-65);
-                    pm.rightArm.rotation.x = toRad(170);
-                    pm.leftArm.rotation.x = toRad(170);
-                    pm.rightLeg.rotation.x = toRad(10);
-                    pm.leftLeg.rotation.x = toRad(10);
+                    skin.body.rotation.x = toRad(85);
+                    skin.head.rotation.x = toRad(-65);
+                    skin.rightArm.rotation.x = toRad(170);
+                    skin.leftArm.rotation.x = toRad(170);
+                    skin.rightLeg.rotation.x = toRad(10);
+                    skin.leftLeg.rotation.x = toRad(10);
                     break;
 
                 case 'victory':
-                    // Triumph Victory Cheer
-                    pm.rightArm.rotation.x = toRad(-160);
-                    pm.rightArm.rotation.z = toRad(25);
-                    pm.leftArm.rotation.x = toRad(-160);
-                    pm.leftArm.rotation.z = toRad(-25);
-                    pm.head.rotation.x = toRad(-20);
-                    pm.rightLeg.rotation.x = toRad(-15);
-                    pm.leftLeg.rotation.x = toRad(15);
+                    skin.rightArm.rotation.x = toRad(-160);
+                    skin.rightArm.rotation.z = toRad(25);
+                    skin.leftArm.rotation.x = toRad(-160);
+                    skin.leftArm.rotation.z = toRad(-25);
+                    skin.head.rotation.x = toRad(-20);
+                    skin.rightLeg.rotation.x = toRad(-15);
+                    skin.leftLeg.rotation.x = toRad(15);
                     break;
 
                 case 'trident':
-                    // Trident Riptide Throw
-                    pm.rightArm.rotation.x = toRad(-145);
-                    pm.rightArm.rotation.y = toRad(-30);
-                    pm.rightArm.rotation.z = toRad(20);
-                    pm.leftArm.rotation.x = toRad(35);
-                    pm.body.rotation.y = toRad(-20);
-                    pm.head.rotation.y = toRad(20);
+                    skin.rightArm.rotation.x = toRad(-145);
+                    skin.rightArm.rotation.y = toRad(-30);
+                    skin.rightArm.rotation.z = toRad(20);
+                    skin.leftArm.rotation.x = toRad(35);
+                    skin.body.rotation.y = toRad(-20);
+                    skin.head.rotation.y = toRad(20);
                     break;
 
                 case 'king':
-                    // Throne Majesty
-                    pm.rightLeg.rotation.x = toRad(-85);
-                    pm.leftLeg.rotation.x = toRad(-85);
-                    pm.rightArm.rotation.x = toRad(-20);
-                    pm.rightArm.rotation.z = toRad(35);
-                    pm.leftArm.rotation.x = toRad(-20);
-                    pm.leftArm.rotation.z = toRad(-35);
-                    pm.head.rotation.x = toRad(-12);
+                    skin.rightLeg.rotation.x = toRad(-85);
+                    skin.leftLeg.rotation.x = toRad(-85);
+                    skin.rightArm.rotation.x = toRad(-20);
+                    skin.rightArm.rotation.z = toRad(35);
+                    skin.leftArm.rotation.x = toRad(-20);
+                    skin.leftArm.rotation.z = toRad(-35);
+                    skin.head.rotation.x = toRad(-12);
                     break;
 
                 case 'zenith':
-                    // Zenith Lightning Blade
-                    pm.rightArm.rotation.x = toRad(-135);
-                    pm.rightArm.rotation.z = toRad(35);
-                    pm.leftArm.rotation.x = toRad(25);
-                    pm.leftArm.rotation.z = toRad(-20);
-                    pm.head.rotation.y = toRad(-15);
-                    pm.rightLeg.rotation.x = toRad(-25);
-                    pm.leftLeg.rotation.x = toRad(25);
+                    skin.rightArm.rotation.x = toRad(-135);
+                    skin.rightArm.rotation.z = toRad(35);
+                    skin.leftArm.rotation.x = toRad(25);
+                    skin.leftArm.rotation.z = toRad(-20);
+                    skin.head.rotation.y = toRad(-15);
+                    skin.rightLeg.rotation.x = toRad(-25);
+                    skin.leftLeg.rotation.x = toRad(25);
                     break;
 
                 case 'mace':
-                    // Heavy Mace Slam
-                    pm.rightArm.rotation.x = toRad(-170);
-                    pm.leftArm.rotation.x = toRad(-170);
-                    pm.head.rotation.x = toRad(20);
-                    pm.body.rotation.x = toRad(15);
+                    skin.rightArm.rotation.x = toRad(-170);
+                    skin.leftArm.rotation.x = toRad(-170);
+                    skin.head.rotation.x = toRad(20);
+                    skin.body.rotation.x = toRad(15);
                     break;
 
                 case 'totem':
-                    // Totem of Undying Guard
-                    pm.leftArm.rotation.x = toRad(-80);
-                    pm.leftArm.rotation.y = toRad(15);
-                    pm.rightArm.rotation.x = toRad(-25);
-                    pm.head.rotation.y = toRad(-10);
+                    skin.leftArm.rotation.x = toRad(-80);
+                    skin.leftArm.rotation.y = toRad(15);
+                    skin.rightArm.rotation.x = toRad(-25);
+                    skin.head.rotation.y = toRad(-10);
                     break;
 
                 case 'salute':
-                    // Military Salute
-                    pm.rightArm.rotation.x = toRad(-140);
-                    pm.rightArm.rotation.z = toRad(45);
-                    pm.head.rotation.x = toRad(-5);
+                    skin.rightArm.rotation.x = toRad(-140);
+                    skin.rightArm.rotation.z = toRad(45);
+                    skin.head.rotation.x = toRad(-5);
                     break;
 
                 default: // idle
-                    // Natural isometric rest
-                    pm.rightArm.rotation.x = toRad(-10);
-                    pm.leftArm.rotation.x = toRad(10);
-                    pm.rightLeg.rotation.x = toRad(5);
-                    pm.leftLeg.rotation.x = toRad(-5);
+                    skin.rightArm.rotation.x = toRad(-10);
+                    skin.leftArm.rotation.x = toRad(10);
+                    skin.rightLeg.rotation.x = toRad(5);
+                    skin.leftLeg.rotation.x = toRad(-5);
                     break;
             }
 
@@ -916,21 +902,20 @@
         }
 
         function updateManualBone(part, val) {
-            if (!viewer || !viewer.playerModel) return;
+            const skin = getSkin();
+            if (!skin) return;
             clearAllAnimations();
 
-            const pm = viewer.playerModel;
             const rad = toRad(parseFloat(val));
-
             const cap = part.charAt(0).toUpperCase() + part.slice(1);
             const valEl = document.getElementById(`val${cap}`);
             if (valEl) valEl.textContent = `${val}°`;
 
-            if (part === 'rightArm') pm.rightArm.rotation.x = rad;
-            if (part === 'leftArm') pm.leftArm.rotation.x = rad;
-            if (part === 'rightLeg') pm.rightLeg.rotation.x = rad;
-            if (part === 'leftLeg') pm.leftLeg.rotation.x = rad;
-            if (part === 'head') pm.head.rotation.x = rad;
+            if (part === 'rightArm') skin.rightArm.rotation.x = rad;
+            if (part === 'leftArm') skin.leftArm.rotation.x = rad;
+            if (part === 'rightLeg') skin.rightLeg.rotation.x = rad;
+            if (part === 'leftLeg') skin.leftLeg.rotation.x = rad;
+            if (part === 'head') skin.head.rotation.x = rad;
         }
 
         function setCameraAngle(angle, btnEl) {
@@ -966,7 +951,7 @@
         function toggleRunningAnimation() {
             if (!viewer) return;
             const btn = document.getElementById('btnRun');
-            if (activeAnimation) {
+            if (viewer.animation instanceof skinview3d.RunningAnimation) {
                 clearAllAnimations();
                 applyPosePreset('idle');
                 if (btn) btn.style.background = '';
