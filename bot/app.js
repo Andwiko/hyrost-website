@@ -71,11 +71,11 @@ const BOT_CHANGELOGS = [
     badge: '💎 Versi Aktif Saat Ini',
     color: '#9B59B6',
     highlights: [
-      '🧩 <strong>Micro-Kernel Hot-Swap Plugin Engine (<code>!kernel</code>):</strong> Isolasi modular sandbox dengan reload kode live tanpa restart bot (0ms downtime).',
-      '🧠 <strong>Autonomous Self-Healing AI Diagnostic Daemon:</strong> Deteksi anomali runtime dan pemulihan koneksi mandiri.',
-      '⚡ <strong>True 0ms Event Loop Lag — Async Worker Thread Pool:</strong> Multi-threading terpisah untuk komputasi berat agar respons interaksi Discord instan.',
-      '🎙️ <strong>Real-Time Conversational Voice AI Companion (<code>!voiceai</code>):</strong> Sintesis suara AI Text-to-Speech langsung di dalam Voice Channel.',
-      '🌐 <strong>Zero-Downtime State Persistence Mesh:</strong> Snapshot memori aktif memulihkan sesi pemutaran lagu 100% utuh saat restart.'
+      '🧩 <strong>Micro-Kernel Hot-Swap Plugin Engine (<code>!kernel</code>):</strong> Isolasi modular sandbox dengan kemampuan reload modul secara live tanpa restart bot (0ms downtime).',
+      '🧠 <strong>Autonomous Self-Healing AI Diagnostic Daemon:</strong> Penganalisis error otonom di level Node.js runtime yang mendeteksi anomali dan memulihkan koneksi secara mandiri.',
+      '⚡ <strong>True 0ms Event Loop Lag — Async Worker Thread Pool:</strong> Komputasi berat dialihkan ke worker thread multi-threading terpisah agar respons interaksi Discord selalu instan.',
+      '🎙️ <strong>Real-Time Conversational Voice AI Companion (<code>!voiceai</code>):</strong> Sintesis Text-to-Speech cerdas yang memungkinkan AI Mei berbicara langsung di Voice Channel.',
+      '🌐 <strong>Zero-Downtime State Persistence Mesh:</strong> Snapshot memori aktif yang memulihkan player lagu dan sesi suara 100% utuh saat restart.'
     ]
   },
   {
@@ -85,10 +85,23 @@ const BOT_CHANGELOGS = [
     badge: '🚀 Enterprise Upgrade',
     color: '#00E5FF',
     highlights: [
-      '🛡️ <strong>Enterprise Security & Honeypot Trap (<code>!honeypot</code>):</strong> Channel jebakan otomatis untuk auto-ban bot raid & spammer serta audit performa moderator.',
-      '📻 <strong>24/7 Live Internet Radio (<code>!radio</code>):</strong> Siaran radio live non-stop (Lofi Girl, Anime OST, Nightcore, Synthwave, Cafe Jazz, Acoustic).',
-      '🤖 <strong>AI Context Moderation (<code>!aimod</code>):</strong> Deteksi phising dan toxic chat cerdas dengan Natural Language Processing.',
-      '🏰 <strong>Minecraft RCON & Seasonal Leaderboard (<code>!mcwhitelist</code>, <code>!season</code>):</strong> Sinkronisasi whitelist server Minecraft via TCP RCON & klasemen musiman.'
+      '🛡️ <strong>Enterprise Security & Honeypot Trap (<code>!honeypot</code>, <code>!modstats</code>):</strong> Channel jebakan otomatis untuk auto-ban bot raid & spammer serta audit performa moderator.',
+      '📻 <strong>24/7 Live Internet Radio (<code>!radio</code>):</strong> Menu interaktif 1-klik untuk siaran langsung radio non-stop (Lofi Girl, Anime OST, Nightcore, Synthwave, Cafe Jazz, Acoustic).',
+      '🤖 <strong>AI Context Moderation (<code>!aimod</code>):</strong> Deteksi cerdas link phising, scam, dan kalimat toxic menggunakan Natural Language Processing.',
+      '🎛️ <strong>Web Control Panel & Cloud Backup:</strong> Manajemen server langsung dari web browser serta scheduler backup snapshot database otomatis setiap 24 jam.',
+      '🏰 <strong>Minecraft RCON & Seasonal Leaderboard (<code>!mcwhitelist</code>, <code>!season</code>):</strong> Sinkronisasi whitelist server Minecraft via TCP RCON serta sistem klasemen musiman.'
+    ]
+  },
+  {
+    version: '2.54.22.1.1',
+    title: '📊 ACTIVITY ANALYTICS BUFFER FLUSH & CHANNEL MAP RESILIENCY',
+    date: '25 Agustus 2026',
+    badge: '📊 Analytics Map Resiliency',
+    color: '#EB459E',
+    highlights: [
+      '📊 <strong>Penyelarasan Tipe Data Map & Objek:</strong> Memperbaiki deserialisasi <code>stats.channelActivity</code> agar kompatibel penuh dengan JavaScript Map, Mongoose Map, maupun plain JSON Object.',
+      '⚡ <strong>Penyimpanan Atomik & Non-Blocking:</strong> Mengganti metode <code>.save()</code> dengan <code>Guild.updateOne()</code> atomik yang aman terhadap cache in-memory.',
+      '🛡️ <strong>Connection State Shield:</strong> Proteksi status koneksi MongoDB sebelum operasi database berkala dijalankan.'
     ]
   },
   {
@@ -98,20 +111,300 @@ const BOT_CHANGELOGS = [
     badge: '📰 News & 360 Studio',
     color: '#2ECC71',
     highlights: [
-      '📰 <strong>Interaktif Warta Minecraft Resmi (<code>!mcnews</code>):</strong> Integrasi feed resmi Mojang Studios dengan filter kategori (Java, Bedrock, Snapshots).',
-      '🧭 <strong>Rotasi 360° Studio Karakter (<code>!mcskin</code>):</strong> Kontrol sudut putar 360 derajat (0°-315°) dengan tombol putar presisi dan link 3D Web Studio.',
-      '🎭 <strong>Katalog 80 Pose & Emote 3D:</strong> Model pose beragam dari Samurai Katana, Knight Shield, Archer, hingga Zenith.'
+      '📰 <strong>Interaktif Penuh Warta Minecraft (<code>!mcnews</code>):</strong> Integrasi langsung feed resmi Mojang Studios dengan filter kategori (Java, Bedrock, Snapshots, Spinoffs), dropdown artikel, dan tombol navigasi.',
+      '🧭 <strong>Rotasi 360° Studio Karakter (<code>!mcskin</code>):</strong> Kontrol sudut putar 360 derajat (0°-315°) dengan tombol putar presisi <code>↺ -45°</code> & <code>↻ +45°</code> dan integrasi 3D Web Studio.',
+      '⚡ <strong>Non-Blocking Resiliency:</strong> Standarisasi cache in-memory pada permission lisensi dan pencegahan timeout interaksi Discord.'
+    ]
+  },
+  {
+    version: '2.54.20.1.1',
+    title: '⚡ ZERO-LATENCY INTERACTION DISPATCH & MENU RESILIENCE',
+    date: '25 Agustus 2026',
+    badge: '⚡ Zero-Latency Dispatch',
+    color: '#00E5FF',
+    highlights: [
+      '⚡ <strong>Non-Blocking In-Memory UI Resolution:</strong> Cache in-memory instan untuk dropdown menu bantuan <code>!help</code> menghilangkan error timeout interaksi.',
+      '🛡️ <strong>Connection-Aware Timeout Shield:</strong> Proteksi <code>Promise.race</code> (800ms) menghasilkan respon transisi kategori menu di bawah 50ms.',
+      '🔄 <strong>Fail-Safe Interaction Resiliency:</strong> Error handling menyeluruh untuk tombol navigasi Beranda, Pencarian, dan pemilihan perintah.'
     ]
   },
   {
     version: '2.54.19.1.1',
     title: '✨ PURE COMMUNITY TIER ARCHITECTURE (FREE, SUPPORTER, PARTNER, FOUNDER)',
     date: '23 Agustus 2026',
-    badge: '✨ Pure Community Tiers',
+    badge: '✨ Pure Community Tier',
     color: '#FF69B4',
     highlights: [
-      '💎 <strong>Arsitektur 4 Tier Murni:</strong> Standarisasi 100% pada tier resmi: <code>Free</code> (Tier 0), <code>Mei\'s Supporter</code> (Tier 1), <code>Lab Partner</code> (Tier 2), dan <code>Mei Labs Founder</code> (Tier 3).',
-      '🧹 <strong>Pembersihan Tier Legacy:</strong> Penyelarasan skema database Mongoose dan lisensi <code>!genkey</code>.'
+      '🧹 <strong>Penghapusan Total Tier Lama:</strong> Menghapus tier legacy (<code>vip</code>, <code>pro</code>, <code>enterprise</code>) dari skema database Mongoose dan lisensi <code>!genkey</code>.',
+      '💎 <strong>Arsitektur 4 Tier Murni:</strong> Standarisasi resmi: <code>Free</code> (Tier 0), <code>Mei\'s Supporter</code> (Tier 1), <code>Lab Partner</code> (Tier 2), dan <code>Mei Labs Founder</code> (Tier 3).',
+      '🛡️ <strong>Strict Schema Enforcement:</strong> Validasi ketat yang menjamin konsistensi di seluruh ekosistem bot dan dashboard.'
+    ]
+  },
+  {
+    version: '2.54.18.1.1',
+    title: '🔑 SUPPORTER & FOUNDER LICENSE SCHEMA ALIGNMENT',
+    date: '23 Agustus 2026',
+    badge: '🔑 Schema Alignment',
+    color: '#FF69B4',
+    highlights: [
+      '🔑 <strong>Mongoose Enum Schema Alignment:</strong> Penambahan tier supporter, partner, dan founder ke dalam skema database.',
+      '🛡️ <strong>Multi-Tier Backward Compatibility:</strong> Dukungan transisi nama tier baru dan alias legasi secara mulus.',
+      '⚡ <strong>Validated License Minting:</strong> Pembuatan dan aktivasi lisensi 100% instan dan bebas kendala skema.'
+    ]
+  },
+  {
+    version: '2.54.17.1.1',
+    title: '🛡️ BUTTON INTERACTION GUARD & DISCORD 10062 API RESILIENCE',
+    date: '23 Agustus 2026',
+    badge: '🛡️ Interaction Guard',
+    color: '#00E5FF',
+    highlights: [
+      '🛡️ <strong>Global Interaction Options Guard:</strong> Fallback options proxy universal untuk seluruh tombol interaktif (inventory, balance, rank, weekly).',
+      '⚡ <strong>Discord API 10062/40060 Resilience Shield:</strong> Penanganan token interaksi expired/stale pada menu dropdown help.',
+      '🔄 <strong>Smart FollowUp vs Reply Routing:</strong> Menghindari tabrakan state respon Discord pada aksi tombol cepat berulang.'
+    ]
+  },
+  {
+    version: '2.54.16.1.1',
+    title: '🎧 MULTI-NODE LAVALINK REDUNDANCY & FAILOVER POOL',
+    date: '23 Agustus 2026',
+    badge: '🎧 Lavalink Cluster',
+    color: '#1DB954',
+    highlights: [
+      '🛡️ <strong>Multi-Node Failover Cluster:</strong> Konfigurasi 3 node Lavalink v4 aktif dengan auto-failover agar musik tidak terputus.',
+      '⚡ <strong>Auto-Reconnect & Retry Shield (15x Retries):** Peningkatan percobaan ulang koneksi hingga 15 kali untuk stabilitas 24/7.',
+      '🌐 <strong>Dual-Layer Voice Guardian:</strong> Menjaga integritas room suara saat node lavalink berganti tanpa merusak status Voice 24/7.'
+    ]
+  },
+  {
+    version: '2.54.15.1.1',
+    title: '⚡ DEEP PERFORMANCE OPTIMIZATION: LRU CACHE & COMPOUND INDEXES',
+    date: '23 Agustus 2026',
+    badge: '⚡ Performance Suite',
+    color: '#2ECC71',
+    highlights: [
+      '🚀 <strong>LRU Memory Cache Lirik (<code>utils/lyricsFinder.js</code>):</strong> Pencarian lirik lagu disimpan di in-memory cache dengan 0ms latency.',
+      '🗄️ <strong>MongoDB Compound Indexing:</strong> Indeks multi-kunci <code>(guildId + balance)</code> dan <code>(guildId + bank)</code> mempercepat kueri leaderboard hingga 5x.',
+      '🛡️ <strong>Zero Memory Leak Safety:</strong> Optimasi pembersihan event listener, audio buffer recycle, dan garbage collection.'
+    ]
+  },
+  {
+    version: '2.54.14.1.1',
+    title: '🎨 MULTI-TIER PIXELATE ENGINE WITH REAL-TIME QUALITY SWITCHING',
+    date: '23 Agustus 2026',
+    badge: '🎨 Pixel Art Engine',
+    color: '#E67E22',
+    highlights: [
+      '✨ <strong>5 Opsi Kualitas Pixel:</strong> Pilihan kerapatan dari <code>4px</code> (Ultra HD), <code>8px</code> (16-Bit), <code>16px</code> (Arcade 8-Bit), <code>32px</code>, hingga <code>64px</code>.',
+      '🔘 <strong>Tombol Live Switcher:</strong> Tombol interaktif langsung di Discord untuk mengubah kualitas pixel secara instan.',
+      '⚡ <strong>Slash & Prefix Support:</strong> Mendukung <code>/pixelate quality:...</code> serta input langsung <code>!pixelate @user 16</code>.'
+    ]
+  },
+  {
+    version: '2.54.13.1.1',
+    title: '💳 CATEGORIZED FINANCIAL BOARD, REALM GEMS & IDENTITY CARD',
+    date: '23 Agustus 2026',
+    badge: '💳 Financial Suite',
+    color: '#00E5FF',
+    highlights: [
+      '💼 <strong>Papan Finansial Terkategori (<code>!balance</code>):</strong> Pemisahan jelas antara Uang Tunai, Saldo Bank, Realm Gems 💎, dan Net Worth.',
+      '👤 <strong>Kartu Identitas Komprehensif (<code>!profile</code>):</strong> Rangkuman level, XP progress bar, finansial, statistik RPG, dan badge donatur.',
+      '🌐 <strong>Sinkronisasi Web Hyrost (<code>/api/economy/sync</code>):</strong> Web Hyrost membaca dan menampilkan data Dompet, Bank, dan Gems secara akurat.'
+    ]
+  },
+  {
+    version: '2.54.12.1.1',
+    title: '⚡ FULL INTERACTIVITY SUITE: LIVE POLL, SLOTS, COINFLIP, 8BALL & JOKES',
+    date: '23 Agustus 2026',
+    badge: '⚡ Interactive Suite',
+    color: '#2ECC71',
+    highlights: [
+      '📊 <strong>Live Interactive Polling (<code>!poll</code>):</strong> Polling suara langsung dengan 3 tombol dan progress bar persentase live.',
+      '🎰 <strong>Mesin Slot Cepat (<code>!slots</code>):</strong> Tombol aksi cepat <code>[🎰 Putar Lagi]</code> dan <code>[⚡ 2x Taruhan]</code>.',
+      '🪙 <strong>Lempar Koin Interaktif (<code>!coinflip</code>):</strong> Tombol pasang cepat <code>[🦅 Kepala]</code> dan <code>[🪙 Ekor]</code>.',
+      '🎱 <strong>Magic 8-Ball & Humor (<code>!8ball</code>, <code>!joke</code>):</strong> Tombol kocok ulang dan lelucon baru.'
+    ]
+  },
+  {
+    version: '2.54.11.1.1',
+    title: '🎮 INTERACTIVE MINI-GAMES: 3X3 TICTACTOE, TRIVIA & BUTTON RPS',
+    date: '23 Agustus 2026',
+    badge: '🎮 Mini-Games Suite',
+    color: '#3498DB',
+    highlights: [
+      '❌ <strong>Tic-Tac-Toe 3x3 Interaktif (<code>!tictactoe</code>):</strong> Papan 3x3 tombol interaktif bertanding melawan AI Bot Mei atau teman.',
+      '🧠 <strong>Kuis Trivia Interaktif (<code>!trivia</code>):</strong> Kuis pilihan ganda 4 tombol dengan timer 20 detik dan reward koin ekonomi.',
+      '🪨 <strong>Batu Gunting Kertas Modern (<code>!rps</code>):</strong> Tombol suit interaktif dengan status pemenang dinamis.'
+    ]
+  },
+  {
+    version: '2.54.10.1.1',
+    title: '🌟 SUPPORTER AUTOMATION, CUSTOM COMMAND ENGINE & FOUNDER GREETING',
+    date: '23 Agustus 2026',
+    badge: '🌟 Supporter Automation',
+    color: '#FF69B4',
+    highlights: [
+      '👑 <strong>Auto-Role & Auto-Channel on Redeem:</strong> Otomatisasi pemberian Role Supporter dan akses channel private eksklusif.',
+      '💬 <strong>Personalized Bot Response (<code>!greeting</code>):</strong> Gelar sapaan kustom untuk donatur Tier 3 Founder di seluruh respon bot.',
+      '⚡ <strong>Custom Command Engine (<code>!customcmd</code>):</strong> Pembuatan perintah pesan/link kustom server bagi Tier 2 & Tier 3.',
+      '📢 <strong>Server Hall of Fame & Shoutout (<code>!shoutout</code>):</strong> Papan apresiasi estetik untuk seluruh donatur dan founder.'
+    ]
+  },
+  {
+    version: '2.54.9.1.1',
+    title: '💖 OFFICIAL SUPPORTER, LAB PARTNER & FOUNDER TIERS MATRIX',
+    date: '23 Agustus 2026',
+    badge: '💎 Official Tiers Matrix',
+    color: '#FFD700',
+    highlights: [
+      '💖 <strong>Tier 1: Mei\'s Supporter:</strong> Role warna unik, akses supporter-chat, bonus emote, Voice 24/7 & HD Audio.',
+      '🧪 <strong>Tier 2: Lab Partner:</strong> Request custom bot command, cooldown cepat, Anti-Nuke Fortress & Studio HD 256 kbps.',
+      '👑 <strong>Tier 3: Mei Labs Founder:</strong> Role prestisius, akses beta fitur, custom voice room, personalized bot response, monthly shoutout.'
+    ]
+  },
+  {
+    version: '2.54.8.1.1',
+    title: '🚀 CODEBASE MODERNIZATION & INTERACTIVE QUICK-ACTIONS',
+    date: '23 Agustus 2026',
+    badge: '🚀 Modernization Update',
+    color: '#00E5FF',
+    highlights: [
+      '⚡ <strong>100% Deprecation Clean (37 Files):</strong> Seluruh parameter ephemeral dimutakhirkan ke flags: 64 standar Discord.js modern.',
+      '💳 <strong>Interactive Economy Cards:</strong> Perintah balance & rank dilengkapi tombol cepat Klaim Daily, Buka Tas, Ladang Farm, Top Kaya.',
+      '🛡️ <strong>Quick-Action Moderasi (<code>!warn</code>, <code>!ban</code>, <code>!timeout</code>):</strong> Log sanksi menyertakan tombol Unban Cepat, Cabut Timeout, Hapus Warn, Edit Alasan.',
+      '🌐 <strong>Real-Time Discord ↔ Hyrost Web Sync (<code>/api/economy/sync</code>):</strong> Sinkronisasi inventaris & koin bot ke portal web.'
+    ]
+  },
+  {
+    version: '2.54.7.1.1',
+    title: '📜 UNIVERSAL MUSIC LYRICS & 16-GENRE RADIO EXPLORER',
+    date: '23 Agustus 2026',
+    badge: '📜 Music Lyrics & Radio',
+    color: '#FF69B4',
+    highlights: [
+      '📜 <strong>Pencari Lirik Universal (<code>!lyrics</code>):</strong> Lirik lagu real-time dari database global LRCLIB API.',
+      '🔘 <strong>Tombol Lirik di Music Dashboard:</strong> Akses lirik 1-klik langsung dari panel controller lagu.',
+      '📻 <strong>16-Genre Music Radio (<code>!genre</code>):</strong> Dropdown selector memutar playlist acak (Lofi, Pop Indo, Rock, Anime, Phonk, Jazz, dll).'
+    ]
+  },
+  {
+    version: '2.54.6.1.1',
+    title: '🎮 3D BLOCKBENCH SKIN & DYNAMIC POSING STUDIO',
+    date: '23 Agustus 2026',
+    badge: '🎮 3D Skin Studio',
+    color: '#9B59B6',
+    highlights: [
+      '🎮 <strong>3D Blockbench WebGL Skin Studio (<code>/skin</code>):</strong> Viewport 3D 60FPS di browser dengan rotasi 360°, zoom, dan pan.',
+      '⚔️ <strong>Preset Pose Aksi:</strong> Samurai Katana, Knight Shield, Archer, Ninja, dan Elytra Gliding.',
+      '🎚️ <strong>Bone Rigging:</strong> Slider tekukan tangan kanan/kiri, kaki, dan kepala presisi.',
+      '📸 <strong>Snapshot 4K PNG:</strong> Ekspor render karakter 3D beresolusi tinggi dengan background transparan.'
+    ]
+  },
+  {
+    version: '2.54.5.1.1',
+    title: '🌐 LIVE WEB STATUS DASHBOARD & HEALTH PORTAL',
+    date: '21 Agustus 2026',
+    badge: '🌐 Web Status Portal',
+    color: '#00D2D3',
+    highlights: [
+      '🌐 <strong>Live Web Status Dashboard (<code>!dashboard</code>):</strong> Portal web memantau status uptime, ping, RAM, dan room musik aktif.',
+      '📊 <strong>RESTful Health Check API (<code>/api/health</code>):</strong> Endpoint JSON publik untuk integrasi Uptime monitoring.',
+      '🔄 <strong>Live Auto-Sync 5 Detik:</strong> Metrik real-time diperbarui otomatis di browser.'
+    ]
+  },
+  {
+    version: '2.54.0.0.0',
+    title: '👑 THE VIP FORTRESS & PERFORMANCE EDITION',
+    date: '21 Agustus 2026',
+    badge: '💎 Lisensi VIP & Anti-Nuke',
+    color: '#9B59B6',
+    highlights: [
+      '💎 <strong>Sistem Langganan VIP & Lisensi (<code>!premium</code>, <code>!genkey</code>):</strong> Aktivasi via kode lisensi resmi.',
+      '🚨 <strong>Enterprise Anti-Nuke Fortress (<code>!antinuke</code>):</strong> Perlindungan mutlak dari bahaya rogue admin dan mass ban.',
+      '🛡️ <strong>AI Deep Phishing Blocker:</strong> Pemindaian cerdas tautan scam airdrop dan fake nitro.'
+    ]
+  },
+  {
+    version: '2.53.0.0.0',
+    title: '🛡️ ADVANCED MODERATION & AUTOMATION PACK',
+    date: '21 Agustus 2026',
+    badge: '🛡️ Moderasi & Otomasi',
+    color: '#E74C3C',
+    highlights: [
+      '📜 <strong>Mod History Rap Sheet (<code>!history @user</code>):</strong> Profil disiplin lengkap riwayat sanksi dan catatan internal.',
+      '🚨 <strong>Emergency Server Lockdown (<code>!lockdown</code>):</strong> Kunci seluruh channel publik dalam 1 detik saat darurat.',
+      '👻 <strong>Anti-Ghost Ping Detector:</strong> Menangkap dan mengekspos pelaku ghost ping.'
+    ]
+  },
+  {
+    version: '2.52.0.0.0',
+    title: '💖 DYNAMIC LIVE HUBS & VIRTUAL COMPANION',
+    date: '20 Agustus 2026',
+    badge: '🌸 Sahabat & Live Hubs',
+    color: '#FF69B4',
+    highlights: [
+      '📖 <strong>Live Server Guide & FAQ Hub (<code>!guidehub</code>):</strong> Papan panduan in-place edit otomatis.',
+      '📅 <strong>Live Event Schedule Hub (<code>!eventhub</code>):</strong> Kalender jadwal event dengan countdown dinamis.',
+      '💖 <strong>Mei Super Virtual Companion:</strong> Asisten virtual empati tinggi yang proaktif menyemangati member.'
+    ]
+  },
+  {
+    version: '2.50.0.0.0',
+    title: '⚖️ CORE RPG GAMEPLAY & ECONOMY REBALANCE',
+    date: '18 Agustus 2026',
+    badge: '⚖️ Gameplay Tuning',
+    color: '#F1C40F',
+    highlights: [
+      '🎣 <strong>Fishing Pier Rebalance:</strong> Cooldown mancing, mekanik ikan meloloskan diri, dan sampah laut.',
+      '🏹 <strong>Hunting Camp Rebalance:</strong> Cooldown berburu, sistem mangsa kabur, dan akurasi panah.',
+      '🌾 <strong>Virtual Farm Overhaul:</strong> Durasi pertumbuhan bibit realistis dan sistem bonus penyiraman air.'
+    ]
+  },
+  {
+    version: '2.30.0.0.0',
+    title: '🤖 AI ASSISTANT & SUPPORT TICKET MATRIX',
+    date: '1 Agustus 2026',
+    badge: '🤖 AI & Layanan Tiket',
+    color: '#9B59B6',
+    highlights: [
+      '🤖 <strong>AI Gemini Assistant (<code>!ask</code>):</strong> Integrasi kecerdasan buatan Google Gemini dengan persona resmi Mei Labs.',
+      '🎫 <strong>Sistem Tiket Bantuan (<code>!ticket</code>):</strong> Ruang bantuan private member berbasis form modal dan transkrip obrolan.'
+    ]
+  },
+  {
+    version: '2.20.0.0.0',
+    title: '🎵 LAVALINK V4 AUDIO STUDIO & SOUND FILTERS',
+    date: '20 Juli 2026',
+    badge: '🎵 Studio Audio HD',
+    color: '#1ABC9C',
+    highlights: [
+      '🎵 <strong>Lavalink v4 Multi-Node Audio:</strong> Pemutar musik lossless dengan failover otomatis.',
+      '🎛️ <strong>Interactive Music Dashboard:</strong> Panel kontrol live di channel <code>#music</code>.',
+      '🔊 <strong>Digital Sound Equalizer:</strong> Filter Bassboost, 8D Surround, Nightcore, dan Vaporwave.'
+    ]
+  },
+  {
+    version: '2.0.0.0.0',
+    title: '🧠 GENERASI 2.0 MEI LABS GENESIS',
+    date: '15 Juni 2026',
+    badge: '🚀 Core Genesis V2',
+    color: '#2ECC71',
+    highlights: [
+      '🧠 <strong>Pondasi Arsitektur V2:</strong> Migrasi penuh ke Discord.js v14 dan sistem modular Core + Plugin.',
+      '🍃 <strong>Database Cloud MongoDB:</strong> Penyimpanan data profil dan inventaris warga secara permanen di cloud.',
+      '🛡️ <strong>Sistem Anti-Crash & Auto-Recovery:</strong> Perekam sesi musik aktif dan pemulihan otomatis saat restart.'
+    ]
+  },
+  {
+    version: '1.0.0.0.0',
+    title: '🌱 INTI AWAL CLASSIC MEI BOT (DAY ONE)',
+    date: '1 Maret 2026',
+    badge: '🌱 Generasi 1.0 Day One',
+    color: '#7F8C8D',
+    highlights: [
+      '🌱 <strong>Kelahiran Bot Mei:</strong> Bot Discord monolitik awal berbasis Discord.js v13.',
+      '⚙️ <strong>Perintah Utilitas Dasar:</strong> <code>!ping</code>, <code>!help</code>, <code>!clear</code>, <code>!userinfo</code>, <code>!avatar</code>, <code>!say</code>.',
+      '📁 <strong>Penyimpanan Lokal:</strong> Konfigurasi berbasis file JSON lokal.'
     ]
   }
 ];
@@ -127,7 +420,31 @@ function openChangelogModal() {
   const body = document.getElementById('changelogModalBody');
   if (!modal || !body) return;
 
-  body.innerHTML = BOT_CHANGELOGS.map(ch => `
+  body.innerHTML = `
+    <div style="margin-bottom:16px; display:flex; gap:10px; align-items:center;">
+      <div style="position:relative; flex:1;">
+        <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:var(--text-placeholder);"></i>
+        <input type="text" id="changelogSearchInput" placeholder="Cari changelog (contoh: skin, kernel, ai, rcon, music)..." style="width:100%; background:var(--bg-input, #090d16); border:1px solid var(--border-subtle); border-radius:8px; padding:10px 12px 10px 36px; color:#fff; font-size:0.85rem;" oninput="filterChangelogs(this.value)">
+      </div>
+      <span style="font-size:0.8rem; color:var(--text-muted); font-weight:700; white-space:nowrap;" id="changelogCountBadge">${BOT_CHANGELOGS.length} Rilis</span>
+    </div>
+    <div id="changelogItemsContainer">
+      ${renderChangelogHTML(BOT_CHANGELOGS)}
+    </div>
+  `;
+
+  modal.classList.add('open');
+}
+
+function renderChangelogHTML(list) {
+  if (!list || list.length === 0) {
+    return `<div style="text-align:center; padding:30px 10px; color:var(--text-muted); font-size:0.9rem;">
+      <i class="fas fa-search" style="font-size:2rem; margin-bottom:10px; opacity:0.5; display:block;"></i>
+      Tidak ada catatan rilis yang cocok dengan kata kunci pencarian.
+    </div>`;
+  }
+
+  return list.map(ch => `
     <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:4px solid ${ch.color}; border-radius:10px; padding:16px; margin-bottom:14px;">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
         <span style="font-weight:900; color:#fff; font-size:0.95rem;">v${ch.version}</span>
@@ -137,13 +454,35 @@ function openChangelogModal() {
         </div>
       </div>
       <h5 style="color:${ch.color}; font-size:0.85rem; font-weight:800; margin:0 0 10px;">${ch.title}</h5>
-      <ul style="margin:0; padding-left:18px; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">
+      <ul style="margin:0; padding-left:18px; font-size:0.82rem; color:var(--text-secondary, #cbd5e1); line-height:1.6;">
         ${ch.highlights.map(h => `<li style="margin-bottom:6px;">${h}</li>`).join('')}
       </ul>
     </div>
   `).join('');
+}
 
-  modal.classList.add('open');
+function filterChangelogs(query) {
+  const container = document.getElementById('changelogItemsContainer');
+  const countBadge = document.getElementById('changelogCountBadge');
+  if (!container) return;
+
+  const q = (query || '').toLowerCase().trim();
+  if (!q) {
+    container.innerHTML = renderChangelogHTML(BOT_CHANGELOGS);
+    if (countBadge) countBadge.textContent = `${BOT_CHANGELOGS.length} Rilis`;
+    return;
+  }
+
+  const filtered = BOT_CHANGELOGS.filter(ch => {
+    const v = ch.version.toLowerCase();
+    const t = ch.title.toLowerCase();
+    const d = ch.date.toLowerCase();
+    const h = ch.highlights.join(' ').toLowerCase();
+    return v.includes(q) || t.includes(q) || d.includes(q) || h.includes(q);
+  });
+
+  container.innerHTML = renderChangelogHTML(filtered);
+  if (countBadge) countBadge.textContent = `${filtered.length} Rilis Ditemukan`;
 }
 
 function closeChangelogModal() {
@@ -152,6 +491,7 @@ function closeChangelogModal() {
 }
 window.openChangelogModal = openChangelogModal;
 window.closeChangelogModal = closeChangelogModal;
+window.filterChangelogs = filterChangelogs;
 
 /* -----------------------------------------------------------------------------
  * 2. INTERACTIVE MEI VOICE LINES & GREETINGS

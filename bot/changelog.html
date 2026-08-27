@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mei Labs — Catatan Rilis &amp; Changelog Lengkap</title>
+  <meta name="description" content="Riwayat pembaruan dan catatan rilis resmi Discord Bot Mei Labs mulai dari Day One hingga versi terbaru v2.54.24.1.1.">
+  <meta name="theme-color" content="#5865F2">
+
+  <!-- Favicon & Fonts -->
+  <link rel="icon" type="image/jpeg" href="assets/images/mei-avatar.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Core Bot Stylesheet -->
+  <link rel="stylesheet" href="styles.css?v=36">
+
+  <style>
+    .changelog-page-container {
+      padding-top: 100px;
+      padding-bottom: 60px;
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    .changelog-header-banner {
+      background: linear-gradient(135deg, rgba(88, 101, 242, 0.12) 0%, rgba(155, 89, 182, 0.12) 50%, rgba(255, 51, 133, 0.08) 100%);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-xl);
+      padding: 36px 32px;
+      margin-bottom: 30px;
+      text-align: center;
+      backdrop-filter: blur(12px);
+    }
+
+    .changelog-header-banner h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .changelog-header-banner p {
+      color: var(--text-dim);
+      font-size: 0.95rem;
+      max-width: 680px;
+      margin: 0 auto 20px;
+    }
+
+    /* Filter & Search Bar */
+    .filter-search-box {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 20px;
+      margin-bottom: 30px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .search-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input-wrap i {
+      position: absolute;
+      left: 16px;
+      color: var(--text-placeholder);
+    }
+
+    .search-input-field {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 14px 16px 14px 44px;
+      color: #fff;
+      font-size: 0.92rem;
+      font-weight: 600;
+      outline: none;
+      transition: var(--transition-fast);
+    }
+
+    .search-input-field:focus {
+      border-color: var(--mei-primary);
+      box-shadow: 0 0 0 3px var(--mei-primary-glow);
+    }
+
+    .filter-chips-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .filter-chip {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 8px 16px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .filter-chip:hover {
+      border-color: var(--mei-cyan);
+      color: #fff;
+    }
+
+    .filter-chip.active {
+      background: linear-gradient(135deg, var(--mei-primary), #4338ca);
+      border-color: var(--mei-primary);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(88, 101, 242, 0.4);
+    }
+
+    /* Changelog Card Item */
+    .changelog-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .changelog-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .card-top-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .version-title-text {
+      font-size: 1.15rem;
+      font-weight: 800;
+      margin-bottom: 14px;
+    }
+
+    .highlights-list {
+      margin: 0;
+      padding-left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .highlights-list li {
+      color: var(--text-dim);
+      font-size: 0.88rem;
+      line-height: 1.6;
+    }
+
+    .highlights-list strong {
+      color: #fff;
+    }
+
+    .highlights-list code {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-family: var(--font-code);
+      font-size: 0.82rem;
+      color: var(--mei-cyan);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Light Overlay -->
+  <div class="bg-ambient-lights" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="bot-navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-avatar-wrapper">
+          <img src="assets/images/mei-avatar.jpg" alt="Mei Labs Avatar" class="brand-avatar" onerror="this.src='assets/images/mei-avatar.jpg'">
+          <span class="online-dot" title="Bot Online"></span>
+        </div>
+        <span class="brand-name">
+          Mei Labs <span class="brand-badge bot-version-text">v2.54.24.1.1</span>
+        </span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="botNavMenu">
+          <li><a href="index.html#hero" class="nav-link"><i class="fas fa-home"></i> Beranda</a></li>
+          <li><a href="skin.html" class="nav-link"><i class="fas fa-person-running"></i> 3D Skin Studio</a></li>
+          <li><a href="changelog.html" class="nav-link active" style="color:var(--mei-cyan); font-weight:800;"><i class="fas fa-scroll"></i> Changelog</a></li>
+          <li><a href="index.html#features" class="nav-link"><i class="fas fa-cubes"></i> Fitur</a></li>
+          <li><a href="index.html#setup-dashboard" class="nav-link"><i class="fas fa-sliders-h"></i> !setup</a></li>
+          <li><a href="index.html#commands" class="nav-link"><i class="fas fa-terminal"></i> Perintah (197+)</a></li>
+          <li><a href="../dashboard.html" class="nav-link" style="color: var(--mei-cyan);"><i class="fas fa-arrow-left"></i> Dashboard Realm</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="skin.html" class="btn-mei-primary">
+          <i class="fas fa-person-running"></i>
+          <span>3D Skin Studio</span>
+        </a>
+        <button class="btn-mei-magenta open-invite-modal">
+          <i class="fab fa-discord"></i>
+          <span>Undang Bot</span>
+        </button>
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container changelog-page-container">
+    <!-- Header Banner -->
+    <div class="changelog-header-banner">
+      <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(88,101,242,0.15); border:1px solid rgba(88,101,242,0.3); padding:4px 14px; border-radius:99px; font-size:0.8rem; font-weight:800; color:var(--mei-primary); margin-bottom:12px;">
+        <i class="fas fa-code-branch"></i> REPOSITORY RELEASE TIMELINE
+      </div>
+      <h1>
+        <i class="fas fa-scroll" style="color:var(--mei-cyan);"></i>
+        <span>Catatan Rilis Resmi Mei Labs</span>
+      </h1>
+      <p>Telusuri seluruh rekam jejak inovasi fitur, pembaruan keamanan, arsitektur micro-kernel, perbaikan bug, dan ekspansi ekosistem Discord Bot Mei Labs sejak versi 1.0 hingga 2.54.</p>
+    </div>
+
+    <!-- Search & Filter Controls -->
+    <div class="filter-search-box">
+      <div class="search-input-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="pageSearchInput" class="search-input-field" placeholder="Cari rilis atau fitur (misal: kernel, skin, voiceai, radio, lavalink, honeypot, rcon)..." oninput="applyPageFilter()">
+      </div>
+      <div class="filter-chips-row">
+        <button class="filter-chip active" data-category="all" onclick="setCategoryFilter('all', this)">Semua Rilis (<span id="totalCount">0</span>)</button>
+        <button class="filter-chip" data-category="v2.54" onclick="setCategoryFilter('v2.54', this)">v2.54.x (Next-Gen)</button>
+        <button class="filter-chip" data-category="v2.5" onclick="setCategoryFilter('v2.5', this)">v2.50 - v2.53</button>
+        <button class="filter-chip" data-category="v2.0" onclick="setCategoryFilter('v2.0', this)">v2.0 - v2.4 (Genesis)</button>
+        <button class="filter-chip" data-category="v1" onclick="setCategoryFilter('v1', this)">v1.x (Classic)</button>
+      </div>
+    </div>
+
+    <!-- Changelog Items List -->
+    <div id="pageChangelogContainer">
+      <!-- Dynamically Rendered -->
+    </div>
+  </main>
+
+  <!-- Discord Invite Modal -->
+  <div class="invite-modal-overlay" id="inviteModalOverlay">
+    <div class="invite-modal-box">
+      <div class="invite-modal-header">
+        <h3><i class="fab fa-discord"></i> Undang Mei Labs ke Server</h3>
+        <button class="close-modal-btn" id="closeInviteModal">&times;</button>
+      </div>
+      <div class="invite-modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+          Pilih izin hak akses yang ingin diberikan kepada Mei Labs di server Discord Anda:
+        </p>
+
+        <div class="perm-options-list">
+          <div class="perm-option-item selected" data-perm="8">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Administrator (Rekomendasi)</h5>
+              <p>Memberikan akses penuh otomatis untuk auto-mod, ticketing, voice generator, dan setup.</p>
+            </div>
+          </div>
+
+          <div class="perm-option-item" data-perm="277025508352">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Standard Moderation &amp; Music</h5>
+              <p>Izin mengelola pesan, mengusir pelanggar, memutar audio di voice channel, dan leveling.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">URL Undangan Resmi:</label>
+          <input type="text" id="generatedInviteLink" class="control-input" readonly value="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" style="width:100%; padding:10px; background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:#fff;">
+        </div>
+      </div>
+      <div class="invite-modal-footer">
+        <a href="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener" class="btn-mei-magenta" id="generateInviteBtn" style="width: 100%; text-align: center;">
+          <i class="fab fa-discord"></i> Buka Otorisasi Discord
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="background: var(--bg-card); border-top: 1px solid var(--border-subtle); padding: 40px 0 30px; text-align: center; margin-top: 60px;">
+    <div class="container">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <img src="assets/images/mei-avatar.jpg" alt="Logo" style="width: 32px; height: 32px; border-radius: 50%;" onerror="this.src='assets/images/mei-avatar.jpg'">
+        <span style="font-weight: 800; font-size: 1.1rem; color: #fff;">Mei Labs <span class="bot-version-text" style="font-size: 0.75rem; color: var(--mei-magenta); background: rgba(255,51,133,0.15); padding: 2px 8px; border-radius: 99px;">v2.54.24.1.1</span></span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 600px; margin: 0 auto 16px;">
+        Asisten Discord Multifungsi &amp; AI Bot Komunitas Resmi Hyrost Realm Network. Ditenagai Node.js, Discord.js, Lavalink HQ Audio, 3D Minecraft Skin Studio, dan Google Gemini AI.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 18px; font-size: 0.85rem; flex-wrap:wrap;">
+        <a href="index.html" style="color: var(--mei-cyan); text-decoration: none;"><i class="fab fa-discord"></i> Beranda Bot</a>
+        <a href="skin.html" style="color: var(--mei-magenta); text-decoration: none;"><i class="fas fa-person-running"></i> 3D Skin Studio</a>
+        <a href="../index.html" style="color: var(--text-dim); text-decoration: none;"><i class="fas fa-globe"></i> Portal Hyrost</a>
+        <a href="../verify-user.html" style="color: var(--text-dim); text-decoration: none;"><i class="fab fa-discord"></i> Discord Linked Roles</a>
+        <a href="../terms.html" style="color: var(--text-dim); text-decoration: none;">Ketentuan Layanan</a>
+        <a href="../privacy.html" style="color: var(--text-dim); text-decoration: none;">Privasi</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js?v=27"></script>
+  <script>
+    let activeCategory = 'all';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('totalCount').textContent = BOT_CHANGELOGS.length;
+      renderPageChangelogs(BOT_CHANGELOGS);
+    });
+
+    function setCategoryFilter(category, btnEl) {
+      activeCategory = category;
+      document.querySelectorAll('.filter-chip').forEach(b => {
+        if (b === btnEl) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+      applyPageFilter();
+    }
+
+    function applyPageFilter() {
+      const q = (document.getElementById('pageSearchInput').value || '').toLowerCase().trim();
+
+      const filtered = BOT_CHANGELOGS.filter(ch => {
+        // Category check
+        let matchesCat = true;
+        if (activeCategory === 'v2.54') matchesCat = ch.version.startsWith('2.54');
+        else if (activeCategory === 'v2.5') matchesCat = ch.version.startsWith('2.50') || ch.version.startsWith('2.51') || ch.version.startsWith('2.52') || ch.version.startsWith('2.53');
+        else if (activeCategory === 'v2.0') matchesCat = ch.version.startsWith('2.0') || ch.version.startsWith('2.1') || ch.version.startsWith('2.2') || ch.version.startsWith('2.3') || ch.version.startsWith('2.4');
+        else if (activeCategory === 'v1') matchesCat = ch.version.startsWith('1.');
+
+        if (!matchesCat) return false;
+
+        // Search check
+        if (!q) return true;
+        const v = ch.version.toLowerCase();
+        const t = ch.title.toLowerCase();
+        const d = ch.date.toLowerCase();
+        const h = ch.highlights.join(' ').toLowerCase();
+        return v.includes(q) || t.includes(q) || d.includes(q) || h.includes(q);
+      });
+
+      renderPageChangelogs(filtered);
+    }
+
+    function renderPageChangelogs(list) {
+      const container = document.getElementById('pageChangelogContainer');
+      if (!container) return;
+
+      if (!list || list.length === 0) {
+        container.innerHTML = `
+          <div style="background:var(--bg-card); border:1px solid var(--border-subtle); border-radius:var(--radius-xl); padding:40px 20px; text-align:center; color:var(--text-muted);">
+            <i class="fas fa-search" style="font-size:2.5rem; margin-bottom:12px; opacity:0.5; display:block;"></i>
+            <h4 style="color:#fff; margin-bottom:6px;">Tidak ada riwayat rilis ditemukan</h4>
+            <p style="font-size:0.88rem;">Coba gunakan kata kunci pencarian lain atau pilih filter kategori di atas.</p>
+          </div>
+        `;
+        return;
+      }
+
+      container.innerHTML = list.map(ch => `
+        <article class="changelog-card" style="border-left: 4px solid ${ch.color};">
+          <div class="card-top-row">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span style="font-weight:900; font-size:1.1rem; color:#fff; font-family:var(--font-code);">v${ch.version}</span>
+              <span style="background:${ch.color}22; color:${ch.color}; font-size:0.75rem; font-weight:800; padding:3px 10px; border-radius:99px; border:1px solid ${ch.color}44;">
+                ${ch.badge}
+              </span>
+            </div>
+            <span style="font-size:0.82rem; color:var(--text-muted); font-weight:600;">
+              <i class="far fa-calendar-alt"></i> ${ch.date}
+            </span>
+          </div>
+          <h3 class="version-title-text" style="color:${ch.color};">${ch.title}</h3>
+          <ul class="highlights-list">
+            ${ch.highlights.map(h => `<li>${h}</li>`).join('')}
+          </ul>
+        </article>
+      `).join('');
+    }
+  </script>
+</body>
+</html>
