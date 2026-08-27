@@ -502,21 +502,26 @@
                             <i class="fas fa-masks-theater" style="color:var(--accent-indigo);"></i> Katalog Pose &amp; Emote Model 3D
                         </div>
                         <div class="poses-grid" id="posesGrid">
-                            <button class="pose-card-btn active" onclick="applyPosePreset('idle')">🧍 Isometrik Santai</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('samurai')">⚔️ Samurai Katana</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('knight')">🛡️ Ksatria Perisai</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('archer')">🏹 Membidik Busur</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('ninja')">🥷 Kuda-Kuda Ninja</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('elytra')">🦅 Melayang Elytra</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('running')">🏃 Lari Sprint</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('waving')">👋 Melambaikan Tangan</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('sitting')">🪑 Duduk Santai</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('mining')">⛏️ Menambang Deepslate</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('swimming')">🏊 Menyelam Samudra</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('victory')">🏆 Sorak Kemenangan</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('trident')">🔱 Lemparan Trisula</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('king')">👑 Singgasana Raja</button>
-                            <button class="pose-card-btn" onclick="applyPosePreset('zenith')">⚡ Pedang Petir Zenith</button>
+                            <button class="pose-card-btn active" data-pose="idle" onclick="applyPosePreset('idle', this)">🧍 Isometrik Santai</button>
+                            <button class="pose-card-btn" data-pose="samurai" onclick="applyPosePreset('samurai', this)">⚔️ Samurai Katana</button>
+                            <button class="pose-card-btn" data-pose="knight" onclick="applyPosePreset('knight', this)">🛡️ Ksatria Perisai</button>
+                            <button class="pose-card-btn" data-pose="archer" onclick="applyPosePreset('archer', this)">🏹 Membidik Busur</button>
+                            <button class="pose-card-btn" data-pose="ninja" onclick="applyPosePreset('ninja', this)">🥷 Kuda-Kuda Ninja</button>
+                            <button class="pose-card-btn" data-pose="elytra" onclick="applyPosePreset('elytra', this)">🦅 Melayang Elytra</button>
+                            <button class="pose-card-btn" data-pose="running" onclick="applyPosePreset('running', this)">🏃 Lari Sprint</button>
+                            <button class="pose-card-btn" data-pose="walking" onclick="applyPosePreset('walking', this)">🚶 Jalan Santai</button>
+                            <button class="pose-card-btn" data-pose="waving" onclick="applyPosePreset('waving', this)">👋 Melambaikan Tangan</button>
+                            <button class="pose-card-btn" data-pose="flying" onclick="applyPosePreset('flying', this)">🦸 Terbang Melayang</button>
+                            <button class="pose-card-btn" data-pose="sitting" onclick="applyPosePreset('sitting', this)">🪑 Duduk Santai</button>
+                            <button class="pose-card-btn" data-pose="mining" onclick="applyPosePreset('mining', this)">⛏️ Menambang Deepslate</button>
+                            <button class="pose-card-btn" data-pose="swimming" onclick="applyPosePreset('swimming', this)">🏊 Menyelam Samudra</button>
+                            <button class="pose-card-btn" data-pose="victory" onclick="applyPosePreset('victory', this)">🏆 Sorak Kemenangan</button>
+                            <button class="pose-card-btn" data-pose="trident" onclick="applyPosePreset('trident', this)">🔱 Lemparan Trisula</button>
+                            <button class="pose-card-btn" data-pose="king" onclick="applyPosePreset('king', this)">👑 Singgasana Raja</button>
+                            <button class="pose-card-btn" data-pose="zenith" onclick="applyPosePreset('zenith', this)">⚡ Pedang Petir Zenith</button>
+                            <button class="pose-card-btn" data-pose="mace" onclick="applyPosePreset('mace', this)">🔨 Hantaman Heavy Mace</button>
+                            <button class="pose-card-btn" data-pose="totem" onclick="applyPosePreset('totem', this)">🌟 Totem of Undying</button>
+                            <button class="pose-card-btn" data-pose="salute" onclick="applyPosePreset('salute', this)">🫡 Hormat Prajurit</button>
                         </div>
                     </div>
 
@@ -634,6 +639,11 @@
             orbitControl.enableRotate = true;
             orbitControl.enableZoom = true;
             orbitControl.enablePan = true;
+
+            // Default initial stance
+            setTimeout(() => {
+                applyPosePreset('idle');
+            }, 300);
         }
 
         function loadCustomSkinFromInput() {
@@ -648,75 +658,125 @@
             return (deg * Math.PI) / 180;
         }
 
+        function toDeg(rad) {
+            return Math.round((rad * 180) / Math.PI);
+        }
+
+        function setSlider(part, deg) {
+            const slider = document.getElementById(`slider${part}`);
+            const valEl = document.getElementById(`val${part}`);
+            if (slider) slider.value = deg;
+            if (valEl) valEl.textContent = `${deg}°`;
+        }
+
+        function syncSlidersFromModel() {
+            if (!viewer || !viewer.playerModel) return;
+            const pm = viewer.playerModel;
+            setSlider('RightArm', toDeg(pm.rightArm.rotation.x));
+            setSlider('LeftArm', toDeg(pm.leftArm.rotation.x));
+            setSlider('RightLeg', toDeg(pm.rightLeg.rotation.x));
+            setSlider('LeftLeg', toDeg(pm.leftLeg.rotation.x));
+            setSlider('Head', toDeg(pm.head.rotation.x));
+        }
+
+        function clearAllAnimations() {
+            if (!viewer) return;
+            if (viewer.animation) {
+                try { viewer.animation.resetAndKeep(); } catch(e){}
+                viewer.animation = null;
+            }
+            if (viewer.animations) {
+                viewer.animations.paused = true;
+                try { viewer.animations.resetAndKeep(); } catch(e){}
+            }
+            activeAnimation = null;
+            const btnRun = document.getElementById('btnRun');
+            if (btnRun) btnRun.style.background = '';
+        }
+
         function resetBones() {
             if (!viewer || !viewer.playerModel) return;
-            viewer.playerModel.head.rotation.set(0, 0, 0);
-            viewer.playerModel.leftArm.rotation.set(0, 0, 0);
-            viewer.playerModel.rightArm.rotation.set(0, 0, 0);
-            viewer.playerModel.leftLeg.rotation.set(0, 0, 0);
-            viewer.playerModel.rightLeg.rotation.set(0, 0, 0);
-            viewer.playerModel.body.rotation.set(0, 0, 0);
+            const pm = viewer.playerModel;
+            pm.head.rotation.set(0, 0, 0);
+            pm.leftArm.rotation.set(0, 0, 0);
+            pm.rightArm.rotation.set(0, 0, 0);
+            pm.leftLeg.rotation.set(0, 0, 0);
+            pm.rightLeg.rotation.set(0, 0, 0);
+            pm.body.rotation.set(0, 0, 0);
 
-            // Reset UI sliders
             ['RightArm', 'LeftArm', 'RightLeg', 'LeftLeg', 'Head'].forEach(part => {
-                const slider = document.getElementById(`slider${part}`);
-                const val = document.getElementById(`val${part}`);
-                if (slider) slider.value = 0;
-                if (val) val.textContent = '0°';
+                setSlider(part, 0);
             });
         }
 
-        function applyPosePreset(pose) {
-            document.querySelectorAll('.pose-card-btn').forEach(b => b.classList.remove('active'));
-            if (event && event.target) event.target.closest('.pose-card-btn')?.classList.add('active');
+        function applyPosePreset(pose, clickedBtn) {
+            // Update active button UI
+            document.querySelectorAll('.pose-card-btn').forEach(b => {
+                if (b === clickedBtn || b.getAttribute('data-pose') === pose) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
 
-            if (activeAnimation) {
-                activeAnimation.resetAndKeep();
-                activeAnimation = null;
-            }
-
-            resetBones();
             if (!viewer || !viewer.playerModel) return;
             if (window.HyrostSFX) window.HyrostSFX.playClick();
+
+            clearAllAnimations();
+            resetBones();
 
             const pm = viewer.playerModel;
 
             switch(pose) {
                 case 'samurai':
+                    // Katana battle stance
                     pm.rightArm.rotation.x = toRad(-110);
                     pm.rightArm.rotation.y = toRad(-35);
                     pm.rightArm.rotation.z = toRad(45);
                     pm.leftArm.rotation.x = toRad(30);
-                    pm.leftArm.rotation.z = toRad(-20);
-                    pm.rightLeg.rotation.x = toRad(-25);
-                    pm.leftLeg.rotation.x = toRad(25);
-                    break;
-                case 'knight':
-                    pm.leftArm.rotation.x = toRad(-90);
-                    pm.leftArm.rotation.y = toRad(25);
-                    pm.rightArm.rotation.x = toRad(-45);
-                    pm.rightArm.rotation.z = toRad(15);
-                    pm.leftLeg.rotation.x = toRad(-15);
-                    break;
-                case 'archer':
-                    pm.rightArm.rotation.x = toRad(-90);
-                    pm.rightArm.rotation.y = toRad(-55);
-                    pm.leftArm.rotation.x = toRad(-90);
-                    pm.leftArm.rotation.y = toRad(55);
-                    pm.head.rotation.y = toRad(35);
-                    break;
-                case 'ninja':
-                    pm.rightArm.rotation.x = toRad(45);
-                    pm.rightArm.rotation.z = toRad(60);
-                    pm.leftArm.rotation.x = toRad(45);
-                    pm.leftArm.rotation.z = toRad(-60);
+                    pm.leftArm.rotation.z = toRad(-25);
                     pm.rightLeg.rotation.x = toRad(-30);
-                    pm.leftLeg.rotation.x = toRad(30);
-                    pm.head.rotation.x = toRad(15);
+                    pm.leftLeg.rotation.x = toRad(25);
+                    pm.head.rotation.y = toRad(15);
+                    pm.head.rotation.x = toRad(10);
                     break;
+
+                case 'knight':
+                    // Shield & Sword block
+                    pm.leftArm.rotation.x = toRad(-85);
+                    pm.leftArm.rotation.y = toRad(40);
+                    pm.rightArm.rotation.x = toRad(-95);
+                    pm.rightArm.rotation.y = toRad(-20);
+                    pm.leftLeg.rotation.x = toRad(-20);
+                    pm.rightLeg.rotation.x = toRad(20);
+                    break;
+
+                case 'archer':
+                    // Bow Draw Aim
+                    pm.leftArm.rotation.x = toRad(-85);
+                    pm.leftArm.rotation.y = toRad(25);
+                    pm.rightArm.rotation.x = toRad(-85);
+                    pm.rightArm.rotation.y = toRad(-45);
+                    pm.head.rotation.y = toRad(-25);
+                    pm.head.rotation.x = toRad(-5);
+                    break;
+
+                case 'ninja':
+                    // Stealth Low Crouch
+                    pm.body.rotation.x = toRad(25);
+                    pm.head.rotation.x = toRad(-25);
+                    pm.rightArm.rotation.x = toRad(45);
+                    pm.rightArm.rotation.z = toRad(50);
+                    pm.leftArm.rotation.x = toRad(45);
+                    pm.leftArm.rotation.z = toRad(-50);
+                    pm.rightLeg.rotation.x = toRad(-40);
+                    pm.leftLeg.rotation.x = toRad(30);
+                    break;
+
                 case 'elytra':
+                    // Gliding flight
                     pm.body.rotation.x = toRad(75);
-                    pm.head.rotation.x = toRad(-60);
+                    pm.head.rotation.x = toRad(-65);
                     pm.rightArm.rotation.x = toRad(15);
                     pm.rightArm.rotation.z = toRad(35);
                     pm.leftArm.rotation.x = toRad(15);
@@ -724,64 +784,141 @@
                     pm.rightLeg.rotation.x = toRad(10);
                     pm.leftLeg.rotation.x = toRad(10);
                     break;
+
                 case 'running':
-                    activeAnimation = viewer.animations.add(skinview3d.RunningAnimation);
-                    activeAnimation.speed = 1.2;
+                    viewer.animation = new skinview3d.RunningAnimation();
+                    viewer.animation.speed = 1.0;
+                    activeAnimation = viewer.animation;
                     break;
+
+                case 'walking':
+                    viewer.animation = new skinview3d.WalkingAnimation();
+                    viewer.animation.speed = 0.8;
+                    activeAnimation = viewer.animation;
+                    break;
+
                 case 'waving':
-                    activeAnimation = viewer.animations.add(skinview3d.WaveAnimation);
+                    viewer.animation = new skinview3d.WaveAnimation();
+                    activeAnimation = viewer.animation;
                     break;
+
+                case 'flying':
+                    viewer.animation = new skinview3d.FlyingAnimation();
+                    activeAnimation = viewer.animation;
+                    break;
+
                 case 'sitting':
+                    // Sitting relaxed
                     pm.rightLeg.rotation.x = toRad(-90);
                     pm.leftLeg.rotation.x = toRad(-90);
-                    pm.rightArm.rotation.x = toRad(-20);
-                    pm.leftArm.rotation.x = toRad(-20);
+                    pm.rightArm.rotation.x = toRad(-25);
+                    pm.leftArm.rotation.x = toRad(-25);
+                    pm.head.rotation.x = toRad(-5);
                     break;
+
                 case 'mining':
-                    pm.rightArm.rotation.x = toRad(-120);
+                    // Mining deepslate pickaxe swing
+                    pm.rightArm.rotation.x = toRad(-125);
                     pm.rightArm.rotation.y = toRad(-20);
+                    pm.rightArm.rotation.z = toRad(15);
+                    pm.leftArm.rotation.x = toRad(20);
                     pm.head.rotation.x = toRad(25);
+                    pm.rightLeg.rotation.x = toRad(-20);
+                    pm.leftLeg.rotation.x = toRad(15);
                     break;
+
                 case 'swimming':
+                    // Streamlined water dive
                     pm.body.rotation.x = toRad(85);
                     pm.head.rotation.x = toRad(-65);
                     pm.rightArm.rotation.x = toRad(170);
                     pm.leftArm.rotation.x = toRad(170);
+                    pm.rightLeg.rotation.x = toRad(10);
+                    pm.leftLeg.rotation.x = toRad(10);
                     break;
+
                 case 'victory':
+                    // Triumph Victory Cheer
                     pm.rightArm.rotation.x = toRad(-160);
-                    pm.rightArm.rotation.z = toRad(20);
+                    pm.rightArm.rotation.z = toRad(25);
                     pm.leftArm.rotation.x = toRad(-160);
-                    pm.leftArm.rotation.z = toRad(-20);
+                    pm.leftArm.rotation.z = toRad(-25);
                     pm.head.rotation.x = toRad(-20);
+                    pm.rightLeg.rotation.x = toRad(-15);
+                    pm.leftLeg.rotation.x = toRad(15);
                     break;
+
                 case 'trident':
-                    pm.rightArm.rotation.x = toRad(-140);
+                    // Trident Riptide Throw
+                    pm.rightArm.rotation.x = toRad(-145);
                     pm.rightArm.rotation.y = toRad(-30);
-                    pm.leftArm.rotation.x = toRad(30);
+                    pm.rightArm.rotation.z = toRad(20);
+                    pm.leftArm.rotation.x = toRad(35);
                     pm.body.rotation.y = toRad(-20);
+                    pm.head.rotation.y = toRad(20);
                     break;
+
                 case 'king':
+                    // Throne Majesty
                     pm.rightLeg.rotation.x = toRad(-85);
                     pm.leftLeg.rotation.x = toRad(-85);
-                    pm.rightArm.rotation.z = toRad(30);
-                    pm.leftArm.rotation.z = toRad(-30);
-                    pm.head.rotation.x = toRad(-10);
+                    pm.rightArm.rotation.x = toRad(-20);
+                    pm.rightArm.rotation.z = toRad(35);
+                    pm.leftArm.rotation.x = toRad(-20);
+                    pm.leftArm.rotation.z = toRad(-35);
+                    pm.head.rotation.x = toRad(-12);
                     break;
+
                 case 'zenith':
-                    pm.rightArm.rotation.x = toRad(-130);
-                    pm.rightArm.rotation.z = toRad(30);
-                    pm.leftArm.rotation.x = toRad(20);
+                    // Zenith Lightning Blade
+                    pm.rightArm.rotation.x = toRad(-135);
+                    pm.rightArm.rotation.z = toRad(35);
+                    pm.leftArm.rotation.x = toRad(25);
+                    pm.leftArm.rotation.z = toRad(-20);
                     pm.head.rotation.y = toRad(-15);
+                    pm.rightLeg.rotation.x = toRad(-25);
+                    pm.leftLeg.rotation.x = toRad(25);
                     break;
+
+                case 'mace':
+                    // Heavy Mace Slam
+                    pm.rightArm.rotation.x = toRad(-170);
+                    pm.leftArm.rotation.x = toRad(-170);
+                    pm.head.rotation.x = toRad(20);
+                    pm.body.rotation.x = toRad(15);
+                    break;
+
+                case 'totem':
+                    // Totem of Undying Guard
+                    pm.leftArm.rotation.x = toRad(-80);
+                    pm.leftArm.rotation.y = toRad(15);
+                    pm.rightArm.rotation.x = toRad(-25);
+                    pm.head.rotation.y = toRad(-10);
+                    break;
+
+                case 'salute':
+                    // Military Salute
+                    pm.rightArm.rotation.x = toRad(-140);
+                    pm.rightArm.rotation.z = toRad(45);
+                    pm.head.rotation.x = toRad(-5);
+                    break;
+
                 default: // idle
-                    activeAnimation = viewer.animations.add(skinview3d.IdleAnimation);
+                    // Natural isometric rest
+                    pm.rightArm.rotation.x = toRad(-10);
+                    pm.leftArm.rotation.x = toRad(10);
+                    pm.rightLeg.rotation.x = toRad(5);
+                    pm.leftLeg.rotation.x = toRad(-5);
                     break;
             }
+
+            syncSlidersFromModel();
         }
 
         function updateManualBone(part, val) {
             if (!viewer || !viewer.playerModel) return;
+            clearAllAnimations();
+
             const pm = viewer.playerModel;
             const rad = toRad(parseFloat(val));
 
@@ -796,9 +933,11 @@
             if (part === 'head') pm.head.rotation.x = rad;
         }
 
-        function setCameraAngle(angle) {
-            document.querySelectorAll('.angle-btn').forEach(b => b.classList.remove('active'));
-            if (event && event.target) event.target.classList.add('active');
+        function setCameraAngle(angle, btnEl) {
+            document.querySelectorAll('.angle-btn').forEach(b => {
+                if (b === btnEl) b.classList.add('active');
+                else b.classList.remove('active');
+            });
 
             if (!viewer) return;
             const rad = toRad(angle);
@@ -828,12 +967,11 @@
             if (!viewer) return;
             const btn = document.getElementById('btnRun');
             if (activeAnimation) {
-                activeAnimation.resetAndKeep();
-                activeAnimation = null;
+                clearAllAnimations();
+                applyPosePreset('idle');
                 if (btn) btn.style.background = '';
             } else {
-                activeAnimation = viewer.animations.add(skinview3d.RunningAnimation);
-                activeAnimation.speed = 1.0;
+                applyPosePreset('running');
                 if (btn) btn.style.background = 'var(--accent-pink)';
             }
         }
@@ -844,7 +982,8 @@
             viewer.camera.position.y = 10;
             viewer.camera.position.z = 35;
             viewer.camera.lookAt(0, 0, 0);
-            setCameraAngle(0);
+            const firstAngle = document.querySelector('.angle-btn');
+            if (firstAngle) setCameraAngle(0, firstAngle);
         }
 
         function exportSnapshot4K() {
