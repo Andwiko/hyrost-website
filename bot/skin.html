@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mei Labs — 3D Minecraft Skin Studio &amp; Pose Rigging</title>
+  <meta name="description" content="Studio 3D Model Karakter &amp; Pose Rigging Minecraft resmi Mei Labs &amp; Hyrost Realm Network. Render WebGL 60 FPS, rotasi 360°, rig animasi tulang, dan ekspor snapshot 4K.">
+  <meta name="keywords" content="Minecraft 3D Skin Viewer, skinview3d, Mei Labs Bot, Minecraft Pose Studio, Minecraft Skin 3D, Discord Bot Minecraft">
+  <meta name="theme-color" content="#5865F2">
+
+  <!-- Favicon & Fonts -->
+  <link rel="icon" type="image/jpeg" href="assets/images/mei-avatar.jpg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <!-- Core Bot Stylesheet -->
+  <link rel="stylesheet" href="styles.css?v=35">
+
+  <!-- SkinView3D WebGL Library -->
+  <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.1/bundles/skinview3d.bundle.js"></script>
+
+  <style>
+    .studio-main-container {
+      padding-top: 100px;
+      padding-bottom: 60px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .studio-header-banner {
+      background: linear-gradient(135deg, rgba(88, 101, 242, 0.12) 0%, rgba(255, 51, 133, 0.08) 100%);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      margin-bottom: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      backdrop-filter: blur(12px);
+    }
+
+    .studio-header-titles h1 {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+
+    .studio-header-titles p {
+      color: var(--text-dim);
+      font-size: 0.92rem;
+      max-width: 680px;
+    }
+
+    .studio-layout-grid {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .studio-layout-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ─── 3D Viewport Card ─── */
+    .viewport-card {
+      background: linear-gradient(135deg, rgba(13, 18, 31, 0.95) 0%, rgba(20, 27, 45, 0.95) 100%);
+      border: 1px solid var(--border-glow);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .viewport-canvas-wrapper {
+      position: relative;
+      width: 100%;
+      height: 460px;
+      background: radial-gradient(circle at 50% 50%, rgba(88, 101, 242, 0.2) 0%, rgba(7, 10, 19, 0.98) 85%);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #skin_container {
+      width: 100% !important;
+      height: 100% !important;
+      cursor: grab;
+    }
+
+    #skin_container:active {
+      cursor: grabbing;
+    }
+
+    .viewport-badge-top {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(13, 18, 31, 0.88);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 800;
+      color: var(--mei-cyan);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      z-index: 5;
+    }
+
+    .viewport-controls-floating {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+      background: rgba(13, 18, 31, 0.9);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      z-index: 5;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .floating-btn {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      color: #fff;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 0.8rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .floating-btn:hover {
+      background: var(--mei-primary);
+      border-color: var(--mei-primary);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 14px rgba(88, 101, 242, 0.4);
+    }
+
+    /* ─── Controls & Editor Panel ─── */
+    .controls-panel-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-xl);
+      padding: 26px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .panel-section-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* IGN Search Box */
+    .ign-search-box {
+      display: flex;
+      gap: 10px;
+    }
+
+    .ign-input-wrap {
+      position: relative;
+      flex: 1;
+      display: flex;
+      align-items: center;
+    }
+
+    .ign-input-wrap i {
+      position: absolute;
+      left: 14px;
+      color: var(--text-placeholder);
+    }
+
+    .ign-input {
+      width: 100%;
+      background: var(--bg-input);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-md);
+      padding: 12px 14px 12px 40px;
+      color: #fff;
+      font-size: 0.9rem;
+      font-weight: 700;
+      outline: none;
+      transition: var(--transition-fast);
+    }
+
+    .ign-input:focus {
+      border-color: var(--mei-primary);
+      box-shadow: 0 0 0 3px var(--mei-primary-glow);
+    }
+
+    /* Preset Pose Buttons */
+    .poses-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+      gap: 8px;
+      max-height: 230px;
+      overflow-y: auto;
+      padding-right: 6px;
+      scrollbar-width: thin;
+    }
+
+    .pose-card-btn {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-dim);
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-fast);
+      text-align: left;
+    }
+
+    .pose-card-btn:hover {
+      background: rgba(88, 101, 242, 0.15);
+      border-color: rgba(88, 101, 242, 0.4);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .pose-card-btn.active {
+      background: linear-gradient(135deg, var(--mei-primary), #4338ca);
+      border-color: var(--mei-primary);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(88, 101, 242, 0.45);
+    }
+
+    /* Rigging Bone Sliders */
+    .slider-group {
+      background: rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--border-subtle);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .slider-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .slider-label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: var(--text-dim);
+      min-width: 150px;
+    }
+
+    .slider-range {
+      flex: 1;
+      accent-color: var(--mei-primary);
+      cursor: pointer;
+    }
+
+    .slider-val {
+      font-family: var(--font-code);
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--mei-cyan);
+      min-width: 44px;
+      text-align: right;
+    }
+
+    /* 360 Camera Angle Selector */
+    .angles-bar {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .angle-btn {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--border-subtle);
+      color: var(--text-muted);
+      padding: 7px 12px;
+      border-radius: var(--radius-sm);
+      font-size: 0.78rem;
+      font-weight: 800;
+      cursor: pointer;
+      transition: var(--transition-fast);
+    }
+
+    .angle-btn:hover {
+      border-color: var(--mei-cyan);
+      color: #fff;
+    }
+
+    .angle-btn.active {
+      background: rgba(6, 182, 212, 0.2);
+      border-color: var(--mei-cyan);
+      color: var(--mei-cyan);
+    }
+
+    .actions-export-bar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Ambient Animated Light Overlay -->
+  <div class="bg-ambient-lights" aria-hidden="true">
+    <div class="ambient-orb orb-1"></div>
+    <div class="ambient-orb orb-2"></div>
+    <div class="ambient-orb orb-3"></div>
+  </div>
+
+  <!-- Top Navigation Bar -->
+  <header class="bot-navbar">
+    <div class="container nav-container">
+      <a href="index.html" class="nav-brand">
+        <div class="brand-avatar-wrapper">
+          <img src="assets/images/mei-avatar.jpg" alt="Mei Labs Avatar" class="brand-avatar" onerror="this.src='assets/images/mei-avatar.jpg'">
+          <span class="online-dot" title="Bot Online"></span>
+        </div>
+        <span class="brand-name">
+          Mei Labs <span class="brand-badge bot-version-text">v2.54.24.1.1</span>
+        </span>
+      </a>
+
+      <nav>
+        <ul class="nav-menu" id="botNavMenu">
+          <li><a href="index.html#hero" class="nav-link"><i class="fas fa-home"></i> Beranda</a></li>
+          <li><a href="index.html#chat-demo" class="nav-link"><i class="fas fa-comments"></i> AI Chat</a></li>
+          <li><a href="skin.html" class="nav-link active" style="color:var(--mei-magenta); font-weight:800;"><i class="fas fa-person-running"></i> 3D Skin Studio</a></li>
+          <li><a href="index.html#features" class="nav-link"><i class="fas fa-cubes"></i> Fitur</a></li>
+          <li><a href="index.html#setup-dashboard" class="nav-link"><i class="fas fa-sliders-h"></i> !setup</a></li>
+          <li><a href="index.html#commands" class="nav-link"><i class="fas fa-terminal"></i> Perintah (197+)</a></li>
+          <li><a href="../dashboard.html" class="nav-link" style="color: var(--mei-cyan);"><i class="fas fa-arrow-left"></i> Dashboard Realm</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="btn-mei-primary" onclick="openChangelogModal()">
+          <i class="fas fa-scroll"></i>
+          <span>Changelog</span>
+        </button>
+        <button class="btn-mei-magenta open-invite-modal">
+          <i class="fab fa-discord"></i>
+          <span>Undang Bot</span>
+        </button>
+        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Menu">
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="container studio-main-container">
+    <!-- Top Banner -->
+    <div class="studio-header-banner">
+      <div class="studio-header-titles">
+        <h1>
+          <i class="fas fa-person-running" style="color:var(--mei-magenta);"></i>
+          <span>3D Minecraft Skin Studio &amp; Pose Rigging</span>
+        </h1>
+        <p>Eksplorasi karakter Minecraft 3D WebGL 60 FPS, rotasi kamera 360°, 20 katalog pose &amp; emote gerakan, rig animasi tulang manual, dan ekspor snapshot 4K.</p>
+      </div>
+      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+        <button class="btn-mei-glass" onclick="copyDiscordSkinCommand()">
+          <i class="fab fa-discord" style="color:var(--mei-primary);"></i>
+          <span>Command !mcskin</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Studio Grid -->
+    <div class="studio-layout-grid">
+      <!-- 1. Left Viewport Card -->
+      <div class="viewport-card">
+        <div class="viewport-canvas-wrapper">
+          <div class="viewport-badge-top">
+            <span class="status-dot online" style="background:#10b981; width:8px; height:8px; border-radius:50%; display:inline-block;"></span>
+            <span id="activePlayerLabel">Steve (3D Viewport)</span>
+          </div>
+          <canvas id="skin_container"></canvas>
+          
+          <!-- Floating Quick Controls -->
+          <div class="viewport-controls-floating">
+            <button class="floating-btn" onclick="toggleSpinAnimation()" id="btnSpin">
+              <i class="fas fa-sync-alt"></i> Spin 360°
+            </button>
+            <button class="floating-btn" onclick="toggleRunningAnimation()" id="btnRun">
+              <i class="fas fa-running"></i> Animasi Lari
+            </button>
+            <button class="floating-btn" onclick="resetCameraView()">
+              <i class="fas fa-crosshairs"></i> Reset Kamera
+            </button>
+          </div>
+        </div>
+
+        <!-- 360 Angle Quick Switcher -->
+        <div style="width:100%; margin-top:20px;">
+          <div class="panel-section-title" style="font-size:0.82rem; margin-bottom:10px;">
+            <i class="fas fa-compass" style="color:var(--mei-cyan);"></i> Sudut Kamera Kompas 360°
+          </div>
+          <div class="angles-bar" id="anglesBar">
+            <button class="angle-btn active" onclick="setCameraAngle(0, this)">Depan (0°)</button>
+            <button class="angle-btn" onclick="setCameraAngle(45, this)">Serong Kiri (45°)</button>
+            <button class="angle-btn" onclick="setCameraAngle(90, this)">Samping Kiri (90°)</button>
+            <button class="angle-btn" onclick="setCameraAngle(135, this)">Belakang Kiri (135°)</button>
+            <button class="angle-btn" onclick="setCameraAngle(180, this)">Belakang (180°)</button>
+            <button class="angle-btn" onclick="setCameraAngle(225, this)">Belakang Kanan (225°)</button>
+            <button class="angle-btn" onclick="setCameraAngle(270, this)">Samping Kanan (270°)</button>
+            <button class="angle-btn" onclick="setCameraAngle(315, this)">Serong Kanan (315°)</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- 2. Right Controls & Rigging Panel -->
+      <div class="controls-panel-card">
+        <!-- Player Search & Skin Switcher -->
+        <div>
+          <div class="panel-section-title">
+            <i class="fas fa-user-tag" style="color:var(--mei-cyan);"></i> Pemain / Username Minecraft
+          </div>
+          <div class="ign-search-box">
+            <div class="ign-input-wrap">
+              <i class="fas fa-search"></i>
+              <input type="text" id="ignInput" class="ign-input" placeholder="Ketik IGN (misal: Steve, Alex, Notch, DanTDM)..." value="Steve" onkeydown="if(event.key==='Enter') loadCustomSkinFromInput()">
+            </div>
+            <button class="btn-mei-primary" onclick="loadCustomSkinFromInput()" style="padding:12px 20px;">
+              <i class="fas fa-magic"></i> Muat Skin
+            </button>
+          </div>
+        </div>
+
+        <!-- Poses Catalog (from Discord Bot 80 Poses Engine) -->
+        <div>
+          <div class="panel-section-title">
+            <i class="fas fa-masks-theater" style="color:var(--mei-violet);"></i> Katalog Pose &amp; Emote Model 3D
+          </div>
+          <div class="poses-grid" id="posesGrid">
+            <button class="pose-card-btn active" data-pose="idle" onclick="applyPosePreset('idle', this)">🧍 Isometrik Santai</button>
+            <button class="pose-card-btn" data-pose="samurai" onclick="applyPosePreset('samurai', this)">⚔️ Samurai Katana</button>
+            <button class="pose-card-btn" data-pose="knight" onclick="applyPosePreset('knight', this)">🛡️ Ksatria Perisai</button>
+            <button class="pose-card-btn" data-pose="archer" onclick="applyPosePreset('archer', this)">🏹 Membidik Busur</button>
+            <button class="pose-card-btn" data-pose="ninja" onclick="applyPosePreset('ninja', this)">🥷 Kuda-Kuda Ninja</button>
+            <button class="pose-card-btn" data-pose="elytra" onclick="applyPosePreset('elytra', this)">🦅 Melayang Elytra</button>
+            <button class="pose-card-btn" data-pose="running" onclick="applyPosePreset('running', this)">🏃 Lari Sprint</button>
+            <button class="pose-card-btn" data-pose="walking" onclick="applyPosePreset('walking', this)">🚶 Jalan Santai</button>
+            <button class="pose-card-btn" data-pose="waving" onclick="applyPosePreset('waving', this)">👋 Melambaikan Tangan</button>
+            <button class="pose-card-btn" data-pose="flying" onclick="applyPosePreset('flying', this)">🦸 Terbang Melayang</button>
+            <button class="pose-card-btn" data-pose="sitting" onclick="applyPosePreset('sitting', this)">🪑 Duduk Santai</button>
+            <button class="pose-card-btn" data-pose="mining" onclick="applyPosePreset('mining', this)">⛏️ Menambang Deepslate</button>
+            <button class="pose-card-btn" data-pose="swimming" onclick="applyPosePreset('swimming', this)">🏊 Menyelam Samudra</button>
+            <button class="pose-card-btn" data-pose="victory" onclick="applyPosePreset('victory', this)">🏆 Sorak Kemenangan</button>
+            <button class="pose-card-btn" data-pose="trident" onclick="applyPosePreset('trident', this)">🔱 Lemparan Trisula</button>
+            <button class="pose-card-btn" data-pose="king" onclick="applyPosePreset('king', this)">👑 Singgasana Raja</button>
+            <button class="pose-card-btn" data-pose="zenith" onclick="applyPosePreset('zenith', this)">⚡ Pedang Petir Zenith</button>
+            <button class="pose-card-btn" data-pose="mace" onclick="applyPosePreset('mace', this)">🔨 Hantaman Heavy Mace</button>
+            <button class="pose-card-btn" data-pose="totem" onclick="applyPosePreset('totem', this)">🌟 Totem of Undying</button>
+            <button class="pose-card-btn" data-pose="salute" onclick="applyPosePreset('salute', this)">🫡 Hormat Prajurit</button>
+          </div>
+        </div>
+
+        <!-- Bone Articulation & Rigging Sliders -->
+        <div>
+          <div class="panel-section-title">
+            <i class="fas fa-bone" style="color:var(--mei-gold);"></i> Tekukan Tulang Manual (Bone Rigging)
+          </div>
+          <div class="slider-group">
+            <div class="slider-item">
+              <span class="slider-label">Tangan Kanan (Right Arm):</span>
+              <input type="range" id="sliderRightArm" class="slider-range" min="-180" max="180" value="0" oninput="updateManualBone('rightArm', this.value)">
+              <span class="slider-val" id="valRightArm">0°</span>
+            </div>
+            <div class="slider-item">
+              <span class="slider-label">Tangan Kiri (Left Arm):</span>
+              <input type="range" id="sliderLeftArm" class="slider-range" min="-180" max="180" value="0" oninput="updateManualBone('leftArm', this.value)">
+              <span class="slider-val" id="valLeftArm">0°</span>
+            </div>
+            <div class="slider-item">
+              <span class="slider-label">Kaki Kanan (Right Leg):</span>
+              <input type="range" id="sliderRightLeg" class="slider-range" min="-90" max="90" value="0" oninput="updateManualBone('rightLeg', this.value)">
+              <span class="slider-val" id="valRightLeg">0°</span>
+            </div>
+            <div class="slider-item">
+              <span class="slider-label">Kaki Kiri (Left Leg):</span>
+              <input type="range" id="sliderLeftLeg" class="slider-range" min="-90" max="90" value="0" oninput="updateManualBone('leftLeg', this.value)">
+              <span class="slider-val" id="valLeftLeg">0°</span>
+            </div>
+            <div class="slider-item">
+              <span class="slider-label">Kepala (Head Pitch):</span>
+              <input type="range" id="sliderHead" class="slider-range" min="-60" max="60" value="0" oninput="updateManualBone('head', this.value)">
+              <span class="slider-val" id="valHead">0°</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Export & Download Actions -->
+        <div>
+          <div class="panel-section-title">
+            <i class="fas fa-file-export" style="color:var(--mei-emerald);"></i> Ekspor &amp; Unduh Hasil
+          </div>
+          <div class="actions-export-bar">
+            <button class="btn-mei-magenta" onclick="exportSnapshot4K()" style="flex:1; justify-content:center;">
+              <i class="fas fa-camera"></i> Snapshot PNG 4K
+            </button>
+            <a id="btnDownloadSkinFile" href="https://mc-heads.net/skin/Steve" target="_blank" download class="btn-mei-glass" style="flex:1; justify-content:center;">
+              <i class="fas fa-download"></i> Unduh File Skin
+            </a>
+            <button class="btn-mei-glass" onclick="copyDiscordSkinCommand()" title="Salin Command Discord !mcskin">
+              <i class="fab fa-discord" style="color:var(--mei-primary);"></i> Salin !mcskin
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Discord Invite Modal -->
+  <div class="invite-modal-overlay" id="inviteModalOverlay">
+    <div class="invite-modal-box">
+      <div class="invite-modal-header">
+        <h3><i class="fab fa-discord"></i> Undang Mei Labs ke Server</h3>
+        <button class="close-modal-btn" id="closeInviteModal">&times;</button>
+      </div>
+      <div class="invite-modal-body">
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 16px;">
+          Pilih izin hak akses yang ingin diberikan kepada Mei Labs di server Discord Anda:
+        </p>
+
+        <div class="perm-options-list">
+          <div class="perm-option-item selected" data-perm="8">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Administrator (Rekomendasi)</h5>
+              <p>Memberikan akses penuh otomatis untuk auto-mod, ticketing, voice generator, dan setup.</p>
+            </div>
+          </div>
+
+          <div class="perm-option-item" data-perm="277025508352">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Standard Moderation &amp; Music</h5>
+              <p>Izin mengelola pesan, mengusir pelanggar, memutar audio di voice channel, dan leveling.</p>
+            </div>
+          </div>
+
+          <div class="perm-option-item" data-perm="37088256">
+            <div class="perm-radio"><i class="fas fa-check"></i></div>
+            <div class="perm-info">
+              <h5>Basic / Mini-Games Only</h5>
+              <p>Hanya izin mengirim pesan teks, embed, reaksi, dan obrolan AI.</p>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px;">
+          <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">URL Undangan Resmi:</label>
+          <input type="text" id="generatedInviteLink" class="control-input" readonly value="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" style="width:100%; padding:10px; background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:#fff;">
+        </div>
+      </div>
+      <div class="invite-modal-footer">
+        <a href="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener" class="btn-mei-magenta" id="generateInviteBtn" style="width: 100%; text-align: center;">
+          <i class="fab fa-discord"></i> Buka Otorisasi Discord
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Changelog & Release Notes Modal -->
+  <div class="invite-modal-overlay" id="changelogModalOverlay" onclick="if(event.target===this) closeChangelogModal()">
+    <div class="invite-modal-box" style="max-width: 680px; width: 92%;">
+      <div class="invite-modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="display:flex; align-items:center; gap:8px; font-size:1.15rem; color:#fff; margin:0;">
+          <i class="fas fa-scroll" style="color:var(--mei-cyan);"></i> Catatan Rilis &amp; Changelog Resmi Mei Labs
+        </h3>
+        <button class="close-modal-btn" onclick="closeChangelogModal()" style="cursor:pointer; background:none; border:none; color:var(--text-muted); font-size:1.4rem;">&times;</button>
+      </div>
+      <div class="invite-modal-body" id="changelogModalBody" style="max-height: 480px; overflow-y: auto; padding-right: 6px;">
+        <!-- Dynamic or Synchronized Changelog items -->
+      </div>
+      <div class="invite-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.8rem; color:var(--text-muted);">Bot Engine Versi <strong class="bot-version-text" style="color:var(--mei-cyan);">v2.54.24.1.1</strong></span>
+        <button class="btn-mei-primary" onclick="closeChangelogModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer style="background: var(--bg-card); border-top: 1px solid var(--border-subtle); padding: 40px 0 30px; text-align: center; margin-top: 60px;">
+    <div class="container">
+      <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 12px;">
+        <img src="assets/images/mei-avatar.jpg" alt="Logo" style="width: 32px; height: 32px; border-radius: 50%;" onerror="this.src='assets/images/mei-avatar.jpg'">
+        <span style="font-weight: 800; font-size: 1.1rem; color: #fff;">Mei Labs <span class="bot-version-text" style="font-size: 0.75rem; color: var(--mei-magenta); background: rgba(255,51,133,0.15); padding: 2px 8px; border-radius: 99px;">v2.54.24.1.1</span></span>
+      </div>
+      <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 600px; margin: 0 auto 16px;">
+        Asisten Discord Multifungsi &amp; AI Bot Komunitas Resmi Hyrost Realm Network. Ditenagai Node.js, Discord.js, Lavalink HQ Audio, 3D Minecraft Skin Studio, dan Google Gemini AI.
+      </p>
+      <div style="display: flex; justify-content: center; gap: 18px; font-size: 0.85rem; flex-wrap:wrap;">
+        <a href="index.html" style="color: var(--mei-cyan); text-decoration: none;"><i class="fab fa-discord"></i> Beranda Bot</a>
+        <a href="../index.html" style="color: var(--text-dim); text-decoration: none;"><i class="fas fa-globe"></i> Portal Hyrost</a>
+        <a href="../verify-user.html" style="color: var(--text-dim); text-decoration: none;"><i class="fab fa-discord"></i> Discord Linked Roles</a>
+        <a href="../terms.html" style="color: var(--text-dim); text-decoration: none;">Ketentuan Layanan</a>
+        <a href="../privacy.html" style="color: var(--text-dim); text-decoration: none;">Privasi</a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="app.js?v=26"></script>
+  <script>
+    let viewer = null;
+    let orbitControl = null;
+    let isSpinning = false;
+    let currentIGN = 'Steve';
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const urlParams = new URLSearchParams(window.location.search);
+      if (urlParams.get('user')) {
+        currentIGN = urlParams.get('user').trim();
+        document.getElementById('ignInput').value = currentIGN;
+      }
+
+      initSkinViewer(currentIGN);
+
+      if (urlParams.get('pose')) {
+        setTimeout(() => applyPosePreset(urlParams.get('pose')), 500);
+      }
+      if (urlParams.get('angle')) {
+        const ang = parseInt(urlParams.get('angle'), 10);
+        setTimeout(() => setCameraAngle(ang), 600);
+      }
+    });
+
+    function getSkin() {
+      if (!viewer) return null;
+      if (viewer.playerObject && viewer.playerObject.skin) return viewer.playerObject.skin;
+      if (viewer.playerModel) return viewer.playerModel;
+      if (viewer.skin) return viewer.skin;
+      return null;
+    }
+
+    function initSkinViewer(ign) {
+      const canvas = document.getElementById('skin_container');
+      const cleanUser = encodeURIComponent(ign || 'Steve');
+      document.getElementById('activePlayerLabel').textContent = `${ign} (3D Viewport)`;
+      document.getElementById('btnDownloadSkinFile').href = `https://mc-heads.net/skin/${cleanUser}`;
+
+      if (viewer) {
+        viewer.loadSkin(`https://mc-heads.net/skin/${cleanUser}`);
+        return;
+      }
+
+      viewer = new skinview3d.SkinViewer({
+        canvas: canvas,
+        width: 440,
+        height: 460,
+        skin: `https://mc-heads.net/skin/${cleanUser}`
+      });
+
+      viewer.camera.position.x = -15;
+      viewer.camera.position.y = 10;
+      viewer.camera.position.z = 35;
+      viewer.fov = 65;
+
+      orbitControl = skinview3d.createOrbitControls(viewer);
+      orbitControl.enableRotate = true;
+      orbitControl.enableZoom = true;
+      orbitControl.enablePan = true;
+
+      // Apply initial stance
+      setTimeout(() => {
+        applyPosePreset('idle');
+      }, 350);
+    }
+
+    function loadCustomSkinFromInput() {
+      const val = (document.getElementById('ignInput').value || '').trim();
+      if (!val) return;
+      currentIGN = val;
+      initSkinViewer(currentIGN);
+    }
+
+    function toRad(deg) {
+      return (deg * Math.PI) / 180;
+    }
+
+    function toDeg(rad) {
+      return Math.round((rad * 180) / Math.PI);
+    }
+
+    function setSlider(part, deg) {
+      const slider = document.getElementById(`slider${part}`);
+      const valEl = document.getElementById(`val${part}`);
+      if (slider) slider.value = deg;
+      if (valEl) valEl.textContent = `${deg}°`;
+    }
+
+    function syncSlidersFromModel() {
+      const skin = getSkin();
+      if (!skin) return;
+      setSlider('RightArm', toDeg(skin.rightArm.rotation.x));
+      setSlider('LeftArm', toDeg(skin.leftArm.rotation.x));
+      setSlider('RightLeg', toDeg(skin.rightLeg.rotation.x));
+      setSlider('LeftLeg', toDeg(skin.leftLeg.rotation.x));
+      setSlider('Head', toDeg(skin.head.rotation.x));
+    }
+
+    function clearAllAnimations() {
+      if (!viewer) return;
+      viewer.animation = null;
+      const btnRun = document.getElementById('btnRun');
+      if (btnRun) btnRun.style.background = '';
+    }
+
+    function resetBones() {
+      const skin = getSkin();
+      if (!skin) return;
+      skin.head.rotation.set(0, 0, 0);
+      skin.leftArm.rotation.set(0, 0, 0);
+      skin.rightArm.rotation.set(0, 0, 0);
+      skin.leftLeg.rotation.set(0, 0, 0);
+      skin.rightLeg.rotation.set(0, 0, 0);
+      skin.body.rotation.set(0, 0, 0);
+
+      ['RightArm', 'LeftArm', 'RightLeg', 'LeftLeg', 'Head'].forEach(part => {
+        setSlider(part, 0);
+      });
+    }
+
+    function applyPosePreset(pose, clickedBtn) {
+      document.querySelectorAll('.pose-card-btn').forEach(b => {
+        if (b === clickedBtn || b.getAttribute('data-pose') === pose) {
+          b.classList.add('active');
+        } else {
+          b.classList.remove('active');
+        }
+      });
+
+      const skin = getSkin();
+      if (!skin) return;
+
+      clearAllAnimations();
+      resetBones();
+
+      switch(pose) {
+        case 'samurai':
+          skin.rightArm.rotation.x = toRad(-110);
+          skin.rightArm.rotation.y = toRad(-35);
+          skin.rightArm.rotation.z = toRad(45);
+          skin.leftArm.rotation.x = toRad(30);
+          skin.leftArm.rotation.z = toRad(-25);
+          skin.rightLeg.rotation.x = toRad(-30);
+          skin.leftLeg.rotation.x = toRad(25);
+          skin.head.rotation.y = toRad(15);
+          skin.head.rotation.x = toRad(10);
+          break;
+
+        case 'knight':
+          skin.leftArm.rotation.x = toRad(-85);
+          skin.leftArm.rotation.y = toRad(40);
+          skin.rightArm.rotation.x = toRad(-95);
+          skin.rightArm.rotation.y = toRad(-20);
+          skin.leftLeg.rotation.x = toRad(-20);
+          skin.rightLeg.rotation.x = toRad(20);
+          break;
+
+        case 'archer':
+          skin.leftArm.rotation.x = toRad(-85);
+          skin.leftArm.rotation.y = toRad(25);
+          skin.rightArm.rotation.x = toRad(-85);
+          skin.rightArm.rotation.y = toRad(-45);
+          skin.head.rotation.y = toRad(-25);
+          skin.head.rotation.x = toRad(-5);
+          break;
+
+        case 'ninja':
+          skin.body.rotation.x = toRad(25);
+          skin.head.rotation.x = toRad(-25);
+          skin.rightArm.rotation.x = toRad(45);
+          skin.rightArm.rotation.z = toRad(50);
+          skin.leftArm.rotation.x = toRad(45);
+          skin.leftArm.rotation.z = toRad(-50);
+          skin.rightLeg.rotation.x = toRad(-40);
+          skin.leftLeg.rotation.x = toRad(30);
+          break;
+
+        case 'elytra':
+          skin.body.rotation.x = toRad(75);
+          skin.head.rotation.x = toRad(-65);
+          skin.rightArm.rotation.x = toRad(15);
+          skin.rightArm.rotation.z = toRad(35);
+          skin.leftArm.rotation.x = toRad(15);
+          skin.leftArm.rotation.z = toRad(-35);
+          skin.rightLeg.rotation.x = toRad(10);
+          skin.leftLeg.rotation.x = toRad(10);
+          break;
+
+        case 'running':
+          viewer.animation = new skinview3d.RunningAnimation();
+          viewer.animation.speed = 1.0;
+          break;
+
+        case 'walking':
+          viewer.animation = new skinview3d.WalkingAnimation();
+          viewer.animation.speed = 0.8;
+          break;
+
+        case 'flying':
+          viewer.animation = new skinview3d.FlyingAnimation();
+          viewer.animation.speed = 0.8;
+          break;
+
+        case 'waving':
+          viewer.animation = new skinview3d.FunctionAnimation((time) => {
+            const s = getSkin();
+            if (!s) return;
+            s.rightArm.rotation.x = -Math.PI * 0.75;
+            s.rightArm.rotation.z = Math.sin(time * 6) * 0.35 + 0.35;
+            s.leftArm.rotation.x = 0.1;
+            s.head.rotation.y = Math.sin(time * 2) * 0.15;
+          });
+          break;
+
+        case 'sitting':
+          skin.rightLeg.rotation.x = toRad(-90);
+          skin.leftLeg.rotation.x = toRad(-90);
+          skin.rightArm.rotation.x = toRad(-25);
+          skin.leftArm.rotation.x = toRad(-25);
+          skin.head.rotation.x = toRad(-5);
+          break;
+
+        case 'mining':
+          skin.rightArm.rotation.x = toRad(-125);
+          skin.rightArm.rotation.y = toRad(-20);
+          skin.rightArm.rotation.z = toRad(15);
+          skin.leftArm.rotation.x = toRad(20);
+          skin.head.rotation.x = toRad(25);
+          skin.rightLeg.rotation.x = toRad(-20);
+          skin.leftLeg.rotation.x = toRad(15);
+          break;
+
+        case 'swimming':
+          skin.body.rotation.x = toRad(85);
+          skin.head.rotation.x = toRad(-65);
+          skin.rightArm.rotation.x = toRad(170);
+          skin.leftArm.rotation.x = toRad(170);
+          skin.rightLeg.rotation.x = toRad(10);
+          skin.leftLeg.rotation.x = toRad(10);
+          break;
+
+        case 'victory':
+          skin.rightArm.rotation.x = toRad(-160);
+          skin.rightArm.rotation.z = toRad(25);
+          skin.leftArm.rotation.x = toRad(-160);
+          skin.leftArm.rotation.z = toRad(-25);
+          skin.head.rotation.x = toRad(-20);
+          skin.rightLeg.rotation.x = toRad(-15);
+          skin.leftLeg.rotation.x = toRad(15);
+          break;
+
+        case 'trident':
+          skin.rightArm.rotation.x = toRad(-145);
+          skin.rightArm.rotation.y = toRad(-30);
+          skin.rightArm.rotation.z = toRad(20);
+          skin.leftArm.rotation.x = toRad(35);
+          skin.body.rotation.y = toRad(-20);
+          skin.head.rotation.y = toRad(20);
+          break;
+
+        case 'king':
+          skin.rightLeg.rotation.x = toRad(-85);
+          skin.leftLeg.rotation.x = toRad(-85);
+          skin.rightArm.rotation.x = toRad(-20);
+          skin.rightArm.rotation.z = toRad(35);
+          skin.leftArm.rotation.x = toRad(-20);
+          skin.leftArm.rotation.z = toRad(-35);
+          skin.head.rotation.x = toRad(-12);
+          break;
+
+        case 'zenith':
+          skin.rightArm.rotation.x = toRad(-135);
+          skin.rightArm.rotation.z = toRad(35);
+          skin.leftArm.rotation.x = toRad(25);
+          skin.leftArm.rotation.z = toRad(-20);
+          skin.head.rotation.y = toRad(-15);
+          skin.rightLeg.rotation.x = toRad(-25);
+          skin.leftLeg.rotation.x = toRad(25);
+          break;
+
+        case 'mace':
+          skin.rightArm.rotation.x = toRad(-170);
+          skin.leftArm.rotation.x = toRad(-170);
+          skin.head.rotation.x = toRad(20);
+          skin.body.rotation.x = toRad(15);
+          break;
+
+        case 'totem':
+          skin.leftArm.rotation.x = toRad(-80);
+          skin.leftArm.rotation.y = toRad(15);
+          skin.rightArm.rotation.x = toRad(-25);
+          skin.head.rotation.y = toRad(-10);
+          break;
+
+        case 'salute':
+          skin.rightArm.rotation.x = toRad(-140);
+          skin.rightArm.rotation.z = toRad(45);
+          skin.head.rotation.x = toRad(-5);
+          break;
+
+        default: // idle
+          skin.rightArm.rotation.x = toRad(-10);
+          skin.leftArm.rotation.x = toRad(10);
+          skin.rightLeg.rotation.x = toRad(5);
+          skin.leftLeg.rotation.x = toRad(-5);
+          break;
+      }
+
+      syncSlidersFromModel();
+    }
+
+    function updateManualBone(part, val) {
+      const skin = getSkin();
+      if (!skin) return;
+      clearAllAnimations();
+
+      const rad = toRad(parseFloat(val));
+      const cap = part.charAt(0).toUpperCase() + part.slice(1);
+      const valEl = document.getElementById(`val${cap}`);
+      if (valEl) valEl.textContent = `${val}°`;
+
+      if (part === 'rightArm') skin.rightArm.rotation.x = rad;
+      if (part === 'leftArm') skin.leftArm.rotation.x = rad;
+      if (part === 'rightLeg') skin.rightLeg.rotation.x = rad;
+      if (part === 'leftLeg') skin.leftLeg.rotation.x = rad;
+      if (part === 'head') skin.head.rotation.x = rad;
+    }
+
+    function setCameraAngle(angle, btnEl) {
+      document.querySelectorAll('.angle-btn').forEach(b => {
+        if (b === btnEl) b.classList.add('active');
+        else b.classList.remove('active');
+      });
+
+      if (!viewer) return;
+      const rad = toRad(angle);
+      const dist = 38;
+
+      viewer.camera.position.x = -dist * Math.sin(rad);
+      viewer.camera.position.z = dist * Math.cos(rad);
+      viewer.camera.position.y = 8;
+      viewer.camera.lookAt(0, 0, 0);
+    }
+
+    function toggleSpinAnimation() {
+      if (!viewer) return;
+      isSpinning = !isSpinning;
+      const btn = document.getElementById('btnSpin');
+      if (isSpinning) {
+        viewer.autoRotate = true;
+        viewer.autoRotateSpeed = 2.5;
+        if (btn) btn.style.background = 'var(--mei-primary)';
+      } else {
+        viewer.autoRotate = false;
+        if (btn) btn.style.background = '';
+      }
+    }
+
+    function toggleRunningAnimation() {
+      if (!viewer) return;
+      const btn = document.getElementById('btnRun');
+      if (viewer.animation instanceof skinview3d.RunningAnimation) {
+        clearAllAnimations();
+        applyPosePreset('idle');
+        if (btn) btn.style.background = '';
+      } else {
+        applyPosePreset('running');
+        if (btn) btn.style.background = 'var(--mei-magenta)';
+      }
+    }
+
+    function resetCameraView() {
+      if (!viewer) return;
+      viewer.camera.position.x = -15;
+      viewer.camera.position.y = 10;
+      viewer.camera.position.z = 35;
+      viewer.camera.lookAt(0, 0, 0);
+      const firstAngle = document.querySelector('.angle-btn');
+      if (firstAngle) setCameraAngle(0, firstAngle);
+    }
+
+    function exportSnapshot4K() {
+      if (!viewer || !viewer.canvas) return;
+      const dataUrl = viewer.canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.download = `mei_labs_3d_skin_${currentIGN}_${Date.now()}.png`;
+      link.href = dataUrl;
+      link.click();
+    }
+
+    function copyDiscordSkinCommand() {
+      const cmd = `!mcskin ${currentIGN}`;
+      navigator.clipboard.writeText(cmd).then(() => {
+        alert(`📋 Perintah '${cmd}' disalin ke clipboard! Jalankan di server Discord Mei Labs.`);
+      });
+    }
+  </script>
+</body>
+</html>

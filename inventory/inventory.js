@@ -168,7 +168,7 @@ function refreshSidebar(role) {
         { name: 'Toko Pangkat', icon: 'fa-crown', href: '/modules/store.html', pageKey: 'store', iconStyle: 'color:var(--accent-gold);' },
         { name: 'Forum', icon: 'fa-comments', href: '/modules/forum.html', pageKey: 'forum' },
         { name: 'Galeri Build', icon: 'fa-cubes-stacked', href: '/modules/showcase.html', pageKey: 'showcase', iconStyle: 'color:var(--accent-cyan);' },
-        { name: '3D Skin Studio', icon: 'fa-person-running', href: '/modules/skin-studio.html', pageKey: 'skin-studio', iconStyle: 'color:var(--accent-pink, #ec4899);' },
+        { name: '3D Skin Studio', icon: 'fa-person-running', href: '/bot/skin.html', pageKey: 'skin-studio', iconStyle: 'color:var(--accent-pink, #ec4899);' },
         { name: 'Live Map', icon: 'fa-map-location-dot', href: '/modules/map.html', pageKey: 'map', iconStyle: 'color:var(--accent-emerald-light);' },
         { name: 'Leaderboard', icon: 'fa-trophy', href: '/modules/leaderboard.html', pageKey: 'leaderboard' },
         { name: 'Inventaris', icon: 'fa-box', href: '/inventory/inventory.html', pageKey: 'inventory' },
