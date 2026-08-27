@@ -43,7 +43,7 @@
           <span class="online-dot" title="Bot Online"></span>
         </div>
         <span class="brand-name">
-          Mei Labs <span class="brand-badge bot-version-text">v2.54.5</span>
+          Mei Labs <span class="brand-badge bot-version-text">v2.54.24.1.1</span>
         </span>
       </a>
 
@@ -52,6 +52,7 @@
           <li><a href="#hero" class="nav-link active"><i class="fas fa-home"></i> Beranda</a></li>
           <li><a href="#chat-demo" class="nav-link"><i class="fas fa-comments"></i> AI Chat</a></li>
           <li><a href="#features" class="nav-link"><i class="fas fa-cubes"></i> Fitur</a></li>
+          <li><a href="../modules/skin-studio.html" class="nav-link" style="color:var(--mei-magenta); font-weight:800;"><i class="fas fa-person-running"></i> 3D Skin Studio</a></li>
           <li><a href="#setup-dashboard" class="nav-link"><i class="fas fa-sliders-h"></i> !setup</a></li>
           <li><a href="#switchboard" class="nav-link"><i class="fas fa-toggle-on"></i> Saklar (23)</a></li>
           <li><a href="#rank-generator" class="nav-link"><i class="fas fa-id-card"></i> Rank Card</a></li>
@@ -62,6 +63,10 @@
       </nav>
 
       <div class="nav-actions">
+        <button class="btn-mei-primary" onclick="openChangelogModal()">
+          <i class="fas fa-scroll"></i>
+          <span>Changelog</span>
+        </button>
         <button class="btn-mei-primary open-invite-modal">
           <i class="fab fa-discord"></i>
           <span>Undang Bot</span>
@@ -83,9 +88,9 @@
           
           <!-- Hero Content Left -->
           <div class="hero-text-col">
-            <div class="hero-pill-badge">
+            <div class="hero-pill-badge" onclick="openChangelogModal()" style="cursor:pointer;" title="Klik untuk lihat rilis changelog">
               <span class="pulse-indicator"></span>
-              <span class="hero-pill-text">Online 24/7 ⚡ (<span class="bot-version-text">v2.54.5</span> • Prefix: <span class="bot-prefix-text">!</span>)</span>
+              <span class="hero-pill-text">Online 24/7 ⚡ (<span class="bot-version-text">v2.54.24.1.1</span> • Prefix: <span class="bot-prefix-text">!</span> • 🏛️ 5 Core Pillars)</span>
             </div>
             
             <h1 class="hero-title">
@@ -94,7 +99,7 @@
             </h1>
 
             <p class="hero-subtitle">
-              Temui <strong>Mei</strong>, bot Discord all-in-one bertenaga <strong>Google Gemini AI</strong>. Dilengkapi sistem leveling interaktif, ekonomi RPG (Mancing, Berburu, Kebun, AI Dungeon), Lavalink musik HQ 320kbps, Master Dashboard <code>!setup</code> (14 Kategori), dan jembatan Realm Minecraft Hyrost.
+              Temui <strong>Mei</strong>, bot Discord all-in-one bertenaga <strong>Google Gemini AI</strong>. Dilengkapi sistem leveling interaktif, ekonomi RPG (Mancing, Berburu, Kebun, AI Dungeon), Lavalink musik HQ 320kbps, <strong>3D Minecraft Skin Studio &amp; 360° Viewport</strong>, Voice AI Companion, Master Dashboard <code>!setup</code> (14 Kategori), dan jembatan Realm Minecraft Hyrost.
             </p>
 
             <div class="hero-cta-group">
@@ -102,12 +107,14 @@
                 <i class="fab fa-discord"></i>
                 <span>Undang Mei ke Server</span>
               </button>
-              <a href="#chat-demo" class="btn-mei-glass">
-                <i class="fas fa-sparkles" style="color: var(--mei-magenta);"></i>
-                <span>Coba AI Chat Simulator</span>
+              <a href="../modules/skin-studio.html" class="btn-mei-glass" style="border-color:var(--mei-magenta); color:#fff;">
+                <i class="fas fa-person-running" style="color:var(--mei-magenta);"></i>
+                <span>Buka 3D Skin Studio</span>
               </a>
-              <a href="#commands" class="btn-mei-glass">
-                <i class="fas fa-code"></i>
+              <button class="btn-mei-glass" onclick="openChangelogModal()">
+                <i class="fas fa-scroll" style="color:var(--mei-cyan);"></i>
+                <span>Changelog v2.54.24</span>
+              </button>
                 <span>Lihat 197+ Command</span>
               </a>
             </div>
@@ -267,6 +274,12 @@
             </button>
             <button class="tab-btn" data-tab="minecraft">
               <i class="fas fa-cube"></i> <span>Minecraft Bridge</span>
+            </button>
+            <button class="tab-btn" data-tab="skinstudio" style="border-color:rgba(236,72,153,0.4);">
+              <i class="fas fa-person-running" style="color:var(--mei-magenta);"></i> <span>3D Skin Studio (80 Pose)</span>
+            </button>
+            <button class="tab-btn" data-tab="corepillars" style="border-color:rgba(0,229,255,0.4);">
+              <i class="fas fa-microchip" style="color:var(--mei-cyan);"></i> <span>5 Core Pillars (v2.54.24)</span>
             </button>
           </div>
         </div>
@@ -482,6 +495,86 @@
                   <div style="background:rgba(0,0,0,0.3); padding:12px; border-radius:8px;">
                     <div style="font-size:0.75rem; color:var(--text-muted);">Versi Game</div>
                     <div style="font-size:1.2rem; font-weight:800; color:#fff;">1.20.x - 1.21.x</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 6: 3D Skin Studio & 360° Viewport -->
+        <div class="feature-tab-content" id="tab-skinstudio">
+          <div class="tab-showcase-box">
+            <div class="tab-info-col">
+              <h3>🎮 3D Minecraft Skin Studio &amp; Pose Rigging</h3>
+              <p>
+                Studio karakter Minecraft 3D generasi terbaru! Terintegrasi langsung dengan perintah Discord <code>!mcskin &lt;user&gt; [sudut 360°]</code> dan Web 3D Studio 60 FPS bertenaga <code>skinview3d</code>.
+              </p>
+              <ul class="tab-feature-bullets">
+                <li><i class="fas fa-check-circle"></i> <strong>Katalog 80 Pose &amp; Emote:</strong> Samurai, Ksatria, Archer, Ninja, Elytra, Running, Mining, Zenith, dll.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Rotasi Kamera 360° Penuh:</strong> Sudut putar 0° hingga 315° dengan tombol putar presisi di Discord &amp; Web.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Bone Articulation Sliders:</strong> Kustomisasi sudut tekukan tangan, kaki, dan kepala pemain secara live.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Ekspor Gambar 4K:</strong> Unduh file skin PNG asli dan snapshot 3D resolusi tinggi transparan.</li>
+              </ul>
+              <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:14px;">
+                <a href="../modules/skin-studio.html" class="btn-mei-primary" style="background:linear-gradient(135deg, var(--mei-magenta), #c026d3);">
+                  <i class="fas fa-person-running"></i> <span>Buka 3D Web Studio</span>
+                </a>
+                <button class="btn-mei-primary" onclick="copyCommand('!mcskin Notch 45')">
+                  <i class="fab fa-discord"></i> <span>Salin !mcskin</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="tab-visual-col">
+              <div style="background:var(--bg-surface-2, #121827); border:1px solid rgba(236,72,153,0.4); border-radius:var(--radius-lg); padding:20px; text-align:center;">
+                <img src="https://mc-heads.net/player/Steve/380.png" alt="3D Minecraft Skin Studio" style="max-height:220px; object-fit:contain; filter:drop-shadow(0 10px 20px rgba(0,0,0,0.6)); margin-bottom:12px;">
+                <div style="display:flex; justify-content:center; gap:8px;">
+                  <span class="head-badge" style="background:rgba(236,72,153,0.2); color:var(--mei-magenta); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.75rem;">360° Orbit Viewport</span>
+                  <span class="head-badge" style="background:rgba(6,182,212,0.2); color:var(--mei-cyan); padding:4px 10px; border-radius:6px; font-weight:800; font-size:0.75rem;">80 Model Poses</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 7: 5 Next-Gen Core Pillars (v2.54.24.1.1) -->
+        <div class="feature-tab-content" id="tab-corepillars">
+          <div class="tab-showcase-box">
+            <div class="tab-info-col">
+              <h3>🏛️ 5 Next-Gen Core Pillars (v2.54.24.1.1)</h3>
+              <p>
+                Fondasi teknologi enterprise mutakhir yang menjaga kestabilan bot dengan latensi 0ms dan zero downtime.
+              </p>
+              <ul class="tab-feature-bullets">
+                <li><i class="fas fa-check-circle"></i> <strong>Micro-Kernel Hot-Swap Engine:</strong> Reload kode dan fitur baru tanpa restart bot (0ms downtime).</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Async Worker Thread Pool:</strong> Komputasi berat dialihkan ke thread terpisah agar interaksi Discord selalu instan.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Real-Time Voice AI Companion (<code>!voiceai</code>):</strong> Obrolan suara cerdas langsung di dalam Voice Channel.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>24/7 Live Radio Streams (<code>!radio</code>):</strong> Siaran Lofi, Anime OST, Nightcore, Synthwave, dan Jazz non-stop.</li>
+                <li><i class="fas fa-check-circle"></i> <strong>Enterprise Honeypot Security (<code>!honeypot</code>):</strong> Deteksi raid dan auto-ban akun spammer berbahaya.</li>
+              </ul>
+              <button class="btn-mei-primary" onclick="openChangelogModal()">
+                <i class="fas fa-scroll"></i> <span>Baca Detail Rilis v2.54.24</span>
+              </button>
+            </div>
+
+            <div class="tab-visual-col">
+              <div style="background:var(--bg-surface-2, #121827); border:1px solid rgba(0,229,255,0.4); border-radius:var(--radius-lg); padding:20px;">
+                <h5 style="color:#00E5FF; font-size:0.95rem; font-weight:800; margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                  <i class="fas fa-shield-halved"></i> Enterprise Runtime Status
+                </h5>
+                <div style="display:flex; flex-direction:column; gap:8px; font-size:0.8rem;">
+                  <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(0,0,0,0.3); border-radius:6px;">
+                    <span style="color:var(--text-muted);">Micro-Kernel:</span>
+                    <span style="color:#10b981; font-weight:700;">Hot-Swap Ready (0ms)</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(0,0,0,0.3); border-radius:6px;">
+                    <span style="color:var(--text-muted);">Worker Threads:</span>
+                    <span style="color:#10b981; font-weight:700;">Active Multi-Core</span>
+                  </div>
+                  <div style="display:flex; justify-content:space-between; padding:8px; background:rgba(0,0,0,0.3); border-radius:6px;">
+                    <span style="color:var(--text-muted);">Tiers Model:</span>
+                    <span style="color:#FFD700; font-weight:700;">Pure Community (4 Tiers)</span>
                   </div>
                 </div>
               </div>
@@ -863,18 +956,38 @@
     </div>
   </div>
 
+  <!-- Changelog & Release Notes Modal -->
+  <div class="invite-modal-overlay" id="changelogModalOverlay" onclick="if(event.target===this) closeChangelogModal()">
+    <div class="invite-modal-box" style="max-width: 680px; width: 92%;">
+      <div class="invite-modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <h3 style="display:flex; align-items:center; gap:8px; font-size:1.15rem; color:#fff; margin:0;">
+          <i class="fas fa-scroll" style="color:var(--mei-cyan);"></i> Catatan Rilis &amp; Changelog Resmi Mei Labs
+        </h3>
+        <button class="close-modal-btn" onclick="closeChangelogModal()" style="cursor:pointer; background:none; border:none; color:var(--text-muted); font-size:1.4rem;">&times;</button>
+      </div>
+      <div class="invite-modal-body" id="changelogModalBody" style="max-height: 480px; overflow-y: auto; padding-right: 6px;">
+        <!-- Dynamic or Synchronized Changelog items -->
+      </div>
+      <div class="invite-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.8rem; color:var(--text-muted);">Bot Engine Versi <strong class="bot-version-text" style="color:var(--mei-cyan);">v2.54.24.1.1</strong></span>
+        <button class="btn-mei-primary" onclick="closeChangelogModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Footer -->
   <footer style="background: var(--bg-surface-1, #0d121f); border-top: 1px solid var(--border-subtle); padding: 40px 0 30px; text-align: center; margin-top: 60px;">
     <div class="container">
       <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 12px;">
         <img src="assets/images/mei-avatar.jpg" alt="Logo" style="width: 32px; height: 32px; border-radius: 50%;" onerror="this.src='assets/images/mei-avatar.jpg'">
-        <span style="font-weight: 800; font-size: 1.1rem; color: #fff;">Mei Labs <span class="bot-version-text" style="font-size: 0.75rem; color: var(--mei-magenta); background: rgba(255,51,133,0.15); padding: 2px 8px; border-radius: 99px;">v2.54.5</span></span>
+        <span style="font-weight: 800; font-size: 1.1rem; color: #fff;">Mei Labs <span class="bot-version-text" style="font-size: 0.75rem; color: var(--mei-magenta); background: rgba(255,51,133,0.15); padding: 2px 8px; border-radius: 99px;">v2.54.24.1.1</span></span>
       </div>
       <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 600px; margin: 0 auto 16px;">
-        Asisten Discord Multifungsi &amp; AI Bot Komunitas Resmi Hyrost Realm Network. Ditenagai Node.js, Discord.js, Lavalink HQ Audio, dan Google Gemini AI.
+        Asisten Discord Multifungsi &amp; AI Bot Komunitas Resmi Hyrost Realm Network. Ditenagai Node.js, Discord.js, Lavalink HQ Audio, 3D Minecraft Skin Studio, dan Google Gemini AI.
       </p>
-      <div style="display: flex; justify-content: center; gap: 18px; font-size: 0.85rem;">
+      <div style="display: flex; justify-content: center; gap: 18px; font-size: 0.85rem; flex-wrap:wrap;">
         <a href="../index.html" style="color: var(--mei-cyan); text-decoration: none;"><i class="fas fa-globe"></i> Portal Hyrost</a>
+        <a href="../modules/skin-studio.html" style="color: var(--mei-magenta); text-decoration: none;"><i class="fas fa-person-running"></i> 3D Skin Studio</a>
         <a href="../verify-user.html" style="color: var(--text-dim); text-decoration: none;"><i class="fab fa-discord"></i> Discord Linked Roles</a>
         <a href="../terms.html" style="color: var(--text-dim); text-decoration: none;">Ketentuan Layanan</a>
         <a href="../privacy.html" style="color: var(--text-dim); text-decoration: none;">Privasi</a>
@@ -883,6 +996,6 @@
   </footer>
 
   <!-- Scripts -->
-  <script src="app.js?v=22"></script>
+  <script src="app.js?v=25"></script>
 </body>
 </html>

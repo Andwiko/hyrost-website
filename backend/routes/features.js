@@ -66,4 +66,23 @@ router.get('/plugin/scheduled-commands', requireBridgeKey, featuresController.ge
 router.post('/plugin/scheduled-commands/:id/done', requireBridgeKey, featuresController.markScheduledExecuted);
 router.post('/plugin/player-sessions', requireBridgeKey, featuresController.updateMcSessions);
 
+// Bot Version & Changelog Sync
+router.get('/bot/version', (req, res) => {
+    res.json({
+        success: true,
+        name: 'Mei Labs Bot',
+        version: '2.54.24.1.1',
+        tag: 'v2.54.24.1.1',
+        status: 'online',
+        uptime: process.uptime(),
+        pillars: [
+            'Micro-Kernel Hot-Swap Plugin Engine',
+            'Autonomous Self-Healing AI Diagnostic Daemon',
+            'Async Worker Thread Pool',
+            'Real-Time Conversational Voice AI Companion',
+            'Zero-Downtime State Persistence Mesh'
+        ]
+    });
+});
+
 module.exports = router;

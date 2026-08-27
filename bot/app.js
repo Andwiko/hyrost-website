@@ -59,6 +59,101 @@ function initMobileNav() {
 }
 
 /* -----------------------------------------------------------------------------
+ * 1. NAVBAR, VERSION SYNC & CHANGELOG MODAL
+ * -------------------------------------------------------------------------- */
+const CURRENT_BOT_VERSION = 'v2.54.24.1.1';
+
+const BOT_CHANGELOGS = [
+  {
+    version: '2.54.24.1.1',
+    title: '🏛️ 5 NEXT-GEN REVOLUTIONARY CORE PILLARS: MICRO-KERNEL, WORKER POOL & VOICE AI',
+    date: '27 Agustus 2026',
+    badge: '💎 Versi Aktif Saat Ini',
+    color: '#9B59B6',
+    highlights: [
+      '🧩 <strong>Micro-Kernel Hot-Swap Plugin Engine (<code>!kernel</code>):</strong> Isolasi modular sandbox dengan reload kode live tanpa restart bot (0ms downtime).',
+      '🧠 <strong>Autonomous Self-Healing AI Diagnostic Daemon:</strong> Deteksi anomali runtime dan pemulihan koneksi mandiri.',
+      '⚡ <strong>True 0ms Event Loop Lag — Async Worker Thread Pool:</strong> Multi-threading terpisah untuk komputasi berat agar respons interaksi Discord instan.',
+      '🎙️ <strong>Real-Time Conversational Voice AI Companion (<code>!voiceai</code>):</strong> Sintesis suara AI Text-to-Speech langsung di dalam Voice Channel.',
+      '🌐 <strong>Zero-Downtime State Persistence Mesh:</strong> Snapshot memori aktif memulihkan sesi pemutaran lagu 100% utuh saat restart.'
+    ]
+  },
+  {
+    version: '2.54.23.1.1',
+    title: '🚀 ENTERPRISE CORE UPGRADE: HONEYPOT, 24/7 RADIO, AI MOD & MC RCON',
+    date: '27 Agustus 2026',
+    badge: '🚀 Enterprise Upgrade',
+    color: '#00E5FF',
+    highlights: [
+      '🛡️ <strong>Enterprise Security & Honeypot Trap (<code>!honeypot</code>):</strong> Channel jebakan otomatis untuk auto-ban bot raid & spammer serta audit performa moderator.',
+      '📻 <strong>24/7 Live Internet Radio (<code>!radio</code>):</strong> Siaran radio live non-stop (Lofi Girl, Anime OST, Nightcore, Synthwave, Cafe Jazz, Acoustic).',
+      '🤖 <strong>AI Context Moderation (<code>!aimod</code>):</strong> Deteksi phising dan toxic chat cerdas dengan Natural Language Processing.',
+      '🏰 <strong>Minecraft RCON & Seasonal Leaderboard (<code>!mcwhitelist</code>, <code>!season</code>):</strong> Sinkronisasi whitelist server Minecraft via TCP RCON & klasemen musiman.'
+    ]
+  },
+  {
+    version: '2.54.21.1.1',
+    title: '📰 INTERACTIVE MOJANG NEWS CENTER & 360° FULL SKIN ORBIT ROTATION',
+    date: '25 Agustus 2026',
+    badge: '📰 News & 360 Studio',
+    color: '#2ECC71',
+    highlights: [
+      '📰 <strong>Interaktif Warta Minecraft Resmi (<code>!mcnews</code>):</strong> Integrasi feed resmi Mojang Studios dengan filter kategori (Java, Bedrock, Snapshots).',
+      '🧭 <strong>Rotasi 360° Studio Karakter (<code>!mcskin</code>):</strong> Kontrol sudut putar 360 derajat (0°-315°) dengan tombol putar presisi dan link 3D Web Studio.',
+      '🎭 <strong>Katalog 80 Pose & Emote 3D:</strong> Model pose beragam dari Samurai Katana, Knight Shield, Archer, hingga Zenith.'
+    ]
+  },
+  {
+    version: '2.54.19.1.1',
+    title: '✨ PURE COMMUNITY TIER ARCHITECTURE (FREE, SUPPORTER, PARTNER, FOUNDER)',
+    date: '23 Agustus 2026',
+    badge: '✨ Pure Community Tiers',
+    color: '#FF69B4',
+    highlights: [
+      '💎 <strong>Arsitektur 4 Tier Murni:</strong> Standarisasi 100% pada tier resmi: <code>Free</code> (Tier 0), <code>Mei\'s Supporter</code> (Tier 1), <code>Lab Partner</code> (Tier 2), dan <code>Mei Labs Founder</code> (Tier 3).',
+      '🧹 <strong>Pembersihan Tier Legacy:</strong> Penyelarasan skema database Mongoose dan lisensi <code>!genkey</code>.'
+    ]
+  }
+];
+
+function initAutoVersionSync() {
+  document.querySelectorAll('.bot-version-text').forEach(el => {
+    el.textContent = CURRENT_BOT_VERSION;
+  });
+}
+
+function openChangelogModal() {
+  const modal = document.getElementById('changelogModalOverlay');
+  const body = document.getElementById('changelogModalBody');
+  if (!modal || !body) return;
+
+  body.innerHTML = BOT_CHANGELOGS.map(ch => `
+    <div style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); border-left:4px solid ${ch.color}; border-radius:10px; padding:16px; margin-bottom:14px;">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; flex-wrap:wrap; gap:6px;">
+        <span style="font-weight:900; color:#fff; font-size:0.95rem;">v${ch.version}</span>
+        <div style="display:flex; gap:6px; align-items:center;">
+          <span style="background:${ch.color}22; color:${ch.color}; font-size:0.72rem; font-weight:800; padding:2px 8px; border-radius:99px; border:1px solid ${ch.color}44;">${ch.badge}</span>
+          <span style="font-size:0.75rem; color:var(--text-muted);">${ch.date}</span>
+        </div>
+      </div>
+      <h5 style="color:${ch.color}; font-size:0.85rem; font-weight:800; margin:0 0 10px;">${ch.title}</h5>
+      <ul style="margin:0; padding-left:18px; font-size:0.82rem; color:var(--text-secondary); line-height:1.6;">
+        ${ch.highlights.map(h => `<li style="margin-bottom:6px;">${h}</li>`).join('')}
+      </ul>
+    </div>
+  `).join('');
+
+  modal.classList.add('open');
+}
+
+function closeChangelogModal() {
+  const modal = document.getElementById('changelogModalOverlay');
+  if (modal) modal.classList.remove('open');
+}
+window.openChangelogModal = openChangelogModal;
+window.closeChangelogModal = closeChangelogModal;
+
+/* -----------------------------------------------------------------------------
  * 2. INTERACTIVE MEI VOICE LINES & GREETINGS
  * -------------------------------------------------------------------------- */
 const meiQuotes = [
