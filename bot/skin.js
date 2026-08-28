@@ -388,14 +388,26 @@ function initSkinViewer(ign) {
   viewer.camera.lookAt(0, 4, 0);
   viewer.fov = 50;
 
-  orbitControl = skinview3d.createOrbitControls(viewer);
-  orbitControl.enableRotate = true;
-  orbitControl.enableZoom = true;
-  orbitControl.enablePan = false; // keep character centered
-  orbitControl.minDistance = 15;
-  orbitControl.maxDistance = 75;
-  orbitControl.target.set(0, 4, 0);
-  orbitControl.update();
+  // Initialize controls safely supporting both SkinView3D v2 and v3
+  if (typeof skinview3d.createOrbitControls === 'function') {
+    orbitControl = skinview3d.createOrbitControls(viewer);
+  } else if (viewer && viewer.controls) {
+    orbitControl = viewer.controls;
+  }
+
+  if (orbitControl) {
+    orbitControl.enableRotate = true;
+    orbitControl.enableZoom = true;
+    orbitControl.enablePan = false; // keep character centered
+    orbitControl.minDistance = 15;
+    orbitControl.maxDistance = 75;
+    if (orbitControl.target && typeof orbitControl.target.set === 'function') {
+      orbitControl.target.set(0, 4, 0);
+    }
+    if (typeof orbitControl.update === 'function') {
+      orbitControl.update();
+    }
+  }
 
   // Listen for window resize & wrapper size changes
   window.addEventListener('resize', resizeSkinViewer);

@@ -43,9 +43,11 @@ Options -Indexes
     # Blokir akses ke folder sensitif
     RewriteRule ^(data|credentials|backend|database|\.git|\.github|\.npm)(/|$) - [F,L]
 
-    # Forward request /api/ ke Node.js Backend Port 3044
-    RewriteCond %{REQUEST_FILENAME} !-f
-    RewriteRule ^api/(.*)$ http://127.0.0.1:3044/api/$1 [P,L]
+    # Forward request /api/ ke Node.js Backend Port 3044 (jika mod_proxy aktif)
+    <IfModule mod_proxy.c>
+        RewriteCond %{REQUEST_FILENAME} !-f
+        RewriteRule ^api/(.*)$ http://127.0.0.1:3044/api/$1 [P,L]
+    </IfModule>
 
     # Clean URL routing untuk file HTML statis
     RewriteCond %{REQUEST_FILENAME} !-f
@@ -54,11 +56,44 @@ Options -Indexes
     RewriteRule ^(.*)$ $1.html [L]
 </IfModule>
 
-# 4. Security Headers
+# 4. Security & Smart Cache Headers
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
     Header unset X-Powered-By
+
+    # Selalu revalidasi file HTML agar perubahan navbar / UI langsung tampil tanpa Shift+F5
+    <FilesMatch "\.(html|htm)$">
+        Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
+        Header set Pragma "no-cache"
+        Header set Expires "0"
+    </FilesMatch>
+
+    # Cache file aset statis (CSS, JS, gambar, font)
+    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot)$">
+        Header set Cache-Control "public, max-age=31536000, stale-while-revalidate=86400"
+    </FilesMatch>
+</IfModule>
+
+# 5. Enable GZIP & Deflate Compression (Dramatically Boosts PageSpeed FCP & LCP)
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/plain
+    AddOutputFilterByType DEFLATE text/html
+    AddOutputFilterByType DEFLATE text/xml
+    AddOutputFilterByType DEFLATE text/css
+    AddOutputFilterByType DEFLATE text/javascript
+    AddOutputFilterByType DEFLATE application/xml
+    AddOutputFilterByType DEFLATE application/xhtml+xml
+    AddOutputFilterByType DEFLATE application/rss+xml
+    AddOutputFilterByType DEFLATE application/javascript
+    AddOutputFilterByType DEFLATE application/x-javascript
+    AddOutputFilterByType DEFLATE application/json
+    AddOutputFilterByType DEFLATE image/svg+xml
+    AddOutputFilterByType DEFLATE font/ttf
+    AddOutputFilterByType DEFLATE font/otf
+    AddOutputFilterByType DEFLATE font/woff
+    AddOutputFilterByType DEFLATE font/woff2
+    AddOutputFilterByType DEFLATE application/vnd.ms-fontobject
 </IfModule>

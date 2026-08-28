@@ -70,53 +70,80 @@
     return mobileHeader;
   }
 
+  let lastToggleTime = 0;
+
   function closeDrawer(sidebar, overlay) {
     sidebar.classList.remove('active', 'open', 'mobile-open');
-    overlay.classList.remove('active', 'open');
+    if (overlay) overlay.classList.remove('active', 'open');
     document.body.style.overflow = '';
   }
 
   function openDrawer(sidebar, overlay) {
     sidebar.classList.add('active', 'open', 'mobile-open');
-    overlay.classList.add('active');
+    if (overlay) overlay.classList.add('active', 'open');
     document.body.style.overflow = 'hidden';
   }
 
+  function toggleDrawer(sidebar, overlay, e) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+    const now = Date.now();
+    if (now - lastToggleTime < 180) return; // Debounce rapid multi-triggers
+    lastToggleTime = now;
+
+    const sb = sidebar || document.querySelector('.sidebar, .admin-sidebar');
+    const ov = overlay || document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
+    if (!sb) return;
+
+    const isOpen =
+      sb.classList.contains('active') ||
+      sb.classList.contains('open') ||
+      sb.classList.contains('mobile-open');
+    if (isOpen) closeDrawer(sb, ov);
+    else openDrawer(sb, ov);
+  }
+
+  function bindNavItems(sidebar, overlay) {
+    if (!sidebar) return;
+    const ov = overlay || document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
+    sidebar.querySelectorAll('.nav-item, .nav-link, a').forEach((item) => {
+      if (item.dataset.drawerCloseBound) return;
+      item.dataset.drawerCloseBound = '1';
+      item.addEventListener('click', () => {
+        if (window.innerWidth <= 992) closeDrawer(sidebar, ov);
+      });
+    });
+  }
+
   function bindDrawer(sidebar, overlay) {
-    const toggle = (e) => {
-      if (e) e.stopPropagation();
-      const isOpen =
-        sidebar.classList.contains('active') ||
-        sidebar.classList.contains('open') ||
-        sidebar.classList.contains('mobile-open');
-      if (isOpen) closeDrawer(sidebar, overlay);
-      else openDrawer(sidebar, overlay);
-    };
+    const toggle = (e) => toggleDrawer(sidebar, overlay, e);
 
     global.toggleMobileSidebar = toggle;
 
     document.querySelectorAll(
-      '#sidebarToggle, #adminSidebarToggle, .sidebar-toggle, .hamburger, [data-toggle="sidebar"]'
+      '#sidebarToggle, #adminSidebarToggle, .sidebar-toggle, .hamburger, [data-toggle="sidebar"], .mobile-header .btn-header-action'
     ).forEach((btn) => {
+      if (btn.classList.contains('mobile-logout-btn') || btn.title === 'Keluar') return;
       if (btn.dataset.sidebarBound) return;
       btn.dataset.sidebarBound = '1';
       btn.addEventListener('click', toggle);
     });
 
-    if (!overlay.dataset.sidebarBound) {
+    if (overlay && !overlay.dataset.sidebarBound) {
       overlay.dataset.sidebarBound = '1';
-      overlay.addEventListener('click', () => closeDrawer(sidebar, overlay));
+      overlay.addEventListener('click', (e) => {
+        if (e) e.stopPropagation();
+        closeDrawer(sidebar, overlay);
+      });
     }
 
-    sidebar.querySelectorAll('.nav-item, .nav-link, a').forEach((item) => {
-      item.addEventListener('click', () => {
-        if (window.innerWidth <= 992) closeDrawer(sidebar, overlay);
-      });
-    });
+    bindNavItems(sidebar, overlay);
 
-    window.addEventListener('resize', () => {
-      if (window.innerWidth > 992) closeDrawer(sidebar, overlay);
-    });
+    if (!global.__sidebarResizeBound) {
+      global.__sidebarResizeBound = true;
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 992) closeDrawer(sidebar, overlay);
+      });
+    }
   }
 
   function init(options = {}) {
@@ -135,6 +162,12 @@
     bindDrawer(sidebar, overlay);
   }
 
-  global.HyrostMobileLayout = { init };
-  document.addEventListener('DOMContentLoaded', () => init());
+  global.HyrostMobileLayout = { init, bindNavItems, open: openDrawer, close: closeDrawer, toggle: toggleDrawer };
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => init());
+  } else {
+    init();
+  }
 })(window);
+
+

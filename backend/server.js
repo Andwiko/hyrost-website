@@ -26,6 +26,7 @@ const localFileStore = require("./utils/localFileStore");
 const { startAutoBackup, runBackup } = require("./utils/autoBackup");
 
 const initDB = async () => {
+  const safeCols = (rows) => Array.isArray(rows) ? rows.map((c) => c.Field || c.field || '') : [];
   try {
     // --- 1. CORE TABLES ---
 
@@ -49,7 +50,7 @@ const initDB = async () => {
 
     // Migration: Ensure new columns exist on users table
     const [connCols] = await pool.execute("SHOW COLUMNS FROM users");
-    const connColNames = connCols.map((c) => c.Field);
+    const connColNames = safeCols(connCols);
     if (!connColNames.includes("discord_id"))
       await pool.execute("ALTER TABLE users ADD COLUMN discord_id VARCHAR(255) DEFAULT NULL");
     if (!connColNames.includes("discord_username"))
@@ -79,7 +80,7 @@ const initDB = async () => {
 
     // Migration: Ensure new columns exist
     const [roleCols] = await pool.execute("SHOW COLUMNS FROM roles");
-    const colNames = roleCols.map((c) => c.Field);
+    const colNames = safeCols(roleCols);
     if (!colNames.includes("badge_text"))
       await pool.execute("ALTER TABLE roles ADD COLUMN badge_text VARCHAR(50)");
     if (!colNames.includes("badge_color"))
@@ -526,7 +527,7 @@ const initDB = async () => {
         `);
 
     const [invCols] = await pool.execute("SHOW COLUMNS FROM user_inventory");
-    const invColNames = invCols.map((c) => c.Field);
+    const invColNames = safeCols(invCols);
     if (!invColNames.includes("description"))
       await pool.execute("ALTER TABLE user_inventory ADD COLUMN description TEXT");
     if (!invColNames.includes("rarity"))
@@ -553,7 +554,7 @@ const initDB = async () => {
       await pool.execute("ALTER TABLE user_inventory ADD COLUMN plugin_id VARCHAR(50) DEFAULT 'hyrost_bridge'");
 
     const [mpCols] = await pool.execute("SHOW COLUMNS FROM marketplace_items");
-    const mpColNames = mpCols.map((c) => c.Field);
+    const mpColNames = safeCols(mpCols);
     if (!mpColNames.includes("description"))
       await pool.execute("ALTER TABLE marketplace_items ADD COLUMN description TEXT");
     if (!mpColNames.includes("item_code"))
@@ -572,7 +573,7 @@ const initDB = async () => {
       await pool.execute("ALTER TABLE marketplace_items ADD COLUMN plugin_id VARCHAR(50) DEFAULT 'hyrost_bridge'");
 
     const [pdCols] = await pool.execute("SHOW COLUMNS FROM pending_deliveries");
-    const pdColNames = pdCols.map((c) => c.Field);
+    const pdColNames = safeCols(pdCols);
     if (!pdColNames.includes("inventory_id"))
       await pool.execute("ALTER TABLE pending_deliveries ADD COLUMN inventory_id INT NULL");
     if (!pdColNames.includes("plugin_id"))

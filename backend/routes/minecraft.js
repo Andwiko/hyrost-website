@@ -8,6 +8,7 @@ const { requireBridgeKey } = require('../middleware/bridgeAuth');
 
 // ─── PUBLIC / SERVER PLUGIN ROUTES ───────────────────────────────────────────
 router.get('/status',               minecraftController.getStatus);
+router.get('/news',                 minecraftController.getMojangNews);
 router.post('/status',              requireBridgeKey, minecraftController.updateStatus);
 router.post('/redeem',              requireBridgeKey, minecraftController.redeemCode);
 router.get('/init-db',              requireBridgeKey, minecraftController.initDB);

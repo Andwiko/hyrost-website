@@ -1,16 +1,21 @@
 const jwt = require('jsonwebtoken');
 const pool = require('../config/mysql');
+const { getJwtSecret } = require('../utils/security');
 
 // Middleware untuk verifikasi JWT
 exports.verifyToken = (req, res, next) => {
-  const token = req.header('Authorization')?.replace('Bearer ', '');
+  const token = req.header('Authorization')?.replace(/^Bearer\s+/i, '');
   if (!token) return res.status(401).json({ message: 'No token, authorization denied' });
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const secret = getJwtSecret();
+    const decoded = jwt.verify(token, secret);
     req.user = decoded;
     next();
   } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      return res.status(401).json({ message: 'Token telah kedaluwarsa', expired: true });
+    }
     res.status(401).json({ message: 'Token is not valid' });
   }
 };

@@ -44,18 +44,25 @@ async function resolveMidtransConfig() {
 
   // 2. Override from DB site_settings (Admin panel settings take highest precedence)
   try {
-    const [rows] = await getPool().execute(
+    const [rows] = await pool.execute(
       "SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('pay_midtrans_is_production', 'pay_midtrans_server_key', 'pay_midtrans_client_key', 'pay_midtrans_enabled')"
     );
     for (const r of rows) {
-      if (r.setting_key === 'pay_midtrans_is_production') isProd = (r.setting_value === 'true');
-      if (r.setting_key === 'pay_midtrans_server_key' && r.setting_value) serverKey = r.setting_value;
-      if (r.setting_key === 'pay_midtrans_client_key' && r.setting_value) clientKey = r.setting_value;
-      if (r.setting_key === 'pay_midtrans_enabled') enabled = (r.setting_value === 'true');
+      if (r.setting_key === 'pay_midtrans_is_production') isProd = (String(r.setting_value).trim() === 'true');
+      if (r.setting_key === 'pay_midtrans_server_key' && r.setting_value) serverKey = String(r.setting_value).trim();
+      if (r.setting_key === 'pay_midtrans_client_key' && r.setting_value) clientKey = String(r.setting_value).trim();
+      if (r.setting_key === 'pay_midtrans_enabled') enabled = (String(r.setting_value).trim() !== 'false');
     }
-  } catch (_) {}
+  } catch (dbErr) {
+    console.warn('[studio/resolveConfig] site_settings fetch error, using env fallback:', dbErr.message);
+  }
 
-  return { isProd, serverKey, clientKey, enabled };
+  return {
+    isProd: Boolean(isProd),
+    serverKey: String(serverKey || '').trim(),
+    clientKey: String(clientKey || '').trim(),
+    enabled: Boolean(enabled)
+  };
 }
 
 function createSnapClient(config) {
