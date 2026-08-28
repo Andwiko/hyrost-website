@@ -1,94 +1,51 @@
 /**
- * Hyrost — Realtime Minecraft Server Status Widget
- * Zero-Error, High-Performance, Public API & Local Fallback
+ * Hyrost — Realtime Minecraft server status widget (website ↔ MC server).
+ * Polls /api/server-status (plugin bridge + mcsrvstat) and updates all IP widgets.
  */
 (function (global) {
-  const MC_SERVER_IP = 'play.hyrost.net';
-  const DEFAULT_MAX_PLAYERS = 500;
-  const POLL_INTERVAL = 30000; // 30 seconds
+  const POLL_MS = 10000;
 
   const HyrostMCServer = {
-    data: {
-      serverIp: MC_SERVER_IP,
-      serverPort: 25565,
-      serverAddress: MC_SERVER_IP,
-      isOnline: true,
-      onlinePlayers: 128,
-      maxPlayers: DEFAULT_MAX_PLAYERS,
-    },
+    data: null,
     timer: null,
 
     init() {
-      // 1. Apply initial display immediately
-      this.apply(this.data);
-
-      // 2. Fetch live data after initial paint to maximize mobile FCP/LCP
-      if ('requestIdleCallback' in window) {
-        window.requestIdleCallback(() => this.fetchPublicStatus(), { timeout: 3000 });
-      } else {
-        setTimeout(() => this.fetchPublicStatus(), 2000);
-      }
-
-      // 3. Periodic update
-      if (!this.timer) {
-        this.timer = setInterval(() => this.fetchPublicStatus(), POLL_INTERVAL);
-      }
+      if (this.timer) return;
+      this.refresh();
+      this.timer = setInterval(() => this.refresh(), POLL_MS);
     },
 
     destroy() {
-      if (this.timer) {
-        clearInterval(this.timer);
-        this.timer = null;
-      }
+      if (this.timer) clearInterval(this.timer);
+      this.timer = null;
     },
 
-    async fetchPublicStatus() {
+    async refresh() {
       try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 6000);
-
-        const res = await fetch(`https://api.mcsrvstat.us/2/${MC_SERVER_IP}`, {
-          signal: controller.signal,
-          cache: 'default',
-        });
-        clearTimeout(timeoutId);
-
-        if (res.ok) {
-          const mcsrv = await res.json();
-          const isOnline = mcsrv.online !== false;
-          const players = (mcsrv.players && typeof mcsrv.players.online === 'number') ? mcsrv.players.online : 128;
-          const max = (mcsrv.players && typeof mcsrv.players.max === 'number') ? mcsrv.players.max : DEFAULT_MAX_PLAYERS;
-
-          this.data = {
-            serverIp: MC_SERVER_IP,
-            serverPort: mcsrv.port || 25565,
-            serverAddress: MC_SERVER_IP,
-            isOnline: isOnline,
-            onlinePlayers: players,
-            maxPlayers: max,
-          };
-          this.apply(this.data);
-        }
-      } catch (_) {
-        // Silently use current data on network hiccup - no console noise
-      }
+        const res = await fetch('/api/server-status', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        this.apply(data);
+      } catch (_) {}
     },
 
     apply(data) {
       if (!data) return;
+      this.data = data;
 
-      const ip = data.serverIp || MC_SERVER_IP;
+      const ip = data.serverIp || 'play.hyrost.net';
       const port = data.serverPort || '25565';
       const address = data.serverAddress || (port && port !== '25565' ? `${ip}:${port}` : ip);
       const online = !!data.isOnline;
-      const players = data.onlinePlayers ?? 128;
-      const max = data.maxPlayers || DEFAULT_MAX_PLAYERS;
+      const players = data.onlinePlayers ?? 0;
+      const max = data.maxPlayers || 500;
+      const source = data.statusSource || 'api';
 
-      // Update all IP text elements
+      // All IP text nodes across the site
       document.querySelectorAll(
         '.server-ip, .server-pill-ip, #ipText, #sidebarServerIp, #serverIpDisplay, #realmServerIp, #mcServerWidgetIp, [data-mc-server-ip]'
       ).forEach((el) => {
-        el.textContent = el.dataset?.mcShowPort === 'true' ? address : ip;
+        el.textContent = el.dataset.mcShowPort === 'true' ? address : ip;
       });
 
       document.querySelectorAll('[data-mc-server-address]').forEach((el) => {
@@ -103,7 +60,7 @@
       document.querySelectorAll(
         '#sidebarOnlinePlayers, #onlinePlayers, #mcServerWidgetPlayers, [data-mc-player-count]'
       ).forEach((el) => {
-        if (el.dataset?.format === 'full') {
+        if (el.dataset.format === 'full') {
           el.textContent = `${players} / ${max}`;
         } else {
           el.textContent = String(players);
@@ -115,7 +72,7 @@
       });
 
       // Status dots
-      document.querySelectorAll('.status-dot, .mc-sync-dot, .preview-status .badge-dot').forEach((dot) => {
+      document.querySelectorAll('.status-dot, .mc-sync-dot').forEach((dot) => {
         dot.classList.toggle('online', online);
         dot.style.background = online ? '#10b981' : '#ef4444';
         dot.title = online ? 'Server online' : 'Server offline';
@@ -141,31 +98,75 @@
       if (addrEl) addrEl.textContent = address;
 
       const updatedEl = document.getElementById('mcServerWidgetUpdated');
-      if (updatedEl) {
-        const d = new Date();
-        updatedEl.textContent = d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      if (updatedEl && data.lastUpdated) {
+        const t = new Date(data.lastUpdated);
+        const srcLabel = source === 'plugin' ? 'Plugin' : source === 'mcsrvstat' ? 'Query' : 'API';
+        updatedEl.textContent = `Diperbarui ${t.toLocaleTimeString('id-ID')} · ${srcLabel}`;
       }
+
+      const widget = document.getElementById('mcServerWidget');
+      if (widget) {
+        widget.classList.toggle('mc-server-online', online);
+        widget.classList.toggle('mc-server-offline', !online);
+      }
+
+      // Store for copy helpers
+      global.__hyrostServerIp = ip;
+      global.__hyrostServerAddress = address;
     },
 
     copyIp() {
-      const ip = this.data?.serverAddress || MC_SERVER_IP;
+      const text = this.data?.serverAddress || global.__hyrostServerAddress
+        || (() => {
+          const ip = this.data?.serverIp || global.__hyrostServerIp || 'play.hyrost.net';
+          const port = this.data?.serverPort || '25565';
+          return port && port !== '25565' ? `${ip}:${port}` : ip;
+        })();
+
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(ip).then(() => {
-          if (typeof showToast === 'function') {
-            showToast(`IP Server (${ip}) berhasil disalin!`);
-          } else {
-            alert(`IP Server (${ip}) disalin ke clipboard!`);
-          }
-        }).catch(() => {});
+        navigator.clipboard.writeText(text).then(() => {
+          HyrostMCServer.showCopyToast(`IP ${text} disalin!`);
+        }).catch(() => {
+          HyrostMCServer.fallbackCopy(text);
+        });
+      } else {
+        this.fallbackCopy(text);
       }
+    },
+
+    fallbackCopy(text) {
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      document.body.appendChild(ta);
+      ta.select();
+      try {
+        document.execCommand('copy');
+        this.showCopyToast(`IP ${text} disalin!`);
+      } catch (_) {
+        alert('IP: ' + text);
+      }
+      document.body.removeChild(ta);
+    },
+
+    showCopyToast(msg) {
+      if (typeof toast === 'function') {
+        toast(msg, 'success');
+        return;
+      }
+      const existing = document.getElementById('mcCopyToast');
+      if (existing) existing.remove();
+      const el = document.createElement('div');
+      el.id = 'mcCopyToast';
+      el.textContent = msg;
+      el.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#10b981;color:#fff;padding:10px 18px;border-radius:10px;font-weight:700;z-index:99999;box-shadow:0 8px 24px rgba(0,0,0,0.4);';
+      document.body.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
     },
   };
 
   global.HyrostMCServer = HyrostMCServer;
+  global.copyIP = () => HyrostMCServer.copyIp();
+  global.copyServerIP = () => HyrostMCServer.copyIp();
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => HyrostMCServer.init());
-  } else {
-    HyrostMCServer.init();
-  }
-})(typeof window !== 'undefined' ? window : this);
+  document.addEventListener('DOMContentLoaded', () => HyrostMCServer.init());
+})(window);

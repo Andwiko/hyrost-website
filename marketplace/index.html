@@ -3,30 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost — Marketplace Realm</title>
+    <title>Hyrost - Marketplace Shop</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css?v=50">
-    <link rel="stylesheet" href="shop_dashboard.css?v=50">
+    <link rel="stylesheet" href="../dashboard.css?v=3">
+    <link rel="stylesheet" href="shop_dashboard.css?v=3">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body class="page-marketplace">
     <div class="dashboard-container">
-        <!-- Sidebar Overlay for Mobile -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
-
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar">
             <div class="sidebar-header">
                 <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <div class="brand-text">
-                    <h2>Hyrost</h2>
-                    <span>Member Realm</span>
-                </div>
+                <h2>Hyrost</h2>
             </div>
             
             <div class="nav-section-label">Navigasi Utama</div>
@@ -46,18 +40,6 @@
                 <a href="../modules/forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
                     <span>Forum</span>
-                </a>
-                <a href="../modules/showcase.html" class="nav-item">
-                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan);"></i>
-                    <span>Galeri Build</span>
-                </a>
-                <a href="../bot/skin.html" class="nav-item">
-                    <i class="fas fa-person-running" style="color:var(--accent-pink, #ec4899);"></i>
-                    <span>3D Skin Studio</span>
-                </a>
-                <a href="../modules/map.html" class="nav-item">
-                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
-                    <span>Live Map</span>
                 </a>
                 <a href="../modules/leaderboard.html" class="nav-item">
                     <i class="fas fa-trophy"></i>
@@ -87,75 +69,63 @@
                     <i class="fas fa-headset"></i>
                     <span>Pusat Bantuan</span>
                 </a>
-                <a href="../verify-user.html" class="nav-item">
-                    <i class="fab fa-discord" style="color:#5865F2;"></i>
-                    <span>Verifikasi Discord</span>
-                </a>
                 <div class="nav-divider"></div>
-                <div class="nav-section-label nav-section-admin">Admin Panel</div>
+                <div class="nav-section-label nav-section-admin" style="margin-top:12px;">Admin Panel</div>
                 <a href="../modules/admin.html" class="nav-item nav-admin">
                     <i class="fas fa-user-shield"></i>
                     <span>Admin Panel</span>
                 </a>
             </nav>
 
-            <div class="sidebar-bottom">
-                <div class="sidebar-server-pill">
-                    <div class="server-pill-row">
-                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
-                        <span class="status-dot online"></span>
-                    </div>
-                    <div class="server-pill-ip">play.hyrost.net</div>
+            <div class="server-status-widget">
+                <div class="widget-header">
+                    <span>Status Server</span>
+                    <span class="status-dot"></span>
                 </div>
+                <div class="server-ip">play.hyrost.net</div>
+                <div class="player-count"><i class="fas fa-users"></i> Online</div>
+            </div>
+            <div style="display:flex; justify-content:center; gap:8px; font-size:0.75rem; margin-top:12px; color:rgba(255,255,255,0.4);">
+                <a href="../terms.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Terms</a>
+                <span>•</span>
+                <a href="../privacy.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Privacy</a>
+                <span>•</span>
+                <a href="../index.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
             </div>
         </aside>
-
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu" style="padding:8px 12px;">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="mobile-logo">
-                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <h2>Hyrost</h2>
-            </div>
-        </div>
 
         <!-- Main Content -->
         <main class="main-content">
             <div class="top-user-banner">
                 <div>
-                    <h1 style="font-size: 1.5rem; font-weight: 800; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-                        <i class="fas fa-store" style="color:var(--accent-cyan);"></i>
-                        <span>Marketplace &amp; Toko Komunitas</span>
-                    </h1>
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">Pusat perdagangan nametag kosmetik, badge profil, dan item antar pemain.</p>
+                    <h1 style="font-size: 1.8rem; font-weight: 800;">🛒 Marketplace Shop</h1>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Pusat perdagangan kosmetik, badge, dan lelang eksklusif.</p>
                 </div>
-                <button class="btn-header-action btn-primary-action" onclick="window.location.href='upload.html'">
+                <button class="btn-header-action" style="background: var(--accent-indigo); color:#fff; font-weight:700;" onclick="window.location.href='upload.html'">
                     <i class="fas fa-plus"></i>
                     <span>Jual Item</span>
                 </button>
             </div>
 
-            <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
-                <a href="shop.html" class="btn-header-action">
-                    <i class="fas fa-gem" style="color:var(--accent-gold);"></i> Toko Kosmetik Admin
+            <div style="display:flex; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
+                <a href="shop.html" class="btn-header-action" style="background:rgba(99,102,241,0.2); color:#a5b4fc; text-decoration:none;">
+                    <i class="fas fa-gem"></i> Toko Kosmetik Admin
                 </a>
-                <a href="upload.html" class="btn-header-action">
-                    <i class="fas fa-upload" style="color:var(--accent-emerald-light);"></i> Jual Item Saya
+                <a href="upload.html" class="btn-header-action" style="background:rgba(16,185,129,0.2); color:#6ee7b7; text-decoration:none;">
+                    <i class="fas fa-upload"></i> Jual Item Saya
                 </a>
             </div>
 
             <!-- User Listings Grid -->
-            <div class="module-grid" id="marketplaceListingsGrid" style="grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));">
-                <div style="grid-column:1/-1; text-align:center; padding:40px; color:var(--text-muted);">
-                    <i class="fas fa-spinner fa-spin" style="margin-right:8px;"></i> Memuat listing item...
+            <div class="module-grid" id="marketplaceListingsGrid" style="grid-template-columns: repeat(3, 1fr);">
+                <div style="grid-column:1/-1;text-align:center;padding:40px;color:#9ca3af;">
+                    <i class="fas fa-spinner fa-spin"></i> Memuat listing...
                 </div>
             </div>
         </main>
     </div>
 
-    <script src="../assets/js/mobileLayout.js"></script>
-    <script src="market.js?v=21"></script>
+    <script src="../inventory/inventory.js"></script>
+    <script src="market.js"></script>
 </body>
 </html>

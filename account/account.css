@@ -1,15 +1,15 @@
-/* ========== ACCOUNT PAGE OBSIDIAN THEME ========== */
+/* ========== ACCOUNT PAGE MODERN GLASSMORPHIC STYLES ========== */
 
 .account-banner {
-  background: var(--bg-surface-1);
-  border: 1px solid var(--border-medium);
-  border-radius: var(--radius-lg);
-  padding: 24px 28px;
+  background: linear-gradient(135deg, rgba(15, 20, 31, 0.95) 0%, rgba(30, 27, 75, 0.75) 100%);
+  border: 1px solid var(--border-color, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-lg, 20px);
+  padding: 2rem 2.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 28px;
-  box-shadow: var(--shadow-md);
+  margin-bottom: 2rem;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
   position: relative;
   overflow: hidden;
 }
@@ -20,30 +20,29 @@
   top: 0;
   left: 0;
   width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, var(--accent-indigo), var(--accent-cyan), transparent 80%);
+  height: 4px;
+  background: linear-gradient(90deg, #6366f1, #06b6d4, #8b5cf6);
 }
 
 .banner-user-info {
   display: flex;
   align-items: center;
-  gap: 18px;
+  gap: 1.5rem;
   z-index: 1;
 }
 
 .banner-avatar-wrapper {
   position: relative;
-  width: 76px;
-  height: 76px;
-  flex-shrink: 0;
+  width: 90px;
+  height: 90px;
 }
 
 .banner-avatar-wrapper img {
   width: 100%;
   height: 100%;
   border-radius: 50%;
-  border: 2px solid var(--border-medium);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+  border: 3px solid #6366f1;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
   object-fit: cover;
 }
 
@@ -51,23 +50,22 @@
   position: absolute;
   bottom: 0;
   right: 0;
-  background: var(--accent-indigo);
+  background: #6366f1;
   color: #ffffff;
-  border: 2px solid var(--bg-surface-1);
-  width: 28px;
-  height: 28px;
+  border: 2px solid #0f141f;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.75rem;
-  transition: var(--transition);
+  transition: all 0.3s ease;
 }
 
 .change-avatar-btn-mini:hover {
-  transform: scale(1.1);
-  background: var(--accent-cyan);
+  transform: scale(1.15);
+  background: #06b6d4;
 }
 
 .banner-text h2 {
@@ -124,30 +122,29 @@
 }
 
 .card {
-  background: var(--bg-surface-1);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-lg);
+  background: rgba(18, 24, 38, 0.7);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 20px;
   padding: 24px;
   margin-bottom: 24px;
-  box-shadow: var(--shadow-sm);
 }
 
 .card h3 {
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 800;
   color: #ffffff;
   margin-bottom: 18px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  letter-spacing: -0.2px;
 }
 
 /* Info Rows */
 .info-list {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 14px;
 }
 
 .info-row {
@@ -155,77 +152,78 @@
   justify-content: space-between;
   align-items: center;
   padding: 12px 16px;
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
 }
 
 .info-row .label {
-  color: var(--text-muted);
-  font-size: 0.84rem;
+  color: #9ca3af;
+  font-size: 0.88rem;
   font-weight: 600;
 }
 
 .info-row .value {
   color: #ffffff;
-  font-size: 0.92rem;
+  font-size: 0.95rem;
   font-weight: 700;
 }
 
-/* Form Controls */
+/* Form Controls - Easy to Click */
 .form-group {
-  margin-bottom: 18px;
+  margin-bottom: 20px;
 }
 
 .form-group label {
   display: block;
-  font-size: 0.84rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
+  color: #d1d5db;
+  margin-bottom: 8px;
 }
 
 .form-control {
   width: 100%;
-  padding: 11px 14px;
-  background: var(--bg-surface-2);
-  border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
   color: #ffffff;
   font-family: inherit;
-  font-size: 0.88rem;
-  transition: var(--transition);
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
 }
 
 .form-control:focus {
   outline: none;
-  border-color: var(--accent-indigo);
-  background: var(--bg-surface-3);
+  border-color: #6366f1;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.35);
+  background: rgba(0, 0, 0, 0.6);
 }
 
-/* Action Buttons */
+/* Big Easy-To-Click Buttons */
 .btn-save-primary, .btn-save {
   width: 100%;
-  padding: 12px 18px;
-  background: linear-gradient(135deg, var(--accent-indigo) 0%, var(--accent-indigo-dark) 100%);
+  padding: 16px;
+  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
   color: #ffffff;
-  border: 1px solid rgba(255,255,255,0.15);
-  border-radius: var(--radius-sm);
+  border: none;
+  border-radius: 9999px;
   font-weight: 800;
-  font-size: 0.9rem;
+  font-size: 1rem;
   cursor: pointer;
-  transition: var(--transition);
-  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 10px;
   margin-top: 10px;
 }
 
 .btn-save-primary:hover, .btn-save:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 26px rgba(99, 102, 241, 0.55);
 }
 
 .btn-admin-panel {
@@ -1111,67 +1109,5 @@ input[type="checkbox"]:checked + .switch-toggle::after {
   margin-top: 10px;
   font-size: 0.8rem;
   color: #6b7280;
-}
-
-/* ==========================================================================
-   ACCOUNT PAGE MOBILE RESPONSIVENESS
-   ========================================================================== */
-@media (max-width: 768px) {
-  .account-banner {
-    flex-direction: column !important;
-    align-items: flex-start !important;
-    padding: 18px 16px !important;
-    gap: 16px !important;
-    width: 100% !important;
-  }
-
-  .banner-user-info {
-    flex-direction: row !important;
-    gap: 14px !important;
-  }
-
-  .banner-text h2 {
-    font-size: 1.25rem !important;
-  }
-
-  .account-grid,
-  .security-grid,
-  .profile-edit-grid {
-    grid-template-columns: 1fr !important;
-    gap: 16px !important;
-  }
-
-  .search-input-group {
-    flex-direction: column !important;
-  }
-
-  .search-input-group button {
-    width: 100% !important;
-  }
-
-  .found-head-card {
-    flex-direction: column !important;
-    text-align: center !important;
-    gap: 10px !important;
-  }
-
-  .avatar-head-grid {
-    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr)) !important;
-    gap: 8px !important;
-  }
-
-  .avatar-nav-bar {
-    flex-wrap: wrap !important;
-    gap: 6px !important;
-  }
-
-  .avatar-nav-btn {
-    font-size: 0.76rem !important;
-    padding: 6px 10px !important;
-  }
-
-  .upload-dropzone {
-    padding: 20px 14px !important;
-  }
 }
 

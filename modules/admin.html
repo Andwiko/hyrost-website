@@ -479,14 +479,89 @@
       <!-- ═══════ TAB: SETTINGS ═══════ -->
       <div class="tab-panel" id="tab-settings">
 
-        <!-- 💳 PAYMENT GATEWAY CONFIGURATION CARD -->
-        <div class="card" style="margin-bottom:24px;">
-          <div class="card-header">
-            <h3><i class="fas fa-credit-card" style="color:#10b981;"></i> Pengaturan Gateway & Metode Pembayaran Toko</h3>
-            <button class="btn btn-sm btn-primary" onclick="savePaymentSettings()"><i class="fas fa-save"></i> Simpan Pengaturan Payment</button>
+        <!-- 💳 MIDTRANS PAYMENT GATEWAY CONFIGURATION CARD -->
+        <div class="card" style="margin-bottom:24px; border: 1px solid rgba(99, 102, 241, 0.3); background: linear-gradient(180deg, rgba(30, 27, 75, 0.4) 0%, rgba(15, 23, 42, 0.6) 100%);">
+          <div class="card-header" style="flex-wrap: wrap; gap: 10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:36px; height:36px; border-radius:8px; background:rgba(99,102,241,0.2); display:flex; align-items:center; justify-content:center; color:#818cf8; font-size:1.1rem;">
+                <i class="fas fa-shield-alt"></i>
+              </div>
+              <div>
+                <h3 style="margin:0; font-size:1.05rem; color:#fff;"><i class="fas fa-bolt" style="color:#818cf8;"></i> Gateway Pembayaran Midtrans Snap</h3>
+                <div style="font-size:0.75rem; color:#94a3b8;">Otomatisasi pembayaran QRIS, E-Wallet, Virtual Account & Kartu Kredit</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button class="btn btn-sm" style="background:rgba(99,102,241,0.2); border:1px solid #6366f1; color:#a5b4fc;" onclick="testMidtransConnection()"><i class="fas fa-vial"></i> Test Koneksi Midtrans</button>
+              <button class="btn btn-sm btn-primary" onclick="savePaymentSettings()"><i class="fas fa-save"></i> Simpan Semua Payment</button>
+            </div>
           </div>
           <div class="card-body">
-            <h4 style="color:#fff; font-size:0.9rem; margin-bottom:12px;"><i class="fas fa-toggle-on"></i> Sakelar Metode Pembayaran Aktif:</h4>
+            <!-- Midtrans Status & Switch Banner -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px; margin-bottom:20px; background:rgba(0,0,0,0.35); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+              <label class="switch-row" style="margin:0;">
+                <div>
+                  <div style="font-weight:600; color:#fff; font-size:0.88rem;"><i class="fas fa-power-off" style="color:#10b981;"></i> Aktifkan Gateway Midtrans</div>
+                  <div style="font-size:0.72rem; color:#94a3b8;">Nyalakan checkout Snap otomatis di Studio & Toko</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="payMidtransEnabled" checked><span class="slider"></span></label>
+              </label>
+              <label class="switch-row" style="margin:0;">
+                <div>
+                  <div style="font-weight:600; color:#fff; font-size:0.88rem;"><i class="fas fa-globe" style="color:#06b6d4;"></i> Mode Production (Live)</div>
+                  <div style="font-size:0.72rem; color:#94a3b8;" id="midtransModeLabel">OFF = Sandbox (Testing), ON = Production (Live)</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="payMidtransIsProduction" onchange="updateMidtransModeBadge()"><span class="slider"></span></label>
+              </label>
+            </div>
+
+            <!-- Midtrans API Keys Grid -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px; margin-bottom:20px;">
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600;"><i class="fas fa-key" style="color:#f59e0b;"></i> Midtrans Server Key (Rahasia)</label>
+                  <span id="btnToggleServerKey" style="font-size:0.75rem; color:#818cf8; cursor:pointer;" onclick="toggleKeyVisibility('payMidtransServerKey')"><i class="fas fa-eye"></i> Tampilkan</span>
+                </div>
+                <input type="password" id="payMidtransServerKey" placeholder="SB-Mid-server-xxxxxxxxxxxx" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">Dapatkan di Midtrans Dashboard &rarr; Settings &rarr; Access Keys</div>
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-code" style="color:#06b6d4;"></i> Midtrans Client Key (Public)</label>
+                <input type="text" id="payMidtransClientKey" placeholder="SB-Mid-client-xxxxxxxxxxxx" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">Client key untuk memuat Midtrans Snap popup di frontend browser</div>
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-id-badge" style="color:#ec4899;"></i> Merchant ID (Opsional)</label>
+                <input type="text" id="payMidtransMerchantId" placeholder="G123456789" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">ID Merchant akun Midtrans Anda</div>
+              </div>
+            </div>
+
+            <!-- Test Connection Result Notification Area -->
+            <div id="midtransTestResult" style="display:none; margin-bottom:20px; padding:12px 16px; border-radius:8px; font-size:0.85rem;"></div>
+
+            <!-- Webhook Notification URLs Box -->
+            <div style="background:rgba(15, 23, 42, 0.8); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px 16px; margin-bottom:22px;">
+              <div style="font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:8px;"><i class="fas fa-link" style="color:#10b981;"></i> URL Notifikasi Webhook Midtrans:</div>
+              <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:10px;">Salin URL berikut dan tempel ke <strong>Midtrans Dashboard &rarr; Settings &rarr; Configuration &rarr; Payment Notification URL</strong> agar transaksi otomatis terkonfirmasi:</div>
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:10px;">
+                <div style="display:flex; align-items:center; background:#020617; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:6px 10px;">
+                  <span style="font-size:0.72rem; color:#64748b; margin-right:8px; white-space:nowrap;">Studio VIP:</span>
+                  <span id="webhookStudioUrl" style="font-family:monospace; font-size:0.75rem; color:#38bdf8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">https://hyrost.net/api/studio/payment-webhook</span>
+                  <button type="button" class="btn btn-sm" style="padding:2px 8px; font-size:0.7rem; background:rgba(56,189,248,0.15); color:#38bdf8; border:none; margin-left:6px;" onclick="copyWebhookUrl('webhookStudioUrl')"><i class="fas fa-copy"></i> Salin</button>
+                </div>
+                <div style="display:flex; align-items:center; background:#020617; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:6px 10px;">
+                  <span style="font-size:0.72rem; color:#64748b; margin-right:8px; white-space:nowrap;">Store Rank:</span>
+                  <span id="webhookStoreUrl" style="font-family:monospace; font-size:0.75rem; color:#38bdf8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">https://hyrost.net/api/features/payments/midtrans-webhook</span>
+                  <button type="button" class="btn btn-sm" style="padding:2px 8px; font-size:0.7rem; background:rgba(56,189,248,0.15); color:#38bdf8; border:none; margin-left:6px;" onclick="copyWebhookUrl('webhookStoreUrl')"><i class="fas fa-copy"></i> Salin</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Manual Payment & Account Details -->
+            <h4 style="color:#fff; font-size:0.9rem; margin-bottom:12px; border-top:1px solid rgba(255,255,255,0.1); padding-top:16px;"><i class="fas fa-toggle-on"></i> Sakelar Metode Pembayaran Toko Manual & Tambahan:</h4>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:12px; margin-bottom:20px; background:rgba(0,0,0,0.3); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
               <label class="switch-row" style="margin:0;">
                 <span><i class="fas fa-qrcode" style="color:#10b981;"></i> QRIS Instant</span>
@@ -514,7 +589,7 @@
               </label>
             </div>
 
-            <h4 style="color:#fff; font-size:0.9rem; margin-bottom:12px;"><i class="fas fa-university"></i> Detail Rekening Merchant & QRIS:</h4>
+            <h4 style="color:#fff; font-size:0.9rem; margin-bottom:12px;"><i class="fas fa-university"></i> Detail Rekening Merchant & Alternatif Saweria:</h4>
             <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap:14px;">
               <div>
                 <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Nama Merchant / Pemilik Rekening</label>
@@ -531,6 +606,10 @@
               <div>
                 <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">Pajak / Biaya Admin Transaksi (%)</label>
                 <input type="number" id="payCfgTaxRate" value="0" min="0" style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
+              </div>
+              <div>
+                <label style="color:#aaa; font-size:0.8rem; display:block; margin-bottom:4px;">URL Alternatif Saweria / Donasi</label>
+                <input type="text" id="payCfgSaweriaUrl" value="https://saweria.co/meilabs" placeholder="https://saweria.co/..." style="width:100%; padding:10px; background:#1e1e1e; border:1px solid #333; color:#fff; border-radius:8px;" />
               </div>
             </div>
           </div>

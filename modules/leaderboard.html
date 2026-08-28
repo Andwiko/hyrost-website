@@ -3,30 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost — Leaderboard Pemain</title>
+    <title>Hyrost - Leaderboard Pemain</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css?v=50">
-    <link rel="stylesheet" href="leaderboard.css?v=50">
+    <link rel="stylesheet" href="../dashboard.css?v=12">
+    <link rel="stylesheet" href="leaderboard.css?v=12">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar Overlay for Mobile -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
-
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar">
             <div class="sidebar-header">
                 <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <div class="brand-text">
-                    <h2>Hyrost</h2>
-                    <span>Member Realm</span>
-                </div>
+                <h2>Hyrost</h2>
+                <span>Member Realm</span>
             </div>
             
             <div class="nav-section-label">Navigasi Utama</div>
@@ -46,18 +41,6 @@
                 <a href="forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
                     <span>Forum</span>
-                </a>
-                <a href="showcase.html" class="nav-item">
-                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan);"></i>
-                    <span>Galeri Build</span>
-                </a>
-                <a href="../bot/skin.html" class="nav-item">
-                    <i class="fas fa-person-running" style="color:var(--accent-pink, #ec4899);"></i>
-                    <span>3D Skin Studio</span>
-                </a>
-                <a href="map.html" class="nav-item">
-                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
-                    <span>Live Map</span>
                 </a>
                 <a href="leaderboard.html" class="nav-item active">
                     <i class="fas fa-trophy"></i>
@@ -87,61 +70,49 @@
                     <i class="fas fa-headset"></i>
                     <span>Pusat Bantuan</span>
                 </a>
-                <a href="../verify-user.html" class="nav-item">
-                    <i class="fab fa-discord" style="color:#5865F2;"></i>
-                    <span>Verifikasi Discord</span>
-                </a>
                 <div class="nav-divider"></div>
-                <div class="nav-section-label nav-section-admin">Admin Panel</div>
+                <div class="nav-section-label nav-section-admin" style="margin-top:12px;">Admin Panel</div>
                 <a href="admin.html" class="nav-item nav-admin">
                     <i class="fas fa-user-shield"></i>
                     <span>Admin Panel</span>
                 </a>
             </nav>
 
-            <div class="sidebar-bottom">
-                <div class="sidebar-server-pill">
-                    <div class="server-pill-row">
-                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
-                        <span class="status-dot online"></span>
-                    </div>
-                    <div class="server-pill-ip">play.hyrost.net</div>
+            <div class="server-status-widget">
+                <div class="widget-header">
+                    <span>Status Server</span>
+                    <span class="status-dot"></span>
                 </div>
+                <div class="server-ip">play.hyrost.net</div>
+                <div class="player-count"><i class="fas fa-users"></i> Online</div>
+            </div>
+            <div style="display:flex; justify-content:center; gap:8px; font-size:0.75rem; margin-top:12px; color:rgba(255,255,255,0.4);">
+                <a href="../terms.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Terms</a>
+                <span>•</span>
+                <a href="../privacy.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Privacy</a>
+                <span>•</span>
+                <a href="../index.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
             </div>
         </aside>
-
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu" style="padding:8px 12px;">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="mobile-logo">
-                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <h2>Hyrost</h2>
-            </div>
-        </div>
 
         <!-- Main Content -->
         <main class="main-content">
             <div class="top-user-banner">
                 <div>
-                    <h1 style="font-size: 1.5rem; font-weight: 800; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-                        <i class="fas fa-trophy" style="color:var(--accent-emerald-light);"></i>
-                        <span>Leaderboard &amp; Peringkat Pemain</span>
-                    </h1>
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">Peringkat pemain teratas dengan kekayaan koin dan level tertinggi di realm.</p>
+                    <h1 style="font-size: 1.8rem; font-weight: 800;">🏆 Leaderboard Pemain</h1>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Daftar pemain dengan peringkat dan kekayaan terbesar di Hyrost Realm.</p>
                 </div>
                 <a href="../dashboard.html" class="btn-header-action">
                     <i class="fas fa-arrow-left"></i>
-                    <span>Dashboard</span>
+                    <span>Kembali ke Dashboard</span>
                 </a>
             </div>
 
             <div class="leaderboard-controls">
                 <div class="filter-tabs">
-                    <button class="filter-tab active" data-filter="wealth">Koin Terbanyak</button>
+                    <button class="filter-tab active" data-filter="wealth">Paling Kaya (Koin)</button>
                     <button class="filter-tab" data-filter="level">Level Tertinggi</button>
-                    <button class="filter-tab" data-filter="quests">Misi Selesai</button>
+                    <button class="filter-tab" data-filter="quests">Aktivitas Terbanyak</button>
                 </div>
             </div>
 
@@ -193,8 +164,8 @@
                                         <span>Ikoo</span>
                                     </div>
                                 </td>
-                                <td><span class="role-tag" style="background: rgba(239,68,68,0.14); color:#ef4444; border-color:rgba(239,68,68,0.3);">Admin</span></td>
-                                <td style="font-weight: 800; font-family:var(--font-mono); color: var(--accent-gold-light);">3,000 Koin</td>
+                                <td><span class="role-tag" style="background: rgba(239,68,68,0.2); color:#ef4444;">Admin</span></td>
+                                <td style="font-weight: 700; color: var(--accent-gold);">3,000 Koin</td>
                             </tr>
                         </tbody>
                     </table>
@@ -203,7 +174,7 @@
         </main>
     </div>
 
-    <script src="../dashboard.js"></script>
-    <script src="leaderboard.js?v=20"></script>
+    <script src="../inventory/inventory.js"></script>
+    <script src="leaderboard.js?v=12"></script>
 </body>
 </html>

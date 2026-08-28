@@ -18,8 +18,8 @@
     <link rel="icon" type="image/png" href="assets/images/hyrost.png">
     
     <!-- CSS & Fonts -->
-    <link rel="stylesheet" href="styles.css?v=30">
-    <link rel="stylesheet" href="assets/css/legal.css?v=30">
+    <link rel="stylesheet" href="styles.css?v=3">
+    <link rel="stylesheet" href="assets/css/legal.css?v=1">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -353,20 +353,9 @@
         </div>
     </footer>
 
-    <!-- Interactive Scripts -->
+    <!-- Interactive ScrollSpy Script -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // Mobile Menu Toggle
-            const hamburger = document.getElementById('hamburger');
-            const navLinksContainer = document.getElementById('navLinksContainer');
-            if (hamburger && navLinksContainer) {
-                hamburger.addEventListener('click', () => {
-                    hamburger.classList.toggle('active');
-                    navLinksContainer.classList.toggle('active');
-                });
-            }
-
-            // ScrollSpy & Back to Top
             const sections = document.querySelectorAll('.legal-section');
             const navLinks = document.querySelectorAll('.toc-link');
             const backToTop = document.getElementById('backToTop');
@@ -388,23 +377,17 @@
                 });
 
                 // Toggle Back to Top Button
-                if (backToTop) {
-                    if (window.scrollY > 400) {
-                        backToTop.classList.add('visible');
-                    } else {
-                        backToTop.classList.remove('visible');
-                    }
+                if (window.scrollY > 400) {
+                    backToTop.classList.add('visible');
+                } else {
+                    backToTop.classList.remove('visible');
                 }
             });
 
-            if (backToTop) {
-                backToTop.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
+            backToTop.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
         });
     </script>
-    <script src="assets/js/theme.js"></script>
-    <link rel="stylesheet" href="assets/css/theme-light.css">
 </body>
 </html>

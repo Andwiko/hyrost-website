@@ -71,9 +71,33 @@ function setupSidebar() {
         HyrostMobileLayout.init();
         return;
     }
-    const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar');
+    const sidebar = document.querySelector('.sidebar');
     if (!sidebar) return;
 
+    // Check / Inject mobile header if missing in the page
+    let mobileHeader = document.querySelector('.mobile-header');
+    if (!mobileHeader) {
+        const container = document.querySelector('.dashboard-container') || document.body;
+        mobileHeader = document.createElement('div');
+        mobileHeader.className = 'mobile-header';
+        const isSubdir = window.location.pathname.toLowerCase().includes('/modules/') || window.location.pathname.toLowerCase().includes('/account/') || window.location.pathname.toLowerCase().includes('/inventory/') || window.location.pathname.toLowerCase().includes('/marketplace/');
+        const logoPath = isSubdir ? '../assets/images/hyrost.png' : 'assets/images/hyrost.png';
+        mobileHeader.innerHTML = `
+            <button id="sidebarToggle" class="btn-header-action" aria-label="Toggle Navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="${logoPath}" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+            </div>
+            <button class="btn-header-action" onclick="if(typeof logout === 'function') logout(); else { localStorage.clear(); window.location.href='/index.html'; }" title="Keluar">
+                <i class="fas fa-sign-out-alt"></i>
+            </button>
+        `;
+        container.insertBefore(mobileHeader, container.firstChild);
+    }
+
+    // Ensure overlay exists
     let overlay = document.getElementById('sidebarOverlay');
     if (!overlay) {
         overlay = document.createElement('div');
@@ -82,49 +106,45 @@ function setupSidebar() {
         document.body.appendChild(overlay);
     }
 
-    let lastToggle = 0;
+    // Toggle sidebar function
     const toggleSidebar = (e) => {
-        if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
-        const now = Date.now();
-        if (now - lastToggle < 180) return;
-        lastToggle = now;
-
-        const isOpen = sidebar.classList.contains('active') || sidebar.classList.contains('open') || sidebar.classList.contains('mobile-open');
+        if (e) e.stopPropagation();
+        const isOpen = sidebar.classList.contains('active') || sidebar.classList.contains('open');
         if (isOpen) {
-            sidebar.classList.remove('active', 'open', 'mobile-open');
-            overlay.classList.remove('active', 'open');
+            sidebar.classList.remove('active', 'open');
+            overlay.classList.remove('active');
             document.body.style.overflow = '';
         } else {
-            sidebar.classList.add('active', 'open', 'mobile-open');
-            overlay.classList.add('active', 'open');
+            sidebar.classList.add('active', 'open');
+            overlay.classList.add('active');
             document.body.style.overflow = 'hidden';
         }
     };
 
     window.toggleMobileSidebar = toggleSidebar;
 
+    // Bind all hamburger / toggle buttons
     const toggleBtns = document.querySelectorAll('#sidebarToggle, .sidebar-toggle, .hamburger, [data-toggle="sidebar"], .mobile-header .btn-header-action');
     
     toggleBtns.forEach(btn => {
-        if (btn.classList.contains('mobile-logout-btn') || btn.title === 'Keluar') return;
         if (btn.getAttribute('data-bound')) return;
         btn.setAttribute('data-bound', 'true');
         btn.addEventListener('click', toggleSidebar);
     });
 
-    overlay.addEventListener('click', (e) => {
-        if (e) e.stopPropagation();
-        sidebar.classList.remove('active', 'open', 'mobile-open');
-        overlay.classList.remove('active', 'open');
+    overlay.addEventListener('click', () => {
+        sidebar.classList.remove('active', 'open');
+        overlay.classList.remove('active');
         document.body.style.overflow = '';
     });
 
+    // Close drawer when clicking any navigation link on mobile
     const navItems = sidebar.querySelectorAll('.nav-item, a');
     navItems.forEach(item => {
         item.addEventListener('click', () => {
             if (window.innerWidth <= 992) {
-                sidebar.classList.remove('active', 'open', 'mobile-open');
-                overlay.classList.remove('active', 'open');
+                sidebar.classList.remove('active', 'open');
+                overlay.classList.remove('active');
                 document.body.style.overflow = '';
             }
         });
@@ -167,9 +187,6 @@ function refreshSidebar(role) {
         { name: 'Profil Saya', icon: 'fa-user-circle', href: '/account/index.html', pageKey: 'account' },
         { name: 'Toko Pangkat', icon: 'fa-crown', href: '/modules/store.html', pageKey: 'store', iconStyle: 'color:var(--accent-gold);' },
         { name: 'Forum', icon: 'fa-comments', href: '/modules/forum.html', pageKey: 'forum' },
-        { name: 'Galeri Build', icon: 'fa-cubes-stacked', href: '/modules/showcase.html', pageKey: 'showcase', iconStyle: 'color:var(--accent-cyan);' },
-        { name: '3D Skin Studio', icon: 'fa-person-running', href: '/bot/skin.html', pageKey: 'skin-studio', iconStyle: 'color:var(--accent-pink, #ec4899);' },
-        { name: 'Live Map', icon: 'fa-map-location-dot', href: '/modules/map.html', pageKey: 'map', iconStyle: 'color:var(--accent-emerald-light);' },
         { name: 'Leaderboard', icon: 'fa-trophy', href: '/modules/leaderboard.html', pageKey: 'leaderboard' },
         { name: 'Inventaris', icon: 'fa-box', href: '/inventory/inventory.html', pageKey: 'inventory' },
         { name: 'Marketplace', icon: 'fa-store', href: '/marketplace/index.html', pageKey: 'marketplace' },
@@ -189,8 +206,6 @@ function refreshSidebar(role) {
     else if (path.includes('/inventory/')) activeKey = 'inventory';
     else if (path.includes('store')) activeKey = 'store';
     else if (path.includes('forum')) activeKey = 'forum';
-    else if (path.includes('showcase')) activeKey = 'showcase';
-    else if (path.includes('map')) activeKey = 'map';
     else if (path.includes('leaderboard')) activeKey = 'leaderboard';
     else if (path.includes('rewards')) activeKey = 'rewards';
     else if (path.includes('social')) activeKey = 'social';
@@ -232,10 +247,6 @@ function refreshSidebar(role) {
         `;
         nav.appendChild(a);
     });
-
-    if (window.HyrostMobileLayout && typeof window.HyrostMobileLayout.bindNavItems === 'function') {
-        window.HyrostMobileLayout.bindNavItems(sidebar);
-    }
 
     // Upgrade bottom server status widget to match admin design
     let serverWidget = sidebar.querySelector('.server-status-widget, .sidebar-bottom');
@@ -643,6 +654,25 @@ async function syncUserProfile() {
         });
         if (res.ok) {
             const userData = await res.json();
+            
+            // Sync with Discord Bot Economy API if discordId exists
+            if (userData.discordId || userData.id) {
+                try {
+                    const discordRes = await fetch(`/api/economy/user?userId=${encodeURIComponent(userData.discordId || userData.id)}`);
+                    if (discordRes.ok) {
+                        const discordEco = await discordRes.json();
+                        if (discordEco.found) {
+                            userData.discordCoins = discordEco.balance || 0;
+                            userData.discordBank = discordEco.bank || 0;
+                            userData.discordGems = discordEco.gems || 0;
+                            userData.discordTotal = discordEco.total || ((discordEco.balance || 0) + (discordEco.bank || 0));
+                            userData.discordLevel = discordEco.level || 1;
+                            userData.discordXp = discordEco.xp || 0;
+                        }
+                    }
+                } catch (_) {}
+            }
+
             localStorage.setItem('currentUser', JSON.stringify(userData));
             
             // Re-run UI updates if role changed
@@ -731,41 +761,3 @@ async function checkGlobalSettings() {
         console.error("Failed to load settings");
     }
 }
-
-// ─── 3D MINECRAFT SKIN VIEWER MODAL ──────────────────────────────────────────
-let invSkinViewerInitialized = false;
-
-function openInventory3DSkinModal() {
-    const modal = document.getElementById('skinPreviewModal');
-    if (!modal) return;
-    modal.classList.add('active');
-
-    if (window.HyrostSFX) window.HyrostSFX.playClick();
-
-    const canvas = document.getElementById('invSkinCanvas');
-    if (canvas && window.HyrostSkinViewer && !invSkinViewerInitialized) {
-        invSkinViewerInitialized = true;
-        const userStr = localStorage.getItem('currentUser');
-        let username = 'Steve';
-        if (userStr) {
-            try {
-                const u = JSON.parse(userStr);
-                username = u.mojang_username || u.username || 'Steve';
-            } catch (e) {}
-        }
-
-        window.HyrostSkinViewer.init(canvas, {
-            username: username,
-            height: 340,
-            animation: true
-        });
-    }
-}
-window.openInventory3DSkinModal = openInventory3DSkinModal;
-
-function closeInventory3DSkinModal() {
-    const modal = document.getElementById('skinPreviewModal');
-    if (modal) modal.classList.remove('active');
-}
-window.closeInventory3DSkinModal = closeInventory3DSkinModal;
-

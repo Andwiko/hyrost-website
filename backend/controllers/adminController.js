@@ -837,11 +837,31 @@ let globalPaymentSettings = {
     bca_va_number: "88009442808943",
     mandiri_va_number: "88012398471230",
     qris_image_url: "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=HYROST_REALM_QRIS_PAYMENT_GATEWAY",
-    tax_rate: 0
+    tax_rate: 0,
+    // Midtrans Payment Gateway Configuration
+    midtrans_enabled: process.env.MIDTRANS_ENABLED !== 'false',
+    midtrans_is_production: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+    midtrans_server_key: process.env.MIDTRANS_SERVER_KEY || '',
+    midtrans_client_key: process.env.MIDTRANS_CLIENT_KEY || '',
+    midtrans_merchant_id: process.env.MIDTRANS_MERCHANT_ID || '',
+    saweria_url: process.env.STUDIO_SAWERIA_URL || 'https://saweria.co/meilabs'
 };
 
 exports.getPaymentSettings = async (req, res) => {
     try {
+        // Start with env defaults
+        globalPaymentSettings.midtrans_enabled = process.env.MIDTRANS_ENABLED !== 'false';
+        globalPaymentSettings.midtrans_is_production = process.env.MIDTRANS_IS_PRODUCTION === 'true';
+        if (process.env.MIDTRANS_SERVER_KEY && !globalPaymentSettings.midtrans_server_key) {
+            globalPaymentSettings.midtrans_server_key = process.env.MIDTRANS_SERVER_KEY;
+        }
+        if (process.env.MIDTRANS_CLIENT_KEY && !globalPaymentSettings.midtrans_client_key) {
+            globalPaymentSettings.midtrans_client_key = process.env.MIDTRANS_CLIENT_KEY;
+        }
+        if (process.env.MIDTRANS_MERCHANT_ID && !globalPaymentSettings.midtrans_merchant_id) {
+            globalPaymentSettings.midtrans_merchant_id = process.env.MIDTRANS_MERCHANT_ID;
+        }
+
         const [rows] = await pool.execute("SELECT setting_key, setting_value FROM site_settings WHERE setting_key LIKE 'pay_%'");
         if (rows.length > 0) {
             rows.forEach(r => {
@@ -881,6 +901,55 @@ exports.updatePaymentSettings = async (req, res) => {
     } catch (err) {
         console.error("UPDATE PAYMENT SETTINGS ERROR:", err);
         res.status(500).json({ success: false, message: "Gagal menyimpan pengaturan pembayaran" });
+    }
+};
+
+exports.testMidtransConnection = async (req, res) => {
+    try {
+        const { serverKey, isProduction } = req.body;
+        const sKey = (serverKey || globalPaymentSettings.midtrans_server_key || process.env.MIDTRANS_SERVER_KEY || '').trim();
+        const isProd = isProduction !== undefined 
+            ? isProduction 
+            : (globalPaymentSettings.midtrans_is_production || process.env.MIDTRANS_IS_PRODUCTION === 'true');
+
+        if (!sKey || sKey.includes('GANTI_DENGAN_SERVER_KEY')) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Server Key Midtrans belum diisi atau masih berupa nilai default placeholder!' 
+            });
+        }
+
+        // Test API ping to Midtrans v2 endpoint using Basic Auth
+        const endpoint = isProd 
+            ? 'https://api.midtrans.com/v2/token' 
+            : 'https://api.sandbox.midtrans.com/v2/token';
+
+        const testRes = await fetch(endpoint, {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Basic ' + Buffer.from(sKey + ':').toString('base64'),
+                'Accept': 'application/json'
+            }
+        });
+
+        if (testRes.status === 401) {
+            return res.status(400).json({ 
+                success: false, 
+                message: '❌ Server Key Midtrans DITOLAK (401 Unauthorized). Pastikan Server Key cocok dengan environment (' + (isProd ? 'Production' : 'Sandbox') + ').' 
+            });
+        }
+
+        return res.json({ 
+            success: true, 
+            message: `✅ Koneksi Midtrans API BERHASIL TERHUBUNG! Mode: ${isProd ? 'PRODUCTION (Live)' : 'SANDBOX (Testing)'}.`,
+            isProduction: isProd,
+            status: testRes.status
+        });
+    } catch (e) {
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Gagal menghubungi server Midtrans: ' + e.message 
+        });
     }
 };
 

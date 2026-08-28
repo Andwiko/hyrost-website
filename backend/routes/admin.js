@@ -33,10 +33,9 @@ router.delete('/forum/thread/:id', adminController.deleteThread);
 router.post('/thread/:id/pin', adminController.togglePinThread);
 router.post('/forum/thread/:id/pin', adminController.togglePinThread);
 
-// Logs & Security Audit
+// Logs
 router.get('/activity-logs', adminController.getActivityLogs);
 router.get('/logs', adminController.getActivityLogs);
-router.get('/audit-logs', adminController.getAuditLogs);
 
 // Cosmetics
 router.get('/cosmetics', adminController.getAllCosmetics);

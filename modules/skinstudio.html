@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hyrost - 3D Blockbench Skin Studio</title>
+    <!-- Core Styles -->
+    <link rel="stylesheet" href="../dashboard.css?v=10">
+    <link rel="stylesheet" href="skinstudio.css?v=1">
+    
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Three.js & Skinview3D WebGL Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.1/bundles/skinview3d.bundle.js"></script>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+                <span>Member Realm</span>
+            </div>
+            
+            <div class="nav-section-label">Navigasi Utama</div>
+            <nav class="sidebar-nav">
+                <a href="../dashboard.html" class="nav-item">
+                    <i class="fas fa-chart-pie"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="../account/index.html" class="nav-item">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Profil Saya</span>
+                </a>
+                <a href="skinstudio.html" class="nav-item active">
+                    <i class="fas fa-cube" style="color:var(--accent-gold);"></i>
+                    <span>3D Skin Studio</span>
+                </a>
+                <a href="store.html" class="nav-item">
+                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                    <span>Toko Pangkat</span>
+                </a>
+                <a href="forum.html" class="nav-item">
+                    <i class="fas fa-comments"></i>
+                    <span>Forum</span>
+                </a>
+                <a href="leaderboard.html" class="nav-item">
+                    <i class="fas fa-trophy"></i>
+                    <span>Leaderboard</span>
+                </a>
+                <a href="../inventory/inventory.html" class="nav-item">
+                    <i class="fas fa-box"></i>
+                    <span>Inventaris</span>
+                </a>
+                <a href="../marketplace/index.html" class="nav-item">
+                    <i class="fas fa-store"></i>
+                    <span>Marketplace</span>
+                </a>
+                <a href="rewards.html" class="nav-item">
+                    <i class="fas fa-gift"></i>
+                    <span>Daily Rewards</span>
+                </a>
+                <a href="wiki.html" class="nav-item">
+                    <i class="fas fa-book"></i>
+                    <span>Wiki & Guide</span>
+                </a>
+                <a href="social.html" class="nav-item">
+                    <i class="fas fa-users"></i>
+                    <span>Pertemanan</span>
+                </a>
+                <a href="support.html" class="nav-item">
+                    <i class="fas fa-headset"></i>
+                    <span>Pusat Bantuan</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header Top Bar -->
+            <header class="top-header">
+                <div>
+                    <h1 style="font-family:'Outfit',sans-serif; font-size:1.6rem; font-weight:800; color:#fff; display:flex; align-items:center; gap:10px;">
+                        🎮 3D Blockbench Minecraft Skin Studio
+                        <span style="font-size:0.75rem; background:linear-gradient(135deg,#a855f7,#7c3aed); color:#fff; padding:3px 10px; border-radius:20px; font-weight:700;">WebGL 60FPS</span>
+                    </h1>
+                    <p style="font-size:0.85rem; color:var(--text-muted); margin-top:2px;">
+                        Putar karakter 360°, tekuk sudut tulang rig, pilih pose aksi Samurai / Knight / Archer & ambil foto transparan 4K!
+                    </p>
+                </div>
+            </header>
+
+            <div class="content-body">
+                <div class="studio-grid">
+                    <!-- 3D Viewport Column -->
+                    <div class="studio-viewport-card">
+                        <div class="canvas-box">
+                            <canvas id="skinCanvas"></canvas>
+                            <div class="viewport-hint">
+                                <i class="fas fa-mouse-pointer"></i> Drag = Putar 360° | Scroll = Zoom In/Out | Right-Click = Geser
+                            </div>
+                        </div>
+
+                        <div style="margin-top:16px; width:100%; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="font-size:0.88rem; color:#94a3b8;">
+                                Pemain: <strong id="displayPlayerName" style="color:#fff;">andwiko</strong>
+                            </div>
+                            <div style="display:flex; gap:8px;">
+                                <button id="btnToggleAnim" class="btn-studio-action" style="padding:6px 12px; font-size:0.78rem; background:rgba(255,255,255,0.08);">
+                                    <i class="fas fa-pause"></i> Jeda Gerak
+                                </button>
+                                <button id="btnResetCam" class="btn-studio-action" style="padding:6px 12px; font-size:0.78rem; background:rgba(255,255,255,0.08);">
+                                    <i class="fas fa-sync-alt"></i> Reset Kamera
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Posing & Controls Column -->
+                    <div class="studio-controls-card">
+                        <!-- Input Username -->
+                        <div>
+                            <div class="studio-section-title"><i class="fas fa-user-tag" style="color:var(--studio-accent);"></i> Pilih Skin Minecraft</div>
+                            <div class="studio-input-group">
+                                <input type="text" id="inputMcUsername" class="studio-input" placeholder="Masukkan Username Minecraft Java/Bedrock...">
+                                <button id="btnLoadSkin" class="btn-studio-action">
+                                    <i class="fas fa-search"></i> Muat 3D
+                                </button>
+                            </div>
+                            <div style="margin-top:8px; font-size:0.78rem; color:#94a3b8; display:flex; align-items:center; gap:8px;">
+                                <span>Atau upload file:</span>
+                                <input type="file" id="fileUploadSkin" accept="image/png" style="font-size:0.75rem; color:#cbd5e1;">
+                            </div>
+                        </div>
+
+                        <!-- Blockbench Presets -->
+                        <div>
+                            <div class="studio-section-title"><i class="fas fa-running" style="color:var(--studio-cyan);"></i> Preset Pose Aksi Blockbench</div>
+                            <div class="poses-picker-grid">
+                                <div class="pose-chip active" data-pose="samurai" onclick="applyBlockbenchPose('samurai')">⚔️ Samurai Katana</div>
+                                <div class="pose-chip" data-pose="knight" onclick="applyBlockbenchPose('knight')">🛡️ Ksatria Perisai</div>
+                                <div class="pose-chip" data-pose="archer" onclick="applyBlockbenchPose('archer')">🏹 Membidik Busur</div>
+                                <div class="pose-chip" data-pose="ninja" onclick="applyBlockbenchPose('ninja')">🥷 Kuda-Kuda Ninja</div>
+                                <div class="pose-chip" data-pose="elytra" onclick="applyBlockbenchPose('elytra')">🦅 Melayang Elytra</div>
+                                <div class="pose-chip" data-pose="running" onclick="applyBlockbenchPose('running')">🏃 Lari Sprint</div>
+                                <div class="pose-chip" data-pose="walking" onclick="applyBlockbenchPose('walking')">🚶 Melangkah Santai</div>
+                                <div class="pose-chip" data-pose="waving" onclick="applyBlockbenchPose('waving')">👋 Melambaikan Tangan</div>
+                                <div class="pose-chip" data-pose="sitting" onclick="applyBlockbenchPose('sitting')">🪑 Duduk Santai</div>
+                                <div class="pose-chip" data-pose="mining" onclick="applyBlockbenchPose('mining')">⛏️ Menambang Beliung</div>
+                                <div class="pose-chip" data-pose="swimming" onclick="applyBlockbenchPose('swimming')">🏊 Menyelam Air</div>
+                                <div class="pose-chip" data-pose="idle" onclick="applyBlockbenchPose('idle')">🧍 Isometrik Standar</div>
+                            </div>
+                        </div>
+
+                        <!-- Bone Rigging Sliders -->
+                        <div>
+                            <div class="studio-section-title"><i class="fas fa-sliders-h" style="color:var(--studio-gold);"></i> Sudut Tekukan Tulang (Bone Rig)</div>
+                            <div class="bone-sliders-box">
+                                <div class="bone-slider-row">
+                                    <span>Tangan Kanan:</span>
+                                    <input type="range" min="-180" max="180" value="0" oninput="updateBoneSlider('rightArm', this.value)">
+                                </div>
+                                <div class="bone-slider-row">
+                                    <span>Tangan Kiri:</span>
+                                    <input type="range" min="-180" max="180" value="0" oninput="updateBoneSlider('leftArm', this.value)">
+                                </div>
+                                <div class="bone-slider-row">
+                                    <span>Kaki Kanan:</span>
+                                    <input type="range" min="-90" max="90" value="0" oninput="updateBoneSlider('rightLeg', this.value)">
+                                </div>
+                                <div class="bone-slider-row">
+                                    <span>Kaki Kiri:</span>
+                                    <input type="range" min="-90" max="90" value="0" oninput="updateBoneSlider('leftLeg', this.value)">
+                                </div>
+                                <div class="bone-slider-row">
+                                    <span>Sudut Kepala:</span>
+                                    <input type="range" min="-60" max="60" value="0" oninput="updateBoneSlider('head', this.value)">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Export Actions -->
+                        <div class="studio-footer-actions">
+                            <button class="btn-export-png" onclick="exportTransparentSnapshot()">
+                                <i class="fas fa-camera"></i> Ambil Foto PNG Transparan 4K
+                            </button>
+                            <a id="btnDownloadSkinTex" class="btn-dl-skin-tex" href="https://mc-heads.net/skin/andwiko" target="_blank" download>
+                                <i class="fas fa-download"></i> Unduh Skin Asli
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="skinstudio.js?v=1"></script>
+</body>
+</html>

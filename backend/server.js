@@ -442,6 +442,20 @@ const initDB = async () => {
         await pool.execute(
           "ALTER TABLE users ADD COLUMN last_claim_time TIMESTAMP NULL DEFAULT NULL",
         );
+
+      // Skin Studio Premium Columns
+      if (!userColNames.includes("skin_studio_vip_expires"))
+        await pool.execute(
+          "ALTER TABLE users ADD COLUMN skin_studio_vip_expires TIMESTAMP NULL DEFAULT NULL",
+        );
+      if (!userColNames.includes("skin_studio_plan"))
+        await pool.execute(
+          "ALTER TABLE users ADD COLUMN skin_studio_plan VARCHAR(100) DEFAULT NULL",
+        );
+      if (!userColNames.includes("skin_studio_ad_until"))
+        await pool.execute(
+          "ALTER TABLE users ADD COLUMN skin_studio_ad_until TIMESTAMP NULL DEFAULT NULL",
+        );
     }
     // Pending Deliveries Table
     await pool.execute(`

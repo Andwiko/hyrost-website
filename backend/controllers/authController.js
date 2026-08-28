@@ -1,45 +1,17 @@
-'use strict';
-
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const crypto = require("crypto");
 const pool = require("../config/mysql");
 const { grantDefaultHeads } = require("../utils/profileHeads");
-const { sanitizeRole, generateReferralCode, getJwtSecret, getJwtRefreshSecret } = require('../utils/security');
+
+const { sanitizeRole, generateReferralCode } = require('../utils/security');
 const { sendPasswordResetEmail } = require('../utils/mailer');
 const { sendDiscordEmbed } = require('../utils/discordWebhook');
-const { logSecurityEvent } = require('../utils/securityAudit');
-
-// Helper to generate access and refresh token pair
-function generateTokenPair(user) {
-  const jwtSecret = getJwtSecret();
-  const refreshSecret = getJwtRefreshSecret();
-
-  const token = jwt.sign(
-    { id: user.id, username: user.username, role: user.role },
-    jwtSecret,
-    { expiresIn: "1d" }
-  );
-
-  const refreshToken = jwt.sign(
-    { id: user.id, type: 'refresh' },
-    refreshSecret,
-    { expiresIn: "7d" }
-  );
-
-  return { token, refreshToken };
-}
 
 // Register new user
 exports.register = async (req, res) => {
-  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
   try {
     const { username, email, password, referralCode } = req.body;
     const role = 'Member';
-
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: 'Semua field wajib diisi' });
-    }
 
     // Check if user exists (Active or Soft Deleted)
     const [existingUsers] = await pool.execute(
@@ -57,7 +29,6 @@ exports.register = async (req, res) => {
             const hoursDiff = (now - deletedTime) / (1000 * 60 * 60);
 
             if (hoursDiff < 48) {
-                logSecurityEvent('REGISTER_BLOCKED_SOFT_DELETE', { username, ip, status: 'WARN' });
                 return res.status(403).json({ 
                     message: `Akun ini baru dihapus. Anda harus menunggu ${Math.ceil(48 - hoursDiff)} jam lagi untuk mendaftar ulang dengan email/username ini.` 
                 });
@@ -66,8 +37,7 @@ exports.register = async (req, res) => {
                 await pool.execute('DELETE FROM users WHERE id = ?', [user.id]);
             }
         } else {
-            logSecurityEvent('REGISTER_FAILED_DUPLICATE', { username, ip, status: 'INFO' });
-            return res.status(400).json({ message: 'Username atau Email sudah terdaftar' });
+            return res.status(400).json({ message: 'Username or Email already exists' });
         }
     }
 
@@ -109,42 +79,41 @@ exports.register = async (req, res) => {
       color: 0x6366f1,
     }).catch(() => {});
     
-    const [newUserRows] = await pool.execute('SELECT id, username, email, role, avatar_url, created_at FROM users WHERE id = ?', [newUserId]);
-    const userObj = newUserRows[0];
+    // Fetch newly created user to get the correct timestamp
+    const [newUserRows] = await pool.execute('SELECT created_at FROM users WHERE id = ?', [newUserId]);
+    const createdAt = newUserRows[0].created_at;
 
-    const tokens = generateTokenPair(userObj);
-
-    logSecurityEvent('REGISTER_SUCCESS', { username, userId: newUserId, ip, status: 'INFO' });
+    console.log('REGISTER SUCCESS:', username, 'ID:', newUserId);
+    
+    // Generate JWT
+    const token = jwt.sign(
+      { id: newUserId, role: role }, 
+      process.env.JWT_SECRET, 
+      { expiresIn: '1d' }
+    );
 
     res.status(201).json({
-      success: true,
-      token: tokens.token,
-      refreshToken: tokens.refreshToken,
+      token,
       user: {
-        id: userObj.id,
-        username: userObj.username,
-        email: userObj.email,
-        role: userObj.role,
-        avatarUrl: userObj.avatar_url,
-        createdAt: userObj.created_at
+        id: newUserId,
+        username,
+        email,
+        role,
+        createdAt: createdAt // Send timestamp to frontend
       }
     });
 
   } catch (err) {
     console.error('REGISTER ERROR:', err);
-    res.status(500).json({ message: 'Terjadi kesalahan server saat registrasi', error: err.message });
+    res.status(500).json({ message: 'Server error', error: err.message });
   }
 };
 
 // Login user
 exports.login = async (req, res) => {
-  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+  console.log("LOGIN ATTEMPT:", req.body);
   try {
     const { email, password } = req.body;
-
-    if (!email || !password) {
-      return res.status(400).json({ message: "Email/Username dan Password wajib diisi" });
-    }
 
     // Find User (Allow login by email or username, excluding deleted users)
     const [users] = await pool.execute(
@@ -154,222 +123,121 @@ exports.login = async (req, res) => {
     const user = users[0];
 
     if (!user) {
-      logSecurityEvent('LOGIN_FAILED_USER_NOT_FOUND', { username: email, ip, status: 'WARN' });
-      return res.status(401).json({ message: "Kredensial tidak valid atau akun telah dinonaktifkan" });
+      console.log("USER NOT FOUND OR DELETED:", email);
+      return res.status(401).json({ message: "Kredensial tidak valid atau akun telah dihapus" });
     }
 
     // Validate password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      logSecurityEvent('LOGIN_FAILED_WRONG_PASSWORD', { username: user.username, userId: user.id, ip, status: 'WARN' });
-      return res.status(401).json({ message: "Password yang Anda masukkan salah" });
+      console.log("PASSWORD MISMATCH for:", user.username);
+      return res.status(401).json({ message: "Invalid credentials" });
     }
 
-    // Check if 2FA is enabled on account
-    let requires2FA = false;
-    try {
-      const [totpRows] = await pool.execute('SELECT enabled FROM admin_totp WHERE user_id = ? AND enabled = 1', [user.id]);
-      if (totpRows.length > 0) {
-        requires2FA = true;
-      }
-    } catch (_) {}
+    console.log("LOGIN SUCCESS:", user.username, "Role:", user.role);
 
-    const tokens = generateTokenPair(user);
-
-    logSecurityEvent('LOGIN_SUCCESS', { username: user.username, userId: user.id, ip, status: 'INFO' });
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user.id, role: user.role },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
 
     res.json({
-      success: true,
-      token: tokens.token,
-      refreshToken: tokens.refreshToken,
-      requires2FA,
+      token,
       user: {
         id: user.id,
         username: user.username,
         email: user.email,
         role: user.role,
-        avatarUrl: user.avatar_url,
+        avatarUrl: user.avatar_url, // Map from snake_case
         createdAt: user.created_at
       },
     });
   } catch (err) {
     console.error("LOGIN ERROR:", err);
-    res.status(500).json({ message: "Terjadi kesalahan server saat login", error: err.message });
-  }
-};
-
-// Refresh Access Token
-exports.refreshToken = async (req, res) => {
-  try {
-    const { refreshToken } = req.body;
-    if (!refreshToken) {
-      return res.status(400).json({ success: false, message: 'Refresh token diperlukan' });
-    }
-
-    const refreshSecret = getJwtRefreshSecret();
-    let decoded;
-    try {
-      decoded = jwt.verify(refreshToken, refreshSecret);
-    } catch (err) {
-      return res.status(401).json({ success: false, message: 'Refresh token tidak valid atau telah kedaluwarsa' });
-    }
-
-    const [users] = await pool.execute(
-      'SELECT id, username, email, role, avatar_url, created_at FROM users WHERE id = ? AND deleted_at IS NULL LIMIT 1',
-      [decoded.id]
-    );
-
-    if (!users.length) {
-      return res.status(401).json({ success: false, message: 'Pengguna tidak ditemukan' });
-    }
-
-    const user = users[0];
-    const newTokens = generateTokenPair(user);
-
-    res.json({
-      success: true,
-      token: newTokens.token,
-      refreshToken: newTokens.refreshToken,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        avatarUrl: user.avatar_url
-      }
-    });
-  } catch (err) {
-    console.error('REFRESH TOKEN ERROR:', err);
-    res.status(500).json({ success: false, message: 'Gagal memperbarui token', error: err.message });
-  }
-};
-
-// Get current logged-in user profile
-exports.getMe = async (req, res) => {
-  try {
-    const [users] = await pool.execute(
-      'SELECT id, username, email, role, avatar_url, coin_bronze, coin_silver, coin_gold, created_at FROM users WHERE id = ? AND deleted_at IS NULL',
-      [req.user.id]
-    );
-
-    if (!users.length) {
-      return res.status(404).json({ success: false, message: 'Pengguna tidak ditemukan' });
-    }
-
-    const user = users[0];
-    res.json({
-      success: true,
-      user: {
-        id: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        avatarUrl: user.avatar_url,
-        coins: {
-          bronze: user.coin_bronze || 0,
-          silver: user.coin_silver || 0,
-          gold: user.coin_gold || 0
-        },
-        createdAt: user.created_at
-      }
-    });
-  } catch (err) {
-    res.status(500).json({ success: false, message: 'Server error', error: err.message });
-  }
-};
-
-// Forgot Password
-exports.forgotPassword = async (req, res) => {
-  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-  try {
-    const { email } = req.body;
-    if (!email) return res.status(400).json({ message: "Harap masukkan email Anda" });
-
-    const [users] = await pool.execute('SELECT id, email, username FROM users WHERE email = ? AND deleted_at IS NULL', [email]);
-    if (users.length === 0) {
-      // Return 200 to prevent user enumeration attacks
-      return res.status(200).json({ success: true, message: "Jika email terdaftar, instruksi reset password telah dikirim." });
-    }
-
-    const user = users[0];
-    const resetToken = crypto.randomBytes(32).toString("hex");
-    const resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
-    const resetPasswordExpire = new Date(Date.now() + 15 * 60 * 1000); // 15 minutes
-
-    await pool.execute(
-      "UPDATE users SET reset_password_token = ?, reset_password_expire = ? WHERE id = ?",
-      [resetPasswordToken, resetPasswordExpire, user.id]
-    );
-
-    const resetUrl = `${req.protocol}://${req.get("host")}/auth/reset-password.html?resettoken=${resetToken}`;
-
-    logSecurityEvent('PASSWORD_RESET_REQUESTED', { username: user.username, userId: user.id, ip, status: 'INFO' });
-
-    try {
-      await sendPasswordResetEmail(user.email, resetUrl);
-      res.status(200).json({ success: true, message: "Email reset password telah dikirim ke alamat email Anda." });
-    } catch (err) {
-      await pool.execute("UPDATE users SET reset_password_token = NULL, reset_password_expire = NULL WHERE id = ?", [user.id]);
-      return res.status(500).json({ message: "Gagal mengirim email reset password" });
-    }
-  } catch (err) {
-    console.error("FORGOT PASSWORD ERROR:", err);
     res.status(500).json({ message: "Server error", error: err.message });
   }
 };
 
-// Reset Password
-exports.resetPassword = async (req, res) => {
-  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
+// Generate Reset Token
+const crypto = require("crypto");
+
+// Forgot Password (MySQL)
+exports.forgotPassword = async (req, res) => {
   try {
-    const resetPasswordToken = crypto.createHash("sha256").update(req.params.resettoken).digest("hex");
-
-    const [users] = await pool.execute(
-      "SELECT id, username FROM users WHERE reset_password_token = ? AND reset_password_expire > NOW()",
-      [resetPasswordToken]
-    );
-
+    const { email } = req.body;
+    const [users] = await pool.execute('SELECT id, email FROM users WHERE email = ?', [email]);
     if (users.length === 0) {
-      logSecurityEvent('PASSWORD_RESET_INVALID_TOKEN', { ip, status: 'WARN' });
-      return res.status(400).json({ message: "Token reset password tidak valid atau telah kedaluwarsa" });
+      return res.status(404).json({ message: "Email not found" });
     }
 
     const user = users[0];
+    const resetToken = crypto.randomBytes(20).toString("hex");
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+    const expiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await pool.execute(
+      'INSERT INTO password_resets (user_id, token, expires_at) VALUES (?, ?, ?)',
+      [user.id, hashedToken, expiresAt]
+    );
+
+    const resetUrl = `${req.protocol}://${req.get("host")}/auth/reset-password.html?token=${resetToken}`;
+
+    await sendPasswordResetEmail(user.email, resetUrl);
+
+    res.status(200).json({ success: true, data: "Email sent" });
+  } catch (err) {
+    console.error("FORGOT PASSWORD ERROR:", err);
+    res.status(500).json({ message: "Email could not be sent" });
+  }
+};
+
+// Reset Password (MySQL)
+exports.resetPassword = async (req, res) => {
+  try {
+    const resetToken = req.params.resettoken || req.body.token;
+    if (!resetToken) return res.status(400).json({ message: "Token required" });
+
+    const hashedToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+
+    const [resets] = await pool.execute(
+      'SELECT * FROM password_resets WHERE token = ? AND expires_at > NOW() ORDER BY created_at DESC LIMIT 1',
+      [hashedToken]
+    );
+
+    if (resets.length === 0) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    const resetRecord = resets[0];
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(req.body.password, salt);
 
-    await pool.execute(
-      "UPDATE users SET password = ?, reset_password_token = NULL, reset_password_expire = NULL WHERE id = ?",
-      [hashedPassword, user.id]
-    );
+    await pool.execute('UPDATE users SET password = ? WHERE id = ?', [hashedPassword, resetRecord.user_id]);
+    await pool.execute('DELETE FROM password_resets WHERE user_id = ?', [resetRecord.user_id]);
 
-    logSecurityEvent('PASSWORD_RESET_SUCCESS', { username: user.username, userId: user.id, ip, status: 'INFO' });
-
-    res.status(200).json({ success: true, message: "Password berhasil diperbarui. Silakan login kembali." });
+    res.status(200).json({ success: true, data: "Password updated" });
   } catch (err) {
     console.error("RESET PASSWORD ERROR:", err);
-    res.status(500).json({ message: "Server error", error: err.message });
+    res.status(500).json({ message: "Server error" });
   }
 };
 
 // Google OAuth login/register (MySQL)
 const { OAuth2Client } = require('google-auth-library');
-const googleClientId = process.env.GOOGLE_CLIENT_ID && !process.env.GOOGLE_CLIENT_ID.includes('your_google_client_id')
-  ? process.env.GOOGLE_CLIENT_ID
-  : null;
-const client = googleClientId ? new OAuth2Client(googleClientId) : null;
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 exports.googleLogin = async (req, res) => {
-  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
   try {
     const { token, payload: clientPayload } = req.body;
     let name, email, picture, googleId;
 
-    if (token && client && googleClientId) {
+    if (token && process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_ID !== 'your_google_client_id') {
       try {
         const ticket = await client.verifyIdToken({
             idToken: token,
-            audience: googleClientId, 
+            audience: process.env.GOOGLE_CLIENT_ID, 
         });
         const p = ticket.getPayload();
         name = p.name;
@@ -378,7 +246,7 @@ exports.googleLogin = async (req, res) => {
         googleId = p.sub;
       } catch (verifyErr) {
         if (process.env.NODE_ENV === 'production') {
-          return res.status(401).json({ message: 'Verifikasi Google Token gagal. Pastikan Google Client ID valid.' });
+          return res.status(401).json({ message: 'Google token verification failed' });
         }
         if (clientPayload && clientPayload.email) {
           name = clientPayload.name || clientPayload.email.split('@')[0];
@@ -391,13 +259,17 @@ exports.googleLogin = async (req, res) => {
       }
     } else if (clientPayload && clientPayload.email) {
       if (process.env.NODE_ENV === 'production') {
-        return res.status(401).json({ message: 'Google login memerlukan konfigurasi Google Client ID yang valid di production.' });
+        return res.status(401).json({ message: 'Google login requires valid token in production' });
       }
       name = clientPayload.name || clientPayload.email.split('@')[0];
       email = clientPayload.email;
       picture = clientPayload.picture || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}`;
       googleId = clientPayload.sub || `google_${Date.now()}`;
     } else if (token) {
+      if (process.env.NODE_ENV === 'production') {
+        return res.status(401).json({ message: 'Google Client ID not configured' });
+      }
+      // Dev-only fallback decode
       try {
         const decoded = JSON.parse(Buffer.from(token.split('.')[1], 'base64').toString('utf8'));
         name = decoded.name || decoded.email.split('@')[0];
@@ -410,6 +282,8 @@ exports.googleLogin = async (req, res) => {
     } else {
       return res.status(400).json({ message: "Google Token tidak ditemukan" });
     }
+
+    console.log("GOOGLE LOGIN SUCCESS:", email);
 
     const [users] = await pool.execute('SELECT * FROM users WHERE email = ? LIMIT 1', [email]);
     let user;
@@ -424,7 +298,8 @@ exports.googleLogin = async (req, res) => {
             user.google_id = googleId;
         }
     } else {
-        const randomPassword = crypto.randomBytes(16).toString('hex');
+        console.log("Creating new user from Google:", email);
+        const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(randomPassword, salt);
         const cleanUsername = (name || email.split('@')[0]).replace(/[^a-zA-Z0-9_]/g, '');
@@ -437,14 +312,15 @@ exports.googleLogin = async (req, res) => {
         user = newUserRows[0];
     }
 
-    const tokens = generateTokenPair(user);
-
-    logSecurityEvent('GOOGLE_LOGIN_SUCCESS', { username: user.username, userId: user.id, ip, status: 'INFO' });
+    const jwtToken = jwt.sign(
+        { id: user.id, role: user.role },
+        process.env.JWT_SECRET,
+        { expiresIn: '1d' }
+    );
 
     res.json({
         success: true,
-        token: tokens.token,
-        refreshToken: tokens.refreshToken,
+        token: jwtToken,
         user: {
             id: user.id,
             username: user.username,
@@ -463,16 +339,11 @@ exports.googleLogin = async (req, res) => {
 
 // Create first admin (MySQL)
 exports.createFirstAdmin = async (req, res) => {
-  const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
   try {
     const [admins] = await pool.execute("SELECT id FROM users WHERE role = 'Admin' LIMIT 1");
-    if (admins.length > 0) return res.status(400).json({ message: "Akun admin utama sudah ada" });
+    if (admins.length > 0) return res.status(400).json({ message: "Admin already exists" });
 
     const { username, email, password } = req.body;
-    if (!username || !email || !password) {
-      return res.status(400).json({ message: "Semua data admin wajib diisi" });
-    }
-
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
@@ -481,11 +352,8 @@ exports.createFirstAdmin = async (req, res) => {
       [username, email, hashedPassword]
     );
 
-    logSecurityEvent('FIRST_ADMIN_CREATED', { username, userId: result.insertId, ip, status: 'CRITICAL' });
-
     res.status(201).json({
-      success: true,
-      message: "Admin utama berhasil dibuat",
+      message: "Admin created successfully",
       user: {
         id: result.insertId,
         username,

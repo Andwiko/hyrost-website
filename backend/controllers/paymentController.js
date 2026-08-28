@@ -17,6 +17,25 @@ function generateOrderCode() {
   return `HYR-${Date.now().toString(36).toUpperCase()}-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
 }
 
+async function resolvePaymentMidtransConfig() {
+  let isProd = process.env.MIDTRANS_IS_PRODUCTION === 'true';
+  let serverKey = process.env.MIDTRANS_SERVER_KEY || '';
+  let enabled = process.env.MIDTRANS_ENABLED !== 'false';
+
+  try {
+    const [rows] = await pool.execute(
+      "SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('pay_midtrans_is_production', 'pay_midtrans_server_key', 'pay_midtrans_enabled')"
+    );
+    for (const r of rows) {
+      if (r.setting_key === 'pay_midtrans_is_production') isProd = (r.setting_value === 'true');
+      if (r.setting_key === 'pay_midtrans_server_key' && r.setting_value) serverKey = r.setting_value;
+      if (r.setting_key === 'pay_midtrans_enabled') enabled = (r.setting_value === 'true');
+    }
+  } catch (_) {}
+
+  return { isProd, serverKey, enabled };
+}
+
 async function createRankOrder(userId, { rankName, paymentMethod, promoCode }) {
   const methods = await readPaymentMethods();
   const active = methods.filter((m) => m.is_active !== false);
@@ -29,7 +48,8 @@ async function createRankOrder(userId, { rankName, paymentMethod, promoCode }) {
   }
 
   const orderCode = generateOrderCode();
-  const useMidtrans = process.env.MIDTRANS_SERVER_KEY && process.env.MIDTRANS_ENABLED === 'true';
+  const midtransCfg = await resolvePaymentMidtransConfig();
+  const useMidtrans = midtransCfg.enabled && !!midtransCfg.serverKey && !midtransCfg.serverKey.includes('GANTI_DENGAN');
 
   let midtransToken = null;
   let midtransOrderId = orderCode;
@@ -37,15 +57,19 @@ async function createRankOrder(userId, { rankName, paymentMethod, promoCode }) {
   if (useMidtrans) {
     const [users] = await pool.execute('SELECT username, email FROM users WHERE id = ?', [userId]);
     const user = users[0] || {};
-    const snapRes = await fetch('https://app.midtrans.com/snap/v1/transactions', {
+    const snapEndpoint = midtransCfg.isProd
+      ? 'https://app.midtrans.com/snap/v1/transactions'
+      : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
+
+    const snapRes = await fetch(snapEndpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: 'Basic ' + Buffer.from(process.env.MIDTRANS_SERVER_KEY + ':').toString('base64'),
+        Authorization: 'Basic ' + Buffer.from(midtransCfg.serverKey + ':').toString('base64'),
       },
       body: JSON.stringify({
         transaction_details: { order_id: orderCode, gross_amount: amount },
-        customer_details: { first_name: user.username, email: user.email },
+        customer_details: { first_name: user.username, email: user.email || `${user.username}@hyrost.net` },
         item_details: [{ id: rankName, price: amount, quantity: 1, name: `Rank ${rankName}` }],
       }),
     });

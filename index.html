@@ -3,130 +3,37 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost Realm - Modern Minecraft Server & Community Hub</title>
     <meta name="description" content="Hyrost Realm - Server & Komunitas Minecraft Indonesia Terdepan. Nikmati survival realm, toko pangkat eksklusif, marketplace, dan sistem inventaris modern.">
-    <meta name="robots" content="index, follow">
-    <meta name="theme-color" content="#090c14">
-    <link rel="canonical" href="https://hyrost.web.id/">
+    <meta name="theme-color" content="#6366f1">
     
     <!-- OpenGraph Meta Tags for Social Media (WhatsApp, Discord, Facebook) -->
     <meta property="og:title" content="Hyrost - Modern Minecraft Realm & Community Hub">
     <meta property="og:description" content="Server & Komunitas Minecraft Indonesia Terdepan. Toko Pangkat, Marketplace, Daily Rewards & In-Game Auto Claim.">
-    <meta property="og:image" content="https://hyrost.web.id/assets/images/hyrost.png">
-    <meta property="og:url" content="https://hyrost.web.id/">
+    <meta property="og:image" content="assets/images/hyrost.png">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary_large_image">
     
-    <!-- Favicon & PWA Manifest -->
-    <link rel="icon" type="image/png" href="assets/images/hyrost.png">
-    <link rel="shortcut icon" href="favicon.ico">
+    <!-- PWA Manifest -->
     <link rel="manifest" href="manifest.json">
     
-    <!-- Performance Resource Hints -->
+    <!-- CSS & Fonts -->
+    <link rel="stylesheet" href="styles.css?v=3">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Comprehensive Critical CSS Inline (Immediate 0.4s FCP on Mobile) -->
-    <style>
-        :root{--bg-primary:#090c14;--bg-card:#121827;--border-color:rgba(255,255,255,0.09);--text-main:#f8fafc;--text-muted:#cbd5e1;--text-dim:#94a3b8;--accent-indigo:#818cf8;--accent-cyan:#22d3ee;--accent-emerald:#34d399;--accent-gold:#fbbf24;--accent-purple:#a78bfa;--font-family:'Plus Jakarta Sans',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;--transition:all 0.22s cubic-bezier(0.16,1,0.3,1);}
-        *{margin:0;padding:0;box-sizing:border-box}
-        html{scroll-behavior:smooth;font-size:15px;background-color:#090c14;color-scheme:dark}
-        body{font-family:var(--font-family);background-color:#090c14;color:#f8fafc;line-height:1.6;overflow-x:hidden}
-        .sr-only{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border-width:0!important}
-        :focus-visible{outline:2px solid var(--accent-indigo)!important;outline-offset:3px!important}
-        .navbar{position:fixed;top:0;left:0;width:100%;z-index:1000;background:rgba(7,9,14,0.85);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,0.08);height:76px}
-        .navbar-container{max-width:1240px;margin:0 auto;padding:0 24px;display:flex;justify-content:space-between;align-items:center;height:100%}
-        .navbar-logo{display:flex;align-items:center;gap:12px;text-decoration:none;font-weight:800;font-size:1.35rem;color:#fff}
-        .navbar-logo img{width:40px;height:40px;border-radius:10px;object-fit:cover}
-        .logo-badge{background:linear-gradient(135deg,var(--accent-indigo),var(--accent-cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-weight:800}
-        .nav-links-container{display:flex;align-items:center;gap:32px}
-        .navbar-menu{display:flex;gap:24px}
-        .nav-link{color:var(--text-muted);text-decoration:none;font-weight:500;font-size:0.95rem;transition:var(--transition);min-height:44px;display:inline-flex;align-items:center}
-        .nav-link:hover,.nav-link.active{color:#fff}
-        .navbar-buttons{display:flex;align-items:center;gap:12px}
-        .btn-primary{background:linear-gradient(135deg,var(--accent-indigo) 0%,#4f46e5 100%);color:#fff;padding:10px 22px;border-radius:9999px;font-weight:600;font-size:0.9rem;border:1px solid rgba(255,255,255,0.15);cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px;text-decoration:none;min-height:44px;touch-action:manipulation}
-        .btn-secondary{background:rgba(255,255,255,0.05);color:var(--text-main);padding:10px 22px;border-radius:9999px;font-weight:600;font-size:0.9rem;border:1px solid var(--border-color);cursor:pointer;transition:var(--transition);display:inline-flex;align-items:center;gap:8px;text-decoration:none;min-height:44px;touch-action:manipulation}
-        .hamburger{display:none;background:transparent;border:none;cursor:pointer;flex-direction:column;justify-content:center;gap:5px;padding:8px;z-index:1001}
-        .hamburger span{width:24px;height:2px;background:#fff;border-radius:2px;transition:var(--transition)}
-        .hero{padding-top:130px;padding-bottom:80px;position:relative}
-        .container{max-width:1240px;margin:0 auto;padding:0 24px;position:relative}
-        .hero-container{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;align-items:center}
-        .hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(99,102,241,0.12);border:1px solid rgba(99,102,241,0.25);padding:6px 14px;border-radius:9999px;font-size:0.8rem;font-weight:600;color:var(--accent-indigo);margin-bottom:16px}
-        .badge-dot{width:8px;height:8px;border-radius:50%;background:var(--accent-emerald)}
-        .hero-title{font-size:clamp(1.85rem,4vw,3.2rem);font-weight:800;line-height:1.18;letter-spacing:-1px;margin-bottom:18px}
-        .gradient-text{background:linear-gradient(135deg,#fff 30%,#a5b4fc 70%,#38bdf8 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-        .hero-subtitle{font-size:1.05rem;color:var(--text-muted);line-height:1.6;margin-bottom:28px;max-width:540px}
-        .hero-buttons{display:flex;flex-wrap:wrap;gap:14px;align-items:center}
-        .server-ip-box{display:inline-flex;align-items:center;gap:12px;background:var(--bg-card);border:1px solid var(--border-color);padding:10px 18px;border-radius:9999px;cursor:pointer;transition:var(--transition);min-height:44px;touch-action:manipulation;user-select:none}
-        .ip-text{font-family:'JetBrains Mono',monospace;font-size:0.95rem;font-weight:700;color:var(--accent-cyan)}
-        .hero-preview-card{background:var(--bg-card);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--border-color);border-radius:20px;padding:28px;position:relative;overflow:hidden}
-        .preview-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-        .preview-status{display:flex;align-items:center;gap:8px;font-size:0.85rem;font-weight:600;color:var(--accent-emerald)}
-        .preview-stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-        .stat-card{background:rgba(255,255,255,0.03);border:1px solid var(--border-color);padding:14px;border-radius:14px}
-        .stat-label{font-size:0.8rem;color:var(--text-muted)}
-        .stat-value{font-size:1.45rem;font-weight:800;color:#fff;margin-top:4px;min-height:28px;display:flex;align-items:center}
-        @media(max-width:992px){
-            .hamburger{display:flex!important}
-            .nav-links-container{display:none!important;flex-direction:column;position:fixed;top:76px;left:0;width:100%;height:calc(100vh - 76px);background:rgba(9,12,20,0.98);padding:24px 20px 40px;overflow-y:auto;gap:20px;z-index:999}
-            .nav-links-container.active{display:flex!important}
-            .hero-container{grid-template-columns:1fr;text-align:center}
-            .hero-subtitle{margin-left:auto;margin-right:auto}
-            .hero-buttons{justify-content:center}
-        }
-        @media(max-width:768px){
-            .navbar{background:rgba(7,9,14,0.95)}
-            .navbar-container{padding:0 16px;height:68px}
-            .nav-links-container{top:68px;height:calc(100vh - 68px)}
-            .hero{padding-top:96px;padding-bottom:40px}
-            .hero-buttons{flex-direction:column;width:100%}
-            .hero-buttons .btn-primary,.hero-buttons .btn-secondary,.hero-buttons .server-ip-box{width:100%;justify-content:center}
-        }
-    </style>
-    
-    <!-- Primary Stylesheet (Non-Blocking Preloaded) -->
-    <link rel="preload" as="style" href="styles.css?v=40">
-    <link rel="stylesheet" href="styles.css?v=40" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="styles.css?v=40"></noscript>
-    
-    <!-- Asynchronous Non-blocking Web Fonts -->
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
-    
-    <!-- Asynchronous Non-blocking FontAwesome Icons -->
-    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'">
-    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"></noscript>
-    
-    <!-- Structured Data (JSON-LD) for SEO 100 -->
-    <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "WebSite",
-      "name": "Hyrost Realm",
-      "url": "https://hyrost.web.id/",
-      "description": "Server & Komunitas Minecraft Indonesia Terdepan. Survival Realm, Toko Pangkat, Marketplace, dan Komunitas Real-Time.",
-      "publisher": {
-        "@type": "Organization",
-        "name": "Hyrost Realm Network",
-        "logo": {
-          "@type": "ImageObject",
-          "url": "https://hyrost.web.id/assets/images/hyrost.png"
-        }
-      }
-    }
-    </script>
+    <!-- Google OAuth Script -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
     <div class="bg-glow"></div>
 
     <!-- Navigation -->
-    <nav class="navbar" aria-label="Navigasi Utama Hyrost">
+    <nav class="navbar">
         <div class="navbar-container">
-            <a href="index.html" class="navbar-logo" aria-label="Hyrost Realm Beranda">
-                <img src="assets/images/hyrost.png" alt="Hyrost Realm Logo" width="40" height="40" fetchpriority="high" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+            <a href="index.html" class="navbar-logo">
+                <img src="assets/images/hyrost.png" alt="Hyrost Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
                 <span>HYROST <span class="logo-badge">REALM</span></span>
             </a>
             
@@ -134,7 +41,7 @@
                 <div class="navbar-menu">
                     <a href="index.html" class="nav-link active">Home</a>
                     <a href="dashboard.html" class="nav-link">Dashboard</a>
-                    <a href="bot/index.html" class="nav-link" style="color: #FF3385; font-weight: 700;"><i class="fab fa-discord" style="color:#5865F2;" aria-hidden="true"></i> Bot Mei <span style="font-size: 0.65rem; background: linear-gradient(135deg, #5865F2, #FF3385); color: #fff; padding: 1px 6px; border-radius: 999px; margin-left: 3px;">NEW</span></a>
+                    <a href="bot/index.html" class="nav-link" style="color: #FF3385; font-weight: 700;"><i class="fab fa-discord" style="color:#5865F2;"></i> Bot Mei <span style="font-size: 0.65rem; background: linear-gradient(135deg, #5865F2, #FF3385); color: #fff; padding: 1px 6px; border-radius: 999px; margin-left: 3px;">NEW</span></a>
                     <a href="modules/forum.html" class="nav-link">Forum</a>
                     <a href="modules/leaderboard.html" class="nav-link">Leaderboard</a>
                     <a href="marketplace/index.html" class="nav-link">Marketplace</a>
@@ -142,14 +49,14 @@
                 </div>
                 <div class="navbar-buttons" id="navAuthButtons">
                     <a href="auth/login.html" class="btn-secondary">Masuk</a>
-                    <button class="btn-primary" onclick="goToDashboard()" aria-label="Buka Dashboard Pemain">
+                    <button class="btn-primary" onclick="goToDashboard()">
                         <span>Dashboard</span>
-                        <i class="fas fa-arrow-right" aria-hidden="true"></i>
+                        <i class="fas fa-arrow-right"></i>
                     </button>
                 </div>
             </div>
 
-            <button class="hamburger" id="hamburger" aria-label="Buka Menu Navigasi Mobile" aria-expanded="false" aria-controls="navLinksContainer">
+            <button class="hamburger" id="hamburger" aria-label="Toggle Navigation">
                 <span></span>
                 <span></span>
                 <span></span>
@@ -158,203 +65,200 @@
     </nav>
 
     <!-- Hero Section -->
-    <header class="hero">
+    <section class="hero">
         <div class="container">
             <div class="hero-container">
                 <div class="hero-content">
                     <div class="hero-badge">
-                        <span class="badge-dot" aria-hidden="true"></span>
+                        <span class="badge-dot"></span>
                         <span>Official Hyrost Server Hub</span>
                     </div>
                     <h1 class="hero-title">
-                        Platform <span class="gradient-text">Minecraft Realm</span> Terpadu &amp; Modern
+                        Platform <span class="gradient-text">Minecraft Realm</span> Terpadu & Modern
                     </h1>
                     <p class="hero-subtitle">
                         Kelola akun, akses forum diskusi komunitas, nikmati fitur marketplace kosmetik, dan pantau status server secara real-time dalam satu portal interaktif.
                     </p>
                     <div class="hero-buttons">
-                        <button class="btn-primary" onclick="goToDashboard()" aria-label="Buka Dashboard Hyrost">
-                            <i class="fas fa-compass" aria-hidden="true"></i>
+                        <button class="btn-primary" onclick="goToDashboard()">
+                            <i class="fas fa-compass"></i>
                             <span>Buka Dashboard</span>
                         </button>
-                        <a href="auth/login.html" class="btn-secondary" aria-label="Masuk atau Daftar Akun">
-                            <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
+                        <a href="auth/login.html" class="btn-secondary">
+                            <i class="fas fa-sign-in-alt"></i>
                             <span>Masuk / Daftar</span>
                         </a>
-                        <div class="server-ip-box" role="button" tabindex="0" onclick="copyServerIP()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();copyServerIP();}" aria-label="Salin alamat IP Server play.hyrost.net" title="Klik untuk menyalin IP Server">
-                            <i class="fas fa-server" style="color: var(--accent-cyan);" aria-hidden="true"></i>
+                        <div class="server-ip-box" onclick="copyServerIP()" title="Klik untuk menyalin IP Server">
+                            <i class="fas fa-server" style="color: var(--accent-cyan);"></i>
                             <span class="ip-text" id="ipText">play.hyrost.net</span>
-                            <i class="far fa-copy" style="color: var(--text-dim);" aria-hidden="true"></i>
+                            <i class="far fa-copy" style="color: var(--text-dim);"></i>
                         </div>
                     </div>
                 </div>
 
-                <!-- Hero Status Card (CLS Protected) -->
+                <!-- Hero Status Card -->
                 <div class="hero-preview-card">
                     <div class="preview-header">
                         <div>
-                            <h2 style="font-size: 1.1rem; font-weight:700; color:#fff;">Status Server Hyrost</h2>
-                            <p style="font-size: 0.85rem; color: var(--text-muted);">Minecraft Java &amp; Bedrock Edition</p>
+                            <h3 style="font-size: 1.1rem; font-weight:700;">Status Server Hyrost</h3>
+                            <p style="font-size: 0.85rem; color: var(--text-muted);">Minecraft Java & Bedrock Edition</p>
                         </div>
-                        <div class="preview-status" aria-label="Status Server: Online">
-                            <span class="badge-dot" aria-hidden="true"></span>
+                        <div class="preview-status">
+                            <span class="badge-dot"></span>
                             <span id="liveStatusText">ONLINE</span>
                         </div>
                     </div>
 
                     <div class="preview-stats-grid">
                         <div class="stat-card">
-                            <div class="stat-label"><i class="fas fa-users" style="color: var(--accent-indigo);" aria-hidden="true"></i> Pemain Aktif</div>
+                            <div class="stat-label"><i class="fas fa-users" style="color: var(--accent-indigo);"></i> Pemain Aktif</div>
                             <div class="stat-value" id="livePlayersCount">128 / 500</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label"><i class="fas fa-comments" style="color: var(--accent-cyan);" aria-hidden="true"></i> Thread Forum</div>
-                            <div class="stat-value" id="liveForumCount">24+ Thread</div>
+                            <div class="stat-label"><i class="fas fa-comments" style="color: var(--accent-cyan);"></i> Thread Forum</div>
+                            <div class="stat-value" id="liveForumCount">—</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label"><i class="fas fa-shield-alt" style="color: var(--accent-emerald);" aria-hidden="true"></i> Uptime Server</div>
+                            <div class="stat-label"><i class="fas fa-shield-alt" style="color: var(--accent-emerald);"></i> Uptime Server</div>
                             <div class="stat-value">99.9%</div>
                         </div>
                         <div class="stat-card">
-                            <div class="stat-label"><i class="fas fa-coins" style="color: var(--accent-gold);" aria-hidden="true"></i> Ekonomi Koin</div>
+                            <div class="stat-label"><i class="fas fa-coins" style="color: var(--accent-gold);"></i> Ekonomi Koin</div>
                             <div class="stat-value">Aktif</div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
+    </section>
 
     <!-- Features Section (Bento Grid) -->
-    <main>
-        <section class="features" aria-label="Fitur Unggulan Hyrost">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-badge">FITUR UNGGULAN</span>
-                    <h2 class="section-title">Segala Kebutuhan Realm dalam Satu Tempat</h2>
-                    <p class="section-subtitle">Didesain khusus untuk memberikan pengalaman terbaik bagi seluruh pemain dan komunitas Hyrost.</p>
+    <section class="features">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge">FITUR UNGGULAN</span>
+                <h2 class="section-title">Segala Kebutuhan Realm dalam Satu Tempat</h2>
+                <p class="section-subtitle">Didesain khusus untuk memberikan pengalaman terbaik bagi seluruh pemain dan komunitas Hyrost.</p>
+            </div>
+
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3 class="feature-title">Forum & Diskusi Komunitas</h3>
+                    <p class="feature-description">Berbagi cerita, panduan, serta memberikan vote & balasan pada thread diskusi pemain secara real-time.</p>
                 </div>
 
-                <div class="features-grid">
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper" aria-hidden="true">
-                            <i class="fas fa-comments"></i>
-                        </div>
-                        <h3 class="feature-title">Forum &amp; Diskusi Komunitas</h3>
-                        <p class="feature-description">Berbagi cerita, panduan, serta memberikan vote &amp; balasan pada thread diskusi pemain secara real-time.</p>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(6, 182, 212, 0.12); color: var(--accent-cyan);">
+                        <i class="fas fa-shopping-bag"></i>
                     </div>
+                    <h3 class="feature-title">Marketplace Kosmetik</h3>
+                    <p class="feature-description">Gunakan koin Bronze, Silver, atau Gold Anda untuk membeli Nametag, Badge, dan Role eksklusif.</p>
+                </div>
 
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper" style="background: rgba(6, 182, 212, 0.12); color: var(--accent-cyan);" aria-hidden="true">
-                            <i class="fas fa-shopping-bag"></i>
-                        </div>
-                        <h3 class="feature-title">Marketplace Kosmetik</h3>
-                        <p class="feature-description">Gunakan koin Bronze, Silver, atau Gold Anda untuk membeli Nametag, Badge, dan Role eksklusif.</p>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);">
+                        <i class="fas fa-trophy"></i>
                     </div>
+                    <h3 class="feature-title">Leaderboard Pemain</h3>
+                    <p class="feature-description">Pantau peringkat pemain terkaya dan paling aktif di seluruh server dalam tampilan transparan.</p>
+                </div>
 
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper" style="background: rgba(16, 185, 129, 0.12); color: var(--accent-emerald);" aria-hidden="true">
-                            <i class="fas fa-trophy"></i>
-                        </div>
-                        <h3 class="feature-title">Leaderboard Pemain</h3>
-                        <p class="feature-description">Pantau peringkat pemain terkaya dan paling aktif di seluruh server dalam tampilan transparan.</p>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(245, 158, 11, 0.12); color: var(--accent-gold);">
+                        <i class="fas fa-gift"></i>
                     </div>
+                    <h3 class="feature-title">Hadiah Harian (Daily Claim)</h3>
+                    <p class="feature-description">Klaim bonus koin Bronze gratis setiap 24 jam sekali dari halaman profil akun Anda.</p>
+                </div>
 
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper" style="background: rgba(245, 158, 11, 0.12); color: var(--accent-gold);" aria-hidden="true">
-                            <i class="fas fa-gift"></i>
-                        </div>
-                        <h3 class="feature-title">Hadiah Harian (Daily Claim)</h3>
-                        <p class="feature-description">Klaim bonus koin Bronze gratis setiap 24 jam sekali dari halaman profil akun Anda.</p>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(139, 92, 246, 0.12); color: var(--accent-purple);">
+                        <i class="fas fa-box"></i>
                     </div>
+                    <h3 class="feature-title">Storage & Inventaris</h3>
+                    <p class="feature-description">Kelola koleksi item kosmetik, badge terpasang, dan statistik akun Anda dengan mudah.</p>
+                </div>
 
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper" style="background: rgba(139, 92, 246, 0.12); color: var(--accent-purple);" aria-hidden="true">
-                            <i class="fas fa-box"></i>
-                        </div>
-                        <h3 class="feature-title">Storage &amp; Inventaris</h3>
-                        <p class="feature-description">Kelola koleksi item kosmetik, badge terpasang, dan statistik akun Anda dengan mudah.</p>
+                <div class="feature-card">
+                    <div class="feature-icon-wrapper" style="background: rgba(236, 72, 153, 0.12); color: #ec4899;">
+                        <i class="fas fa-book-open"></i>
                     </div>
-
-                    <div class="feature-card">
-                        <div class="feature-icon-wrapper" style="background: rgba(236, 72, 153, 0.12); color: #ec4899;" aria-hidden="true">
-                            <i class="fas fa-book-open"></i>
-                        </div>
-                        <h3 class="feature-title">Wiki &amp; Pusat Bantuan</h3>
-                        <p class="feature-description">Akses aturan server, panduan bermain, dan layanan dukungan tiket jika menemukan kendala.</p>
-                    </div>
+                    <h3 class="feature-title">Wiki & Pusat Bantuan</h3>
+                    <p class="feature-description">Akses aturan server, panduan bermain, dan layanan dukungan tiket jika menemukan kendala.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Live Community Hub (Realtime) -->
-        <section class="live-hub-section" aria-label="Komunitas Hyrost Real-Time">
-            <div class="container">
-                <div class="section-header">
-                    <span class="section-badge"><span class="badge-dot online-pulse" aria-hidden="true"></span> LIVE INTERAKSI</span>
-                    <h2 class="section-title">Komunitas Hyrost Secara Real-Time</h2>
-                    <p class="section-subtitle">Pantau pemain online, aktivitas realm, dan obrolan komunitas web — diperbarui otomatis tanpa refresh.</p>
+    <!-- Live Community Hub (Realtime) -->
+    <section class="live-hub-section">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-badge"><span class="badge-dot online-pulse"></span> LIVE INTERAKSI</span>
+                <h2 class="section-title">Komunitas Hyrost Secara Real-Time</h2>
+                <p class="section-subtitle">Pantau pemain online, aktivitas realm, dan obrolan komunitas web — diperbarui otomatis tanpa refresh.</p>
+            </div>
+
+            <div class="live-hub-grid">
+                <div class="live-hub-card">
+                    <div class="live-hub-card-head">
+                        <i class="fas fa-signal"></i>
+                        <span>Pengunjung Web Online</span>
+                    </div>
+                    <div class="live-hub-stat" id="liveWebOnlineCount">0</div>
+                    <p class="live-hub-hint">Pemain yang sedang membuka portal Hyrost</p>
                 </div>
 
-                <div class="live-hub-grid">
-                    <div class="live-hub-card">
-                        <div class="live-hub-card-head">
-                            <i class="fas fa-signal" aria-hidden="true"></i>
-                            <span>Pengunjung Web Online</span>
-                        </div>
-                        <div class="live-hub-stat" id="liveWebOnlineCount">14</div>
-                        <p class="live-hub-hint">Pemain yang sedang membuka portal Hyrost</p>
+                <div class="live-hub-card live-hub-card-wide">
+                    <div class="live-hub-card-head">
+                        <i class="fas fa-bolt"></i>
+                        <span>Aktivitas Realm Terbaru</span>
                     </div>
+                    <div id="visitorLiveActivity" class="live-activity-list"></div>
+                </div>
 
-                    <div class="live-hub-card live-hub-card-wide">
-                        <div class="live-hub-card-head">
-                            <i class="fas fa-bolt" aria-hidden="true"></i>
-                            <span>Aktivitas Realm Terbaru</span>
-                        </div>
-                        <div id="visitorLiveActivity" class="live-activity-list" aria-live="polite"></div>
+                <div class="live-hub-card live-hub-card-wide">
+                    <div class="live-hub-card-head">
+                        <i class="fas fa-comments"></i>
+                        <span>Obrolan Komunitas</span>
                     </div>
-
-                    <div class="live-hub-card live-hub-card-wide">
-                        <div class="live-hub-card-head">
-                            <i class="fas fa-comments" aria-hidden="true"></i>
-                            <span>Obrolan Komunitas</span>
-                        </div>
-                        <div id="visitorLiveChat" class="live-chat-panel" aria-live="polite"></div>
-                        <div class="live-chat-compose" id="visitorChatCompose">
-                            <label for="visitorLiveChatInput" class="sr-only">Tulis pesan obrolan komunitas</label>
-                            <input type="text" id="visitorLiveChatInput" placeholder="Ketik pesan..." maxlength="280" autocomplete="off" />
-                            <button type="button" id="visitorLiveChatSend" aria-label="Kirim Pesan Obrolan"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
-                        </div>
-                        <p class="live-hub-hint" id="visitorChatHint">Masuk untuk ikut berdiskusi dengan komunitas.</p>
+                    <div id="visitorLiveChat" class="live-chat-panel"></div>
+                    <div class="live-chat-compose" id="visitorChatCompose">
+                        <input type="text" id="visitorLiveChatInput" placeholder="Ketik pesan..." maxlength="280" />
+                        <button type="button" id="visitorLiveChatSend"><i class="fas fa-paper-plane"></i></button>
                     </div>
+                    <p class="live-hub-hint" id="visitorChatHint">Masuk untuk ikut berdiskusi dengan komunitas.</p>
                 </div>
             </div>
-        </section>
+        </div>
+    </section>
 
-        <!-- Quick CTA Section -->
-        <section class="cta-section" aria-label="Ajakan Bergabung">
-            <div class="container">
-                <div class="cta-box">
-                    <h2 class="cta-title">Siap Bergabung dengan Hyrost?</h2>
-                    <p class="cta-subtitle">Masuk ke akun Anda sekarang atau jelajahi dashboard untuk menikmati seluruh fitur komunitas.</p>
-                    <div class="hero-buttons" style="justify-content: center;">
-                        <button class="btn-primary" onclick="goToDashboard()" aria-label="Akses Dashboard Sekarang">
-                            <span>Akses Dashboard Sekarang</span>
-                            <i class="fas fa-arrow-right" aria-hidden="true"></i>
-                        </button>
-                        <a href="auth/login.html" class="btn-secondary" aria-label="Buat Akun atau Login">
-                            <i class="fas fa-user-plus" aria-hidden="true"></i>
-                            <span>Buat Akun / Login</span>
-                        </a>
-                    </div>
+    <!-- Quick CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-box">
+                <h2 class="cta-title">Siap Bergabung dengan Hyrost?</h2>
+                <p class="cta-subtitle">Masuk ke akun Anda sekarang atau jelajahi dashboard untuk menikmati seluruh fitur komunitas.</p>
+                <div class="hero-buttons" style="justify-content: center;">
+                    <button class="btn-primary" onclick="goToDashboard()">
+                        <span>Akses Dashboard Sekarang</span>
+                        <i class="fas fa-arrow-right"></i>
+                    </button>
+                    <a href="auth/login.html" class="btn-secondary">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Buat Akun / Login</span>
+                    </a>
                 </div>
             </div>
-        </section>
-    </main>
+        </div>
+    </section>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast" role="status" aria-live="polite">
-        <i class="fas fa-check-circle" aria-hidden="true"></i>
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle"></i>
         <span id="toastMsg">IP Server berhasil disalin!</span>
     </div>
 
@@ -364,22 +268,22 @@
             <div class="footer-links">
                 <a href="index.html" class="footer-link">Home</a>
                 <a href="dashboard.html" class="footer-link">Dashboard</a>
-                <a href="bot/index.html" class="footer-link" style="color: #FF3385;"><i class="fab fa-discord" aria-hidden="true"></i> Bot Mei</a>
+                <a href="bot/index.html" class="footer-link" style="color: #FF3385;"><i class="fab fa-discord"></i> Bot Mei</a>
                 <a href="modules/forum.html" class="footer-link">Forum</a>
                 <a href="modules/support.html" class="footer-link">Support</a>
                 <a href="terms.html" class="footer-link">Terms of Service</a>
                 <a href="privacy.html" class="footer-link">Privacy Policy</a>
             </div>
             <p class="footer-text">
-                &copy; 2026 <strong style="color: var(--accent-indigo);">Hyrost Server</strong>. All rights reserved.
+                © 2026 <strong style="color: var(--accent-indigo);">Hyrost Server</strong>. All rights reserved.
             </p>
         </div>
     </footer>
 
-    <!-- Logic Scripts (Optimized) -->
-    <script src="assets/js/mcServerWidget.js?v=35" defer></script>
-    <script src="assets/js/liveHub.js?v=35" defer></script>
-    <script src="index.js?v=35" defer></script>
+    <!-- Logic Script -->
+    <script src="assets/js/mcServerWidget.js"></script>
+    <script src="assets/js/liveHub.js"></script>
+    <script src="index.js?v=3"></script>
     <script>
         function copyServerIP() {
             if (window.HyrostMCServer) {
@@ -405,8 +309,8 @@
             }
         }
     </script>
-    <script src="assets/js/pwa-init.js?v=35" defer></script>
-    <script src="assets/js/theme.js?v=35" defer></script>
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="assets/js/pwa-init.js"></script>
+    <script src="assets/js/theme.js"></script>
+    <link rel="stylesheet" href="assets/css/theme-light.css">
 </body>
 </html>

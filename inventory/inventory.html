@@ -3,30 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost — Storage &amp; Inventaris</title>
+    <title>Hyrost - Storage Inventaris</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css?v=52">
-    <link rel="stylesheet" href="inventory.css?v=52">
+    <link rel="stylesheet" href="../dashboard.css?v=10">
+    <link rel="stylesheet" href="inventory.css?v=4">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-container">
-        <!-- Sidebar Overlay for Mobile -->
-        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar(event)"></div>
-
         <!-- Sidebar -->
-        <aside class="sidebar" id="sidebar">
+        <aside class="sidebar">
             <div class="sidebar-header">
                 <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <div class="brand-text">
-                    <h2>Hyrost</h2>
-                    <span>Member Realm</span>
-                </div>
+                <h2>Hyrost</h2>
             </div>
             
             <div class="nav-section-label">Navigasi Utama</div>
@@ -46,18 +40,6 @@
                 <a href="../modules/forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
                     <span>Forum</span>
-                </a>
-                <a href="../modules/showcase.html" class="nav-item">
-                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan);"></i>
-                    <span>Galeri Build</span>
-                </a>
-                <a href="../bot/skin.html" class="nav-item">
-                    <i class="fas fa-person-running" style="color:var(--accent-pink, #ec4899);"></i>
-                    <span>3D Skin Studio</span>
-                </a>
-                <a href="../modules/map.html" class="nav-item">
-                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
-                    <span>Live Map</span>
                 </a>
                 <a href="../modules/leaderboard.html" class="nav-item">
                     <i class="fas fa-trophy"></i>
@@ -87,65 +69,39 @@
                     <i class="fas fa-headset"></i>
                     <span>Pusat Bantuan</span>
                 </a>
-                <a href="../verify-user.html" class="nav-item">
-                    <i class="fab fa-discord" style="color:#5865F2;"></i>
-                    <span>Verifikasi Discord</span>
-                </a>
                 <div class="nav-divider"></div>
-                <div class="nav-section-label nav-section-admin">Admin Panel</div>
+                <div class="nav-section-label nav-section-admin" style="margin-top:12px;">Admin Panel</div>
                 <a href="../modules/admin.html" class="nav-item nav-admin">
                     <i class="fas fa-user-shield"></i>
                     <span>Admin Panel</span>
                 </a>
             </nav>
-
-            <div class="sidebar-bottom">
-                <div class="sidebar-server-pill">
-                    <div class="server-pill-row">
-                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
-                        <span class="status-dot online"></span>
-                    </div>
-                    <div class="server-pill-ip">play.hyrost.net</div>
-                </div>
+            <div style="display:flex; justify-content:center; gap:8px; font-size:0.75rem; padding:16px 0; color:rgba(255,255,255,0.4);">
+                <a href="../terms.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Terms</a>
+                <span>•</span>
+                <a href="../privacy.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Privacy</a>
+                <span>•</span>
+                <a href="../index.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
             </div>
         </aside>
-
-        <!-- Mobile Header -->
-        <div class="mobile-header">
-            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar(event)" aria-label="Menu" style="padding:8px 12px;">
-                <i class="fas fa-bars"></i>
-            </button>
-            <div class="mobile-logo">
-                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <h2>Hyrost</h2>
-            </div>
-            <button class="btn-header-action mobile-logout-btn" onclick="localStorage.clear(); window.location.href='../index.html';" title="Keluar" style="padding:8px 12px;">
-                <i class="fas fa-sign-out-alt"></i>
-            </button>
-        </div>
 
         <!-- Main Content -->
         <main class="main-content">
             <div class="top-user-banner">
                 <div>
-                    <h1 style="font-size: 1.5rem; font-weight: 800; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:4px;">
-                        <i class="fas fa-box-open" style="color:var(--accent-purple-light);"></i>
-                        <span>Storage Inventaris Realm</span>
+                    <h1 style="font-size: 1.8rem; font-weight: 800; display:flex; align-items:center; gap:10px;">
+                        <span>📦 Storage Inventaris Realm</span>
                     </h1>
-                    <p style="color: var(--text-muted); font-size: 0.85rem;">Kelola nametag kosmetik, badge profil, dan item yang Anda miliki di realm.</p>
+                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Kelola perlengkapan, kosmetik 3D, badge profil, dan item in-game yang Anda miliki.</p>
                 </div>
-                <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-                    <button class="btn-header-action" onclick="claimAllItemsToMinecraft()" style="background: linear-gradient(135deg, var(--accent-emerald), #059669); color:#fff; font-weight:700; border:none;">
+                <div style="display:flex; gap:10px; align-items:center;">
+                    <button class="btn-header-action" onclick="claimAllItemsToMinecraft()" style="background: linear-gradient(135deg, #84cc16, #65a30d); color:#fff; font-weight:700; border:none;">
                         <i class="fas fa-cubes"></i>
-                        <span>Klaim ke Minecraft</span>
+                        <span>Klaim Semua ke MC</span>
                     </button>
-                    <button class="btn-header-action" onclick="openInventory3DSkinModal()">
-                        <i class="fas fa-cube" style="color:var(--accent-cyan);"></i>
-                        <span>Preview Karakter 3D</span>
-                    </button>
-                    <a href="../marketplace/index.html" class="btn-header-action btn-primary-action">
+                    <a href="../marketplace/index.html" class="btn-header-action" style="background: var(--accent-indigo); color:#fff; font-weight:700;">
                         <i class="fas fa-shopping-bag"></i>
-                        <span>Marketplace</span>
+                        <span>Buka Marketplace</span>
                     </a>
                 </div>
             </div>
@@ -163,19 +119,19 @@
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background:rgba(245,158,11,0.12); color:var(--accent-gold); border-color:rgba(245,158,11,0.25);"><i class="fas fa-gem"></i></div>
+                    <div class="stat-icon" style="background:rgba(245,158,11,0.15); color:#f59e0b;"><i class="fas fa-gem"></i></div>
                     <div>
                         <span class="stat-label">Item Terpasang</span>
                         <h4 id="equippedCountText">0 Item Aktif</h4>
-                        <span class="stat-sub" style="color:var(--accent-gold);">Kosmetik &amp; Badge</span>
+                        <span class="stat-sub" style="color:#f59e0b;">Kosmetik & Badge</span>
                     </div>
                 </div>
                 <div class="stat-card">
-                    <div class="stat-icon" style="background:rgba(16,185,129,0.12); color:var(--accent-emerald-light); border-color:rgba(16,185,129,0.25);"><i class="fas fa-coins"></i></div>
+                    <div class="stat-icon" style="background:rgba(16,185,129,0.15); color:#10b981;"><i class="fas fa-coins"></i></div>
                     <div>
-                        <span class="stat-label">Estimasi Nilai</span>
+                        <span class="stat-label">Nilai Item Storage</span>
                         <h4 id="totalValueText">~ 0 Koin</h4>
-                        <span class="stat-sub" style="color:var(--accent-emerald-light);">Nilai Total Item</span>
+                        <span class="stat-sub" style="color:#10b981;">Estimasi Pasar</span>
                     </div>
                 </div>
             </div>
@@ -183,11 +139,11 @@
             <!-- Controls: Filter Tabs & Search/Sort Bar -->
             <div class="inventory-controls-container">
                 <div class="inv-category-tabs">
-                    <button class="inv-tab-btn active" data-cat="all"><i class="fas fa-th"></i> Semua</button>
-                    <button class="inv-tab-btn" data-cat="weapon"><i class="fas fa-shield-alt"></i> Perlengkapan</button>
-                    <button class="inv-tab-btn" data-cat="cosmetic"><i class="fas fa-tag"></i> Nametag &amp; Badge</button>
-                    <button class="inv-tab-btn" data-cat="potion"><i class="fas fa-flask"></i> Potion</button>
-                    <button class="inv-tab-btn" data-cat="key"><i class="fas fa-key"></i> Kunci Peti</button>
+                    <button class="inv-tab-btn active" data-cat="all"><i class="fas fa-th"></i> Semua Item</button>
+                    <button class="inv-tab-btn" data-cat="weapon"><i class="fas fa-khanda"></i> Senjata & Armor</button>
+                    <button class="inv-tab-btn" data-cat="cosmetic"><i class="fas fa-feather-alt"></i> Kosmetik 3D</button>
+                    <button class="inv-tab-btn" data-cat="potion"><i class="fas fa-flask"></i> Potion & Konsumsi</button>
+                    <button class="inv-tab-btn" data-cat="key"><i class="fas fa-key"></i> Kunci & Lootbox</button>
                 </div>
 
                 <div class="inv-search-group">
@@ -213,52 +169,44 @@
 
     <!-- Item Inspection Detail Modal -->
     <div class="modal-overlay" id="itemDetailModal">
-        <div class="modal-content item-modal-box" style="max-width:480px; width:92%;">
-            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; padding:18px 22px; border-bottom:1px solid var(--border-subtle);">
-                <h3 style="margin:0; font-size:1.1rem; color:#fff; font-weight:800; display:flex; align-items:center; gap:8px;">
-                    <i class="fas fa-search-plus" style="color:var(--accent-indigo-light);"></i> Inspeksi Detail Item
-                </h3>
-                <button class="close-modal" onclick="closeItemDetailModal()" style="background:var(--bg-surface-2); border:1px solid var(--border-subtle); color:var(--text-muted); width:30px; height:30px; border-radius:50%; cursor:pointer; display:flex; align-items:center; justify-content:center;">
+        <div class="modal-content item-modal-box">
+            <div class="modal-header">
+                <h3 style="margin:0;"><i class="fas fa-search-plus" style="color:#6366f1;"></i> Inspeksi Detail Item</h3>
+                <button class="close-modal" onclick="closeItemDetailModal()">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
-            <div class="modal-body" style="padding:22px;">
-                <div class="item-modal-grid" id="itemModalDetails">
-                    <!-- Loaded dynamically by inventory.js -->
+            <div class="modal-body" style="padding:24px;">
+                <div class="item-modal-grid">
+                    <div class="item-modal-visual" id="modalItemVisual">
+                        <i class="fas fa-box"></i>
+                    </div>
+                    <div class="item-modal-info">
+                        <span class="rarity-badge mythic" id="modalItemRarity">MYTHIC</span>
+                        <h3 id="modalItemName" style="color:#fff; font-size:1.4rem; margin:6px 0 2px;">Item Name</h3>
+                        <p id="modalItemCategory" style="color:#a5b4fc; font-size:0.85rem; margin-bottom:12px;">Kosmetik Headwear</p>
+                        <p id="modalItemDesc" style="color:#d1d5db; font-size:0.9rem; line-height:1.5;">Deskripsi item lengkap.</p>
+                        
+                        <div class="item-stats-table">
+                            <div class="stat-row"><span>Jumlah (Qty):</span> <strong id="modalItemQty">1x</strong></div>
+                            <div class="stat-row"><span>Kode Item MC:</span> <code id="modalItemCode">item_code</code></div>
+                            <div class="stat-row"><span>Status Pasang:</span> <span id="modalItemEquippedStatus" style="color:#10b981; font-weight:700;">Belum Terpasang</span></div>
+                        </div>
+
+                        <div style="display:flex; gap:10px; margin-top:20px;">
+                            <button class="btn-use" id="btnModalEquip" style="flex:1;">
+                                <i class="fas fa-tshirt"></i> Pasang Kosmetik
+                            </button>
+                            <button class="btn-use" id="btnModalClaimMC" style="flex:1; background: linear-gradient(135deg, #84cc16, #65a30d); border-color:#84cc16;">
+                                <i class="fas fa-cube"></i> Klaim ke MC
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 3D Skin Viewer Modal in Inventory -->
-    <div class="modal-overlay" id="skinPreviewModal" onclick="if(event.target === this) closeInventory3DSkinModal()">
-        <div class="modal-content" style="max-width:540px; width:92%; padding:0; overflow:hidden;">
-            <div class="modal-header" style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid var(--border-subtle); background:var(--bg-surface-2);">
-                <h3 style="margin:0; font-size:1.1rem; color:#fff; font-weight:800; display:flex; align-items:center; gap:8px;">
-                    <i class="fas fa-cube" style="color:var(--accent-cyan);"></i> Preview Karakter 3D Minecraft
-                </h3>
-                <button class="close-modal" onclick="closeInventory3DSkinModal()" style="background:none; border:none; color:var(--text-muted); font-size:1.2rem; cursor:pointer;">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div style="padding:20px;">
-                <div id="invSkinContainer" style="position:relative; width:100%; height:340px; background:radial-gradient(circle at center, #1e1b4b 0%, #080c14 100%); border-radius:var(--radius-md); border:1px solid var(--border-subtle); display:flex; align-items:center; justify-content:center; overflow:hidden;">
-                    <canvas id="invSkinCanvas" style="width:100%; height:100%; cursor:grab;"></canvas>
-                </div>
-                <div style="display:flex; justify-content:center; gap:8px; margin-top:16px;">
-                    <button class="btn-action-outline" onclick="if(window.HyrostSkinViewer) window.HyrostSkinViewer.setAnimation('invSkinCanvas', 'idle')" style="padding:6px 14px; font-size:0.8rem;"><i class="fas fa-person"></i> Diam</button>
-                    <button class="btn-action-outline" onclick="if(window.HyrostSkinViewer) window.HyrostSkinViewer.setAnimation('invSkinCanvas', 'walk')" style="padding:6px 14px; font-size:0.8rem;"><i class="fas fa-person-walking"></i> Jalan</button>
-                    <button class="btn-action-outline" onclick="if(window.HyrostSkinViewer) window.HyrostSkinViewer.setAnimation('invSkinCanvas', 'wave')" style="padding:6px 14px; font-size:0.8rem;"><i class="fas fa-hand"></i> Lambaikan</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Scripts -->
-    <script src="../assets/js/sfx.js"></script>
-    <script src="../assets/js/skinViewer.js"></script>
-    <script src="../assets/js/notifications.js"></script>
-    <script src="../assets/js/mobileLayout.js?v=52"></script>
-    <script src="inventory.js?v=26"></script>
+    <script src="inventory.js"></script>
 </body>
 </html>

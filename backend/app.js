@@ -6,59 +6,33 @@ const errorHandler = require('./middleware/errorHandler');
 // Initialize app
 const app = express();
 
-// Security Headers & Hardening
+// Security Headers & CORS
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
   res.setHeader('X-XSS-Protection', '1; mode=block');
-  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-
-  // Enforce HSTS on HTTPS / production proxy
-  if (req.secure || req.headers['x-forwarded-proto'] === 'https') {
-    res.setHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-  }
-
-  res.removeHeader('X-Powered-By');
   next();
 });
 
-// Strict CORS Whitelist Configuration
-const explicitAllowedOrigins = process.env.ALLOWED_ORIGINS 
-  ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim().toLowerCase()) 
-  : [];
-
-const TRUSTED_DOMAIN_REGEX = /^https?:\/\/([a-zA-Z0-9-]+\.)*(hyrost\.web\.id|hyrost\.net)(:[0-9]+)?$/i;
-const LOCALHOST_REGEX = /^http:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/i;
+const allowedOrigins = process.env.ALLOWED_ORIGINS 
+  ? process.env.ALLOWED_ORIGINS.split(',') 
+  : ['http://localhost:3000', 'http://localhost:3044', 'http://127.0.0.1:3044'];
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Non-browser / server-to-server requests
-    if (!origin) return callback(null, true);
-
-    const lowerOrigin = origin.toLowerCase();
-
-    // 1. Primary trusted domains & all subdomains
-    if (TRUSTED_DOMAIN_REGEX.test(lowerOrigin)) {
+    if (!origin) {
+      if (process.env.NODE_ENV === 'production') {
+        return callback(new Error('Origin header required'), false);
+      }
       return callback(null, true);
     }
-
-    // 2. Explicit origins in .env
-    if (explicitAllowedOrigins.includes(lowerOrigin)) {
-      return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
     }
-
-    // 3. Localhost in development mode only
-    if (process.env.NODE_ENV !== 'production' && LOCALHOST_REGEX.test(lowerOrigin)) {
-      return callback(null, true);
-    }
-
-    // Block unknown / unauthorized origins
-    return callback(new Error(`CORS Blocked: Origin '${origin}' is not authorized`));
   },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-admin-2fa', 'x-minecraft-bridge-key']
+  credentials: true
 }));
 
 app.use(express.json({
@@ -69,20 +43,6 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Discord Developer Portal Endpoint Aliases
-app.use('/interaction', (req, res, next) => {
-  req.url = '/interaction' + req.url;
-  require('./routes/interaction')(req, res, next);
-});
-app.use('/interactions', (req, res, next) => {
-  req.url = '/interaction' + req.url;
-  require('./routes/interaction')(req, res, next);
-});
-app.get('/verify-user', (req, res) => {
-  res.sendFile(path.join(rootDir, 'verify-user.html'));
-});
-
-// Serve uploads & static asset directories with caching
 const rootDir = path.join(__dirname, '..');
 const staticOptions = {
   maxAge: '1d',
@@ -90,6 +50,20 @@ const staticOptions = {
   extensions: ['html', 'htm'],
   dotfiles: 'ignore'
 };
+
+// Discord Developer Portal Endpoint Aliases
+const interactionRoutes = require('./routes/interaction');
+const verifyUserRoutes = require('./routes/verifyUser');
+
+app.use('/interaction', interactionRoutes);
+app.use('/interactions', interactionRoutes);
+app.use('/verify-user', verifyUserRoutes);
+app.get('/verify-user', (req, res) => {
+  res.sendFile(path.join(rootDir, 'verify-user.html'));
+});
+app.get('/verify-user.html', (req, res) => {
+  res.sendFile(path.join(rootDir, 'verify-user.html'));
+});
 // Secure local media (data/uploads) — filename whitelist only
 app.use('/uploads', require('./routes/media'));
 

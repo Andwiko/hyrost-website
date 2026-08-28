@@ -58,9 +58,7 @@ router.use('/support', supportRoutes);
 router.use('/inventory', inventoryRoutes);
 router.use('/marketplace', marketplaceRoutes);
 router.use('/plugin', pluginRoutes);
-router.use('/showcases', require('./showcaseRoutes'));
-router.use('/referrals', require('./referralRoutes'));
-router.use('/upload', require('./uploadRoutes'));
+router.use('/studio', require('./studio'));
 
 router.use('/forum', forumRoutes);
 router.use('/chat', chatRoutes);

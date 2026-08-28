@@ -1,69 +1,47 @@
-'use strict';
-
+// Auth routes
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const twoFactorController = require('../controllers/twoFactorController');
-const { verifyToken } = require('../middleware/auth');
 
-// Progressive In-Memory Rate Limiter for Auth Routes
+console.log('DEBUG: Registering Auth Routes. authController keys:', Object.keys(authController || {}));
+
+if (!authController.register) console.error('CRITICAL: authController.register is undefined!');
+if (!authController.login) console.error('CRITICAL: authController.login is undefined!');
+
+// Rate Limiter Middleware for Auth Routes
 const rateLimitMap = new Map();
-
-function createEndpointLimiter(maxRequests, windowMs, customMsg) {
-  return (req, res, next) => {
-    const ip = req.ip || req.headers['x-forwarded-for'] || req.socket.remoteAddress || '127.0.0.1';
-    const key = `${req.baseUrl}${req.path}:${ip}`;
+const authRateLimiter = (req, res, next) => {
+    const ip = req.ip || req.connection.remoteAddress || 'unknown';
     const now = Date.now();
+    const windowMs = 15 * 60 * 1000; // 15 minutes window
+    const maxRequests = 20; // max 20 requests per 15 mins per IP
 
-    const record = rateLimitMap.get(key) || { count: 0, resetTime: now + windowMs };
+    const record = rateLimitMap.get(ip) || { count: 0, resetTime: now + windowMs };
 
     if (now > record.resetTime) {
-      record.count = 1;
-      record.resetTime = now + windowMs;
+        record.count = 1;
+        record.resetTime = now + windowMs;
     } else {
-      record.count += 1;
+        record.count += 1;
     }
 
-    rateLimitMap.set(key, record);
+    rateLimitMap.set(ip, record);
 
     if (record.count > maxRequests) {
-      const waitMinutes = Math.ceil((record.resetTime - now) / 60000);
-      return res.status(429).json({ 
-        success: false,
-        message: customMsg || `Terlalu banyak request. Silakan coba lagi dalam ${waitMinutes} menit.` 
-      });
+        return res.status(429).json({ 
+            message: 'Terlalu banyak percobaan autentikasi. Silakan coba lagi dalam 15 menit.' 
+        });
     }
 
     next();
-  };
-}
+};
 
-// Clean up expired entries every 10 minutes
-setInterval(() => {
-  const now = Date.now();
-  for (const [k, v] of rateLimitMap.entries()) {
-    if (now > v.resetTime) rateLimitMap.delete(k);
-  }
-}, 10 * 60 * 1000);
+router.use(authRateLimiter);
 
-// Specific Rate Limiters
-const loginLimiter = createEndpointLimiter(10, 10 * 60 * 1000, 'Terlalu banyak percobaan login gagal. Silakan coba lagi dalam 10 menit.');
-const registerLimiter = createEndpointLimiter(5, 60 * 60 * 1000, 'Batas pendaftaran tercapai. Silakan coba lagi dalam 1 jam.');
-const forgotPasswordLimiter = createEndpointLimiter(3, 60 * 60 * 1000, 'Batas permintaan reset password tercapai. Coba lagi dalam 1 jam.');
-
-// Public Auth Endpoints
-router.post('/login', loginLimiter, authController.login);
-router.post('/register', registerLimiter, authController.register);
-router.post('/google', loginLimiter, authController.googleLogin);
-router.post('/refresh', authController.refreshToken);
-router.post('/forgotpassword', forgotPasswordLimiter, authController.forgotPassword);
+router.post('/register', authController.register);
+router.post('/login', authController.login);
+router.post('/google', authController.googleLogin);
+router.post('/forgotpassword', authController.forgotPassword);
 router.put('/resetpassword/:resettoken', authController.resetPassword);
-
-// Authenticated Endpoints
-router.get('/me', verifyToken, authController.getMe);
-
-// 2FA Endpoints (Authenticated)
-router.get('/2fa/setup', verifyToken, twoFactorController.setup2FA);
-router.post('/2fa/verify', verifyToken, twoFactorController.verify2FA);
 
 module.exports = router;

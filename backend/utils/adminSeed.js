@@ -18,16 +18,29 @@ async function ensureAdminUser(pool) {
   }
 
   const [rows] = await pool.execute(
-    'SELECT id FROM users WHERE username = ? OR email = ?',
+    'SELECT id, role, password FROM users WHERE username = ? OR email = ?',
     [config.username, config.email]
   );
 
+  const hash = await bcrypt.hash(config.password, await bcrypt.genSalt(10));
+
   if (rows.length > 0) {
-    console.log(`ℹ️  Admin user '${config.username}' already exists — password unchanged.`);
+    const existing = rows[0];
+    const isPassMatch = await bcrypt.compare(config.password, existing.password);
+    const roleIsAdmin = (existing.role || '').toLowerCase() === 'admin';
+
+    if (!isPassMatch || !roleIsAdmin) {
+      await pool.execute(
+        'UPDATE users SET role = ?, password = ?, deleted_at = NULL WHERE id = ?',
+        ['Admin', hash, existing.id]
+      );
+      console.log(`✅ Admin user '${config.username}' role & password synchronized to Admin.`);
+    } else {
+      console.log(`ℹ️  Admin user '${config.username}' verified (Role: Admin).`);
+    }
     return;
   }
 
-  const hash = await bcrypt.hash(config.password, await bcrypt.genSalt(10));
   await pool.execute(
     `INSERT INTO users (username, email, password, role, coin_bronze, coin_silver, coin_gold, avatar_url)
      VALUES (?, ?, ?, 'Admin', 1000, 1000, 1000, ?)`,
@@ -38,7 +51,7 @@ async function ensureAdminUser(pool) {
       `https://ui-avatars.com/api/?name=${encodeURIComponent(config.username)}&background=6366f1&color=fff`,
     ]
   );
-  console.log(`✅ Admin account '${config.username}' created.`);
+  console.log(`✅ Admin account '${config.username}' created successfully.`);
 }
 
 async function seedInMemoryAdmin(inMemoryStore) {

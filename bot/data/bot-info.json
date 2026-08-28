@@ -1,10 +1,19 @@
 {
   "name": "Mei Labs",
-  "version": "2.54.5.1.1",
-  "displayVersion": "v2.54.5",
+  "version": "2.54.24.1.1",
+  "displayVersion": "v2.54.24",
   "prefix": "!",
-  "commandsCount": 197,
-  "featuresCount": 23,
-  "engine": "Google Gemini AI & Lavalink HQ",
-  "lastSynced": "2026-08-23T12:05:00.000Z"
+  "commandsCount": 246,
+  "categoriesCount": 12,
+  "featuresCount": 30,
+  "engine": "Next-Gen Micro-Kernel, Gemini 2.0 AI, Lavalink HQ & Worker Pool",
+  "pillars": [
+    "Micro-Kernel Hot-Swap Plugin Architecture",
+    "Autonomous Self-Healing AI Diagnostic Daemon",
+    "True 0ms Event Loop Lag — Async Worker Thread Pool",
+    "Real-Time Conversational Voice AI Companion",
+    "Zero-Downtime State Persistence Mesh"
+  ],
+  "status": "ONLINE",
+  "lastSynced": "2026-08-28T09:03:52.218Z"
 }

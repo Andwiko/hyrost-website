@@ -1413,12 +1413,127 @@ window.deleteVoucherAdmin = async (id) => {
   }
 };
 
-// ─── MODULE 6: PAYMENT SETTINGS MANAGER ────────────────────────────────────
+// ─── MODULE 6: PAYMENT SETTINGS & MIDTRANS MANAGER ─────────────────────────
+function updateMidtransModeBadge() {
+  const isProd = document.getElementById('payMidtransIsProduction')?.checked;
+  const label = document.getElementById('midtransModeLabel');
+  if (label) {
+    label.innerHTML = isProd 
+      ? '<strong style="color:#ef4444;">🔴 PRODUCTION (Live Transaksi Nyata)</strong>' 
+      : '<strong style="color:#38bdf8;">🟢 SANDBOX (Mode Pengujian / Simulasi)</strong>';
+  }
+}
+window.updateMidtransModeBadge = updateMidtransModeBadge;
+
+function toggleKeyVisibility(inputId) {
+  const input = document.getElementById(inputId);
+  const btn = document.getElementById('btnToggleServerKey');
+  if (!input) return;
+  if (input.type === 'password') {
+    input.type = 'text';
+    if (btn) btn.innerHTML = '<i class="fas fa-eye-slash"></i> Sembunyikan';
+  } else {
+    input.type = 'password';
+    if (btn) btn.innerHTML = '<i class="fas fa-eye"></i> Tampilkan';
+  }
+}
+window.toggleKeyVisibility = toggleKeyVisibility;
+
+function copyWebhookUrl(elementId) {
+  const el = document.getElementById(elementId);
+  if (!el) return;
+  const text = el.textContent || el.innerText;
+  navigator.clipboard.writeText(text).then(() => {
+    toast("📋 URL Webhook berhasil disalin!", "success");
+  }).catch(() => {
+    toast("Gagal menyalin URL", "error");
+  });
+}
+window.copyWebhookUrl = copyWebhookUrl;
+
+async function testMidtransConnection() {
+  const serverKey = document.getElementById('payMidtransServerKey')?.value;
+  const isProduction = document.getElementById('payMidtransIsProduction')?.checked;
+  const resultBox = document.getElementById('midtransTestResult');
+
+  if (!serverKey || serverKey.includes('GANTI_DENGAN_SERVER_KEY')) {
+    toast("⚠️ Masukkan Midtrans Server Key terlebih dahulu!", "warning");
+    if (resultBox) {
+      resultBox.style.display = 'block';
+      resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+      resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+      resultBox.style.color = '#f87171';
+      resultBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Masukkan Server Key Midtrans valid sebelum melakukan pengetesan koneksi.';
+    }
+    return;
+  }
+
+  if (resultBox) {
+    resultBox.style.display = 'block';
+    resultBox.style.background = 'rgba(99, 102, 241, 0.15)';
+    resultBox.style.border = '1px solid rgba(99, 102, 241, 0.4)';
+    resultBox.style.color = '#a5b4fc';
+    resultBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungi API Midtrans... Mohon tunggu.';
+  }
+
+  const { ok, data } = await safeFetchJson(`${API}/admin/payment-settings/test-midtrans`, {
+    method: 'POST',
+    headers: authHeaders,
+    body: JSON.stringify({ serverKey, isProduction })
+  });
+
+  if (resultBox) {
+    if (ok && data.success) {
+      resultBox.style.background = 'rgba(16, 185, 129, 0.15)';
+      resultBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+      resultBox.style.color = '#34d399';
+      resultBox.innerHTML = `<i class="fas fa-check-circle"></i> ${data.message}`;
+      toast(data.message, "success");
+    } else {
+      resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+      resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+      resultBox.style.color = '#f87171';
+      resultBox.innerHTML = `<i class="fas fa-times-circle"></i> ${data.message || 'Koneksi Midtrans gagal'}`;
+      toast(data.message || "Koneksi Midtrans gagal", "error");
+    }
+  }
+}
+window.testMidtransConnection = testMidtransConnection;
+
 async function loadPaymentSettings() {
   const { ok, data } = await safeFetchJson(`${API}/admin/payment-settings`, { headers: authHeaders });
   if (!ok || !data.settings) return;
 
   const s = data.settings;
+
+  // Midtrans Settings
+  if (document.getElementById('payMidtransEnabled')) {
+    document.getElementById('payMidtransEnabled').checked = s.midtrans_enabled !== false;
+  }
+  if (document.getElementById('payMidtransIsProduction')) {
+    document.getElementById('payMidtransIsProduction').checked = s.midtrans_is_production === true;
+    updateMidtransModeBadge();
+  }
+  if (document.getElementById('payMidtransServerKey') && s.midtrans_server_key !== undefined) {
+    document.getElementById('payMidtransServerKey').value = s.midtrans_server_key;
+  }
+  if (document.getElementById('payMidtransClientKey') && s.midtrans_client_key !== undefined) {
+    document.getElementById('payMidtransClientKey').value = s.midtrans_client_key;
+  }
+  if (document.getElementById('payMidtransMerchantId') && s.midtrans_merchant_id !== undefined) {
+    document.getElementById('payMidtransMerchantId').value = s.midtrans_merchant_id;
+  }
+
+  // Update Dynamic Webhook URLs in UI
+  const origin = window.location.origin;
+  if (document.getElementById('webhookStudioUrl')) {
+    document.getElementById('webhookStudioUrl').textContent = `${origin}/api/studio/payment-webhook`;
+  }
+  if (document.getElementById('webhookStoreUrl')) {
+    document.getElementById('webhookStoreUrl').textContent = `${origin}/api/features/payments/midtrans-webhook`;
+  }
+
+  // Store & Manual Gateways
   if (document.getElementById('payCfgQris')) document.getElementById('payCfgQris').checked = s.qris_active !== false;
   if (document.getElementById('payCfgBca')) document.getElementById('payCfgBca').checked = s.bca_active !== false;
   if (document.getElementById('payCfgMandiri')) document.getElementById('payCfgMandiri').checked = s.mandiri_active !== false;
@@ -1430,11 +1545,21 @@ async function loadPaymentSettings() {
   if (document.getElementById('payCfgBcaNum') && s.bca_va_number) document.getElementById('payCfgBcaNum').value = s.bca_va_number;
   if (document.getElementById('payCfgMandiriNum') && s.mandiri_va_number) document.getElementById('payCfgMandiriNum').value = s.mandiri_va_number;
   if (document.getElementById('payCfgTaxRate') && s.tax_rate !== undefined) document.getElementById('payCfgTaxRate').value = s.tax_rate;
+  if (document.getElementById('payCfgSaweriaUrl') && s.saweria_url !== undefined) document.getElementById('payCfgSaweriaUrl').value = s.saweria_url;
 }
 window.loadPaymentSettings = loadPaymentSettings;
 
 async function savePaymentSettings() {
   const payload = {
+    // Midtrans Settings
+    midtrans_enabled: document.getElementById('payMidtransEnabled')?.checked ?? true,
+    midtrans_is_production: document.getElementById('payMidtransIsProduction')?.checked ?? false,
+    midtrans_server_key: document.getElementById('payMidtransServerKey')?.value || '',
+    midtrans_client_key: document.getElementById('payMidtransClientKey')?.value || '',
+    midtrans_merchant_id: document.getElementById('payMidtransMerchantId')?.value || '',
+    saweria_url: document.getElementById('payCfgSaweriaUrl')?.value || 'https://saweria.co/meilabs',
+
+    // Store & Manual Gateways
     qris_active: document.getElementById('payCfgQris')?.checked ?? true,
     bca_active: document.getElementById('payCfgBca')?.checked ?? true,
     mandiri_active: document.getElementById('payCfgMandiri')?.checked ?? true,
@@ -1454,7 +1579,8 @@ async function savePaymentSettings() {
   });
 
   if (ok && data.success) {
-    toast("✅ Pengaturan gateway & metode pembayaran berhasil disimpan!", "success");
+    toast("✅ Pengaturan gateway & Midtrans pembayaran berhasil disimpan!", "success");
+    loadPaymentSettings();
   } else {
     toast(data.message || "Gagal menyimpan pengaturan pembayaran", "error");
   }

@@ -4,346 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mei Labs — 3D Minecraft Skin Studio &amp; Pose Rigging</title>
-  <meta name="description" content="Studio 3D Model Karakter &amp; Pose Rigging Minecraft resmi Mei Labs &amp; Hyrost Realm Network. Render WebGL 60 FPS, rotasi 360°, rig animasi tulang, dan ekspor snapshot 4K.">
+  <meta name="description" content="Studio 3D Model Karakter &amp; Pose Rigging Minecraft resmi Mei Labs &amp; Hyrost Realm Network. Render WebGL 60 FPS, rotasi 360°, rig animasi tulang, template sinematik, dan ekspor resolusi 500px s/d 5K.">
   <meta name="keywords" content="Minecraft 3D Skin Viewer, skinview3d, Mei Labs Bot, Minecraft Pose Studio, Minecraft Skin 3D, Discord Bot Minecraft">
-  <meta name="theme-color" content="#5865F2">
+  <meta name="theme-color" content="#FF3385">
 
   <!-- Favicon & Fonts -->
   <link rel="icon" type="image/jpeg" href="assets/images/mei-avatar.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
-  <!-- Core Bot Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=35">
+  <!-- Core Bot Stylesheet & Modular Studio Stylesheet -->
+  <link rel="stylesheet" href="styles.css?v=56">
+  <link rel="stylesheet" href="skin.css?v=56">
 
-  <!-- SkinView3D WebGL Library -->
+  <!-- SkinView3D WebGL Library & GifShot Animation Library -->
   <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.1/bundles/skinview3d.bundle.js"></script>
-
-  <style>
-    .studio-main-container {
-      padding-top: 100px;
-      padding-bottom: 60px;
-      position: relative;
-      z-index: 1;
-    }
-
-    .studio-header-banner {
-      background: linear-gradient(135deg, rgba(88, 101, 242, 0.12) 0%, rgba(255, 51, 133, 0.08) 100%);
-      border: 1px solid var(--border-glow);
-      border-radius: var(--radius-xl);
-      padding: 28px 32px;
-      margin-bottom: 30px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 16px;
-      backdrop-filter: blur(12px);
-    }
-
-    .studio-header-titles h1 {
-      font-size: 1.8rem;
-      font-weight: 900;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 6px;
-    }
-
-    .studio-header-titles p {
-      color: var(--text-dim);
-      font-size: 0.92rem;
-      max-width: 680px;
-    }
-
-    .studio-layout-grid {
-      display: grid;
-      grid-template-columns: 1fr 1.2fr;
-      gap: 24px;
-      align-items: start;
-    }
-
-    @media (max-width: 1024px) {
-      .studio-layout-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    /* ─── 3D Viewport Card ─── */
-    .viewport-card {
-      background: linear-gradient(135deg, rgba(13, 18, 31, 0.95) 0%, rgba(20, 27, 45, 0.95) 100%);
-      border: 1px solid var(--border-glow);
-      border-radius: var(--radius-xl);
-      padding: 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      position: relative;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .viewport-canvas-wrapper {
-      position: relative;
-      width: 100%;
-      height: 460px;
-      background: radial-gradient(circle at 50% 50%, rgba(88, 101, 242, 0.2) 0%, rgba(7, 10, 19, 0.98) 85%);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      overflow: hidden;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    #skin_container {
-      width: 100% !important;
-      height: 100% !important;
-      cursor: grab;
-    }
-
-    #skin_container:active {
-      cursor: grabbing;
-    }
-
-    .viewport-badge-top {
-      position: absolute;
-      top: 14px;
-      left: 14px;
-      background: rgba(13, 18, 31, 0.88);
-      backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 6px 14px;
-      border-radius: var(--radius-full);
-      font-size: 0.8rem;
-      font-weight: 800;
-      color: var(--mei-cyan);
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      z-index: 5;
-    }
-
-    .viewport-controls-floating {
-      position: absolute;
-      bottom: 14px;
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      gap: 8px;
-      background: rgba(13, 18, 31, 0.9);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      padding: 6px 14px;
-      border-radius: var(--radius-full);
-      z-index: 5;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-
-    .floating-btn {
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.12);
-      color: #fff;
-      padding: 6px 14px;
-      border-radius: var(--radius-full);
-      font-size: 0.8rem;
-      font-weight: 700;
-      cursor: pointer;
-      transition: var(--transition-fast);
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .floating-btn:hover {
-      background: var(--mei-primary);
-      border-color: var(--mei-primary);
-      transform: translateY(-2px);
-      box-shadow: 0 4px 14px rgba(88, 101, 242, 0.4);
-    }
-
-    /* ─── Controls & Editor Panel ─── */
-    .controls-panel-card {
-      background: var(--bg-card);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-xl);
-      padding: 26px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      gap: 22px;
-    }
-
-    .panel-section-title {
-      font-size: 0.9rem;
-      font-weight: 800;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-bottom: 14px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-    }
-
-    /* IGN Search Box */
-    .ign-search-box {
-      display: flex;
-      gap: 10px;
-    }
-
-    .ign-input-wrap {
-      position: relative;
-      flex: 1;
-      display: flex;
-      align-items: center;
-    }
-
-    .ign-input-wrap i {
-      position: absolute;
-      left: 14px;
-      color: var(--text-placeholder);
-    }
-
-    .ign-input {
-      width: 100%;
-      background: var(--bg-input);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-md);
-      padding: 12px 14px 12px 40px;
-      color: #fff;
-      font-size: 0.9rem;
-      font-weight: 700;
-      outline: none;
-      transition: var(--transition-fast);
-    }
-
-    .ign-input:focus {
-      border-color: var(--mei-primary);
-      box-shadow: 0 0 0 3px var(--mei-primary-glow);
-    }
-
-    /* Preset Pose Buttons */
-    .poses-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 8px;
-      max-height: 230px;
-      overflow-y: auto;
-      padding-right: 6px;
-      scrollbar-width: thin;
-    }
-
-    .pose-card-btn {
-      background: rgba(255, 255, 255, 0.03);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-dim);
-      padding: 10px 12px;
-      border-radius: var(--radius-md);
-      font-size: 0.82rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      transition: var(--transition-fast);
-      text-align: left;
-    }
-
-    .pose-card-btn:hover {
-      background: rgba(88, 101, 242, 0.15);
-      border-color: rgba(88, 101, 242, 0.4);
-      color: #fff;
-      transform: translateY(-1px);
-    }
-
-    .pose-card-btn.active {
-      background: linear-gradient(135deg, var(--mei-primary), #4338ca);
-      border-color: var(--mei-primary);
-      color: #fff;
-      box-shadow: 0 4px 16px rgba(88, 101, 242, 0.45);
-    }
-
-    /* Rigging Bone Sliders */
-    .slider-group {
-      background: rgba(0, 0, 0, 0.3);
-      border: 1px solid var(--border-subtle);
-      border-radius: var(--radius-lg);
-      padding: 16px 18px;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }
-
-    .slider-item {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 14px;
-    }
-
-    .slider-label {
-      font-size: 0.82rem;
-      font-weight: 700;
-      color: var(--text-dim);
-      min-width: 150px;
-    }
-
-    .slider-range {
-      flex: 1;
-      accent-color: var(--mei-primary);
-      cursor: pointer;
-    }
-
-    .slider-val {
-      font-family: var(--font-code);
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--mei-cyan);
-      min-width: 44px;
-      text-align: right;
-    }
-
-    /* 360 Camera Angle Selector */
-    .angles-bar {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .angle-btn {
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid var(--border-subtle);
-      color: var(--text-muted);
-      padding: 7px 12px;
-      border-radius: var(--radius-sm);
-      font-size: 0.78rem;
-      font-weight: 800;
-      cursor: pointer;
-      transition: var(--transition-fast);
-    }
-
-    .angle-btn:hover {
-      border-color: var(--mei-cyan);
-      color: #fff;
-    }
-
-    .angle-btn.active {
-      background: rgba(6, 182, 212, 0.2);
-      border-color: var(--mei-cyan);
-      color: var(--mei-cyan);
-    }
-
-    .actions-export-bar {
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-  </style>
+  <script src="https://cdn.jsdelivr.net/npm/gifshot@0.4.5/build/gifshot.min.js"></script>
 </head>
 <body>
 
@@ -354,205 +32,760 @@
     <div class="ambient-orb orb-3"></div>
   </div>
 
-  <!-- Top Navigation Bar -->
-  <header class="bot-navbar">
-    <div class="container nav-container">
-      <a href="index.html" class="nav-brand">
-        <div class="brand-avatar-wrapper">
-          <img src="assets/images/mei-avatar.jpg" alt="Mei Labs Avatar" class="brand-avatar" onerror="this.src='assets/images/mei-avatar.jpg'">
-          <span class="online-dot" title="Bot Online"></span>
-        </div>
-        <span class="brand-name">
-          Mei Labs <span class="brand-badge bot-version-text">v2.54.24.1.1</span>
-        </span>
+  <!-- Universal Header / Navigation Bar (Abishek Bhusal Glassmorphism Style) -->
+  <header class="header-container">
+    <div class="nav-wrap">
+      <a href="index.html" class="brand" aria-label="Beranda Mei Labs">
+        <img src="assets/images/mei-avatar.jpg" alt="Mei Avatar" class="brand-avatar" onerror="this.src='assets/images/mei-avatar.jpg'">
+        <span class="brand-name">Mei Labs<span class="brand-dot">.</span></span>
+        <span class="chip bot-version-text" id="botBrandBadge" style="margin-left: 4px;">v2.54.24</span>
       </a>
 
-      <nav>
-        <ul class="nav-menu" id="botNavMenu">
-          <li><a href="index.html#hero" class="nav-link"><i class="fas fa-home"></i> Beranda</a></li>
-          <li><a href="index.html#chat-demo" class="nav-link"><i class="fas fa-comments"></i> AI Chat</a></li>
-          <li><a href="skin.html" class="nav-link active" style="color:var(--mei-magenta); font-weight:800;"><i class="fas fa-person-running"></i> 3D Skin Studio</a></li>
-          <li><a href="changelog.html" class="nav-link" style="color:var(--mei-cyan);"><i class="fas fa-scroll"></i> Changelog</a></li>
-          <li><a href="index.html#features" class="nav-link"><i class="fas fa-cubes"></i> Fitur</a></li>
-          <li><a href="index.html#setup-dashboard" class="nav-link"><i class="fas fa-sliders-h"></i> !setup</a></li>
-          <li><a href="index.html#commands" class="nav-link"><i class="fas fa-terminal"></i> Perintah (197+)</a></li>
-          <li><a href="../dashboard.html" class="nav-link" style="color: var(--mei-cyan);"><i class="fas fa-arrow-left"></i> Dashboard Realm</a></li>
-        </ul>
+      <!-- Desktop Navigation Links -->
+      <nav class="nav-desktop" aria-label="Navigasi Utama">
+        <a href="index.html#hero" class="nav-link">Beranda</a>
+        <a href="index.html#pillars" class="nav-link">Arsitektur Core</a>
+        <a href="skin.html" class="nav-link active" style="color: var(--accent-cyan);">3D Skin Studio</a>
+        <a href="index.html#chat-demo" class="nav-link">AI Simulator</a>
+        <a href="index.html#radio-player" class="nav-link">Live Radio 24/7</a>
+        <a href="index.html#commands" class="nav-link">Perintah (246+)</a>
+        <a href="../index.html" class="nav-link nav-link-external">
+          <span>Web Hyrost</span>
+          <i class="fas fa-arrow-right"></i>
+        </a>
       </nav>
 
+      <!-- Action Buttons -->
       <div class="nav-actions">
-        <button class="btn-mei-primary" onclick="openChangelogModal()">
-          <i class="fas fa-scroll"></i>
-          <span>Changelog</span>
+        <button type="button" class="membership-badge-btn" id="btnUserMembership" onclick="openPremiumModal()" title="Status Langganan VIP & Buka Fitur">
+          <i class="fas fa-crown" style="color:var(--mei-gold);"></i>
+          <span id="navMembershipText">Free (Upgrade PRO)</span>
         </button>
-        <button class="btn-mei-magenta open-invite-modal">
+
+        <button class="cta cta-primary open-invite-modal" aria-label="Undang Mei Labs ke Discord">
           <i class="fab fa-discord"></i>
           <span>Undang Bot</span>
         </button>
-        <button class="mobile-nav-toggle" id="mobileNavToggle" aria-label="Menu">
-          <i class="fas fa-bars"></i>
+
+        <button class="hamburger" id="mobileNavToggle" aria-label="Buka Menu Navigasi Mobile" aria-expanded="false">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
         </button>
       </div>
+    </div>
+
+    <!-- Mobile Drawer Navigation -->
+    <div class="nav-mobile" id="botNavMenu">
+      <div style="padding: 10px 14px; margin-bottom: 8px;">
+        <button type="button" class="membership-badge-btn" id="btnUserMembershipMobile" onclick="openPremiumModal()" style="width: 100%; justify-content: center; padding: 10px;">
+          <i class="fas fa-crown" style="color:var(--mei-gold);"></i>
+          <span id="navMembershipMobileText">Status Akun: Free (Upgrade PRO)</span>
+        </button>
+      </div>
+      <a href="index.html#hero" class="nav-link">Beranda</a>
+      <a href="index.html#pillars" class="nav-link">Arsitektur Core</a>
+      <a href="skin.html" class="nav-link active" style="color: var(--accent-cyan);">3D Skin Studio</a>
+      <a href="index.html#chat-demo" class="nav-link">AI Simulator</a>
+      <a href="index.html#radio-player" class="nav-link">Live Radio 24/7</a>
+      <a href="index.html#commands" class="nav-link">Perintah (246+)</a>
+      <a href="../index.html" class="nav-link" style="color: var(--accent-cyan);">Kembali ke Web Hyrost</a>
+      <button class="cta cta-primary open-invite-modal" style="margin-top: 1rem; width: 100%; justify-content: center;">
+        <i class="fab fa-discord"></i>
+        <span>Undang Mei ke Server</span>
+      </button>
     </div>
   </header>
 
   <main class="container studio-main-container">
-    <!-- Top Banner -->
+    <!-- Header Banner -->
     <div class="studio-header-banner">
       <div class="studio-header-titles">
+        <div style="display:inline-flex; align-items:center; gap:8px; background:rgba(88,101,242,0.15); border:1px solid rgba(88,101,242,0.3); padding:4px 14px; border-radius:99px; font-size:0.8rem; font-weight:800; color:var(--accent); margin-bottom:12px;">
+          <i class="fas fa-cube"></i> MINECRAFT 3D RENDERING ENGINE
+        </div>
         <h1>
-          <i class="fas fa-person-running" style="color:var(--mei-magenta);"></i>
+          <i class="fas fa-person-running" style="color:var(--accent-cyan);"></i>
           <span>3D Minecraft Skin Studio &amp; Pose Rigging</span>
         </h1>
-        <p>Eksplorasi karakter Minecraft 3D WebGL 60 FPS, rotasi kamera 360°, 20 katalog pose &amp; emote gerakan, rig animasi tulang manual, dan ekspor snapshot 4K.</p>
+        <p>Lihat, putar, tekuk anatomi tulang karakter, ganti latar tema Minecraft, pilih template sinematik, dan ekspor snapshot resolusi tinggi (500x500 s/d 5K).</p>
       </div>
-      <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-        <button class="btn-mei-glass" onclick="copyDiscordSkinCommand()">
-          <i class="fab fa-discord" style="color:var(--mei-primary);"></i>
-          <span>Command !mcskin</span>
-        </button>
+      <div>
+        <a href="index.html" class="cta cta-ghost">
+          <i class="fas fa-arrow-left"></i> <span>Kembali ke Beranda</span>
+        </a>
       </div>
     </div>
 
-    <!-- Studio Grid -->
+    <!-- Main Workspace Layout -->
     <div class="studio-layout-grid">
-      <!-- 1. Left Viewport Card -->
+      <!-- Left Column: 3D Viewport -->
       <div class="viewport-card">
-        <div class="viewport-canvas-wrapper">
-          <div class="viewport-badge-top">
-            <span class="status-dot online" style="background:#10b981; width:8px; height:8px; border-radius:50%; display:inline-block;"></span>
+        <div class="viewport-badge-top" id="viewportBadgeTop">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <i class="fas fa-circle" style="color:var(--mei-emerald); font-size:0.6rem;"></i>
             <span id="activePlayerLabel">Steve (3D Viewport)</span>
           </div>
-          <canvas id="skin_container"></canvas>
-          
-          <!-- Floating Quick Controls -->
-          <div class="viewport-controls-floating">
-            <button class="floating-btn" onclick="toggleSpinAnimation()" id="btnSpin">
-              <i class="fas fa-sync-alt"></i> Spin 360°
+          <div class="viewport-top-actions">
+            <button type="button" class="badge-action-btn active" id="btnSoundToggle" onclick="toggleAudioFx()" title="Suara Interaktif (On/Off)">
+              <i class="fas fa-volume-high"></i>
             </button>
-            <button class="floating-btn" onclick="toggleRunningAnimation()" id="btnRun">
-              <i class="fas fa-running"></i> Animasi Lari
+            <button type="button" class="badge-action-btn" id="btnFullscreenToggle" onclick="toggleFullscreenTheater()" title="Mode Layar Penuh (Theater Mode)">
+              <i class="fas fa-expand"></i>
             </button>
-            <button class="floating-btn" onclick="resetCameraView()">
-              <i class="fas fa-crosshairs"></i> Reset Kamera
+            <button type="button" class="theater-exit-btn" id="btnExitTheater" onclick="toggleFullscreenTheater()" title="Keluar dari Mode Teater">
+              <i class="fas fa-arrow-left"></i> <span>Keluar Teater</span>
             </button>
           </div>
         </div>
 
-        <!-- 360 Angle Quick Switcher -->
-        <div style="width:100%; margin-top:20px;">
-          <div class="panel-section-title" style="font-size:0.82rem; margin-bottom:10px;">
-            <i class="fas fa-compass" style="color:var(--mei-cyan);"></i> Sudut Kamera Kompas 360°
+        <div class="viewport-canvas-wrapper" id="viewportCanvasWrapper">
+          <canvas id="skin_container"></canvas>
+
+          <!-- Floating Minecraft 3D Nametag Overlay -->
+          <div id="viewportNametag" class="viewport-nametag-badge">
+            <span id="nametagRankBadge" class="nametag-rank-founder">🟣 Founder</span>
+            <span id="nametagText">Steve</span>
           </div>
-          <div class="angles-bar" id="anglesBar">
-            <button class="angle-btn active" onclick="setCameraAngle(0, this)">Depan (0°)</button>
-            <button class="angle-btn" onclick="setCameraAngle(45, this)">Serong Kiri (45°)</button>
-            <button class="angle-btn" onclick="setCameraAngle(90, this)">Samping Kiri (90°)</button>
-            <button class="angle-btn" onclick="setCameraAngle(135, this)">Belakang Kiri (135°)</button>
-            <button class="angle-btn" onclick="setCameraAngle(180, this)">Belakang (180°)</button>
-            <button class="angle-btn" onclick="setCameraAngle(225, this)">Belakang Kanan (225°)</button>
-            <button class="angle-btn" onclick="setCameraAngle(270, this)">Samping Kanan (270°)</button>
-            <button class="angle-btn" onclick="setCameraAngle(315, this)">Serong Kanan (315°)</button>
+        </div>
+
+        <!-- Interactive Motion & Viewport Action Bar (Below Player Canvas) -->
+        <div class="viewport-action-bar">
+          <button class="viewport-action-btn" id="btnToggleSpin" onclick="toggleSpin()" title="Putar Otomatis 360">
+            <i class="fas fa-rotate" style="color:var(--accent-cyan);"></i> <span>Spin 360°</span>
+          </button>
+          <button class="viewport-action-btn" id="btnToggleRunning" onclick="toggleRunAnimation()" title="Animasi Berlari">
+            <i class="fas fa-person-running" style="color:var(--accent);"></i> <span>Animasi Lari</span>
+          </button>
+          <button class="viewport-action-btn" id="btnToggleWaving" onclick="toggleWavingAnimation()" title="Animasi Melambai">
+            <i class="fas fa-hand-peace" style="color:var(--mei-gold);"></i> <span>Melambai</span>
+          </button>
+          <button class="viewport-action-btn" onclick="resetCameraView()" title="Reset Posisi Kamera">
+            <i class="fas fa-camera-rotate" style="color:#ff3355;"></i> <span>Reset Kamera</span>
+          </button>
+        </div>
+
+        <!-- 360 Camera Angle Quick Select -->
+        <div style="width: 100%; margin-top: 14px;">
+          <div class="panel-section-title">
+            <i class="fas fa-compass" style="color:var(--accent-cyan);"></i> Sudut Kamera Kompas 360°
+          </div>
+          <div class="angles-bar">
+            <button class="angle-btn active" data-angle="0" onclick="setCameraAngle(0, this)">Depan (0°)</button>
+            <button class="angle-btn" data-angle="45" onclick="setCameraAngle(45, this)">Serong Kiri (45°)</button>
+            <button class="angle-btn" data-angle="90" onclick="setCameraAngle(90, this)">Samping Kiri (90°)</button>
+            <button class="angle-btn" data-angle="135" onclick="setCameraAngle(135, this)">Belakang Kiri (135°)</button>
+            <button class="angle-btn" data-angle="180" onclick="setCameraAngle(180, this)">Belakang (180°)</button>
+            <button class="angle-btn" data-angle="225" onclick="setCameraAngle(225, this)">Belakang Kanan (225°)</button>
+            <button class="angle-btn" data-angle="270" onclick="setCameraAngle(270, this)">Samping Kanan (270°)</button>
+            <button class="angle-btn" data-angle="315" onclick="setCameraAngle(315, this)">Serong Kanan (315°)</button>
           </div>
         </div>
       </div>
 
-      <!-- 2. Right Controls & Rigging Panel -->
+      <!-- Right Column: Control & Customization Studio (Tabbed Segmented Navigation) -->
       <div class="controls-panel-card">
-        <!-- Player Search & Skin Switcher -->
-        <div>
-          <div class="panel-section-title">
-            <i class="fas fa-user-tag" style="color:var(--mei-cyan);"></i> Pemain / Username Minecraft
-          </div>
-          <div class="ign-search-box">
-            <div class="ign-input-wrap">
-              <i class="fas fa-search"></i>
-              <input type="text" id="ignInput" class="ign-input" placeholder="Ketik IGN (misal: Steve, Alex, Notch, DanTDM)..." value="Steve" onkeydown="if(event.key==='Enter') loadCustomSkinFromInput()">
+        <!-- Studio Segmented Tab Navigation -->
+        <div class="studio-tabs-bar" role="tablist" aria-label="Studio Navigation">
+          <button class="studio-tab-btn active" role="tab" id="tabBtn_player" aria-selected="true" onclick="switchStudioTab('player', this)">
+            <i class="fas fa-user-astronaut"></i>
+            <span>Pemain</span>
+          </button>
+          <button class="studio-tab-btn" role="tab" id="tabBtn_poses" aria-selected="false" onclick="switchStudioTab('poses', this)">
+            <i class="fas fa-child-reaching"></i>
+            <span>Pose &amp; Map</span>
+          </button>
+          <button class="studio-tab-btn" role="tab" id="tabBtn_rigging" aria-selected="false" onclick="switchStudioTab('rigging', this)">
+            <i class="fas fa-bone"></i>
+            <span>Tekuk Tulang</span>
+          </button>
+          <button class="studio-tab-btn" role="tab" id="tabBtn_cape" aria-selected="false" onclick="switchStudioTab('cape', this)">
+            <i class="fas fa-shield-halved"></i>
+            <span>Jubah &amp; Sayap</span>
+          </button>
+          <button class="studio-tab-btn" role="tab" id="tabBtn_studio" aria-selected="false" onclick="switchStudioTab('studio', this)">
+            <i class="fas fa-image"></i>
+            <span>Latar &amp; FX</span>
+          </button>
+          <button class="studio-tab-btn" role="tab" id="tabBtn_export" aria-selected="false" onclick="switchStudioTab('export', this)">
+            <i class="fas fa-camera"></i>
+            <span>Unduh</span>
+          </button>
+        </div>
+
+        <!-- ── TAB 1: PEMAIN & FORMAT MODEL ── -->
+        <div class="studio-tab-panel active" id="tabPanel_player" role="tabpanel">
+          <!-- IGN Search Bar -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-user-astronaut" style="color:var(--accent-cyan);"></i> Nickname / Skin Pemain
             </div>
-            <button class="btn-mei-primary" onclick="loadCustomSkinFromInput()" style="padding:12px 20px;">
-              <i class="fas fa-magic"></i> Muat Skin
-            </button>
+            <div class="ign-search-box">
+              <div class="ign-input-wrap">
+                <i class="fas fa-search"></i>
+                <input type="text" id="ignInput" class="ign-input" placeholder="Ketik Username Minecraft..." value="Steve" onkeydown="if(event.key==='Enter') loadCustomSkinFromInput()">
+              </div>
+              <button class="cta cta-primary" onclick="loadCustomSkinFromInput()">
+                <i class="fas fa-sync-alt"></i> <span>Muat</span>
+              </button>
+            </div>
+
+            <!-- Quick Popular Avatars -->
+            <div class="quick-avatars-wrap" style="margin-top: 10px;">
+              <div class="quick-avatars-header">
+                <i class="fas fa-fire" style="color:var(--mei-gold);"></i> <span>Karakter Populer:</span>
+              </div>
+              <div class="quick-avatars-grid">
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('Steve')" title="Steve (Classic)">
+                  <img src="https://mc-heads.net/avatar/Steve/24" alt="Steve">
+                  <span>Steve</span>
+                </button>
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('Alex')" title="Alex (Slim)">
+                  <img src="https://mc-heads.net/avatar/Alex/24" alt="Alex">
+                  <span>Alex</span>
+                </button>
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('Technoblade')" title="Technoblade (The Blood God)">
+                  <img src="https://mc-heads.net/avatar/Technoblade/24" alt="Technoblade">
+                  <span>Technoblade</span>
+                </button>
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('Dream')" title="Dream (Speedrunner)">
+                  <img src="https://mc-heads.net/avatar/Dream/24" alt="Dream">
+                  <span>Dream</span>
+                </button>
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('Herobrine')" title="Herobrine (Legend)">
+                  <img src="https://mc-heads.net/avatar/Herobrine/24" alt="Herobrine">
+                  <span>Herobrine</span>
+                </button>
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('Notch')" title="Notch (Creator)">
+                  <img src="https://mc-heads.net/avatar/Notch/24" alt="Notch">
+                  <span>Notch</span>
+                </button>
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('MumboJumbo')" title="MumboJumbo">
+                  <img src="https://mc-heads.net/avatar/MumboJumbo/24" alt="MumboJumbo">
+                  <span>MumboJumbo</span>
+                </button>
+                <button type="button" class="quick-avatar-btn" onclick="loadSkinByIGN('Grian')" title="Grian">
+                  <img src="https://mc-heads.net/avatar/Grian/24" alt="Grian">
+                  <span>Grian</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Recent Skin History Chips -->
+            <div class="recent-skins-wrap" id="recentSkinsSection" style="display:none; margin-top:10px;">
+              <div class="recent-skins-header">
+                <span><i class="fas fa-clock-rotate-left" style="color:var(--accent);"></i> Riwayat Skin Terakhir:</span>
+                <button type="button" class="recent-clear-btn" onclick="clearRecentSkins()" title="Hapus Riwayat">Hapus</button>
+              </div>
+              <div class="recent-skins-chips" id="recentSkinsChips"></div>
+            </div>
+          </div>
+
+          <!-- Custom Skin File Upload (.png) -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-file-arrow-up" style="color:var(--accent);"></i> Unggah Skin Kustom (.png)
+            </div>
+            <div class="skin-upload-dropzone" id="skinUploadZone" onclick="document.getElementById('skinFileInput').click()">
+              <input type="file" id="skinFileInput" accept="image/png" style="display:none;" onchange="handleSkinFileUpload(event)">
+              <i class="fas fa-cloud-arrow-up"></i>
+              <div class="upload-text">
+                <strong>Klik atau Tarik File Skin (.png)</strong>
+                <span>Mendukung file skin lokal 64x64 atau 64x32</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Floating Nametag Customizer -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-id-badge" style="color:var(--mei-gold);"></i> Nametag 3D Minecraft
+            </div>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+              <input type="text" id="nametagInput" class="ign-input" placeholder="Teks Nametag..." value="Steve" oninput="updateNametagText(this.value)" style="flex:1; min-width:130px;">
+              <select id="nametagRankSelect" class="ign-input" style="flex:0.8; min-width:120px; cursor:pointer;" onchange="updateNametagRank(this.value)">
+                <option value="none">Tanpa Rank</option>
+                <option value="member">🟢 Member</option>
+                <option value="vip">🟡 VIP</option>
+                <option value="staff">🔵 Staff</option>
+                <option value="founder" selected>🟣 Founder</option>
+              </select>
+              <label class="layer-checkbox-card" style="margin:0; padding:10px 14px; flex-shrink:0;">
+                <input type="checkbox" id="showNametagCheck" checked onchange="toggleNametagVisibility(this.checked)">
+                <span>Tampilkan</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Model Format & 3D Layer Extrude Controls -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-layer-group" style="color:var(--accent-cyan);"></i> Format Model Karakter
+            </div>
+            <div class="model-format-row">
+              <div class="model-type-toggle">
+                <button class="model-btn active" id="btnModelClassic" onclick="setModelType('default', this)">Classic (Steve 4px)</button>
+                <button class="model-btn" id="btnModelSlim" onclick="setModelType('slim', this)">Slim (Alex 3px)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-cube" style="color:var(--accent);"></i> Visibilitas Layer 3D (Extrude)
+            </div>
+            <div class="layer-toggles-grid">
+              <label class="layer-checkbox-card">
+                <input type="checkbox" id="layerHat" checked onchange="toggleSkinLayer('head', 'outerLayer', this.checked)">
+                <span>🪖 Helm / Rambut (Hat)</span>
+              </label>
+              <label class="layer-checkbox-card">
+                <input type="checkbox" id="layerJacket" checked onchange="toggleSkinLayer('body', 'outerLayer', this.checked)">
+                <span>🧥 Jaket / Baju Luar</span>
+              </label>
+              <label class="layer-checkbox-card">
+                <input type="checkbox" id="layerRightSleeve" checked onchange="toggleSkinLayer('rightArm', 'outerLayer', this.checked)">
+                <span>🥊 Lengan Kanan Luar</span>
+              </label>
+              <label class="layer-checkbox-card">
+                <input type="checkbox" id="layerLeftSleeve" checked onchange="toggleSkinLayer('leftArm', 'outerLayer', this.checked)">
+                <span>🥊 Lengan Kiri Luar</span>
+              </label>
+              <label class="layer-checkbox-card">
+                <input type="checkbox" id="layerRightPants" checked onchange="toggleSkinLayer('rightLeg', 'outerLayer', this.checked)">
+                <span>👖 Celana Kanan Luar</span>
+              </label>
+              <label class="layer-checkbox-card">
+                <input type="checkbox" id="layerLeftPants" checked onchange="toggleSkinLayer('leftLeg', 'outerLayer', this.checked)">
+                <span>👖 Celana Kiri Luar</span>
+              </label>
+            </div>
           </div>
         </div>
 
-        <!-- Poses Catalog (from Discord Bot 80 Poses Engine) -->
-        <div>
-          <div class="panel-section-title">
-            <i class="fas fa-masks-theater" style="color:var(--mei-violet);"></i> Katalog Pose &amp; Emote Model 3D
+        <!-- ── TAB 2: TEMPLATE & POSE PRESET ── -->
+        <div class="studio-tab-panel" id="tabPanel_poses" role="tabpanel">
+          <!-- Curated Cinematic Scene & Map Templates for Mei Members -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-clapperboard" style="color:var(--accent);"></i> Template Pose &amp; Map Sinematik (1-Click)
+            </div>
+            <div class="templates-grid" id="templatesGrid">
+              <!-- Dynamically Rendered by skin.js -->
+            </div>
           </div>
-          <div class="poses-grid" id="posesGrid">
-            <button class="pose-card-btn active" data-pose="idle" onclick="applyPosePreset('idle', this)">🧍 Isometrik Santai</button>
-            <button class="pose-card-btn" data-pose="samurai" onclick="applyPosePreset('samurai', this)">⚔️ Samurai Katana</button>
-            <button class="pose-card-btn" data-pose="knight" onclick="applyPosePreset('knight', this)">🛡️ Ksatria Perisai</button>
-            <button class="pose-card-btn" data-pose="archer" onclick="applyPosePreset('archer', this)">🏹 Membidik Busur</button>
-            <button class="pose-card-btn" data-pose="ninja" onclick="applyPosePreset('ninja', this)">🥷 Kuda-Kuda Ninja</button>
-            <button class="pose-card-btn" data-pose="elytra" onclick="applyPosePreset('elytra', this)">🦅 Melayang Elytra</button>
-            <button class="pose-card-btn" data-pose="running" onclick="applyPosePreset('running', this)">🏃 Lari Sprint</button>
-            <button class="pose-card-btn" data-pose="walking" onclick="applyPosePreset('walking', this)">🚶 Jalan Santai</button>
-            <button class="pose-card-btn" data-pose="waving" onclick="applyPosePreset('waving', this)">👋 Melambaikan Tangan</button>
-            <button class="pose-card-btn" data-pose="flying" onclick="applyPosePreset('flying', this)">🦸 Terbang Melayang</button>
-            <button class="pose-card-btn" data-pose="sitting" onclick="applyPosePreset('sitting', this)">🪑 Duduk Santai</button>
-            <button class="pose-card-btn" data-pose="mining" onclick="applyPosePreset('mining', this)">⛏️ Menambang Deepslate</button>
-            <button class="pose-card-btn" data-pose="swimming" onclick="applyPosePreset('swimming', this)">🏊 Menyelam Samudra</button>
-            <button class="pose-card-btn" data-pose="victory" onclick="applyPosePreset('victory', this)">🏆 Sorak Kemenangan</button>
-            <button class="pose-card-btn" data-pose="trident" onclick="applyPosePreset('trident', this)">🔱 Lemparan Trisula</button>
-            <button class="pose-card-btn" data-pose="king" onclick="applyPosePreset('king', this)">👑 Singgasana Raja</button>
-            <button class="pose-card-btn" data-pose="zenith" onclick="applyPosePreset('zenith', this)">⚡ Pedang Petir Zenith</button>
-            <button class="pose-card-btn" data-pose="mace" onclick="applyPosePreset('mace', this)">🔨 Hantaman Heavy Mace</button>
-            <button class="pose-card-btn" data-pose="totem" onclick="applyPosePreset('totem', this)">🌟 Totem of Undying</button>
-            <button class="pose-card-btn" data-pose="salute" onclick="applyPosePreset('salute', this)">🫡 Hormat Prajurit</button>
-          </div>
-        </div>
 
-        <!-- Bone Articulation & Rigging Sliders -->
-        <div>
-          <div class="panel-section-title">
-            <i class="fas fa-bone" style="color:var(--mei-gold);"></i> Tekukan Tulang Manual (Bone Rigging)
-          </div>
-          <div class="slider-group">
-            <div class="slider-item">
-              <span class="slider-label">Tangan Kanan (Right Arm):</span>
-              <input type="range" id="sliderRightArm" class="slider-range" min="-180" max="180" value="0" oninput="updateManualBone('rightArm', this.value)">
-              <span class="slider-val" id="valRightArm">0°</span>
+          <!-- Standalone Preset Pose Options -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-child-reaching" style="color:var(--accent-cyan);"></i> Pilihan Pose Mandiri
             </div>
-            <div class="slider-item">
-              <span class="slider-label">Tangan Kiri (Left Arm):</span>
-              <input type="range" id="sliderLeftArm" class="slider-range" min="-180" max="180" value="0" oninput="updateManualBone('leftArm', this.value)">
-              <span class="slider-val" id="valLeftArm">0°</span>
-            </div>
-            <div class="slider-item">
-              <span class="slider-label">Kaki Kanan (Right Leg):</span>
-              <input type="range" id="sliderRightLeg" class="slider-range" min="-90" max="90" value="0" oninput="updateManualBone('rightLeg', this.value)">
-              <span class="slider-val" id="valRightLeg">0°</span>
-            </div>
-            <div class="slider-item">
-              <span class="slider-label">Kaki Kiri (Left Leg):</span>
-              <input type="range" id="sliderLeftLeg" class="slider-range" min="-90" max="90" value="0" oninput="updateManualBone('leftLeg', this.value)">
-              <span class="slider-val" id="valLeftLeg">0°</span>
-            </div>
-            <div class="slider-item">
-              <span class="slider-label">Kepala (Head Pitch):</span>
-              <input type="range" id="sliderHead" class="slider-range" min="-60" max="60" value="0" oninput="updateManualBone('head', this.value)">
-              <span class="slider-val" id="valHead">0°</span>
+            <div class="poses-grid">
+              <button class="pose-card-btn active" data-pose="idle" onclick="applyPosePreset('idle', this)">🧍 Berdiri Santai (Idle)</button>
+              <button class="pose-card-btn" data-pose="walking" onclick="applyPosePreset('walking', this)">🚶 Berjalan (Walking)</button>
+              <button class="pose-card-btn" data-pose="running" onclick="applyPosePreset('running', this)">🏃 Berlari Cepat (Running)</button>
+              <button class="pose-card-btn" data-pose="flying" onclick="applyPosePreset('flying', this)">🪽 Terbang Elytra (Flying)</button>
+              <button class="pose-card-btn" data-pose="waving" onclick="applyPosePreset('waving', this)">👋 Melambaikan Tangan</button>
+              <button class="pose-card-btn" data-pose="sword" onclick="applyPosePreset('sword', this)">⚔️ Siaga Pedang Berlian</button>
+              <button class="pose-card-btn" data-pose="bow" onclick="applyPosePreset('bow', this)">🏹 Membidik Busur Panah</button>
+              <button class="pose-card-btn" data-pose="shield" onclick="applyPosePreset('shield', this)">🛡️ Menangkis Perisai</button>
+              <button class="pose-card-btn" data-pose="sitting" onclick="applyPosePreset('sitting', this)">🪑 Duduk Santai</button>
+              <button class="pose-card-btn" data-pose="mining" onclick="applyPosePreset('mining', this)">⛏️ Menambang Deepslate</button>
+              <button class="pose-card-btn" data-pose="swimming" onclick="applyPosePreset('swimming', this)">🏊 Menyelam Samudra</button>
+              <button class="pose-card-btn" data-pose="victory" onclick="applyPosePreset('victory', this)">🏆 Sorak Kemenangan</button>
+              <button class="pose-card-btn" data-pose="trident" onclick="applyPosePreset('trident', this)">🔱 Lemparan Trisula</button>
+              <button class="pose-card-btn" data-pose="king" onclick="applyPosePreset('king', this)">👑 Singgasana Raja</button>
+              <button class="pose-card-btn" data-pose="zenith" onclick="applyPosePreset('zenith', this)">⚡ Pedang Petir Zenith</button>
+              <button class="pose-card-btn" data-pose="mace" onclick="applyPosePreset('mace', this)">🔨 Hantaman Heavy Mace</button>
+              <button class="pose-card-btn" data-pose="totem" onclick="applyPosePreset('totem', this)">🌟 Totem of Undying</button>
+              <button class="pose-card-btn" data-pose="salute" onclick="applyPosePreset('salute', this)">🫡 Hormat Prajurit</button>
             </div>
           </div>
         </div>
 
-        <!-- Export & Download Actions -->
-        <div>
-          <div class="panel-section-title">
-            <i class="fas fa-file-export" style="color:var(--mei-emerald);"></i> Ekspor &amp; Unduh Hasil
+        <!-- ── TAB 3: TEKUK TULANG (BONE RIGGING) ── -->
+        <div class="studio-tab-panel" id="tabPanel_rigging" role="tabpanel">
+          <div class="panel-inner-section">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <div class="panel-section-title" style="margin-bottom:0;">
+                <i class="fas fa-bone" style="color:var(--mei-gold);"></i> Kontrol Artikulasi Sendi
+              </div>
+              <button class="cta cta-ghost" style="padding:4px 10px; font-size:0.75rem;" onclick="applyPosePreset('idle')">
+                <i class="fas fa-rotate-left"></i> Reset ke Idle
+              </button>
+            </div>
+
+            <div class="slider-group">
+              <!-- Arms / Shoulders & Elbows -->
+              <div class="slider-sub-header">💪 Lengan Atas (Bahu) &amp; Siku (Elbows)</div>
+              <div class="slider-item">
+                <span class="slider-label">Bahu Kanan Pitch (X):</span>
+                <input type="range" id="sliderRightArm" class="slider-range" min="-180" max="180" value="-5" oninput="updateManualBone('rightArm', this.value)">
+                <span class="slider-val" id="valRightArm">-5°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Bahu Kanan Roll (Z):</span>
+                <input type="range" id="sliderRightArmZ" class="slider-range" min="-90" max="90" value="0" oninput="updateManualBone('rightArmZ', this.value)">
+                <span class="slider-val" id="valRightArmZ">0°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Siku Kanan (Elbow Bend):</span>
+                <input type="range" id="sliderRightElbow" class="slider-range" min="0" max="120" value="0" oninput="updateManualBone('rightElbow', this.value)">
+                <span class="slider-val" id="valRightElbow">0°</span>
+              </div>
+              
+              <div class="slider-item">
+                <span class="slider-label">Bahu Kiri Pitch (X):</span>
+                <input type="range" id="sliderLeftArm" class="slider-range" min="-180" max="180" value="5" oninput="updateManualBone('leftArm', this.value)">
+                <span class="slider-val" id="valLeftArm">5°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Bahu Kiri Roll (Z):</span>
+                <input type="range" id="sliderLeftArmZ" class="slider-range" min="-90" max="90" value="0" oninput="updateManualBone('leftArmZ', this.value)">
+                <span class="slider-val" id="valLeftArmZ">0°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Siku Kiri (Elbow Bend):</span>
+                <input type="range" id="sliderLeftElbow" class="slider-range" min="0" max="120" value="0" oninput="updateManualBone('leftElbow', this.value)">
+                <span class="slider-val" id="valLeftElbow">0°</span>
+              </div>
+
+              <!-- Legs / Hips & Knees -->
+              <div class="slider-sub-header">🦵 Paha (Pinggul) &amp; Lutut (Knees)</div>
+              <div class="slider-item">
+                <span class="slider-label">Kaki Kanan Pitch (X):</span>
+                <input type="range" id="sliderRightLeg" class="slider-range" min="-90" max="90" value="3" oninput="updateManualBone('rightLeg', this.value)">
+                <span class="slider-val" id="valRightLeg">3°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Lutut Kanan (Knee Bend):</span>
+                <input type="range" id="sliderRightKnee" class="slider-range" min="0" max="120" value="0" oninput="updateManualBone('rightKnee', this.value)">
+                <span class="slider-val" id="valRightKnee">0°</span>
+              </div>
+              
+              <div class="slider-item">
+                <span class="slider-label">Kaki Kiri Pitch (X):</span>
+                <input type="range" id="sliderLeftLeg" class="slider-range" min="-90" max="90" value="-3" oninput="updateManualBone('leftLeg', this.value)">
+                <span class="slider-val" id="valLeftLeg">-3°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Lutut Kiri (Knee Bend):</span>
+                <input type="range" id="sliderLeftKnee" class="slider-range" min="0" max="120" value="0" oninput="updateManualBone('leftKnee', this.value)">
+                <span class="slider-val" id="valLeftKnee">0°</span>
+              </div>
+
+              <!-- Head & Torso -->
+              <div class="slider-sub-header">👤 Kepala &amp; Tubuh (Head &amp; Torso)</div>
+              <div class="slider-item">
+                <span class="slider-label">Kepala Pitch (X):</span>
+                <input type="range" id="sliderHead" class="slider-range" min="-60" max="60" value="0" oninput="updateManualBone('head', this.value)">
+                <span class="slider-val" id="valHead">0°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Kepala Yaw (Y):</span>
+                <input type="range" id="sliderHeadY" class="slider-range" min="-75" max="75" value="0" oninput="updateManualBone('headY', this.value)">
+                <span class="slider-val" id="valHeadY">0°</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Badan Condong (Body Pitch):</span>
+                <input type="range" id="sliderBody" class="slider-range" min="-45" max="45" value="0" oninput="updateManualBone('body', this.value)">
+                <span class="slider-val" id="valBody">0°</span>
+              </div>
+            </div>
+
+            <!-- Custom Pose Saver & Personal Presets -->
+            <div class="custom-pose-save-box" style="margin-top: 16px;">
+              <div class="panel-section-title" style="margin-bottom: 8px;">
+                <i class="fas fa-bookmark" style="color:var(--mei-emerald);"></i> Simpan Pose Kustom Pribadi
+              </div>
+              <div class="pose-save-input-row">
+                <input type="text" id="customPoseNameInput" class="pose-name-input" placeholder="Beri nama pose baru..." onkeydown="if(event.key==='Enter') saveCurrentCustomPose()">
+                <button class="cta cta-primary" onclick="saveCurrentCustomPose()" style="padding:7px 14px; font-size:0.78rem;">
+                  <i class="fas fa-floppy-disk"></i> <span>Simpan Pose</span>
+                </button>
+              </div>
+
+              <!-- List of Saved Custom Poses -->
+              <div class="saved-poses-wrap" id="savedCustomPosesWrap" style="display:none; margin-top:10px;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin-bottom:6px;">
+                  <span><i class="fas fa-star" style="color:var(--mei-gold);"></i> Pose Tersimpan Anda:</span>
+                </div>
+                <div class="saved-poses-chips" id="savedCustomPosesList"></div>
+              </div>
+            </div>
           </div>
-          <div class="actions-export-bar">
-            <button class="btn-mei-magenta" onclick="exportSnapshot4K()" style="flex:1; justify-content:center;">
-              <i class="fas fa-camera"></i> Snapshot PNG 4K
-            </button>
-            <a id="btnDownloadSkinFile" href="https://mc-heads.net/skin/Steve" target="_blank" download class="btn-mei-glass" style="flex:1; justify-content:center;">
-              <i class="fas fa-download"></i> Unduh File Skin
-            </a>
-            <button class="btn-mei-glass" onclick="copyDiscordSkinCommand()" title="Salin Command Discord !mcskin">
-              <i class="fab fa-discord" style="color:var(--mei-primary);"></i> Salin !mcskin
-            </button>
+        </div>
+
+        <!-- ── TAB 4: JUBAH & SAYAP 3D ── -->
+        <div class="studio-tab-panel" id="tabPanel_cape" role="tabpanel">
+          <!-- Equipment Mode Selector (Cape vs Elytra) -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-feather-pointed" style="color:var(--accent-cyan);"></i> Mode Perlengkapan Punggung
+            </div>
+            <div class="model-format-row">
+              <div class="model-type-toggle">
+                <button class="model-btn active" id="btnEquipCape" onclick="setBackEquipmentType('cape', this)">🛡️ Jubah (Cape)</button>
+                <button class="model-btn" id="btnEquipElytra" onclick="setBackEquipmentType('elytra', this)">🪽 Sayap Elytra (Wings)</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-shield-halved" style="color:var(--accent);"></i> Pilihan Tekstur Jubah &amp; Sayap
+            </div>
+            <div class="capes-grid" id="capesGrid">
+              <button class="cape-card-btn active" data-cape="none" onclick="setStudioCape('none', this)">
+                <span class="cape-icon">🚫</span>
+                <span class="cape-name">Tanpa Perlengkapan</span>
+              </button>
+              <button class="cape-card-btn" data-cape="hyrost" onclick="setStudioCape('hyrost', this)">
+                <span class="cape-icon">🟣</span>
+                <span class="cape-name">👑 Hyrost Founder</span>
+              </button>
+              <button class="cape-card-btn" data-cape="minecon2011" onclick="setStudioCape('minecon2011', this)">
+                <span class="cape-icon">🔴</span>
+                <span class="cape-name">Minecon 2011 (Creeper)</span>
+              </button>
+              <button class="cape-card-btn" data-cape="minecon2012" onclick="setStudioCape('minecon2012', this)">
+                <span class="cape-icon">🔵</span>
+                <span class="cape-name">Minecon 2012 (Pickaxe)</span>
+              </button>
+              <button class="cape-card-btn" data-cape="minecon2013" onclick="setStudioCape('minecon2013', this)">
+                <span class="cape-icon">🟢</span>
+                <span class="cape-name">Minecon 2013 (Piston)</span>
+              </button>
+              <button class="cape-card-btn" data-cape="optifine" onclick="setStudioCape('optifine', this)">
+                <span class="cape-icon">🟠</span>
+                <span class="cape-name">OptiFine OF Banner</span>
+              </button>
+              <button class="cape-card-btn" data-cape="migrator" onclick="setStudioCape('migrator', this)">
+                <span class="cape-icon">🔴</span>
+                <span class="cape-name">Migrator Ruby</span>
+              </button>
+              <button class="cape-card-btn" data-cape="anniversary15" onclick="setStudioCape('anniversary15', this)">
+                <span class="cape-icon">🟡</span>
+                <span class="cape-name">15th Anniversary</span>
+              </button>
+              <button class="cape-card-btn" data-cape="cherry" onclick="setStudioCape('cherry', this)">
+                <span class="cape-icon">🌸</span>
+                <span class="cape-name">Cherry Sakura Cape</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB 5: LATAR BELAKANG, CAHAYA & VFX SHADERS ── -->
+        <div class="studio-tab-panel" id="tabPanel_studio" role="tabpanel">
+          <!-- Background Options (Minecraft Themes) -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-image" style="color:var(--accent-cyan);"></i> Latar Belakang (Tema Minecraft)
+            </div>
+            <div class="bg-presets-grid" id="bgPresetsGrid">
+              <button class="bg-preset-btn active" data-bg="transparent" onclick="setStudioBackground('transparent', this)">
+                <span class="bg-preview-swatch bg-transparent-pattern"></span>
+                <span>Transparan (PNG)</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="taiga" onclick="setStudioBackground('taiga', this)">
+                <span class="bg-preview-swatch bg-taiga-swatch"></span>
+                <span>🌲 Hutan Taiga</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="nether" data-pro="true" onclick="setStudioBackground('nether', this)">
+                <span class="bg-preview-swatch bg-nether-swatch"></span>
+                <span>🌋 The Nether</span>
+                <span class="pro-lock-badge">👑 PRO</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="end" data-pro="true" onclick="setStudioBackground('end', this)">
+                <span class="bg-preview-swatch bg-end-swatch"></span>
+                <span>🌌 The End Void</span>
+                <span class="pro-lock-badge">👑 PRO</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="cherry" data-pro="true" onclick="setStudioBackground('cherry', this)">
+                <span class="bg-preview-swatch bg-cherry-swatch"></span>
+                <span>🌸 Cherry Grove</span>
+                <span class="pro-lock-badge">👑 PRO</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="snow" onclick="setStudioBackground('snow', this)">
+                <span class="bg-preview-swatch bg-snow-swatch"></span>
+                <span>🏔️ Snowy Peaks</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="ocean" onclick="setStudioBackground('ocean', this)">
+                <span class="bg-preview-swatch bg-ocean-swatch"></span>
+                <span>🌊 Samudra Tropis</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="sunset" onclick="setStudioBackground('sunset', this)">
+                <span class="bg-preview-swatch bg-sunset-swatch"></span>
+                <span>🌇 Sunset Savanna</span>
+              </button>
+              <button class="bg-preset-btn" data-bg="dark" data-pro="true" onclick="setStudioBackground('dark', this)">
+                <span class="bg-preview-swatch bg-dark-swatch"></span>
+                <span>⬛ Dark Space</span>
+                <span class="pro-lock-badge">👑 PRO</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Post-Processing VFX Shaders -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-wand-magic-sparkles" style="color:var(--accent);"></i> Filter Visual &amp; Efek Kamera (VFX)
+            </div>
+            <div class="filter-presets-grid" id="vfxPresetsGrid">
+              <button class="filter-preset-btn active" data-filter="none" onclick="setStudioVfxFilter('none', this)">
+                <i class="fas fa-ban"></i> <span>Normal (Crisp)</span>
+              </button>
+              <button class="filter-preset-btn" data-filter="vignette" onclick="setStudioVfxFilter('vignette', this)">
+                <i class="fas fa-circle-dot"></i> <span>Vignette Sinematik</span>
+              </button>
+              <button class="filter-preset-btn" data-filter="cyberpunk" onclick="setStudioVfxFilter('cyberpunk', this)">
+                <i class="fas fa-bolt"></i> <span>Neon Cyberpunk</span>
+              </button>
+              <button class="filter-preset-btn" data-filter="golden" onclick="setStudioVfxFilter('golden', this)">
+                <i class="fas fa-sun"></i> <span>Golden Hour Warm</span>
+              </button>
+              <button class="filter-preset-btn" data-filter="retro" onclick="setStudioVfxFilter('retro', this)">
+                <i class="fas fa-gamepad"></i> <span>Retro Pixel CRT</span>
+              </button>
+              <button class="filter-preset-btn" data-filter="noir" onclick="setStudioVfxFilter('noir', this)">
+                <i class="fas fa-moon"></i> <span>Noir Monochrome</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Studio Lighting & Atmosphere -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-sun" style="color:var(--mei-gold);"></i> Pencahayaan Studio &amp; Lampu Sorot
+            </div>
+            <!-- Quick Lighting Ambiance Presets -->
+            <div class="lighting-presets-bar" id="lightingPresetsBar">
+              <button class="lighting-preset-btn active" data-preset="daylight" onclick="applyLightingPreset('daylight', this)">
+                <i class="fas fa-sun" style="color:var(--mei-gold);"></i> <span>Siang Cerah</span>
+              </button>
+              <button class="lighting-preset-btn" data-preset="golden" onclick="applyLightingPreset('golden', this)">
+                <i class="fas fa-mountain-sun" style="color:#ffaa00;"></i> <span>Golden Hour</span>
+              </button>
+              <button class="lighting-preset-btn" data-preset="moonlight" onclick="applyLightingPreset('moonlight', this)">
+                <i class="fas fa-moon" style="color:var(--accent-cyan);"></i> <span>Malam Bulan</span>
+              </button>
+              <button class="lighting-preset-btn" data-preset="spotlight" onclick="applyLightingPreset('spotlight', this)">
+                <i class="fas fa-bolt" style="color:#00e5ff;"></i> <span>Spotlight</span>
+              </button>
+              <button class="lighting-preset-btn" data-preset="dim" onclick="applyLightingPreset('dim', this)">
+                <i class="fas fa-candle-holder" style="color:#d4d4d8;"></i> <span>Redup Sinema</span>
+              </button>
+            </div>
+            <div class="slider-group">
+              <div class="slider-item">
+                <span class="slider-label">Ambient Light:</span>
+                <input type="range" id="sliderAmbientLight" class="slider-range" min="20" max="250" value="100" oninput="updateStudioLighting('ambient', this.value)">
+                <span class="slider-val" id="valAmbientLight">100%</span>
+              </div>
+              <div class="slider-item">
+                <span class="slider-label">Lampu Sorot Sun:</span>
+                <input type="range" id="sliderSunLight" class="slider-range" min="20" max="250" value="100" oninput="updateStudioLighting('sun', this.value)">
+                <span class="slider-val" id="valSunLight">100%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── TAB 6: EKSPOR & UNDUH ── -->
+        <div class="studio-tab-panel" id="tabPanel_export" role="tabpanel">
+          <!-- Aspect Ratio & Resolution Selector -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-crop-simple" style="color:var(--accent-cyan);"></i> Format Aspek Rasio Foto
+            </div>
+            <div class="aspect-ratio-grid" id="aspectRatioGrid">
+              <button class="aspect-ratio-btn active" data-ratio="1:1" onclick="setExportAspectRatio('1:1', this)">
+                <i class="fas fa-square"></i> <span>1:1 Kotak (Profil)</span>
+              </button>
+              <button class="aspect-ratio-btn" data-ratio="16:9" onclick="setExportAspectRatio('16:9', this)">
+                <i class="fas fa-desktop"></i> <span>16:9 Wallpaper PC</span>
+              </button>
+              <button class="aspect-ratio-btn" data-ratio="9:16" onclick="setExportAspectRatio('9:16', this)">
+                <i class="fas fa-mobile-screen"></i> <span>9:16 Story HP</span>
+              </button>
+              <button class="aspect-ratio-btn" data-ratio="3:1" onclick="setExportAspectRatio('3:1', this)">
+                <i class="fas fa-panorama"></i> <span>3:1 Banner Header</span>
+              </button>
+            </div>
+
+            <div class="panel-section-title" style="margin-top: 10px;">
+              <i class="fas fa-expand-arrows-alt" style="color:var(--accent);"></i> Resolusi Gambar Unduhan
+            </div>
+            <div class="res-presets-bar" id="resPresetsBar">
+              <button class="res-preset-btn" data-res="500" onclick="setExportResolution(500, this)">500 px</button>
+              <button class="res-preset-btn active" data-res="1000" onclick="setExportResolution(1000, this)">1000 px (HD)</button>
+              <button class="res-preset-btn" data-res="1500" onclick="setExportResolution(1500, this)">1500 px</button>
+              <button class="res-preset-btn" data-res="2000" onclick="setExportResolution(2000, this)">2000 px (2K)</button>
+              <button class="res-preset-btn" data-res="3000" data-pro="true" onclick="setExportResolution(3000, this)">3000 px (3K) <span class="pro-lock-badge">👑 PRO</span></button>
+              <button class="res-preset-btn" data-res="5000" data-pro="true" onclick="setExportResolution(5000, this)">5000 px (5K) <span class="pro-lock-badge">👑 VIP</span></button>
+            </div>
+          </div>
+
+          <!-- Video & Motion Recording Format & Duration -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-video" style="color:var(--accent-cyan);"></i> Format Perekaman Video &amp; Animasi 360°
+            </div>
+            
+            <div class="video-format-grid" id="videoFormatGrid">
+              <button class="video-format-btn active" data-format="mp4" onclick="setVideoFormat('mp4', this)">
+                <i class="fas fa-file-video" style="color:#ff5577;"></i>
+                <div class="vformat-info">
+                  <strong>MP4 (H.264)</strong>
+                  <span>Universal / WhatsApp / IG / TikTok</span>
+                </div>
+              </button>
+              <button class="video-format-btn" data-format="webm" onclick="setVideoFormat('webm', this)">
+                <i class="fas fa-film" style="color:var(--accent-cyan);"></i>
+                <div class="vformat-info">
+                  <strong>WebM (60 FPS)</strong>
+                  <span>Ultra Halus / Kualitas Tinggi</span>
+                </div>
+              </button>
+              <button class="video-format-btn" data-format="gif" data-pro="true" onclick="setVideoFormat('gif', this)">
+                <i class="fas fa-image" style="color:var(--mei-gold);"></i>
+                <div class="vformat-info">
+                  <strong>GIF Animasi <span class="pro-lock-badge">👑 PRO</span></strong>
+                  <span>Sticker WA / Discord Emoji / Loop</span>
+                </div>
+              </button>
+            </div>
+
+            <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; margin:10px 0 6px; display:flex; align-items:center; gap:6px;">
+              <i class="fas fa-stopwatch" style="color:var(--accent);"></i> <span>Durasi Putaran Video:</span>
+            </div>
+            <div class="video-duration-bar" id="videoDurationBar">
+              <button class="vduration-btn" data-dur="3" onclick="setVideoDuration(3, this)">⚡ 3 Detik (Cepat)</button>
+              <button class="vduration-btn active" data-dur="4.5" onclick="setVideoDuration(4.5, this)">🔄 1x Putaran 360° (~4.5s)</button>
+              <button class="vduration-btn" data-dur="8" data-pro="true" onclick="setVideoDuration(8, this)">🎬 8 Detik <span class="pro-lock-badge">👑 PRO</span></button>
+            </div>
+          </div>
+
+          <!-- Export & Download Actions -->
+          <div class="panel-inner-section">
+            <div class="panel-section-title">
+              <i class="fas fa-file-export" style="color:var(--accent);"></i> Ekspor &amp; Unduh Hasil
+            </div>
+            <div class="actions-export-bar">
+              <button class="cta cta-primary" onclick="exportCustomSnapshot()" style="flex:1.2; justify-content:center;">
+                <i class="fas fa-camera"></i> <span id="btnExportLabel">Unduh Snapshot (1000x1000)</span>
+              </button>
+              <button class="cta cta-ghost" id="btnRecordVideo" onclick="toggleRecord360Spin()" style="flex:1.2; justify-content:center; border-color:var(--accent);">
+                <i class="fas fa-video" style="color:var(--accent-cyan);"></i> <span id="btnRecordLabel">🎬 Rekam Putaran 360° (MP4)</span>
+              </button>
+              <button id="btnDownloadSkinFile" onclick="downloadSkinTexture(event)" class="cta cta-ghost" style="flex:1; justify-content:center;">
+                <i class="fas fa-download"></i> <span>Unduh Skin .png</span>
+              </button>
+              <button class="cta cta-ghost" onclick="copyDiscordSkinCommand()" title="Salin Command Discord !mcskin">
+                <i class="fab fa-discord" style="color:var(--accent);"></i> <span>Salin !mcskin</span>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -599,11 +832,11 @@
 
         <div style="margin-top: 20px;">
           <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">URL Undangan Resmi:</label>
-          <input type="text" id="generatedInviteLink" class="control-input" readonly value="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" style="width:100%; padding:10px; background:var(--bg-input); border:1px solid var(--border-subtle); border-radius:var(--radius-sm); color:#fff;">
+          <input type="text" id="generatedInviteLink" class="control-input" readonly value="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" style="width:100%; padding:10px; background:var(--bg-elevated); border:1px solid var(--border); border-radius:var(--radius); color:#fff;">
         </div>
       </div>
       <div class="invite-modal-footer">
-        <a href="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener" class="btn-mei-magenta" id="generateInviteBtn" style="width: 100%; text-align: center;">
+        <a href="https://discord.com/api/oauth2/authorize?client_id=723160545146044437&permissions=8&scope=bot%20applications.commands" target="_blank" rel="noopener" class="cta cta-primary" id="generateInviteBtn" style="width: 100%; text-align: center; justify-content: center;">
           <i class="fab fa-discord"></i> Buka Otorisasi Discord
         </a>
       </div>
@@ -615,7 +848,7 @@
     <div class="invite-modal-box" style="max-width: 680px; width: 92%;">
       <div class="invite-modal-header" style="display:flex; justify-content:space-between; align-items:center;">
         <h3 style="display:flex; align-items:center; gap:8px; font-size:1.15rem; color:#fff; margin:0;">
-          <i class="fas fa-scroll" style="color:var(--mei-cyan);"></i> Catatan Rilis &amp; Changelog Resmi Mei Labs
+          <i class="fas fa-scroll" style="color:var(--accent-cyan);"></i> Catatan Rilis &amp; Changelog Resmi Mei Labs
         </h3>
         <button class="close-modal-btn" onclick="closeChangelogModal()" style="cursor:pointer; background:none; border:none; color:var(--text-muted); font-size:1.4rem;">&times;</button>
       </div>
@@ -623,431 +856,326 @@
         <!-- Dynamic or Synchronized Changelog items -->
       </div>
       <div class="invite-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
-        <span style="font-size:0.8rem; color:var(--text-muted);">Bot Engine Versi <strong class="bot-version-text" style="color:var(--mei-cyan);">v2.54.24.1.1</strong></span>
-        <button class="btn-mei-primary" onclick="closeChangelogModal()">Tutup</button>
+        <span style="font-size:0.8rem; color:var(--text-muted);">Bot Engine Versi <strong class="bot-version-text" style="color:var(--accent-cyan);">v2.54.24.1.1</strong></span>
+        <button class="cta cta-ghost" onclick="closeChangelogModal()">Tutup</button>
       </div>
     </div>
   </div>
 
-  <!-- Footer -->
-  <footer style="background: var(--bg-card); border-top: 1px solid var(--border-subtle); padding: 40px 0 30px; text-align: center; margin-top: 60px;">
-    <div class="container">
-      <div style="display: flex; justify-content: center; align-items: center; gap: 10px; margin-bottom: 12px;">
-        <img src="assets/images/mei-avatar.jpg" alt="Logo" style="width: 32px; height: 32px; border-radius: 50%;" onerror="this.src='assets/images/mei-avatar.jpg'">
-        <span style="font-weight: 800; font-size: 1.1rem; color: #fff;">Mei Labs <span class="bot-version-text" style="font-size: 0.75rem; color: var(--mei-magenta); background: rgba(255,51,133,0.15); padding: 2px 8px; border-radius: 99px;">v2.54.24.1.1</span></span>
+  <!-- ─── Premium Subscription & Pricing Modal ─── -->
+  <div class="invite-modal-overlay" id="premiumModalOverlay" style="display:none;" onclick="if(event.target===this) closePremiumModal()">
+    <div class="invite-modal-box premium-pricing-modal-box" style="max-width: 860px; width: 94%;">
+      <div class="invite-modal-header" style="display:flex; justify-content:space-between; align-items:center;">
+        <div style="display:flex; align-items:center; gap:10px;">
+          <div class="premium-header-icon-badge">
+            <i class="fas fa-crown" style="color:var(--mei-gold);"></i>
+          </div>
+          <div>
+            <h3 style="margin:0; font-size:1.2rem; color:#fff;">Upgrade Mei Labs VIP PRO</h3>
+            <span style="font-size:0.78rem; color:var(--text-muted);">Akses Tanpa Batas 3D Skin Studio &amp; Fitur Premium Discord Bot</span>
+          </div>
+        </div>
+        <button class="close-modal-btn" onclick="closePremiumModal()" style="cursor:pointer; background:none; border:none; color:var(--text-muted); font-size:1.4rem;">&times;</button>
       </div>
-      <p style="color: var(--text-muted); font-size: 0.85rem; max-width: 600px; margin: 0 auto 16px;">
-        Asisten Discord Multifungsi &amp; AI Bot Komunitas Resmi Hyrost Realm Network. Ditenagai Node.js, Discord.js, Lavalink HQ Audio, 3D Minecraft Skin Studio, dan Google Gemini AI.
-      </p>
-      <div style="display: flex; justify-content: center; gap: 18px; font-size: 0.85rem; flex-wrap:wrap;">
-        <a href="index.html" style="color: var(--mei-cyan); text-decoration: none;"><i class="fab fa-discord"></i> Beranda Bot</a>
-        <a href="changelog.html" style="color: var(--mei-cyan); text-decoration: none;"><i class="fas fa-scroll"></i> Changelog</a>
-        <a href="../index.html" style="color: var(--text-dim); text-decoration: none;"><i class="fas fa-globe"></i> Portal Hyrost</a>
-        <a href="../verify-user.html" style="color: var(--text-dim); text-decoration: none;"><i class="fab fa-discord"></i> Discord Linked Roles</a>
-        <a href="../terms.html" style="color: var(--text-dim); text-decoration: none;">Ketentuan Layanan</a>
-        <a href="../privacy.html" style="color: var(--text-dim); text-decoration: none;">Privasi</a>
+
+      <div class="invite-modal-body" style="max-height: 520px; overflow-y: auto; padding: 18px 20px;">
+        <!-- Account Current Status Banner -->
+        <div class="membership-current-status-card" id="membershipStatusCard">
+          <div class="mstatus-left">
+            <i class="fas fa-user-shield" style="font-size:1.6rem; color:var(--accent-cyan);"></i>
+            <div>
+              <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; text-transform:uppercase;">Status Akun Anda Saat Ini:</div>
+              <div class="mstatus-title" id="mstatusTitle">FREE EDITION (GRATIS)</div>
+            </div>
+          </div>
+          <div class="mstatus-right" id="mstatusDurationInfo">
+            Tonton iklan untuk pass gratis atau upgrade ke VIP PRO
+          </div>
+        </div>
+
+        <!-- Login Guard (ditampilkan jika belum login) -->
+        <div id="premiumLoginGuard" style="display:none; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.3); border-radius:12px; padding:20px; text-align:center; margin:12px 0;">
+          <div style="font-size:2rem; margin-bottom:8px;">🔐</div>
+          <div style="font-weight:700; color:#f87171; margin-bottom:6px;">Login Diperlukan</div>
+          <div style="font-size:0.85rem; color:var(--text-muted); margin-bottom:14px;">Login ke akun Hyrost Web untuk mengakses paket VIP Studio &amp; melakukan pembayaran via Midtrans.</div>
+          <a href="../auth/login.html" class="cta cta-primary" style="display:inline-flex; align-items:center; gap:8px; text-decoration:none;">
+            <i class="fas fa-sign-in-alt"></i> Login Sekarang
+          </a>
+        </div>
+
+        <!-- Plans Section (disembunyikan jika belum login) -->
+        <div id="premiumPlansSection">
+          <!-- Pricing Plans 4-Column Grid -->
+          <div class="pricing-plans-grid">
+            <!-- 1 Day Plan -->
+            <div class="pricing-card" onclick="selectPremiumPlan('1day', 'Pass Harian (24 Jam)', '2.000')">
+              <div class="pricing-card-header">
+                <span class="plan-badge-tag">⚡ 24 JAM</span>
+                <h4>Pass Harian</h4>
+                <div class="plan-cost">Rp 2.000 <span>/ 1 hari</span></div>
+              </div>
+              <ul class="plan-benefits-list">
+                <li><i class="fas fa-check"></i> Akses Instan 24 Jam</li>
+                <li><i class="fas fa-check"></i> Unduh 5K Ultra HD</li>
+                <li><i class="fas fa-check"></i> Bebas Iklan 1 Hari</li>
+              </ul>
+              <button type="button" class="plan-buy-btn" onclick="event.stopPropagation(); selectPremiumPlan('1day', 'Pass Harian (24 Jam)', '2.000')">Bayar via Midtrans</button>
+            </div>
+
+            <!-- 3 Days Plan -->
+            <div class="pricing-card" onclick="selectPremiumPlan('3days', 'Weekend Pass (3 Hari)', '5.000')">
+              <div class="pricing-card-header">
+                <span class="plan-badge-tag">🎮 3 HARI</span>
+                <h4>Weekend Pass</h4>
+                <div class="plan-cost">Rp 5.000 <span>/ 3 hari</span></div>
+              </div>
+              <ul class="plan-benefits-list">
+                <li><i class="fas fa-check"></i> Akses 3 Hari Penuh</li>
+                <li><i class="fas fa-check"></i> Semua Background Sinematik</li>
+                <li><i class="fas fa-check"></i> Ekspor GIF &amp; MP4 8s</li>
+              </ul>
+              <button type="button" class="plan-buy-btn" onclick="event.stopPropagation(); selectPremiumPlan('3days', 'Weekend Pass (3 Hari)', '5.000')">Bayar via Midtrans</button>
+            </div>
+
+            <!-- 1 Week Plan (Popular) -->
+            <div class="pricing-card popular-plan" onclick="selectPremiumPlan('weekly', 'Pass Mingguan (7 Hari)', '10.000')">
+              <div class="popular-ribbon">🔥 PALING LARIS</div>
+              <div class="pricing-card-header">
+                <span class="plan-badge-tag" style="background:var(--accent);">🚀 7 HARI</span>
+                <h4 style="color:var(--accent-cyan);">Pass Mingguan</h4>
+                <div class="plan-cost">Rp 10.000 <span>/ minggu</span></div>
+              </div>
+              <ul class="plan-benefits-list">
+                <li><i class="fas fa-check"></i> 7 Hari Akses Bebas</li>
+                <li><i class="fas fa-check"></i> Prioritas Render Server</li>
+                <li><i class="fas fa-check"></i> Buka 100% Fitur Studio</li>
+              </ul>
+              <button type="button" class="plan-buy-btn popular-btn" onclick="event.stopPropagation(); selectPremiumPlan('weekly', 'Pass Mingguan (7 Hari)', '10.000')">Bayar via Midtrans</button>
+            </div>
+
+            <!-- 1 Month Plan (VIP) -->
+            <div class="pricing-card vip-plan" onclick="selectPremiumPlan('monthly', 'VIP Member Bulanan (30 Hari)', '25.000')">
+              <div class="vip-ribbon">👑 BEST VALUE</div>
+              <div class="pricing-card-header">
+                <span class="plan-badge-tag" style="background:var(--mei-gold); color:#000;">💎 30 HARI</span>
+                <h4 style="color:var(--mei-gold);">VIP Bulanan</h4>
+                <div class="plan-cost">Rp 25.000 <span>/ bulan</span></div>
+              </div>
+              <ul class="plan-benefits-list">
+                <li><i class="fas fa-check"></i> 30 Hari VIP Studio &amp; Bot</li>
+                <li><i class="fas fa-check"></i> Badge VIP Eksklusif Discord</li>
+                <li><i class="fas fa-check"></i> 24/7 Voice HD 192kbps</li>
+              </ul>
+              <button type="button" class="plan-buy-btn vip-btn" onclick="event.stopPropagation(); selectPremiumPlan('monthly', 'VIP Member Bulanan (30 Hari)', '25.000')">Bayar via Midtrans</button>
+            </div>
+          </div>
+
+          <!-- Midtrans Checkout Result Area -->
+          <div id="premiumPlanDetails" style="display:none;"></div>
+
+          <!-- License Key Redeem Box -->
+          <div class="license-redeem-container">
+            <div class="redeem-title">
+              <i class="fas fa-key" style="color:var(--accent-cyan);"></i> <span>Punya Kode Lisensi VIP? (Redeem Key):</span>
+            </div>
+            <div class="redeem-input-row">
+              <input type="text" id="licenseKeyInput" placeholder="Contoh: MEI-VIP-30-A3F7C2E1" class="control-input" autocomplete="off" />
+              <button type="button" id="btnRedeemKey" class="cta cta-primary" onclick="redeemLicenseKeyInput()">
+                <i class="fas fa-unlock"></i> <span>Tukarkan Kode</span>
+              </button>
+            </div>
+            <div class="redeem-footer-note">
+              💡 Kode lisensi VIP diperoleh dari admin setelah konfirmasi pembayaran Midtrans.
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="invite-modal-footer" style="display:flex; justify-content:space-between; align-items:center;">
+        <span style="font-size:0.78rem; color:var(--text-muted);"><i class="fas fa-shield-alt" style="color:var(--mei-emerald);"></i> Pembayaran aman via <strong style="color:var(--accent-cyan);">Midtrans</strong> — GoPay, OVO, QRIS, Virtual Account, Kartu Kredit</span>
+        <button class="cta cta-ghost" onclick="closePremiumModal()">Tutup</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Payment Success & Receipt Celebration Modal ─── -->
+  <div class="invite-modal-overlay" id="paymentSuccessModalOverlay" style="display:none;" onclick="if(event.target===this) closePaymentSuccessModal()">
+    <div class="invite-modal-box payment-success-modal-box" style="max-width: 620px; width: 94%;">
+      
+      <div class="success-hero-header">
+        <div class="success-badge-wrapper">
+          <div class="success-pulse-ring"></div>
+          <div class="success-icon-disc">
+            <i class="fas fa-check"></i>
+          </div>
+        </div>
+        <h3 class="success-hero-title">Pembayaran Berhasil! 🎉</h3>
+        <p class="success-hero-subtitle">Selamat! Akun Anda kini resmi memiliki akses <strong>Mei Labs VIP PRO</strong>.</p>
+      </div>
+
+      <div class="invite-modal-body" style="padding: 0 20px 10px 20px;">
+        <!-- Digital Receipt Card -->
+        <div class="receipt-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <span style="font-size:0.75rem; font-weight:700; color:#94a3b8; text-transform:uppercase; letter-spacing:0.05em;"><i class="fas fa-receipt"></i> Bukti Transaksi Resmi</span>
+            <span class="plan-badge-tag" style="background:#10b981; color:#fff; font-size:0.72rem; padding:3px 8px; border-radius:6px;">LUNAS • SETTLED</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label"><i class="fas fa-hashtag"></i> Nomor Order</span>
+            <span class="receipt-val" style="font-family:monospace; color:#38bdf8; display:flex; align-items:center; gap:6px;">
+              <span id="receiptOrderId">studio-0-plan-000</span>
+              <button type="button" class="btn btn-sm" style="padding:1px 6px; font-size:0.68rem; background:rgba(56,189,248,0.15); color:#38bdf8; border:none; border-radius:4px; cursor:pointer;" onclick="copyReceiptOrderId()"><i class="fas fa-copy"></i></button>
+            </span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label"><i class="fas fa-crown" style="color:var(--mei-gold);"></i> Paket VIP Studio</span>
+            <span class="receipt-val" id="receiptPlanName" style="color:var(--mei-gold);">VIP Studio Member Bulanan</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label"><i class="fas fa-user"></i> Akun Pengguna</span>
+            <span class="receipt-val" id="receiptUsername">Username</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label"><i class="fas fa-credit-card"></i> Metode Bayar</span>
+            <span class="receipt-val" id="receiptPaymentType">Midtrans Snap (QRIS / VA)</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label"><i class="fas fa-calendar-alt"></i> Waktu Transaksi</span>
+            <span class="receipt-val" id="receiptDate">28 Agu 2026</span>
+          </div>
+
+          <div class="receipt-row">
+            <span class="receipt-label"><i class="fas fa-hourglass-end" style="color:#f59e0b;"></i> Masa Aktif VIP s/d</span>
+            <span class="receipt-val" id="receiptExpiryDate" style="color:#34d399; font-weight:700;">27 Sep 2026</span>
+          </div>
+
+          <div class="receipt-divider"></div>
+
+          <div class="receipt-total-row">
+            <span class="receipt-total-label">Total Dibayar</span>
+            <span class="receipt-total-amount" id="receiptTotalAmount">Rp 25.000</span>
+          </div>
+        </div>
+
+        <!-- Unlocked Perks Banner -->
+        <div class="unlocked-perks-container">
+          <div class="unlocked-perks-title">
+            <i class="fas fa-unlock-alt"></i> Fitur PRO yang Sekarang Terbuka:
+          </div>
+          <div class="unlocked-perks-grid">
+            <div class="unlocked-perk-pill"><i class="fas fa-check-circle"></i> Ekspor 5K Ultra HD</div>
+            <div class="unlocked-perk-pill"><i class="fas fa-check-circle"></i> Ekspor MP4 &amp; GIF Animasi</div>
+            <div class="unlocked-perk-pill"><i class="fas fa-check-circle"></i> Semua Background 3D</div>
+            <div class="unlocked-perk-pill"><i class="fas fa-check-circle"></i> 100% Bebas Iklan</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="invite-modal-footer" style="display:flex; justify-content:space-between; align-items:center; padding:14px 20px; background:rgba(0,0,0,0.3);">
+        <button type="button" class="cta cta-ghost" onclick="closePaymentSuccessModal()">
+          <i class="fas fa-times"></i> Tutup
+        </button>
+        <button type="button" class="cta cta-primary" onclick="closePaymentSuccessModal()" style="background:linear-gradient(135deg, #10b981 0%, #059669 100%); box-shadow:0 4px 15px rgba(16,185,129,0.4);">
+          <i class="fas fa-magic"></i> <span>Mulai Berkarya di Studio</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Payment Pending Notice Modal ─── -->
+  <div class="invite-modal-overlay" id="paymentPendingModalOverlay" style="display:none;" onclick="if(event.target===this) closePaymentPendingModal()">
+    <div class="invite-modal-box" style="max-width: 500px; width: 92%; text-align:center;">
+      <div style="padding: 24px 20px;">
+        <div style="font-size:3rem; margin-bottom:12px;">⏳</div>
+        <h3 style="font-size:1.3rem; font-weight:800; color:#fff; margin-bottom:8px;">Menunggu Pembayaran</h3>
+        <p style="font-size:0.88rem; color:var(--text-muted); line-height:1.6; margin-bottom:16px;">
+          Transaksi Midtrans Anda sedang diproses. Silakan selesaikan pembayaran sesuai metode yang Anda pilih (QRIS / Virtual Account / E-Wallet).
+        </p>
+        <div style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.3); border-radius:10px; padding:12px; font-size:0.82rem; color:#fbbf24; margin-bottom:16px;">
+          💡 Setelah pembayaran sukses, status VIP akan otomatis aktif dalam beberapa detik tanpa perlu reload manual!
+        </div>
+        <button type="button" class="cta cta-primary" onclick="closePaymentPendingModal()" style="width:100%; justify-content:center;">
+          Mengerti
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─── Rewarded Ad Simulation Modal (Tonton Iklan Singkat 5 Detik) ─── -->
+  <div class="invite-modal-overlay" id="rewardedAdModalOverlay" style="display:none;">
+    <div class="invite-modal-box rewarded-ad-modal-box" style="max-width: 540px; width: 92%;">
+      <div class="ad-modal-header">
+        <div class="ad-sponsor-badge">
+          <i class="fas fa-bullhorn" style="color:var(--mei-gold);"></i> <span>Iklan Sponsor Mitra Mei Labs</span>
+        </div>
+        <div class="ad-countdown-pill" id="adCountdownPill">
+          <i class="fas fa-hourglass-half"></i> <span id="adCountdownText">5s</span>
+        </div>
+      </div>
+
+      <div class="ad-modal-body">
+        <div class="ad-creative-card">
+          <div class="ad-creative-badge">SPONSORED CLOUD NODE</div>
+          <div class="ad-creative-logo">
+            <img src="assets/images/mei-avatar.jpg" alt="Mei Labs" class="ad-brand-icon">
+            <div>
+              <h4 style="margin:0; color:#fff; font-size:1.05rem;">Mei Labs Cloud &amp; Game Server Node</h4>
+              <p style="margin:4px 0 0; font-size:0.75rem; color:var(--text-muted);">Hosting Bot Discord 24/7 &amp; Server Minecraft Indonesia Anti-DDoS</p>
+            </div>
+          </div>
+          <div class="ad-features-pills">
+            <span>⚡ 99.9% Uptime SLA</span>
+            <span>🛡️ NVMe Gen4 Storage</span>
+            <span>🎙️ Audio HQ Low-Ping</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="ad-modal-footer">
+        <button type="button" class="cta cta-ghost" onclick="openPremiumModal()" style="font-size:0.75rem; padding:8px 12px;">
+          <i class="fas fa-crown" style="color:var(--mei-gold);"></i> <span>Bebas Iklan (PRO)</span>
+        </button>
+        <button type="button" class="cta cta-primary" id="btnClaimAdReward" onclick="claimAdReward()" disabled style="opacity:0.5; cursor:not-allowed;">
+          <i class="fas fa-lock" id="btnClaimAdIcon"></i> <span id="btnClaimAdLabel">Tonton Iklan (5s)...</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer (Minimalist Abishek Style) -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        Mei Labs<span>.</span>
+      </div>
+
+      <div class="footer-copy">
+        © 2026 HYROST ECOSYSTEM • MEI LABS v2.54.24 • 3D MINECRAFT SKIN STUDIO
+      </div>
+
+      <div class="footer-links">
+        <a href="index.html#hero" class="footer-link">Beranda</a>
+        <a href="index.html#pillars" class="footer-link">Arsitektur</a>
+        <a href="skin.html" class="footer-link" style="color: var(--accent-cyan);">3D Skin Studio</a>
+        <a href="index.html#commands" class="footer-link">Perintah</a>
+        <a href="../privacy.html" class="footer-link">Privacy</a>
+        <a href="../terms.html" class="footer-link">Terms</a>
+        <a href="../index.html" class="footer-link" style="color: var(--accent-cyan);">Portal Web</a>
       </div>
     </div>
   </footer>
 
-  <!-- Scripts -->
-  <script src="app.js?v=26"></script>
-  <script>
-    let viewer = null;
-    let orbitControl = null;
-    let isSpinning = false;
-    let currentIGN = 'Steve';
+  <!-- Modular Scripts -->
+  <script src="app.js?v=28"></script>
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get('user')) {
-        currentIGN = urlParams.get('user').trim();
-        document.getElementById('ignInput').value = currentIGN;
-      }
+  <!-- Midtrans Snap.js (loaded dynamically by skin.js) -->
+  <!-- Client Key di-inject via /api/studio/config oleh skin.js saat init -->
 
-      initSkinViewer(currentIGN);
-
-      if (urlParams.get('pose')) {
-        setTimeout(() => applyPosePreset(urlParams.get('pose')), 500);
-      }
-      if (urlParams.get('angle')) {
-        const ang = parseInt(urlParams.get('angle'), 10);
-        setTimeout(() => setCameraAngle(ang), 600);
-      }
-    });
-
-    function getSkin() {
-      if (!viewer) return null;
-      if (viewer.playerObject && viewer.playerObject.skin) return viewer.playerObject.skin;
-      if (viewer.playerModel) return viewer.playerModel;
-      if (viewer.skin) return viewer.skin;
-      return null;
-    }
-
-    function initSkinViewer(ign) {
-      const canvas = document.getElementById('skin_container');
-      const cleanUser = encodeURIComponent(ign || 'Steve');
-      document.getElementById('activePlayerLabel').textContent = `${ign} (3D Viewport)`;
-      document.getElementById('btnDownloadSkinFile').href = `https://mc-heads.net/skin/${cleanUser}`;
-
-      if (viewer) {
-        viewer.loadSkin(`https://mc-heads.net/skin/${cleanUser}`);
-        return;
-      }
-
-      viewer = new skinview3d.SkinViewer({
-        canvas: canvas,
-        width: 440,
-        height: 460,
-        skin: `https://mc-heads.net/skin/${cleanUser}`
-      });
-
-      viewer.camera.position.x = -15;
-      viewer.camera.position.y = 10;
-      viewer.camera.position.z = 35;
-      viewer.fov = 65;
-
-      orbitControl = skinview3d.createOrbitControls(viewer);
-      orbitControl.enableRotate = true;
-      orbitControl.enableZoom = true;
-      orbitControl.enablePan = true;
-
-      // Apply initial stance
-      setTimeout(() => {
-        applyPosePreset('idle');
-      }, 350);
-    }
-
-    function loadCustomSkinFromInput() {
-      const val = (document.getElementById('ignInput').value || '').trim();
-      if (!val) return;
-      currentIGN = val;
-      initSkinViewer(currentIGN);
-    }
-
-    function toRad(deg) {
-      return (deg * Math.PI) / 180;
-    }
-
-    function toDeg(rad) {
-      return Math.round((rad * 180) / Math.PI);
-    }
-
-    function setSlider(part, deg) {
-      const slider = document.getElementById(`slider${part}`);
-      const valEl = document.getElementById(`val${part}`);
-      if (slider) slider.value = deg;
-      if (valEl) valEl.textContent = `${deg}°`;
-    }
-
-    function syncSlidersFromModel() {
-      const skin = getSkin();
-      if (!skin) return;
-      setSlider('RightArm', toDeg(skin.rightArm.rotation.x));
-      setSlider('LeftArm', toDeg(skin.leftArm.rotation.x));
-      setSlider('RightLeg', toDeg(skin.rightLeg.rotation.x));
-      setSlider('LeftLeg', toDeg(skin.leftLeg.rotation.x));
-      setSlider('Head', toDeg(skin.head.rotation.x));
-    }
-
-    function clearAllAnimations() {
-      if (!viewer) return;
-      viewer.animation = null;
-      const btnRun = document.getElementById('btnRun');
-      if (btnRun) btnRun.style.background = '';
-    }
-
-    function resetBones() {
-      const skin = getSkin();
-      if (!skin) return;
-      skin.head.rotation.set(0, 0, 0);
-      skin.leftArm.rotation.set(0, 0, 0);
-      skin.rightArm.rotation.set(0, 0, 0);
-      skin.leftLeg.rotation.set(0, 0, 0);
-      skin.rightLeg.rotation.set(0, 0, 0);
-      skin.body.rotation.set(0, 0, 0);
-
-      ['RightArm', 'LeftArm', 'RightLeg', 'LeftLeg', 'Head'].forEach(part => {
-        setSlider(part, 0);
-      });
-    }
-
-    function applyPosePreset(pose, clickedBtn) {
-      document.querySelectorAll('.pose-card-btn').forEach(b => {
-        if (b === clickedBtn || b.getAttribute('data-pose') === pose) {
-          b.classList.add('active');
-        } else {
-          b.classList.remove('active');
-        }
-      });
-
-      const skin = getSkin();
-      if (!skin) return;
-
-      clearAllAnimations();
-      resetBones();
-
-      switch(pose) {
-        case 'samurai':
-          skin.rightArm.rotation.x = toRad(-110);
-          skin.rightArm.rotation.y = toRad(-35);
-          skin.rightArm.rotation.z = toRad(45);
-          skin.leftArm.rotation.x = toRad(30);
-          skin.leftArm.rotation.z = toRad(-25);
-          skin.rightLeg.rotation.x = toRad(-30);
-          skin.leftLeg.rotation.x = toRad(25);
-          skin.head.rotation.y = toRad(15);
-          skin.head.rotation.x = toRad(10);
-          break;
-
-        case 'knight':
-          skin.leftArm.rotation.x = toRad(-85);
-          skin.leftArm.rotation.y = toRad(40);
-          skin.rightArm.rotation.x = toRad(-95);
-          skin.rightArm.rotation.y = toRad(-20);
-          skin.leftLeg.rotation.x = toRad(-20);
-          skin.rightLeg.rotation.x = toRad(20);
-          break;
-
-        case 'archer':
-          skin.leftArm.rotation.x = toRad(-85);
-          skin.leftArm.rotation.y = toRad(25);
-          skin.rightArm.rotation.x = toRad(-85);
-          skin.rightArm.rotation.y = toRad(-45);
-          skin.head.rotation.y = toRad(-25);
-          skin.head.rotation.x = toRad(-5);
-          break;
-
-        case 'ninja':
-          skin.body.rotation.x = toRad(25);
-          skin.head.rotation.x = toRad(-25);
-          skin.rightArm.rotation.x = toRad(45);
-          skin.rightArm.rotation.z = toRad(50);
-          skin.leftArm.rotation.x = toRad(45);
-          skin.leftArm.rotation.z = toRad(-50);
-          skin.rightLeg.rotation.x = toRad(-40);
-          skin.leftLeg.rotation.x = toRad(30);
-          break;
-
-        case 'elytra':
-          skin.body.rotation.x = toRad(75);
-          skin.head.rotation.x = toRad(-65);
-          skin.rightArm.rotation.x = toRad(15);
-          skin.rightArm.rotation.z = toRad(35);
-          skin.leftArm.rotation.x = toRad(15);
-          skin.leftArm.rotation.z = toRad(-35);
-          skin.rightLeg.rotation.x = toRad(10);
-          skin.leftLeg.rotation.x = toRad(10);
-          break;
-
-        case 'running':
-          viewer.animation = new skinview3d.RunningAnimation();
-          viewer.animation.speed = 1.0;
-          break;
-
-        case 'walking':
-          viewer.animation = new skinview3d.WalkingAnimation();
-          viewer.animation.speed = 0.8;
-          break;
-
-        case 'flying':
-          viewer.animation = new skinview3d.FlyingAnimation();
-          viewer.animation.speed = 0.8;
-          break;
-
-        case 'waving':
-          viewer.animation = new skinview3d.FunctionAnimation((time) => {
-            const s = getSkin();
-            if (!s) return;
-            s.rightArm.rotation.x = -Math.PI * 0.75;
-            s.rightArm.rotation.z = Math.sin(time * 6) * 0.35 + 0.35;
-            s.leftArm.rotation.x = 0.1;
-            s.head.rotation.y = Math.sin(time * 2) * 0.15;
-          });
-          break;
-
-        case 'sitting':
-          skin.rightLeg.rotation.x = toRad(-90);
-          skin.leftLeg.rotation.x = toRad(-90);
-          skin.rightArm.rotation.x = toRad(-25);
-          skin.leftArm.rotation.x = toRad(-25);
-          skin.head.rotation.x = toRad(-5);
-          break;
-
-        case 'mining':
-          skin.rightArm.rotation.x = toRad(-125);
-          skin.rightArm.rotation.y = toRad(-20);
-          skin.rightArm.rotation.z = toRad(15);
-          skin.leftArm.rotation.x = toRad(20);
-          skin.head.rotation.x = toRad(25);
-          skin.rightLeg.rotation.x = toRad(-20);
-          skin.leftLeg.rotation.x = toRad(15);
-          break;
-
-        case 'swimming':
-          skin.body.rotation.x = toRad(85);
-          skin.head.rotation.x = toRad(-65);
-          skin.rightArm.rotation.x = toRad(170);
-          skin.leftArm.rotation.x = toRad(170);
-          skin.rightLeg.rotation.x = toRad(10);
-          skin.leftLeg.rotation.x = toRad(10);
-          break;
-
-        case 'victory':
-          skin.rightArm.rotation.x = toRad(-160);
-          skin.rightArm.rotation.z = toRad(25);
-          skin.leftArm.rotation.x = toRad(-160);
-          skin.leftArm.rotation.z = toRad(-25);
-          skin.head.rotation.x = toRad(-20);
-          skin.rightLeg.rotation.x = toRad(-15);
-          skin.leftLeg.rotation.x = toRad(15);
-          break;
-
-        case 'trident':
-          skin.rightArm.rotation.x = toRad(-145);
-          skin.rightArm.rotation.y = toRad(-30);
-          skin.rightArm.rotation.z = toRad(20);
-          skin.leftArm.rotation.x = toRad(35);
-          skin.body.rotation.y = toRad(-20);
-          skin.head.rotation.y = toRad(20);
-          break;
-
-        case 'king':
-          skin.rightLeg.rotation.x = toRad(-85);
-          skin.leftLeg.rotation.x = toRad(-85);
-          skin.rightArm.rotation.x = toRad(-20);
-          skin.rightArm.rotation.z = toRad(35);
-          skin.leftArm.rotation.x = toRad(-20);
-          skin.leftArm.rotation.z = toRad(-35);
-          skin.head.rotation.x = toRad(-12);
-          break;
-
-        case 'zenith':
-          skin.rightArm.rotation.x = toRad(-135);
-          skin.rightArm.rotation.z = toRad(35);
-          skin.leftArm.rotation.x = toRad(25);
-          skin.leftArm.rotation.z = toRad(-20);
-          skin.head.rotation.y = toRad(-15);
-          skin.rightLeg.rotation.x = toRad(-25);
-          skin.leftLeg.rotation.x = toRad(25);
-          break;
-
-        case 'mace':
-          skin.rightArm.rotation.x = toRad(-170);
-          skin.leftArm.rotation.x = toRad(-170);
-          skin.head.rotation.x = toRad(20);
-          skin.body.rotation.x = toRad(15);
-          break;
-
-        case 'totem':
-          skin.leftArm.rotation.x = toRad(-80);
-          skin.leftArm.rotation.y = toRad(15);
-          skin.rightArm.rotation.x = toRad(-25);
-          skin.head.rotation.y = toRad(-10);
-          break;
-
-        case 'salute':
-          skin.rightArm.rotation.x = toRad(-140);
-          skin.rightArm.rotation.z = toRad(45);
-          skin.head.rotation.x = toRad(-5);
-          break;
-
-        default: // idle
-          skin.rightArm.rotation.x = toRad(-10);
-          skin.leftArm.rotation.x = toRad(10);
-          skin.rightLeg.rotation.x = toRad(5);
-          skin.leftLeg.rotation.x = toRad(-5);
-          break;
-      }
-
-      syncSlidersFromModel();
-    }
-
-    function updateManualBone(part, val) {
-      const skin = getSkin();
-      if (!skin) return;
-      clearAllAnimations();
-
-      const rad = toRad(parseFloat(val));
-      const cap = part.charAt(0).toUpperCase() + part.slice(1);
-      const valEl = document.getElementById(`val${cap}`);
-      if (valEl) valEl.textContent = `${val}°`;
-
-      if (part === 'rightArm') skin.rightArm.rotation.x = rad;
-      if (part === 'leftArm') skin.leftArm.rotation.x = rad;
-      if (part === 'rightLeg') skin.rightLeg.rotation.x = rad;
-      if (part === 'leftLeg') skin.leftLeg.rotation.x = rad;
-      if (part === 'head') skin.head.rotation.x = rad;
-    }
-
-    function setCameraAngle(angle, btnEl) {
-      document.querySelectorAll('.angle-btn').forEach(b => {
-        if (b === btnEl) b.classList.add('active');
-        else b.classList.remove('active');
-      });
-
-      if (!viewer) return;
-      const rad = toRad(angle);
-      const dist = 38;
-
-      viewer.camera.position.x = -dist * Math.sin(rad);
-      viewer.camera.position.z = dist * Math.cos(rad);
-      viewer.camera.position.y = 8;
-      viewer.camera.lookAt(0, 0, 0);
-    }
-
-    function toggleSpinAnimation() {
-      if (!viewer) return;
-      isSpinning = !isSpinning;
-      const btn = document.getElementById('btnSpin');
-      if (isSpinning) {
-        viewer.autoRotate = true;
-        viewer.autoRotateSpeed = 2.5;
-        if (btn) btn.style.background = 'var(--mei-primary)';
-      } else {
-        viewer.autoRotate = false;
-        if (btn) btn.style.background = '';
-      }
-    }
-
-    function toggleRunningAnimation() {
-      if (!viewer) return;
-      const btn = document.getElementById('btnRun');
-      if (viewer.animation instanceof skinview3d.RunningAnimation) {
-        clearAllAnimations();
-        applyPosePreset('idle');
-        if (btn) btn.style.background = '';
-      } else {
-        applyPosePreset('running');
-        if (btn) btn.style.background = 'var(--mei-magenta)';
-      }
-    }
-
-    function resetCameraView() {
-      if (!viewer) return;
-      viewer.camera.position.x = -15;
-      viewer.camera.position.y = 10;
-      viewer.camera.position.z = 35;
-      viewer.camera.lookAt(0, 0, 0);
-      const firstAngle = document.querySelector('.angle-btn');
-      if (firstAngle) setCameraAngle(0, firstAngle);
-    }
-
-    function exportSnapshot4K() {
-      if (!viewer || !viewer.canvas) return;
-      const dataUrl = viewer.canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.download = `mei_labs_3d_skin_${currentIGN}_${Date.now()}.png`;
-      link.href = dataUrl;
-      link.click();
-    }
-
-    function copyDiscordSkinCommand() {
-      const cmd = `!mcskin ${currentIGN}`;
-      navigator.clipboard.writeText(cmd).then(() => {
-        alert(`📋 Perintah '${cmd}' disalin ke clipboard! Jalankan di server Discord Mei Labs.`);
-      });
-    }
-  </script>
+  <script src="skin.js?v=55"></script>
 </body>
 </html>
