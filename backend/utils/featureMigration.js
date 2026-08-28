@@ -175,8 +175,10 @@ async function migrateFeatureTables(pool) {
     )
   `);
 
+  const safeCols = (rows) => (Array.isArray(rows) ? rows.map((c) => c && (c.Field || c.field || c.COLUMN_NAME || '')).filter(Boolean) : []);
+
   const [userCols] = await pool.execute('SHOW COLUMNS FROM users');
-  const names = userCols.map((c) => c.Field);
+  const names = safeCols(userCols);
   if (!names.includes('referral_code')) {
     await pool.execute('ALTER TABLE users ADD COLUMN referral_code VARCHAR(20) UNIQUE NULL');
   }
@@ -185,7 +187,7 @@ async function migrateFeatureTables(pool) {
   }
 
   const [questCols] = await pool.execute('SHOW COLUMNS FROM quests');
-  const qNames = questCols.map((c) => c.Field);
+  const qNames = safeCols(questCols);
   if (!qNames.includes('requirement_type')) {
     await pool.execute("ALTER TABLE quests ADD COLUMN requirement_type VARCHAR(30) DEFAULT 'daily_claim'");
   }
@@ -194,7 +196,7 @@ async function migrateFeatureTables(pool) {
   }
 
   const [mpCols] = await pool.execute('SHOW COLUMNS FROM marketplace_items');
-  const mpNames = mpCols.map((c) => c.Field);
+  const mpNames = safeCols(mpCols);
   if (!mpNames.includes('listing_type')) {
     await pool.execute("ALTER TABLE marketplace_items ADD COLUMN listing_type VARCHAR(20) DEFAULT 'sale'");
   }
