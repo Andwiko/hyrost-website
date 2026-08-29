@@ -466,17 +466,27 @@ async function sendLiveChat() {
     }
 }
 
-function toggleMobileSidebar() {
+let lastDashboardToggle = 0;
+
+function toggleMobileSidebar(e) {
+    if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
+    const now = Date.now();
+    if (now - lastDashboardToggle < 180) return;
+    lastDashboardToggle = now;
+
     const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar') || document.querySelector('.admin-sidebar');
     const overlay = document.querySelector('.sidebar-overlay') || document.getElementById('sidebarOverlay');
-    if (sidebar) {
-        sidebar.classList.toggle('active');
-        sidebar.classList.toggle('open');
-        sidebar.classList.toggle('mobile-open');
-    }
-    if (overlay) {
-        overlay.classList.toggle('active');
-        overlay.classList.toggle('open');
+    if (!sidebar) return;
+
+    const isOpen = sidebar.classList.contains('active') || sidebar.classList.contains('open') || sidebar.classList.contains('mobile-open');
+    if (isOpen) {
+        sidebar.classList.remove('active', 'open', 'mobile-open');
+        if (overlay) overlay.classList.remove('active', 'open');
+        document.body.style.overflow = '';
+    } else {
+        sidebar.classList.add('active', 'open', 'mobile-open');
+        if (overlay) overlay.classList.add('active', 'open');
+        document.body.style.overflow = 'hidden';
     }
 }
 
@@ -489,6 +499,7 @@ function closeMobileSidebar() {
     if (overlay) {
         overlay.classList.remove('active', 'open');
     }
+    document.body.style.overflow = '';
 }
 
 // Auto-close sidebar on scroll or click outside
@@ -517,11 +528,11 @@ window.addEventListener('scroll', () => {
 
 document.addEventListener('click', (e) => {
     const sidebar = document.querySelector('.sidebar') || document.getElementById('sidebar') || document.querySelector('.admin-sidebar');
-    const toggleBtn = document.getElementById('sidebarToggle') || document.querySelector('.mobile-header button');
+    const isToggleClick = e.target.closest('#sidebarToggle, #adminSidebarToggle, .sidebar-toggle, .hamburger, [data-toggle="sidebar"], .mobile-header .btn-header-action');
     
     if (sidebar && (sidebar.classList.contains('active') || sidebar.classList.contains('open') || sidebar.classList.contains('mobile-open'))) {
         // Close if click is outside sidebar & outside hamburger button
-        if (!sidebar.contains(e.target) && (!toggleBtn || !toggleBtn.contains(e.target))) {
+        if (!sidebar.contains(e.target) && !isToggleClick) {
             closeMobileSidebar();
         }
         // Close if click is on a navigation link item

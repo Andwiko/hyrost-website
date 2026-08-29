@@ -907,48 +907,76 @@ exports.updatePaymentSettings = async (req, res) => {
 exports.testMidtransConnection = async (req, res) => {
     try {
         const { serverKey, isProduction } = req.body;
-        const sKey = (serverKey || globalPaymentSettings.midtrans_server_key || process.env.MIDTRANS_SERVER_KEY || '').trim();
-        const isProd = isProduction !== undefined 
-            ? isProduction 
+        const { testServerKey, sanitizeKey, isPlaceholderKey } = require('../utils/midtrans');
+        const sKey = sanitizeKey(serverKey || globalPaymentSettings.midtrans_server_key || process.env.MIDTRANS_SERVER_KEY);
+        const isProdHint = isProduction !== undefined
+            ? isProduction
             : (globalPaymentSettings.midtrans_is_production || process.env.MIDTRANS_IS_PRODUCTION === 'true');
 
-        if (!sKey || sKey.includes('GANTI_DENGAN_SERVER_KEY')) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Server Key Midtrans belum diisi atau masih berupa nilai default placeholder!' 
+        if (isPlaceholderKey(sKey)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Server Key Midtrans belum diisi atau masih berupa nilai default placeholder!'
             });
         }
 
-        // Test API ping to Midtrans v2 endpoint using Basic Auth
-        const endpoint = isProd 
-            ? 'https://api.midtrans.com/v2/token' 
-            : 'https://api.sandbox.midtrans.com/v2/token';
+        const { status, isProd } = await testServerKey(sKey, isProdHint);
 
-        const testRes = await fetch(endpoint, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Basic ' + Buffer.from(sKey + ':').toString('base64'),
-                'Accept': 'application/json'
-            }
-        });
-
-        if (testRes.status === 401) {
-            return res.status(400).json({ 
-                success: false, 
-                message: '❌ Server Key Midtrans DITOLAK (401 Unauthorized). Pastikan Server Key cocok dengan environment (' + (isProd ? 'Production' : 'Sandbox') + ').' 
+        if (status === 401) {
+            return res.status(400).json({
+                success: false,
+                message: '❌ Server Key Midtrans DITOLAK (401 Unauthorized). Pastikan Server Key cocok dengan environment (' + (isProd ? 'Production' : 'Sandbox') + ').'
             });
         }
 
-        return res.json({ 
-            success: true, 
+        return res.json({
+            success: true,
             message: `✅ Koneksi Midtrans API BERHASIL TERHUBUNG! Mode: ${isProd ? 'PRODUCTION (Live)' : 'SANDBOX (Testing)'}.`,
             isProduction: isProd,
-            status: testRes.status
+            status
         });
     } catch (e) {
         return res.status(500).json({ 
             success: false, 
             message: 'Gagal menghubungi server Midtrans: ' + e.message 
+        });
+    }
+};
+
+exports.testTripayConnection = async (req, res) => {
+    try {
+        const { apiKey, privateKey, merchantCode, isProduction } = req.body;
+        const { testTripayConnection } = require('../utils/tripay');
+        
+        const aKey = (apiKey || globalPaymentSettings.tripay_api_key || process.env.TRIPAY_API_KEY || '').trim();
+        const pKey = (privateKey || globalPaymentSettings.tripay_private_key || process.env.TRIPAY_PRIVATE_KEY || '').trim();
+        const mCode = (merchantCode || globalPaymentSettings.tripay_merchant_code || process.env.TRIPAY_MERCHANT_CODE || '').trim();
+        const isProd = isProduction !== undefined ? Boolean(isProduction) : Boolean(globalPaymentSettings.tripay_is_production);
+
+        if (!aKey || !pKey || !mCode) {
+            return res.status(400).json({
+                success: false,
+                message: 'API Key, Private Key, dan Kode Merchant Tripay wajib diisi!'
+            });
+        }
+
+        const result = await testTripayConnection(aKey, pKey, mCode, isProd);
+        if (result.success) {
+            return res.json({
+                success: true,
+                message: `✅ Koneksi Tripay API BERHASIL! Ditemukan ${result.channelsCount} channel pembayaran aktif (Mode: ${result.isProduction ? 'PRODUCTION (Live)' : 'SANDBOX (Testing)'}).`,
+                channels: result.channels,
+            });
+        } else {
+            return res.status(400).json({
+                success: false,
+                message: `❌ Koneksi Tripay Gagal: ${result.message}`,
+            });
+        }
+    } catch (e) {
+        return res.status(500).json({
+            success: false,
+            message: 'Gagal menghubungi server Tripay: ' + e.message,
         });
     }
 };

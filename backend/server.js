@@ -26,6 +26,7 @@ const localFileStore = require("./utils/localFileStore");
 const { startAutoBackup, runBackup } = require("./utils/autoBackup");
 
 const initDB = async () => {
+  const safeCols = (rows) => Array.isArray(rows) ? rows.map((c) => c.Field || c.field || '') : [];
   try {
     // --- 1. CORE TABLES ---
 
@@ -49,7 +50,7 @@ const initDB = async () => {
 
     // Migration: Ensure new columns exist on users table
     const [connCols] = await pool.execute("SHOW COLUMNS FROM users");
-    const connColNames = connCols.map((c) => c.Field);
+    const connColNames = safeCols(connCols);
     if (!connColNames.includes("discord_id"))
       await pool.execute("ALTER TABLE users ADD COLUMN discord_id VARCHAR(255) DEFAULT NULL");
     if (!connColNames.includes("discord_username"))
@@ -79,7 +80,7 @@ const initDB = async () => {
 
     // Migration: Ensure new columns exist
     const [roleCols] = await pool.execute("SHOW COLUMNS FROM roles");
-    const colNames = roleCols.map((c) => c.Field);
+    const colNames = safeCols(roleCols);
     if (!colNames.includes("badge_text"))
       await pool.execute("ALTER TABLE roles ADD COLUMN badge_text VARCHAR(50)");
     if (!colNames.includes("badge_color"))
@@ -138,7 +139,7 @@ const initDB = async () => {
     // Migration: ensure is_read column exists in messages
     try {
       const [msgCols] = await pool.execute("SHOW COLUMNS FROM messages");
-      const msgColNames = msgCols.map((c) => c.Field);
+      const msgColNames = safeCols(msgCols);
       if (!msgColNames.includes("is_read")) {
         await pool.execute("ALTER TABLE messages ADD COLUMN is_read BOOLEAN DEFAULT FALSE");
       }
@@ -274,18 +275,16 @@ const initDB = async () => {
 
     // Migration: ensure forum thread columns match forumController schema
     const [threadCols] = await pool.execute("SHOW COLUMNS FROM threads");
-    if (Array.isArray(threadCols)) {
-      const threadColNames = threadCols.map((c) => c.Field);
-      const threadMigrations = {
-        is_pinned: "ALTER TABLE threads ADD COLUMN is_pinned TINYINT(1) DEFAULT 0",
-        tags: "ALTER TABLE threads ADD COLUMN tags VARCHAR(500) DEFAULT ''",
-        image_url: "ALTER TABLE threads ADD COLUMN image_url LONGTEXT DEFAULT NULL",
-        views: "ALTER TABLE threads ADD COLUMN views INT DEFAULT 0",
-      };
-      for (const [col, sql] of Object.entries(threadMigrations)) {
-        if (!threadColNames.includes(col)) {
-          await pool.execute(sql);
-        }
+    const threadColNames = safeCols(threadCols);
+    const threadMigrations = {
+      is_pinned: "ALTER TABLE threads ADD COLUMN is_pinned TINYINT(1) DEFAULT 0",
+      tags: "ALTER TABLE threads ADD COLUMN tags VARCHAR(500) DEFAULT ''",
+      image_url: "ALTER TABLE threads ADD COLUMN image_url LONGTEXT DEFAULT NULL",
+      views: "ALTER TABLE threads ADD COLUMN views INT DEFAULT 0",
+    };
+    for (const [col, sql] of Object.entries(threadMigrations)) {
+      if (!threadColNames.includes(col)) {
+        await pool.execute(sql);
       }
     }
 
@@ -304,16 +303,14 @@ const initDB = async () => {
         `);
 
     const [replyCols] = await pool.execute("SHOW COLUMNS FROM replies");
-    if (Array.isArray(replyCols)) {
-      const replyColNames = replyCols.map((c) => c.Field);
-      const replyMigrations = {
-        image_url: "ALTER TABLE replies ADD COLUMN image_url LONGTEXT DEFAULT NULL",
-        likes: "ALTER TABLE replies ADD COLUMN likes INT DEFAULT 0",
-      };
-      for (const [col, sql] of Object.entries(replyMigrations)) {
-        if (!replyColNames.includes(col)) {
-          await pool.execute(sql);
-        }
+    const replyColNames = safeCols(replyCols);
+    const replyMigrations = {
+      image_url: "ALTER TABLE replies ADD COLUMN image_url LONGTEXT DEFAULT NULL",
+      likes: "ALTER TABLE replies ADD COLUMN likes INT DEFAULT 0",
+    };
+    for (const [col, sql] of Object.entries(replyMigrations)) {
+      if (!replyColNames.includes(col)) {
+        await pool.execute(sql);
       }
     }
 
@@ -379,21 +376,19 @@ const initDB = async () => {
 
     // Migration: Add new prices if missing
     const [cosCols] = await pool.execute("SHOW COLUMNS FROM cosmetic_items");
-    if (Array.isArray(cosCols)) {
-      const cosColNames = cosCols.map((c) => c.Field);
-      if (!cosColNames.includes("price_bronze"))
-        await pool.execute(
-          "ALTER TABLE cosmetic_items ADD COLUMN price_bronze INT DEFAULT 0",
-        );
-      if (!cosColNames.includes("price_silver"))
-        await pool.execute(
-          "ALTER TABLE cosmetic_items ADD COLUMN price_silver INT DEFAULT 0",
-        );
-      if (!cosColNames.includes("price_gold"))
-        await pool.execute(
-          "ALTER TABLE cosmetic_items ADD COLUMN price_gold INT DEFAULT 0",
-        );
-    }
+    const cosColNames = safeCols(cosCols);
+    if (!cosColNames.includes("price_bronze"))
+      await pool.execute(
+        "ALTER TABLE cosmetic_items ADD COLUMN price_bronze INT DEFAULT 0",
+      );
+    if (!cosColNames.includes("price_silver"))
+      await pool.execute(
+        "ALTER TABLE cosmetic_items ADD COLUMN price_silver INT DEFAULT 0",
+      );
+    if (!cosColNames.includes("price_gold"))
+      await pool.execute(
+        "ALTER TABLE cosmetic_items ADD COLUMN price_gold INT DEFAULT 0",
+      );
 
     // User Cosmetics (Ownership)
     await pool.execute(`
@@ -410,8 +405,7 @@ const initDB = async () => {
 
     // Migration: Add equipped columns and COINS to users
     const [userCols] = await pool.execute("SHOW COLUMNS FROM users");
-    if (Array.isArray(userCols)) {
-      const userColNames = userCols.map((c) => c.Field);
+    const userColNames = safeCols(userCols);
       if (!userColNames.includes("equipped_nametag"))
         await pool.execute(
           "ALTER TABLE users ADD COLUMN equipped_nametag INT DEFAULT NULL",
@@ -456,7 +450,7 @@ const initDB = async () => {
         await pool.execute(
           "ALTER TABLE users ADD COLUMN skin_studio_ad_until TIMESTAMP NULL DEFAULT NULL",
         );
-    }
+
     // Pending Deliveries Table
     await pool.execute(`
             CREATE TABLE IF NOT EXISTS pending_deliveries (
@@ -526,7 +520,7 @@ const initDB = async () => {
         `);
 
     const [invCols] = await pool.execute("SHOW COLUMNS FROM user_inventory");
-    const invColNames = invCols.map((c) => c.Field);
+    const invColNames = safeCols(invCols);
     if (!invColNames.includes("description"))
       await pool.execute("ALTER TABLE user_inventory ADD COLUMN description TEXT");
     if (!invColNames.includes("rarity"))
@@ -553,7 +547,7 @@ const initDB = async () => {
       await pool.execute("ALTER TABLE user_inventory ADD COLUMN plugin_id VARCHAR(50) DEFAULT 'hyrost_bridge'");
 
     const [mpCols] = await pool.execute("SHOW COLUMNS FROM marketplace_items");
-    const mpColNames = mpCols.map((c) => c.Field);
+    const mpColNames = safeCols(mpCols);
     if (!mpColNames.includes("description"))
       await pool.execute("ALTER TABLE marketplace_items ADD COLUMN description TEXT");
     if (!mpColNames.includes("item_code"))
@@ -572,7 +566,7 @@ const initDB = async () => {
       await pool.execute("ALTER TABLE marketplace_items ADD COLUMN plugin_id VARCHAR(50) DEFAULT 'hyrost_bridge'");
 
     const [pdCols] = await pool.execute("SHOW COLUMNS FROM pending_deliveries");
-    const pdColNames = pdCols.map((c) => c.Field);
+    const pdColNames = safeCols(pdCols);
     if (!pdColNames.includes("inventory_id"))
       await pool.execute("ALTER TABLE pending_deliveries ADD COLUMN inventory_id INT NULL");
     if (!pdColNames.includes("plugin_id"))
@@ -842,7 +836,7 @@ const initDB = async () => {
     }
 
     const [userCols2] = await pool.execute("SHOW COLUMNS FROM users");
-    const userColNames2 = userCols2.map((c) => c.Field);
+    const userColNames2 = safeCols(userCols2);
     if (!userColNames2.includes("streak_count"))
       await pool.execute("ALTER TABLE users ADD COLUMN streak_count INT DEFAULT 0");
     if (!userColNames2.includes("referral_code"))

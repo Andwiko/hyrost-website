@@ -3,325 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost - Pertemanan & Social</title>
+    <title>Hyrost — Pertemanan &amp; Komunitas</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css?v=3">
-    <link rel="stylesheet" href="social.css?v=2">
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    <link rel="stylesheet" href="social.css?v=50">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* Modern styling overrides for social page */
-        .social-container {
-            padding: 24px;
-            background: rgba(17, 17, 17, 0.4);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin-top: 20px;
-            min-height: 500px;
-        }
-        
-        .tab-btn {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            font-weight: 600;
-            color: rgba(255, 255, 255, 0.6);
-            padding: 12px 20px;
-            border-bottom: 2px solid transparent;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        
-        .tab-btn.active {
-            color: var(--accent-indigo, #6366f1);
-            border-bottom: 2px solid var(--accent-indigo, #6366f1);
-        }
-        
-        .tab-btn:hover {
-            color: #fff;
-        }
-
-        .tab-btn .badge {
-            background: rgba(99, 102, 241, 0.2);
-            color: var(--accent-indigo, #6366f1);
-            padding: 2px 8px;
-            border-radius: 99px;
-            font-size: 0.8rem;
-            margin-left: 6px;
-            border: 1px solid rgba(99, 102, 241, 0.3);
-        }
-        
-        .tab-btn .badge.red {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border-color: rgba(239, 68, 68, 0.3);
-        }
-
-        /* Search styling */
-        .search-player-bar {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 24px;
-            background: rgba(0, 0, 0, 0.2);
-            padding: 8px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .search-player-bar input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            padding: 10px 16px;
-            color: #fff;
-            font-size: 0.95rem;
-        }
-
-        .search-player-bar button {
-            background: var(--accent-indigo, #6366f1);
-            color: white;
-            border: none;
-            padding: 10px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 700;
-            transition: opacity 0.2s;
-        }
-
-        .search-player-bar button:hover {
-            opacity: 0.9;
-        }
-
-        .empty-state {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 20px;
-            text-align: center;
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        .empty-state i {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            color: rgba(255, 255, 255, 0.15);
-        }
-
-        .empty-state p {
-            font-size: 0.95rem;
-        }
-
-        .toast-notification {
-            position: fixed;
-            bottom: 24px;
-            right: 24px;
-            padding: 16px 24px;
-            border-radius: 12px;
-            background: #1e1e2e;
-            color: #fff;
-            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            transform: translateY(100px);
-            opacity: 0;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            z-index: 10000;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .toast-notification.show {
-            transform: translateY(0);
-            opacity: 1;
-        }
-
-        .toast-notification.success {
-            border-left: 4px solid #10b981;
-        }
-
-        .toast-notification.error {
-            border-left: 4px solid #ef4444;
-        }
-
-        .role-badge {
-            font-size: 0.75rem;
-            padding: 2px 6px;
-            border-radius: 4px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .role-badge.admin { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
-        .role-badge.member { background: rgba(156, 163, 175, 0.2); color: #9ca3af; border: 1px solid rgba(156, 163, 175, 0.3); }
-        .role-badge.vip { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
-
-        .friend-card {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px;
-            border-radius: 12px;
-            transition: transform 0.2s, border-color 0.2s;
-        }
-
-        .friend-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(99, 102, 241, 0.3);
-            background: rgba(0, 0, 0, 0.35);
-        }
-
-        .friend-meta {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .friend-meta img {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .friend-details h4 {
-            margin: 0;
-            color: #fff;
-            font-size: 1rem;
-            font-weight: 700;
-        }
-
-        .friend-details p {
-            margin: 2px 0 0 0;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
-        }
-
-        .friend-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .friend-btn {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: #ccc;
-            width: 36px;
-            height: 36px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .friend-btn:hover {
-            background: rgba(99, 102, 241, 0.2);
-            color: #fff;
-            border-color: var(--accent-indigo, #6366f1);
-        }
-
-        .friend-btn.danger:hover {
-            background: rgba(239, 68, 68, 0.2);
-            color: #ef4444;
-            border-color: #ef4444;
-        }
-        
-        .friend-btn.warning:hover {
-            background: rgba(245, 158, 11, 0.2);
-            color: #f59e0b;
-            border-color: #f59e0b;
-        }
-
-        .request-item {
-            background: rgba(0, 0, 0, 0.25);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 16px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 12px;
-        }
-
-        .request-user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .request-user-info img {
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.05);
-        }
-
-        .request-user-info h4 {
-            margin: 0;
-            color: #fff;
-            font-size: 0.95rem;
-            font-weight: 600;
-        }
-
-        .request-user-info p {
-            margin: 2px 0 0 0;
-            color: rgba(255, 255, 255, 0.4);
-            font-size: 0.8rem;
-        }
-
-        .request-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .btn-action-primary {
-            background: var(--accent-indigo, #6366f1);
-            color: #fff;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-
-        .btn-action-secondary {
-            background: rgba(255, 255, 255, 0.05);
-            color: #ccc;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 8px 16px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .btn-action-primary:hover, .btn-action-secondary:hover {
-            opacity: 0.9;
-        }
-    </style>
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <h2>Hyrost</h2>
-                <span>Member Realm</span>
+                <div class="brand-text">
+                    <h2>Hyrost</h2>
+                    <span>Member Realm</span>
+                </div>
             </div>
             
             <div class="nav-section-label">Navigasi Utama</div>
@@ -341,6 +46,18 @@
                 <a href="forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
                     <span>Forum</span>
+                </a>
+                <a href="showcase.html" class="nav-item">
+                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan);"></i>
+                    <span>Galeri Build</span>
+                </a>
+                <a href="../bot/skin.html" class="nav-item">
+                    <i class="fas fa-person-running" style="color:var(--accent-pink, #ec4899);"></i>
+                    <span>3D Skin Studio</span>
+                </a>
+                <a href="map.html" class="nav-item">
+                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
+                    <span>Live Map</span>
                 </a>
                 <a href="leaderboard.html" class="nav-item">
                     <i class="fas fa-trophy"></i>
@@ -370,117 +87,104 @@
                     <i class="fas fa-headset"></i>
                     <span>Pusat Bantuan</span>
                 </a>
+                <a href="../verify-user.html" class="nav-item">
+                    <i class="fab fa-discord" style="color:#5865F2;"></i>
+                    <span>Verifikasi Discord</span>
+                </a>
                 <div class="nav-divider"></div>
-                <div class="nav-section-label nav-section-admin" style="margin-top:12px;">Admin Panel</div>
+                <div class="nav-section-label nav-section-admin">Admin Panel</div>
                 <a href="admin.html" class="nav-item nav-admin">
                     <i class="fas fa-user-shield"></i>
                     <span>Admin Panel</span>
                 </a>
             </nav>
 
-            <div class="server-status-widget">
-                <div class="widget-header">
-                    <span>Status Server</span>
-                    <span class="status-dot"></span>
+            <div class="sidebar-bottom">
+                <div class="sidebar-server-pill">
+                    <div class="server-pill-row">
+                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
+                        <span class="status-dot online"></span>
+                    </div>
+                    <div class="server-pill-ip">play.hyrost.net</div>
                 </div>
-                <div class="server-ip">play.hyrost.net</div>
-                <div class="player-count"><i class="fas fa-users"></i> Online</div>
-            </div>
-            <div style="display:flex; justify-content:center; gap:8px; font-size:0.75rem; margin-top:12px; color:rgba(255,255,255,0.4);">
-                <a href="../terms.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Terms</a>
-                <span>•</span>
-                <a href="../privacy.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Privacy</a>
-                <span>•</span>
-                <a href="../index.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
             </div>
         </aside>
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu" style="padding:8px 12px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+            </div>
+        </div>
 
         <!-- Main Content -->
         <main class="main-content">
             <div class="top-user-banner">
                 <div>
-                    <h1 style="font-size: 1.8rem; font-weight: 800; font-family: 'Plus Jakarta Sans', sans-serif;">👥 Hub Hubungan Sosial</h1>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Kelola pertemanan Anda, kirim permintaan, atau blokir pengguna demi kenyamanan bermain.</p>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                        <i class="fas fa-user-friends" style="color:var(--accent-blue);"></i>
+                        <span>Pertemanan &amp; Sosial Realm</span>
+                    </h1>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Terhubung dengan sesama pemain Hyrost, pantau status online, dan kirim pesan.</p>
                 </div>
-                <a href="chat.html" class="btn-header-action" style="background: var(--accent-indigo, #6366f1); border: none; color: #fff;">
-                    <i class="fas fa-comments"></i>
-                    <span>Buka Obrolan (Chat)</span>
+                <a href="../dashboard.html" class="btn-header-action">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>Dashboard</span>
                 </a>
             </div>
 
-            <!-- Social Tabs -->
-            <div class="social-tabs" style="border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 20px;">
-                <button class="tab-btn active" data-tab="friends">
-                    <i class="fas fa-user-friends"></i> Teman Saya <span class="badge" id="count-friends">0</span>
-                </button>
-                <button class="tab-btn" data-tab="pending">
-                    <i class="fas fa-envelope-open-text"></i> Permintaan Masuk <span class="badge red" id="count-incoming">0</span>
-                </button>
-                <button class="tab-btn" data-tab="sent">
-                    <i class="fas fa-paper-plane"></i> Terkirim <span class="badge" id="count-outgoing">0</span>
-                </button>
-                <button class="tab-btn" data-tab="search">
-                    <i class="fas fa-search"></i> Cari Pemain
-                </button>
-                <button class="tab-btn" data-tab="blocked">
-                    <i class="fas fa-ban"></i> Blokir <span class="badge" id="count-blocked">0</span>
-                </button>
-            </div>
+            <!-- Social Container -->
+            <div class="widget-card">
+                <!-- Navigation Tabs -->
+                <div class="social-tabs">
+                    <button class="tab-btn active" onclick="switchTab('friends')">
+                        <i class="fas fa-user-check" style="margin-right:6px;"></i> Teman Saya <span class="badge" id="friendCountBadge">0</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('requests')">
+                        <i class="fas fa-user-plus" style="margin-right:6px;"></i> Permintaan <span class="badge red" id="reqCountBadge" style="display:none;">0</span>
+                    </button>
+                    <button class="tab-btn" onclick="switchTab('find')">
+                        <i class="fas fa-search" style="margin-right:6px;"></i> Cari Pemain
+                    </button>
+                    <a href="chat.html" class="btn-chat-link">
+                        <i class="fas fa-comments"></i> Buka Chatroom
+                    </a>
+                </div>
 
-            <div class="social-container">
-                <!-- Friends Tab -->
-                <div id="friendsTab" class="tab-content" style="display: block;">
-                    <div class="friends-grid" id="friends-list-container">
-                        <!-- Loaded dynamically -->
+                <!-- Tab 1: Friends List -->
+                <div id="tab-friends" class="tab-content active">
+                    <div id="friendsList" class="friends-grid">
+                        <!-- Loaded dynamically by social.js -->
                     </div>
                 </div>
 
-                <!-- Pending Incoming Tab -->
-                <div id="pendingTab" class="tab-content" style="display: none;">
-                    <div id="incoming-list-container">
-                        <!-- Loaded dynamically -->
+                <!-- Tab 2: Friend Requests -->
+                <div id="tab-requests" class="tab-content" style="display:none;">
+                    <div id="requestsList">
+                        <!-- Loaded dynamically by social.js -->
                     </div>
                 </div>
 
-                <!-- Sent Outgoing Tab -->
-                <div id="sentTab" class="tab-content" style="display: none;">
-                    <div id="outgoing-list-container">
-                        <!-- Loaded dynamically -->
-                    </div>
-                </div>
-
-                <!-- Search Players Tab -->
-                <div id="searchTab" class="tab-content" style="display: none;">
+                <!-- Tab 3: Find Players -->
+                <div id="tab-find" class="tab-content" style="display:none;">
                     <div class="search-player-bar">
-                        <i class="fas fa-search" style="color: rgba(255,255,255,0.4); margin-left: 16px; align-self: center;"></i>
-                        <input type="text" id="search-input" placeholder="Masukkan minimal 2 karakter username pemain untuk mencari...">
-                        <button id="btn-search-trigger">Cari</button>
+                        <input type="text" id="findPlayerInput" placeholder="Masukkan username pemain..." onkeydown="if(event.key==='Enter') searchPlayers()" />
+                        <button class="btn-header-action btn-primary-action" onclick="searchPlayers()">Cari</button>
                     </div>
-                    <div id="search-results-container">
-                        <div class="empty-state">
-                            <i class="fas fa-search"></i>
-                            <p>Ketik nama pemain dan klik Cari untuk memulai.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Blocked Users Tab -->
-                <div id="blockedTab" class="tab-content" style="display: none;">
-                    <div id="blocked-list-container">
-                        <!-- Loaded dynamically -->
+                    <div id="searchResults" class="friends-grid">
+                        <!-- Search results -->
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- Global Toast Toast Notification System -->
-    <div id="global-toast" class="toast-notification">
-        <i id="toast-icon" class="fas fa-info-circle"></i>
-        <span id="toast-message">Notifikasi</span>
-    </div>
-
-    <script src="../assets/js/mobileLayout.js"></script>
-    <script src="social.js?v=2"></script>
+    <!-- Scripts -->
+    <script src="../dashboard.js"></script>
+    <script src="social.js?v=20"></script>
 </body>
 </html>

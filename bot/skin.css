@@ -2149,3 +2149,149 @@ body.fullscreen-theater-mode .viewport-action-bar {
   z-index: 99999;
 }
 
+/* ─── Multi-Gateway Payment Tabs & Modals ─── */
+.payment-tabs-header {
+  display: flex;
+  gap: 8px;
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid var(--border-mid);
+  padding: 6px;
+  border-radius: 12px;
+  margin-bottom: 18px;
+}
+
+.payment-tab-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 14px;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.payment-tab-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.payment-tab-btn.active {
+  color: #fff;
+  background: linear-gradient(135deg, rgba(88, 101, 242, 0.4) 0%, rgba(129, 140, 248, 0.25) 100%);
+  border: 1px solid rgba(129, 140, 248, 0.4);
+  box-shadow: 0 4px 12px rgba(88, 101, 242, 0.25);
+}
+
+/* Tripay QRIS Real-time Modal Box */
+.qris-display-box {
+  background: #0f172a;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 16px;
+  padding: 24px;
+  text-align: center;
+  position: relative;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.5);
+}
+
+.qris-image-wrapper {
+  background: #ffffff;
+  padding: 14px;
+  border-radius: 12px;
+  display: inline-block;
+  margin: 16px auto;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  position: relative;
+}
+
+.qris-image-wrapper img {
+  width: 210px;
+  height: 210px;
+  display: block;
+  image-rendering: pixelated;
+}
+
+.qris-badge-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  color: #34d399;
+  font-size: 0.75rem;
+  font-weight: 700;
+  padding: 4px 12px;
+  border-radius: 20px;
+}
+
+/* Manual Transfer Box */
+.manual-qris-card {
+  background: rgba(15, 23, 42, 0.85);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 14px;
+  padding: 20px;
+  text-align: center;
+  margin-bottom: 16px;
+}
+
+.bank-detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 14px;
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  margin-bottom: 8px;
+  font-size: 0.85rem;
+}
+
+.copy-badge-btn {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.copy-badge-btn:hover {
+  background: #38bdf8;
+  color: #0f172a;
+}
+
+.wa-confirm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px 20px;
+  background: linear-gradient(135deg, #25d366 0%, #128c7e 100%);
+  color: #fff;
+  font-weight: 800;
+  font-size: 0.95rem;
+  border-radius: 10px;
+  text-decoration: none;
+  border: none;
+  box-shadow: 0 4px 20px rgba(37, 211, 102, 0.4);
+  cursor: pointer;
+  transition: transform 0.2s, box-shadow 0.2s;
+  margin-top: 12px;
+}
+
+.wa-confirm-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(37, 211, 102, 0.6);
+  color: #fff;
+}
+

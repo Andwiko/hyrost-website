@@ -97,18 +97,22 @@ exports.finalizeExpiredAuctions = async () => {
       SELECT m.id FROM marketplace_items m
       WHERE m.listing_type = 'auction' AND m.is_sold = 0 AND m.auction_ends_at <= NOW()
     `);
-    for (const row of expired) {
-      const [topBid] = await pool.execute(
-        'SELECT bidder_id, amount FROM auction_bids WHERE listing_id = ? ORDER BY amount DESC LIMIT 1',
-        [row.id]
-      );
-      if (topBid.length) {
-        const bid = topBid[0];
-        const [listing] = await pool.execute('SELECT * FROM marketplace_items WHERE id = ?', [row.id]);
-        const item = listing[0];
-        const coinCol = `coin_${item.price_type || 'bronze'}`;
-        await pool.execute(`UPDATE users SET ${coinCol} = ${coinCol} - ? WHERE id = ?`, [bid.amount, bid.bidder_id]);
-        await pool.execute('UPDATE marketplace_items SET is_sold = 1 WHERE id = ?', [row.id]);
+    if (Array.isArray(expired)) {
+      for (const row of expired) {
+        const [topBid] = await pool.execute(
+          'SELECT bidder_id, amount FROM auction_bids WHERE listing_id = ? ORDER BY amount DESC LIMIT 1',
+          [row.id]
+        );
+        if (topBid && topBid.length) {
+          const bid = topBid[0];
+          const [listing] = await pool.execute('SELECT * FROM marketplace_items WHERE id = ?', [row.id]);
+          if (listing && listing.length) {
+            const item = listing[0];
+            const coinCol = `coin_${item.price_type || 'bronze'}`;
+            await pool.execute(`UPDATE users SET ${coinCol} = ${coinCol} - ? WHERE id = ?`, [bid.amount, bid.bidder_id]);
+            await pool.execute('UPDATE marketplace_items SET is_sold = 1 WHERE id = ?', [row.id]);
+          }
+        }
       }
     }
   } catch (err) {

@@ -1497,8 +1497,67 @@ async function testMidtransConnection() {
       toast(data.message || "Koneksi Midtrans gagal", "error");
     }
   }
+function updateTripayModeBadge() {
+  const isProd = document.getElementById('payTripayIsProduction')?.checked;
+  const label = document.getElementById('tripayModeLabel');
+  if (label) {
+    label.innerHTML = isProd 
+      ? '<strong style="color:#ef4444;">🔴 PRODUCTION (Live Transaksi Nyata)</strong>' 
+      : '<strong style="color:#38bdf8;">🟢 SANDBOX (Mode Pengujian / Simulasi)</strong>';
+  }
 }
-window.testMidtransConnection = testMidtransConnection;
+window.updateTripayModeBadge = updateTripayModeBadge;
+
+async function testTripayConnection() {
+  const apiKey = document.getElementById('payTripayApiKey')?.value;
+  const privateKey = document.getElementById('payTripayPrivateKey')?.value;
+  const merchantCode = document.getElementById('payTripayMerchantCode')?.value;
+  const isProduction = document.getElementById('payTripayIsProduction')?.checked;
+  const resultBox = document.getElementById('tripayTestResult');
+
+  if (!apiKey || !privateKey || !merchantCode) {
+    toast("⚠️ Masukkan API Key, Private Key, dan Kode Merchant Tripay terlebih dahulu!", "warning");
+    if (resultBox) {
+      resultBox.style.display = 'block';
+      resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+      resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+      resultBox.style.color = '#f87171';
+      resultBox.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Masukkan kredensial Tripay lengkap sebelum melakukan pengetesan koneksi.';
+    }
+    return;
+  }
+
+  if (resultBox) {
+    resultBox.style.display = 'block';
+    resultBox.style.background = 'rgba(14, 165, 233, 0.15)';
+    resultBox.style.border = '1px solid rgba(14, 165, 233, 0.4)';
+    resultBox.style.color = '#38bdf8';
+    resultBox.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menghubungi API Tripay... Mohon tunggu.';
+  }
+
+  const { ok, data } = await safeFetchJson(`${API}/admin/payment-settings/test-tripay`, {
+    method: 'POST',
+    headers: authHeaders,
+    body: JSON.stringify({ apiKey, privateKey, merchantCode, isProduction })
+  });
+
+  if (resultBox) {
+    if (ok && data.success) {
+      resultBox.style.background = 'rgba(16, 185, 129, 0.15)';
+      resultBox.style.border = '1px solid rgba(16, 185, 129, 0.4)';
+      resultBox.style.color = '#34d399';
+      resultBox.innerHTML = `<i class="fas fa-check-circle"></i> ${data.message}`;
+      toast(data.message, "success");
+    } else {
+      resultBox.style.background = 'rgba(239, 68, 68, 0.15)';
+      resultBox.style.border = '1px solid rgba(239, 68, 68, 0.4)';
+      resultBox.style.color = '#f87171';
+      resultBox.innerHTML = `<i class="fas fa-times-circle"></i> ${data.message || 'Koneksi Tripay gagal'}`;
+      toast(data.message || "Koneksi Tripay gagal", "error");
+    }
+  }
+}
+window.testTripayConnection = testTripayConnection;
 
 async function loadPaymentSettings() {
   const { ok, data } = await safeFetchJson(`${API}/admin/payment-settings`, { headers: authHeaders });
@@ -1524,6 +1583,47 @@ async function loadPaymentSettings() {
     document.getElementById('payMidtransMerchantId').value = s.midtrans_merchant_id;
   }
 
+  // Tripay Settings
+  if (document.getElementById('payTripayEnabled')) {
+    document.getElementById('payTripayEnabled').checked = s.tripay_enabled !== false;
+  }
+  if (document.getElementById('payTripayIsProduction')) {
+    document.getElementById('payTripayIsProduction').checked = s.tripay_is_production === true;
+    updateTripayModeBadge();
+  }
+  if (document.getElementById('payTripayApiKey') && s.tripay_api_key !== undefined) {
+    document.getElementById('payTripayApiKey').value = s.tripay_api_key;
+  }
+  if (document.getElementById('payTripayPrivateKey') && s.tripay_private_key !== undefined) {
+    document.getElementById('payTripayPrivateKey').value = s.tripay_private_key;
+  }
+  if (document.getElementById('payTripayMerchantCode') && s.tripay_merchant_code !== undefined) {
+    document.getElementById('payTripayMerchantCode').value = s.tripay_merchant_code;
+  }
+
+  // Manual QRIS & Bank Transfer Settings
+  if (document.getElementById('payManualEnabled')) {
+    document.getElementById('payManualEnabled').checked = s.manual_enabled !== false;
+  }
+  if (document.getElementById('payManualQrisImage') && s.manual_qris_image !== undefined) {
+    document.getElementById('payManualQrisImage').value = s.manual_qris_image;
+  }
+  if (document.getElementById('payManualBankName') && s.manual_bank_name !== undefined) {
+    document.getElementById('payManualBankName').value = s.manual_bank_name;
+  }
+  if (document.getElementById('payManualAccountNumber') && s.manual_account_number !== undefined) {
+    document.getElementById('payManualAccountNumber').value = s.manual_account_number;
+  }
+  if (document.getElementById('payManualAccountName') && s.manual_account_name !== undefined) {
+    document.getElementById('payManualAccountName').value = s.manual_account_name;
+  }
+  if (document.getElementById('payManualWhatsapp') && s.manual_whatsapp !== undefined) {
+    document.getElementById('payManualWhatsapp').value = s.manual_whatsapp;
+  }
+  if (document.getElementById('payManualInstructions') && s.manual_instructions !== undefined) {
+    document.getElementById('payManualInstructions').value = s.manual_instructions;
+  }
+
   // Update Dynamic Webhook URLs in UI
   const origin = window.location.origin;
   if (document.getElementById('webhookStudioUrl')) {
@@ -1531,6 +1631,12 @@ async function loadPaymentSettings() {
   }
   if (document.getElementById('webhookStoreUrl')) {
     document.getElementById('webhookStoreUrl').textContent = `${origin}/api/features/payments/midtrans-webhook`;
+  }
+  if (document.getElementById('webhookTripayStudioUrl')) {
+    document.getElementById('webhookTripayStudioUrl').textContent = `${origin}/api/studio/tripay-webhook`;
+  }
+  if (document.getElementById('webhookTripayStoreUrl')) {
+    document.getElementById('webhookTripayStoreUrl').textContent = `${origin}/api/features/payments/tripay-webhook`;
   }
 
   // Store & Manual Gateways
@@ -1557,6 +1663,23 @@ async function savePaymentSettings() {
     midtrans_server_key: document.getElementById('payMidtransServerKey')?.value || '',
     midtrans_client_key: document.getElementById('payMidtransClientKey')?.value || '',
     midtrans_merchant_id: document.getElementById('payMidtransMerchantId')?.value || '',
+
+    // Tripay Settings
+    tripay_enabled: document.getElementById('payTripayEnabled')?.checked ?? true,
+    tripay_is_production: document.getElementById('payTripayIsProduction')?.checked ?? false,
+    tripay_api_key: document.getElementById('payTripayApiKey')?.value || '',
+    tripay_private_key: document.getElementById('payTripayPrivateKey')?.value || '',
+    tripay_merchant_code: document.getElementById('payTripayMerchantCode')?.value || '',
+
+    // Manual QRIS & Bank Transfer Settings
+    manual_enabled: document.getElementById('payManualEnabled')?.checked ?? true,
+    manual_qris_image: document.getElementById('payManualQrisImage')?.value || '',
+    manual_bank_name: document.getElementById('payManualBankName')?.value || 'BCA / DANA / GoPay',
+    manual_account_number: document.getElementById('payManualAccountNumber')?.value || '08123456789',
+    manual_account_name: document.getElementById('payManualAccountName')?.value || 'Hyrost Admin',
+    manual_whatsapp: document.getElementById('payManualWhatsapp')?.value || '628123456789',
+    manual_instructions: document.getElementById('payManualInstructions')?.value || 'Transfer nominal tepat lalu kirim bukti ke WhatsApp.',
+
     saweria_url: document.getElementById('payCfgSaweriaUrl')?.value || 'https://saweria.co/meilabs',
 
     // Store & Manual Gateways
@@ -1579,7 +1702,7 @@ async function savePaymentSettings() {
   });
 
   if (ok && data.success) {
-    toast("✅ Pengaturan gateway & Midtrans pembayaran berhasil disimpan!", "success");
+    toast("✅ Pengaturan gateway Tripay, Midtrans, & Transfer Manual berhasil disimpan!", "success");
     loadPaymentSettings();
   } else {
     toast(data.message || "Gagal menyimpan pengaturan pembayaran", "error");

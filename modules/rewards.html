@@ -3,25 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hyrost - Daily Rewards</title>
+    <title>Hyrost — Hadiah Harian (Daily Rewards)</title>
     <!-- Core Styles -->
-    <link rel="stylesheet" href="../dashboard.css?v=3">
-    <link rel="stylesheet" href="rewards.css?v=3">
+    <link rel="stylesheet" href="../dashboard.css?v=50">
+    <link rel="stylesheet" href="rewards.css?v=50">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="dashboard-container">
+        <!-- Sidebar Overlay for Mobile -->
+        <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMobileSidebar()"></div>
+
         <!-- Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <h2>Hyrost</h2>
-                <span>Member Realm</span>
+                <div class="brand-text">
+                    <h2>Hyrost</h2>
+                    <span>Member Realm</span>
+                </div>
             </div>
             
             <div class="nav-section-label">Navigasi Utama</div>
@@ -41,6 +46,18 @@
                 <a href="forum.html" class="nav-item">
                     <i class="fas fa-comments"></i>
                     <span>Forum</span>
+                </a>
+                <a href="showcase.html" class="nav-item">
+                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan);"></i>
+                    <span>Galeri Build</span>
+                </a>
+                <a href="../bot/skin.html" class="nav-item">
+                    <i class="fas fa-person-running" style="color:var(--accent-pink, #ec4899);"></i>
+                    <span>3D Skin Studio</span>
+                </a>
+                <a href="map.html" class="nav-item">
+                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
+                    <span>Live Map</span>
                 </a>
                 <a href="leaderboard.html" class="nav-item">
                     <i class="fas fa-trophy"></i>
@@ -70,43 +87,53 @@
                     <i class="fas fa-headset"></i>
                     <span>Pusat Bantuan</span>
                 </a>
+                <a href="../verify-user.html" class="nav-item">
+                    <i class="fab fa-discord" style="color:#5865F2;"></i>
+                    <span>Verifikasi Discord</span>
+                </a>
                 <div class="nav-divider"></div>
-                <div class="nav-section-label nav-section-admin" style="margin-top:12px;">Admin Panel</div>
+                <div class="nav-section-label nav-section-admin">Admin Panel</div>
                 <a href="admin.html" class="nav-item nav-admin">
                     <i class="fas fa-user-shield"></i>
                     <span>Admin Panel</span>
                 </a>
             </nav>
 
-            <div class="server-status-widget">
-                <div class="widget-header">
-                    <span>Status Server</span>
-                    <span class="status-dot"></span>
+            <div class="sidebar-bottom">
+                <div class="sidebar-server-pill">
+                    <div class="server-pill-row">
+                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
+                        <span class="status-dot online"></span>
+                    </div>
+                    <div class="server-pill-ip">play.hyrost.net</div>
                 </div>
-                <div class="server-ip">play.hyrost.net</div>
-                <div class="player-count"><i class="fas fa-users"></i> Online</div>
-            </div>
-            <div style="display:flex; justify-content:center; gap:8px; font-size:0.75rem; margin-top:12px; color:rgba(255,255,255,0.4);">
-                <a href="../terms.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Terms</a>
-                <span>•</span>
-                <a href="../privacy.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Privacy</a>
-                <span>•</span>
-                <a href="../index.html" style="color:rgba(255,255,255,0.6); text-decoration:none;">Home</a>
             </div>
         </aside>
+
+        <!-- Mobile Header -->
+        <div class="mobile-header">
+            <button id="sidebarToggle" class="btn-header-action" onclick="toggleMobileSidebar()" aria-label="Menu" style="padding:8px 12px;">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="mobile-logo">
+                <img src="../assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
+                <h2>Hyrost</h2>
+            </div>
+        </div>
 
         <!-- Main Content -->
         <main class="main-content">
             <div class="top-user-banner">
                 <div>
-                    <h1 style="font-size: 1.8rem; font-weight: 800; display:flex; align-items:center; gap:10px;">
-                        <span>🎁 Hadiah Harian & Streak Login (Daily Claim)</span>
+                    <h1 style="font-size: 1.5rem; font-weight: 800; color:#fff; display:flex; align-items:center; gap:10px; margin-bottom:4px;">
+                        <i class="fas fa-gift" style="color:var(--accent-gold);"></i>
+                        <span>Hadiah Harian &amp; Streak Login</span>
                     </h1>
-                    <p style="color: var(--text-secondary); font-size: 0.9rem;">Login dan klaim koin gratis setiap hari untuk membangun streak & membuka Peti Kosmetik Emas!</p>
+                    <p style="color: var(--text-muted); font-size: 0.85rem;">Login dan klaim koin gratis setiap hari untuk membangun streak &amp; membuka Peti Hadiah!</p>
                 </div>
                 <a href="../dashboard.html" class="btn-header-action">
                     <i class="fas fa-arrow-left"></i>
-                    <span>Kembali ke Dashboard</span>
+                    <span>Dashboard</span>
                 </a>
             </div>
 
@@ -115,14 +142,14 @@
                 <div class="streak-badge-box">
                     <i class="fas fa-fire streak-icon"></i>
                     <div>
-                        <span style="font-size:0.75rem; color:#f59e0b; font-weight:800; text-transform:uppercase;">STREAK SEKARANG</span>
-                        <h3 id="streakCount" style="color:#fff; margin:0; font-size:1.4rem;">1 Hari</h3>
+                        <span style="font-size:0.68rem; color:var(--accent-gold); font-weight:800; text-transform:uppercase; letter-spacing:0.6px;">STREAK AKTIF</span>
+                        <h3 id="streakCount" style="color:#fff; margin:0; font-size:1.3rem; font-weight:800;">1 Hari</h3>
                     </div>
                 </div>
 
                 <div style="flex:1; max-width:480px;">
-                    <div style="display:flex; justify-content:space-between; font-size:0.8rem; color:#9ca3af; font-weight:700; margin-bottom:6px;">
-                        <span>Progress Reset 7 Hari</span>
+                    <div style="display:flex; justify-content:space-between; font-size:0.78rem; color:var(--text-muted); font-weight:700; margin-bottom:6px;">
+                        <span>Progress Siklus 7 Hari</span>
                         <span id="streakPercentText">14%</span>
                     </div>
                     <div class="streak-progress-track">
@@ -131,8 +158,8 @@
                 </div>
 
                 <div class="timer-box-card" id="timerText" style="display:none;">
-                    <span style="font-size:0.7rem; color:#06b6d4; font-weight:800;">KLAIM BERIKUTNYA:</span>
-                    <h4 id="nextRewardTimer" style="margin:2px 0 0; color:#fff; font-size:1.1rem;">--:--:--</h4>
+                    <span style="font-size:0.68rem; color:var(--accent-cyan-light); font-weight:800; text-transform:uppercase;">Klaim Berikutnya:</span>
+                    <h4 id="nextRewardTimer" style="margin:2px 0 0; color:#fff; font-size:1rem; font-family:var(--font-mono);">--:--:--</h4>
                 </div>
             </div>
 
@@ -142,24 +169,22 @@
             </div>
 
             <!-- Main Action Box -->
-            <div class="widget-card" style="text-align: center; padding: 36px 20px; margin-top:24px; background: linear-gradient(135deg, rgba(245, 158, 11, 0.12) 0%, rgba(15, 20, 31, 0.95) 100%); border: 1px solid rgba(245, 158, 11, 0.3); border-radius:24px;">
+            <div class="widget-card daily-reward-card" style="text-align: center; padding: 36px 20px;">
                 <div class="claim-icon-pulse"><i class="fas fa-gift"></i></div>
-                <h2 style="font-size: 1.6rem; font-weight: 800; color:#fff; margin-bottom: 6px;">Klaim Koin Bronze & Silver Harian</h2>
-                <p style="color: var(--text-secondary); max-width: 520px; margin: 0 auto 20px; font-size:0.9rem;">
-                    Klaim koin gratis setiap 24 jam sekali. Jaga streak Anda selama 7 hari berturut-turut untuk meraih Peti Bonus Emas!
+                <h2 style="font-size: 1.4rem; font-weight: 800; color:#fff; margin-bottom: 6px;">Klaim Koin Bronze &amp; Silver Harian</h2>
+                <p style="color: var(--text-muted); max-width: 520px; margin: 0 auto 20px; font-size:0.86rem; line-height:1.5;">
+                    Klaim koin gratis setiap 24 jam sekali. Pertahankan streak Anda selama 7 hari berturut-turut untuk meraih hadiah maksimal!
                 </p>
-
-                <button class="btn-header-action" id="claimBtn" style="background: linear-gradient(135deg, #f59e0b, #d97706); color: #000; font-weight: 800; font-size: 1.05rem; padding: 16px 36px; border-radius:9999px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.4); border:none;">
-                    <i class="fas fa-hand-holding-usd"></i>
-                    <span>KLAIM HADIAH HARIAN SEKARANG</span>
+                <button id="btnClaimDaily" class="btn-claim-reward" onclick="claimDailyReward()">
+                    <i class="fas fa-hand-holding-usd" style="margin-right:8px;"></i>
+                    <span id="btnClaimText">KLAIM HADIAH SEKARANG</span>
                 </button>
             </div>
         </main>
     </div>
 
-    <!-- Canvas Confetti Library -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-    <script src="../assets/js/mobileLayout.js"></script>
-    <script src="rewards.js"></script>
+    <!-- Scripts -->
+    <script src="../dashboard.js"></script>
+    <script src="rewards.js?v=20"></script>
 </body>
 </html>

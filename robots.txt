@@ -1,0 +1,9 @@
+# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /backend/
+Disallow: /credentials/
+Disallow: /data/
+
+# Sitemap
+Sitemap: https://hyrost.web.id/sitemap.xml

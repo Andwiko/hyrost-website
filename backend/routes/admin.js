@@ -33,9 +33,10 @@ router.delete('/forum/thread/:id', adminController.deleteThread);
 router.post('/thread/:id/pin', adminController.togglePinThread);
 router.post('/forum/thread/:id/pin', adminController.togglePinThread);
 
-// Logs
+// Logs & Security Audit
 router.get('/activity-logs', adminController.getActivityLogs);
 router.get('/logs', adminController.getActivityLogs);
+router.get('/audit-logs', adminController.getAuditLogs);
 
 // Cosmetics
 router.get('/cosmetics', adminController.getAllCosmetics);
@@ -55,6 +56,8 @@ router.get('/server-config', adminController.getServerStatus);
 router.post('/server-config', adminController.saveServerConfig);
 router.get('/payment-settings', adminController.getPaymentSettings);
 router.post('/payment-settings', adminController.updatePaymentSettings);
+router.post('/payment-settings/test-midtrans', adminController.testMidtransConnection);
+router.post('/payment-settings/test-tripay', adminController.testTripayConnection);
 router.get('/payment-methods', adminController.getAllPaymentMethods);
 router.post('/payment-method', adminController.savePaymentMethod);
 router.delete('/payment-method/:key', adminController.deletePaymentMethod);

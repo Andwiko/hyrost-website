@@ -615,6 +615,152 @@
           </div>
         </div>
 
+        <!-- ─── TRIPAY PAYMENT GATEWAY (Opsi 1: Otomatis QRIS & VA) ─── -->
+        <div class="card" style="margin-bottom:24px; border:1px solid rgba(14,165,233,0.3); background:linear-gradient(180deg, rgba(14,165,233,0.06) 0%, rgba(15,23,42,0.95) 100%);">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="background:rgba(14,165,233,0.15); border:1px solid rgba(14,165,233,0.3); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-money-check-alt" style="color:#38bdf8;"></i>
+              </div>
+              <div>
+                <h3 style="margin:0; font-size:1.05rem; color:#fff;"><i class="fas fa-qrcode" style="color:#38bdf8;"></i> Gateway Pembayaran Tripay (Opsi 1)</h3>
+                <div style="font-size:0.75rem; color:#94a3b8;">Otomatisasi Real-Time QRIS, Virtual Account, &amp; E-Wallet Tanpa Ribet</div>
+              </div>
+            </div>
+            <div style="display:flex; gap:8px;">
+              <button type="button" class="btn btn-sm" style="background:rgba(14,165,233,0.2); border:1px solid #0ea5e9; color:#38bdf8;" onclick="testTripayConnection()"><i class="fas fa-vial"></i> Test Koneksi Tripay</button>
+              <button type="button" class="btn btn-sm btn-primary" onclick="savePaymentSettings()"><i class="fas fa-save"></i> Simpan Tripay</button>
+            </div>
+          </div>
+          <div class="card-body">
+            <!-- Tripay Switches -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:14px; margin-bottom:20px; background:rgba(0,0,0,0.35); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+              <label class="switch-row" style="margin:0;">
+                <div>
+                  <div style="font-weight:600; color:#fff; font-size:0.88rem;"><i class="fas fa-power-off" style="color:#10b981;"></i> Aktifkan Gateway Tripay</div>
+                  <div style="font-size:0.72rem; color:#94a3b8;">Gunakan Tripay sebagai gateway utama otomatis di Studio &amp; Store</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="payTripayEnabled" checked><span class="slider"></span></label>
+              </label>
+              <label class="switch-row" style="margin:0;">
+                <div>
+                  <div style="font-weight:600; color:#fff; font-size:0.88rem;"><i class="fas fa-globe" style="color:#38bdf8;"></i> Mode Production (Live)</div>
+                  <div style="font-size:0.72rem; color:#94a3b8;" id="tripayModeLabel">OFF = Sandbox (Testing), ON = Production (Live)</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="payTripayIsProduction" onchange="updateTripayModeBadge()"><span class="slider"></span></label>
+              </label>
+            </div>
+
+            <!-- Tripay API Keys Grid -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap:16px; margin-bottom:20px;">
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-key" style="color:#f59e0b;"></i> API Key (Tripay)</label>
+                <input type="text" id="payTripayApiKey" placeholder="DEV-xxxxxxxxxxxx" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">Dapatkan di Tripay Dashboard &rarr; Merchant &rarr; Integrasi</div>
+              </div>
+
+              <div>
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+                  <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600;"><i class="fas fa-lock" style="color:#ec4899;"></i> Private Key (Rahasia)</label>
+                  <span id="btnToggleTripayPrivateKey" style="font-size:0.75rem; color:#38bdf8; cursor:pointer;" onclick="toggleKeyVisibility('payTripayPrivateKey')"><i class="fas fa-eye"></i> Tampilkan</span>
+                </div>
+                <input type="password" id="payTripayPrivateKey" placeholder="xxxxxxxxxxxxxxxxxxxxxxxx" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">Private key untuk verifikasi signature webhook</div>
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-id-card" style="color:#10b981;"></i> Kode Merchant (Tripay)</label>
+                <input type="text" id="payTripayMerchantCode" placeholder="T12345" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">Contoh: T12345 (Ada di Profil Akun Tripay)</div>
+              </div>
+            </div>
+
+            <!-- Test Connection Result Notification Area -->
+            <div id="tripayTestResult" style="display:none; margin-bottom:20px; padding:12px 16px; border-radius:8px; font-size:0.85rem;"></div>
+
+            <!-- Webhook Notification URLs Box -->
+            <div style="background:rgba(15, 23, 42, 0.8); border:1px solid rgba(255,255,255,0.1); border-radius:10px; padding:14px 16px;">
+              <div style="font-size:0.82rem; font-weight:700; color:#cbd5e1; margin-bottom:8px;"><i class="fas fa-link" style="color:#38bdf8;"></i> URL Callback Webhook Tripay:</div>
+              <div style="font-size:0.75rem; color:#94a3b8; margin-bottom:10px;">Salin URL berikut dan masukkan ke <strong>Tripay Dashboard &rarr; Merchant &rarr; Edit &rarr; URL Callback</strong>:</div>
+              <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:10px;">
+                <div style="display:flex; align-items:center; background:#020617; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:6px 10px;">
+                  <span style="font-size:0.72rem; color:#64748b; margin-right:8px; white-space:nowrap;">Studio VIP:</span>
+                  <span id="webhookTripayStudioUrl" style="font-family:monospace; font-size:0.75rem; color:#38bdf8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">https://hyrost.net/api/studio/tripay-webhook</span>
+                  <button type="button" class="btn btn-sm" style="padding:2px 8px; font-size:0.7rem; background:rgba(56,189,248,0.15); color:#38bdf8; border:none; margin-left:6px;" onclick="copyWebhookUrl('webhookTripayStudioUrl')"><i class="fas fa-copy"></i> Salin</button>
+                </div>
+                <div style="display:flex; align-items:center; background:#020617; border:1px solid rgba(255,255,255,0.1); border-radius:6px; padding:6px 10px;">
+                  <span style="font-size:0.72rem; color:#64748b; margin-right:8px; white-space:nowrap;">Store Rank:</span>
+                  <span id="webhookTripayStoreUrl" style="font-family:monospace; font-size:0.75rem; color:#38bdf8; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;">https://hyrost.net/api/features/payments/tripay-webhook</span>
+                  <button type="button" class="btn btn-sm" style="padding:2px 8px; font-size:0.7rem; background:rgba(56,189,248,0.15); color:#38bdf8; border:none; margin-left:6px;" onclick="copyWebhookUrl('webhookTripayStoreUrl')"><i class="fas fa-copy"></i> Salin</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ─── QRIS STATIS & TRANSFER MANUAL (Opsi 5: Direct Admin & 0% Fee) ─── -->
+        <div class="card" style="margin-bottom:24px; border:1px solid rgba(245,158,11,0.3); background:linear-gradient(180deg, rgba(245,158,11,0.06) 0%, rgba(15,23,42,0.95) 100%);">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3); width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center;">
+                <i class="fas fa-university" style="color:#fbbf24;"></i>
+              </div>
+              <div>
+                <h3 style="margin:0; font-size:1.05rem; color:#fff;"><i class="fas fa-hand-holding-usd" style="color:#fbbf24;"></i> QRIS Statis &amp; Transfer Manual (Opsi 5)</h3>
+                <div style="font-size:0.75rem; color:#94a3b8;">Transfer langsung ke Rekening / DANA / QRIS pribadi Admin (0% Potongan Gateway)</div>
+              </div>
+            </div>
+            <button type="button" class="btn btn-sm btn-primary" onclick="savePaymentSettings()"><i class="fas fa-save"></i> Simpan Manual Settings</button>
+          </div>
+          <div class="card-body">
+            <!-- Manual Switch -->
+            <div style="margin-bottom:20px; background:rgba(0,0,0,0.35); padding:16px; border-radius:12px; border:1px solid rgba(255,255,255,0.08);">
+              <label class="switch-row" style="margin:0;">
+                <div>
+                  <div style="font-weight:600; color:#fff; font-size:0.88rem;"><i class="fas fa-power-off" style="color:#10b981;"></i> Aktifkan Opsi Transfer Manual &amp; QRIS Statis</div>
+                  <div style="font-size:0.72rem; color:#94a3b8;">Tampilkan pilihan transfer langsung ke Admin di modal pembayaran</div>
+                </div>
+                <label class="switch"><input type="checkbox" id="payManualEnabled" checked><span class="slider"></span></label>
+              </label>
+            </div>
+
+            <!-- Manual Account Form Grid -->
+            <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap:16px; margin-bottom:20px;">
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-image" style="color:#38bdf8;"></i> URL Gambar QRIS Statis Admin</label>
+                <input type="text" id="payManualQrisImage" placeholder="https://domain.com/qris.jpg atau /assets/qris.jpg" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">Link gambar barcode QRIS statis toko/admin</div>
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-building" style="color:#10b981;"></i> Nama Bank / E-Wallet</label>
+                <input type="text" id="payManualBankName" placeholder="BCA / DANA / GoPay" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-size:0.85rem;" />
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-credit-card" style="color:#f59e0b;"></i> Nomor Rekening / No. HP E-Wallet</label>
+                <input type="text" id="payManualAccountNumber" placeholder="1234567890 / 08123456789" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-user" style="color:#ec4899;"></i> Atas Nama (A/N)</label>
+                <input type="text" id="payManualAccountName" placeholder="Admin Hyrost" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-size:0.85rem;" />
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fab fa-whatsapp" style="color:#25d366;"></i> Nomor WhatsApp Konfirmasi Admin</label>
+                <input type="text" id="payManualWhatsapp" placeholder="628123456789" style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-family:monospace; font-size:0.85rem;" />
+                <div style="font-size:0.72rem; color:#64748b; margin-top:4px;">Gunakan awalan 628... (tanpa spasi / tanda plus)</div>
+              </div>
+
+              <div>
+                <label style="color:#cbd5e1; font-size:0.82rem; font-weight:600; display:block; margin-bottom:6px;"><i class="fas fa-info-circle" style="color:#a855f7;"></i> Petunjuk Transfer Singkat</label>
+                <input type="text" id="payManualInstructions" placeholder="Transfer nominal tepat lalu kirim bukti ke WhatsApp." style="width:100%; padding:10px 12px; background:#0f172a; border:1px solid rgba(255,255,255,0.15); color:#fff; border-radius:8px; font-size:0.85rem;" />
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div class="two-col">
           <!-- Server Config -->
           <div class="card">

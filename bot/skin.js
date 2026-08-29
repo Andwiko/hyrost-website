@@ -388,14 +388,26 @@ function initSkinViewer(ign) {
   viewer.camera.lookAt(0, 4, 0);
   viewer.fov = 50;
 
-  orbitControl = skinview3d.createOrbitControls(viewer);
-  orbitControl.enableRotate = true;
-  orbitControl.enableZoom = true;
-  orbitControl.enablePan = false; // keep character centered
-  orbitControl.minDistance = 15;
-  orbitControl.maxDistance = 75;
-  orbitControl.target.set(0, 4, 0);
-  orbitControl.update();
+  // Initialize controls safely supporting both SkinView3D v2 and v3
+  if (typeof skinview3d.createOrbitControls === 'function') {
+    orbitControl = skinview3d.createOrbitControls(viewer);
+  } else if (viewer && viewer.controls) {
+    orbitControl = viewer.controls;
+  }
+
+  if (orbitControl) {
+    orbitControl.enableRotate = true;
+    orbitControl.enableZoom = true;
+    orbitControl.enablePan = false; // keep character centered
+    orbitControl.minDistance = 15;
+    orbitControl.maxDistance = 75;
+    if (orbitControl.target && typeof orbitControl.target.set === 'function') {
+      orbitControl.target.set(0, 4, 0);
+    }
+    if (typeof orbitControl.update === 'function') {
+      orbitControl.update();
+    }
+  }
 
   // Listen for window resize & wrapper size changes
   window.addEventListener('resize', resizeSkinViewer);
@@ -1963,9 +1975,11 @@ async function studioApiFetch(endpoint, options = {}) {
     ...(options.headers || {}),
   };
   const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), 10000);
+  const timeoutMs = options.timeout || 10000;
+  const { timeout, ...fetchOpts } = options;
+  const tid = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res  = await fetch(url, { ...options, headers, signal: controller.signal });
+    const res  = await fetch(url, { ...fetchOpts, headers, signal: controller.signal });
     clearTimeout(tid);
     const data = await res.json().catch(() => ({}));
     return { ok: res.ok, status: res.status, data };
@@ -2174,7 +2188,7 @@ let _snapJsLoading = false;
 let _snapConfig    = null;
 
 async function loadMidtransConfig() {
-  if (_snapConfig) return _snapConfig;
+  if (_snapConfig && _snapConfig.midtransClientKey) return _snapConfig;
   try {
     const { ok, data } = await studioApiFetch('config', { method: 'GET' });
     if (ok && data.success) {
@@ -2212,6 +2226,10 @@ async function loadSnapJs() {
     _snapJsLoading = false;
     return false;
   }
+  if (config.enabled === false) {
+    _snapJsLoading = false;
+    return false;
+  }
 
   return new Promise(resolve => {
     const existing = document.querySelector(`script[src*="snap.js"]`);
@@ -2226,6 +2244,7 @@ async function loadSnapJs() {
     script.id = 'midtrans-snap-script';
     script.src = config.snapJsUrl;
     script.setAttribute('data-client-key', config.midtransClientKey);
+    script.type = 'text/javascript';
     script.onload  = () => { _snapJsLoaded = true;  _snapJsLoading = false; resolve(true); };
     script.onerror = () => { _snapJsLoaded = false; _snapJsLoading = false; resolve(false); };
     document.head.appendChild(script);
@@ -2401,7 +2420,102 @@ async function checkUrlPaymentCallback() {
   }
 }
 
-// ── Plan Selection → Midtrans Snap Popup ─────────────────────────────────────
+// ─── Multi-Gateway Payment Handling (Tripay, Midtrans, Manual Transfer) ──────
+let _activePollingInterval = null;
+
+function switchPaymentGatewayTab(tabKey) {
+  const tabBtns = {
+    auto: document.getElementById('tabBtnAutoPay'),
+    manual: document.getElementById('tabBtnManualPay'),
+    redeem: document.getElementById('tabBtnRedeemKey'),
+  };
+  const tabPanes = {
+    auto: document.getElementById('tabContentAutoPay'),
+    manual: document.getElementById('tabContentManualPay'),
+    redeem: document.getElementById('tabContentRedeemKey'),
+  };
+
+  for (const [key, btn] of Object.entries(tabBtns)) {
+    if (btn) btn.classList.toggle('active', key === tabKey);
+  }
+  for (const [key, pane] of Object.entries(tabPanes)) {
+    if (pane) pane.style.display = (key === tabKey) ? 'block' : 'none';
+  }
+}
+
+function closeTripayQrisModal() {
+  const modal = document.getElementById('tripayQrisModalOverlay');
+  if (modal) modal.style.display = 'none';
+  if (_activePollingInterval) {
+    clearInterval(_activePollingInterval);
+    _activePollingInterval = null;
+  }
+}
+
+function closeManualTransferModal() {
+  const modal = document.getElementById('manualTransferModalOverlay');
+  if (modal) modal.style.display = 'none';
+}
+
+function copyManualNominal() {
+  const el = document.getElementById('manualTotalAmountText');
+  if (!el) return;
+  const numStr = el.textContent.replace(/[^0-9]/g, '');
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(numStr).then(() => {
+      if (typeof showToast === 'function') showToast('📋 Nominal Rp ' + parseInt(numStr, 10).toLocaleString('id-ID') + ' disalin!');
+    });
+  }
+}
+
+function copyManualAccount() {
+  const el = document.getElementById('manualAccountNumber');
+  if (!el) return;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(el.textContent.trim()).then(() => {
+      if (typeof showToast === 'function') showToast('📋 Nomor rekening/HP berhasil disalin!');
+    });
+  }
+}
+
+function startTripayPaymentPolling(orderId, plan) {
+  if (_activePollingInterval) clearInterval(_activePollingInterval);
+
+  let attempts = 0;
+  _activePollingInterval = setInterval(async () => {
+    attempts++;
+    if (attempts > 120) { // Berhenti polling setelah 4-5 menit
+      clearInterval(_activePollingInterval);
+      _activePollingInterval = null;
+      return;
+    }
+
+    try {
+      const { ok, data } = await studioApiFetch(`payment-status/${orderId}`, { method: 'GET' });
+      if (ok && data && data.isPaid) {
+        clearInterval(_activePollingInterval);
+        _activePollingInterval = null;
+        closeTripayQrisModal();
+
+        _studioCache = null;
+        const status = await fetchStudioStatus();
+        await updateMembershipBadgeUI();
+
+        showPaymentSuccessModal({
+          orderId: orderId,
+          planLabel: plan.label || 'VIP Studio Pass',
+          planDays: plan.days || 30,
+          amount: plan.priceIdr || 2000,
+          amountFormatted: plan.priceFormatted || 'Rp 2.000',
+          paymentType: 'Tripay Real-Time QRIS',
+          expiryDate: status.vipExpiresAt,
+        });
+      }
+    } catch (_) {}
+  }, 2500);
+}
+
+// ── Plan Selection → Tripay QRIS / Midtrans Snap ──────────────────────────────
 async function selectPremiumPlan(planKey, planName, priceStr) {
   if (!isLoggedIn()) {
     if (typeof showToast === 'function') showToast('🔐 Login dulu ke Hyrost Web untuk membeli paket VIP!');
@@ -2409,87 +2523,194 @@ async function selectPremiumPlan(planKey, planName, priceStr) {
     return;
   }
 
-  // Tutup modal premium agar tidak overlap dengan Snap popup
+  // Tutup modal premium utama
   closePremiumModal();
 
-  if (typeof showToast === 'function') showToast('⏳ Mempersiapkan pembayaran Midtrans...');
+  if (typeof showToast === 'function') showToast('⏳ Memproses order pembayaran...');
 
-  // Pastikan Snap.js sudah terload
-  const snapLoaded = await loadSnapJs();
-  if (!snapLoaded || typeof window.snap === 'undefined') {
-    if (typeof showToast === 'function') showToast('❌ Midtrans Snap gagal dimuat. Periksa koneksi dan coba lagi.');
-    return;
+  // Cek konfigurasi gateway
+  const { ok: cfgOk, data: cfgData } = await studioApiFetch('config', { method: 'GET' });
+  const isTripayEnabled = cfgOk && cfgData && cfgData.tripay && cfgData.tripay.enabled;
+
+  // 1. Prioritaskan Tripay Gateway (Opsi 1: Otomatis QRIS)
+  if (isTripayEnabled) {
+    const { ok, data } = await studioApiFetch('create-tripay-payment', {
+      method: 'POST',
+      body: JSON.stringify({ planKey, method: 'QRIS' }),
+      timeout: 30000,
+    });
+
+    if (ok && data && data.success) {
+      const { orderId, qrUrl, qrString, totalAmount, checkoutUrl, plan } = data;
+
+      // Jika ada QR code gambar langsung
+      if (qrUrl || qrString) {
+        const modal = document.getElementById('tripayQrisModalOverlay');
+        const img = document.getElementById('tripayQrisImg');
+        const planLbl = document.getElementById('tripayQrisPlanLabel');
+        const amtLbl = document.getElementById('tripayQrisAmount');
+        const orderLbl = document.getElementById('tripayQrisOrderId');
+        const linkBtn = document.getElementById('tripayCheckoutLinkBtn');
+
+        if (img) img.src = qrUrl || `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(qrString)}`;
+        if (planLbl) planLbl.textContent = plan.label;
+        if (amtLbl) amtLbl.textContent = `Rp ${totalAmount.toLocaleString('id-ID')}`;
+        if (orderLbl) orderLbl.textContent = orderId;
+        if (linkBtn && checkoutUrl) {
+          linkBtn.href = checkoutUrl;
+          linkBtn.style.display = 'inline-flex';
+        }
+
+        if (modal) modal.style.display = 'flex';
+        startTripayPaymentPolling(orderId, plan);
+        return;
+      }
+
+      // Jika redirect checkout URL
+      if (checkoutUrl) {
+        if (typeof showToast === 'function') showToast('🚀 Mengarahkan ke halaman pembayaran...');
+        setTimeout(() => { window.location.href = checkoutUrl; }, 600);
+        return;
+      }
+    }
   }
 
-  // Buat transaksi di server → dapatkan snap_token
-  const { ok, data } = await studioApiFetch('create-payment', {
+  // 2. Fallback ke Midtrans Snap jika Tripay tidak aktif atau gagal
+  await loadSnapJs();
+
+  const { ok: mOk, data: mData } = await studioApiFetch('create-payment', {
     method: 'POST',
     body: JSON.stringify({ planKey }),
+    timeout: 30000,
   });
 
-  if (!ok || !data.success) {
-    if (typeof showToast === 'function') showToast('❌ Gagal buat transaksi: ' + (data.message || 'Server error'));
+  if (!mOk || !mData || !mData.success) {
+    if (typeof showToast === 'function') {
+      showToast('❌ Gateway online belum siap. Mengalihkan ke opsi Transfer Manual...');
+    }
+    selectManualPlan(planKey, planName, priceStr);
     return;
   }
 
-  const { snapToken, orderId, plan } = data;
+  const { snapToken, orderId, plan, redirectUrl } = mData;
 
-  // Tampilkan Midtrans Snap popup
-  window.snap.pay(snapToken, {
-    onSuccess: async function(result) {
-      if (typeof showToast === 'function') showToast('⏳ Pembayaran berhasil! Mengaktifkan VIP...');
-      _studioCache = null; // invalidate cache
-      
-      // Polling payment-status
-      let attempts = 0;
-      let isCompleted = false;
+  if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
+    try {
+      window.snap.pay(snapToken, {
+        onSuccess: async function(result) {
+          if (typeof showToast === 'function') showToast('⏳ Pembayaran berhasil! Mengaktifkan VIP...');
+          _studioCache = null;
+          
+          let attempts = 0;
+          let isCompleted = false;
 
-      const pollStatus = async () => {
-        attempts++;
-        const { ok: sok, data: sdata } = await studioApiFetch(`payment-status/${orderId}`, { method: 'GET' });
-        if (sok && sdata.isPaid) {
-          isCompleted = true;
-          const status = await fetchStudioStatus();
-          await updateMembershipBadgeUI();
+          const pollStatus = async () => {
+            attempts++;
+            const { ok: sok, data: sdata } = await studioApiFetch(`payment-status/${orderId}`, { method: 'GET' });
+            if (sok && sdata.isPaid) {
+              isCompleted = true;
+              const status = await fetchStudioStatus();
+              await updateMembershipBadgeUI();
 
-          showPaymentSuccessModal({
-            orderId: orderId,
-            planLabel: plan.label,
-            planDays: plan.days,
-            amount: plan.priceIdr,
-            amountFormatted: plan.priceFormatted,
-            paymentType: (result && result.payment_type) ? result.payment_type.toUpperCase() : 'Midtrans Snap',
-            expiryDate: status.vipExpiresAt,
-          });
+              showPaymentSuccessModal({
+                orderId: orderId,
+                planLabel: plan.label,
+                planDays: plan.days,
+                amount: plan.priceIdr,
+                amountFormatted: plan.priceFormatted,
+                paymentType: (result && result.payment_type) ? result.payment_type.toUpperCase() : 'Midtrans Snap',
+                expiryDate: status.vipExpiresAt,
+              });
 
-        } else if (attempts < 6 && !isCompleted) {
-          setTimeout(pollStatus, 1800); // retry tiap 1.8 detik
-        } else {
-          await updateMembershipBadgeUI();
-          showPaymentSuccessModal({
-            orderId: orderId,
-            planLabel: plan.label,
-            planDays: plan.days,
-            amount: plan.priceIdr,
-            amountFormatted: plan.priceFormatted,
-            paymentType: 'Midtrans Online Payment',
-          });
-        }
-      };
+            } else if (attempts < 6 && !isCompleted) {
+              setTimeout(pollStatus, 1800);
+            } else {
+              await updateMembershipBadgeUI();
+              showPaymentSuccessModal({
+                orderId: orderId,
+                planLabel: plan.label,
+                planDays: plan.days,
+                amount: plan.priceIdr,
+                amountFormatted: plan.priceFormatted,
+                paymentType: 'Midtrans Online Payment',
+              });
+            }
+          };
 
-      setTimeout(pollStatus, 1500);
-    },
-    onPending: function(result) {
-      showPaymentPendingModal();
-    },
-    onError: function(result) {
-      if (typeof showToast === 'function') showToast('❌ Pembayaran gagal. Coba lagi atau pilih metode pembayaran lain.');
-      playAudioFx('whoosh');
-    },
-    onClose: function() {
-      if (typeof showToast === 'function') showToast('ℹ️ Pembayaran ditutup. Kamu bisa melanjutkan kapan saja.');
-    },
+          setTimeout(pollStatus, 1500);
+        },
+        onPending: function() {
+          showPaymentPendingModal();
+        },
+        onError: function() {
+          if (typeof showToast === 'function') showToast('❌ Pembayaran dibatalkan atau gagal.');
+        },
+        onClose: function() {
+          if (typeof showToast === 'function') showToast('ℹ️ Pembayaran ditutup.');
+        },
+      });
+      return;
+    } catch (snapErr) {
+      console.warn('[selectPremiumPlan] snap.pay popup error, fallback to redirect:', snapErr);
+    }
+  }
+
+  if (redirectUrl) {
+    if (typeof showToast === 'function') showToast('🚀 Mengarahkan ke halaman pembayaran...');
+    setTimeout(() => { window.location.href = redirectUrl; }, 600);
+    return;
+  }
+}
+
+// ── Manual Payment Selection (QRIS Statis & WhatsApp) ────────────────────────
+async function selectManualPlan(planKey, planName, priceStr) {
+  if (!isLoggedIn()) {
+    if (typeof showToast === 'function') showToast('🔐 Login dulu ke Hyrost Web untuk membeli paket VIP!');
+    setTimeout(() => { window.location.href = '../auth/login.html'; }, 800);
+    return;
+  }
+
+  closePremiumModal();
+  if (typeof showToast === 'function') showToast('⏳ Membuat order transfer manual...');
+
+  const { ok, data } = await studioApiFetch('create-manual-payment', {
+    method: 'POST',
+    body: JSON.stringify({ planKey }),
+    timeout: 30000,
   });
+
+  if (!ok || !data || !data.success) {
+    if (typeof showToast === 'function') showToast('❌ Gagal membuat order manual: ' + (data?.message || 'Server error'));
+    return;
+  }
+
+  const modal = document.getElementById('manualTransferModalOverlay');
+  const title = document.getElementById('manualPlanTitle');
+  const amountTxt = document.getElementById('manualTotalAmountText');
+  const bankName = document.getElementById('manualBankName');
+  const accNum = document.getElementById('manualAccountNumber');
+  const accName = document.getElementById('manualAccountName');
+  const waBtn = document.getElementById('manualWaLinkBtn');
+  const qrisContainer = document.getElementById('manualQrisImageContainer');
+  const qrisImg = document.getElementById('manualQrisImage');
+
+  if (title) title.textContent = data.plan?.label || planName;
+  if (amountTxt) amountTxt.textContent = data.totalFormatted || `Rp ${data.totalAmount.toLocaleString('id-ID')}`;
+  if (bankName) bankName.textContent = data.bankName || 'BCA / DANA';
+  if (accNum) accNum.textContent = data.accountNumber || '08123456789';
+  if (accName) accName.textContent = data.accountName || 'Hyrost Admin';
+  if (waBtn && data.whatsappUrl) waBtn.href = data.whatsappUrl;
+
+  if (qrisContainer && qrisImg) {
+    if (data.qrisImage) {
+      qrisImg.src = data.qrisImage;
+      qrisContainer.style.display = 'block';
+    } else {
+      qrisContainer.style.display = 'none';
+    }
+  }
+
+  if (modal) modal.style.display = 'flex';
 }
 
 // ── License Key Redemption ────────────────────────────────────────────────────

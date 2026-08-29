@@ -24,6 +24,7 @@ router.get('/vote/sites', featuresController.getVoteSites);
 // Payments
 router.post('/payments/rank', verifyToken, authStrict, paymentController.createRankPayment);
 router.post('/payments/midtrans-webhook', paymentController.midtransWebhook);
+router.post('/payments/tripay-webhook', paymentController.tripayWebhook);
 router.get('/payments/my-orders', verifyToken, paymentController.getMyOrders);
 
 // User features

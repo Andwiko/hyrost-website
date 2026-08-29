@@ -64,6 +64,8 @@ router.delete('/ip-blacklist/:ip', adminController.unblockIP);
 // Payment Gateways Config & Methods (Admin)
 router.get('/payment-settings', adminController.getPaymentSettings);
 router.post('/payment-settings', adminController.updatePaymentSettings);
+router.post('/payment-settings/test-midtrans', adminController.testMidtransConnection);
+router.post('/payment-settings/test-tripay', adminController.testTripayConnection);
 router.get('/payment-methods', adminController.getAllPaymentMethods);
 router.post('/payment-method', adminController.savePaymentMethod);
 router.delete('/payment-method/:key', adminController.deletePaymentMethod);

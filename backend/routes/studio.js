@@ -4,73 +4,44 @@
  * /api/studio/*
  *
  * Endpoints:
- *   GET  /api/studio/config             — client config (Midtrans client key, dll)
- *   GET  /api/studio/vip-status        — cek status VIP + ad-pass dari DB (butuh login)
- *   POST /api/studio/redeem-key        — redeem license key HMAC (butuh login)
- *   POST /api/studio/claim-ad-reward   — klaim 1-jam rewarded-ad pass (butuh login)
- *   POST /api/studio/create-payment    — buat Midtrans Snap transaction (butuh login)
- *   POST /api/studio/payment-webhook   — Midtrans payment notification webhook (no auth)
+ *   GET  /api/studio/config              — client config (Tripay, Midtrans, Manual QRIS)
+ *   GET  /api/studio/vip-status         — cek status VIP + ad-pass dari DB (butuh login)
+ *   POST /api/studio/redeem-key         — redeem license key HMAC (butuh login)
+ *   POST /api/studio/claim-ad-reward    — klaim 1-jam rewarded-ad pass (butuh login)
+ *   POST /api/studio/create-payment     — buat Midtrans Snap transaction (butuh login)
+ *   POST /api/studio/payment-webhook    — Midtrans payment webhook (no auth)
+ *   POST /api/studio/create-tripay-payment — buat Tripay transaction (butuh login)
+ *   POST /api/studio/tripay-webhook     — Tripay payment webhook callback (no auth)
+ *   POST /api/studio/create-manual-payment — buat Manual QRIS/Bank order (butuh login)
+ *   POST /api/studio/upload-payment-proof  — upload bukti transfer manual (butuh login)
  *   GET  /api/studio/payment-status/:orderId — cek status order (butuh login)
+ *   GET  /api/studio/admin/orders       — daftar order studio untuk admin (admin only)
+ *   POST /api/studio/admin/approve-order/:orderId — approve manual order (admin only)
+ *   POST /api/studio/admin/reject-order/:orderId  — reject manual order (admin only)
  * =============================================================================
  */
 
 const express = require('express');
 const router  = express.Router();
 const crypto  = require('crypto');
-const { verifyToken } = require('../middleware/auth');
+const { verifyToken, verifyAdmin } = require('../middleware/auth');
 const pool    = require('../config/mysql');
-
-// ─── Dynamic Midtrans Config Resolver ─────────────────────────────────────────
-async function resolveMidtransConfig() {
-  let isProd = process.env.MIDTRANS_IS_PRODUCTION === 'true';
-  let serverKey = process.env.MIDTRANS_SERVER_KEY || '';
-  let clientKey = process.env.MIDTRANS_CLIENT_KEY || '';
-  let enabled = process.env.MIDTRANS_ENABLED !== 'false';
-
-  // 1. Try reading directly from .env file on disk (supports hot updates without restart)
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const envPath = path.resolve(__dirname, '../../.env');
-    if (fs.existsSync(envPath)) {
-      const dotenv = require('dotenv');
-      const envObj = dotenv.parse(fs.readFileSync(envPath));
-      if (envObj.MIDTRANS_IS_PRODUCTION) isProd = (envObj.MIDTRANS_IS_PRODUCTION === 'true');
-      if (envObj.MIDTRANS_SERVER_KEY) serverKey = envObj.MIDTRANS_SERVER_KEY;
-      if (envObj.MIDTRANS_CLIENT_KEY) clientKey = envObj.MIDTRANS_CLIENT_KEY;
-      if (envObj.MIDTRANS_ENABLED) enabled = (envObj.MIDTRANS_ENABLED !== 'false');
-    }
-  } catch (_) {}
-
-  // 2. Override from DB site_settings (Admin panel settings take highest precedence)
-  try {
-    const [rows] = await getPool().execute(
-      "SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('pay_midtrans_is_production', 'pay_midtrans_server_key', 'pay_midtrans_client_key', 'pay_midtrans_enabled')"
-    );
-    for (const r of rows) {
-      if (r.setting_key === 'pay_midtrans_is_production') isProd = (r.setting_value === 'true');
-      if (r.setting_key === 'pay_midtrans_server_key' && r.setting_value) serverKey = r.setting_value;
-      if (r.setting_key === 'pay_midtrans_client_key' && r.setting_value) clientKey = r.setting_value;
-      if (r.setting_key === 'pay_midtrans_enabled') enabled = (r.setting_value === 'true');
-    }
-  } catch (_) {}
-
-  return { isProd, serverKey, clientKey, enabled };
-}
-
-function createSnapClient(config) {
-  try {
-    const midtransClient = require('midtrans-client');
-    return new midtransClient.Snap({
-      isProduction: config.isProd,
-      serverKey:    config.serverKey,
-      clientKey:    config.clientKey,
-    });
-  } catch (e) {
-    console.error('[studio] midtrans-client load error:', e.message);
-    return null;
-  }
-}
+const {
+  resolveMidtransConfig,
+  buildSnapPayload,
+  defaultCallbacks,
+  createSnapTransaction,
+  extractNotificationFields,
+  verifyNotificationSignature,
+  isPaidStatus,
+  isFailedStatus,
+} = require('../utils/midtrans');
+const {
+  resolveTripayConfig,
+  createTripayTransaction,
+  verifyTripayWebhookSignature,
+  getTripayPaymentChannels,
+} = require('../utils/tripay');
 
 // ─── Plan Definitions ────────────────────────────────────────────────────────
 const PLANS = {
@@ -82,19 +53,85 @@ const PLANS = {
 
 function getPool() { return pool; }
 
+// Helper untuk membaca pengaturan manual transfer
+async function resolveManualPaymentConfig() {
+  let qrisImage = process.env.MANUAL_QRIS_IMAGE || '';
+  let bankName = process.env.MANUAL_BANK_NAME || 'BCA / DANA / GoPay';
+  let accountNumber = process.env.MANUAL_ACCOUNT_NUMBER || '08123456789';
+  let accountName = process.env.MANUAL_ACCOUNT_NAME || 'Hyrost Admin';
+  let whatsappNumber = process.env.MANUAL_WHATSAPP || '628123456789';
+  let instructions = process.env.MANUAL_PAYMENT_INSTRUCTIONS || 'Transfer sesuai nominal unik, lalu kirim bukti pembayaran via WhatsApp.';
+  let enabled = true;
+
+  try {
+    const [rows] = await getPool().execute(
+      "SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('pay_manual_enabled', 'pay_manual_qris_image', 'pay_manual_bank_name', 'pay_manual_account_number', 'pay_manual_account_name', 'pay_manual_whatsapp', 'pay_manual_instructions')"
+    );
+    for (const r of rows) {
+      const val = r.setting_value;
+      if (r.setting_key === 'pay_manual_enabled' && val !== null && val !== '') enabled = String(val).toLowerCase() === 'true' || val === '1';
+      if (r.setting_key === 'pay_manual_qris_image' && val) qrisImage = String(val).trim();
+      if (r.setting_key === 'pay_manual_bank_name' && val) bankName = String(val).trim();
+      if (r.setting_key === 'pay_manual_account_number' && val) accountNumber = String(val).trim();
+      if (r.setting_key === 'pay_manual_account_name' && val) accountName = String(val).trim();
+      if (r.setting_key === 'pay_manual_whatsapp' && val) whatsappNumber = String(val).trim();
+      if (r.setting_key === 'pay_manual_instructions' && val) instructions = String(val).trim();
+    }
+  } catch (_) {}
+
+  return {
+    enabled,
+    qrisImage,
+    bankName,
+    accountNumber,
+    accountName,
+    whatsappNumber,
+    instructions,
+  };
+}
+
 // ─── GET /api/studio/config ──────────────────────────────────────────────────
-// Expose public Midtrans client key ke frontend. Server key TIDAK pernah dikirim.
+// Expose public config ke frontend: Midtrans, Tripay, dan Manual QRIS
 router.get('/config', async (req, res) => {
-  const cfg = await resolveMidtransConfig();
-  res.json({
-    success:          true,
-    enabled:          cfg.enabled,
-    midtransClientKey: cfg.clientKey,
-    midtransIsProduction: cfg.isProd,
-    snapJsUrl: cfg.isProd
-      ? 'https://app.midtrans.com/snap/snap.js'
-      : 'https://app.sandbox.midtrans.com/snap/snap.js',
-  });
+  try {
+    const midtransCfg = await resolveMidtransConfig();
+    const tripayCfg   = await resolveTripayConfig();
+    const manualCfg   = await resolveManualPaymentConfig();
+
+    let tripayChannels = [];
+    if (tripayCfg.enabled) {
+      try {
+        tripayChannels = await getTripayPaymentChannels(tripayCfg);
+      } catch (_) {}
+    }
+
+    res.json({
+      success: true,
+      // Midtrans
+      midtrans: {
+        enabled: midtransCfg.enabled,
+        clientKey: midtransCfg.clientKey,
+        isProduction: midtransCfg.isProd,
+        snapJsUrl: midtransCfg.snapJsUrl,
+      },
+      // Tripay
+      tripay: {
+        enabled: tripayCfg.enabled,
+        isProduction: tripayCfg.isProd,
+        merchantCode: tripayCfg.merchantCode,
+        channels: tripayChannels,
+      },
+      // Manual Transfer / Direct QRIS
+      manual: manualCfg,
+      // Backward compatibility fields
+      enabled: midtransCfg.enabled || tripayCfg.enabled || manualCfg.enabled,
+      midtransClientKey: midtransCfg.clientKey,
+      midtransIsProduction: midtransCfg.isProd,
+      snapJsUrl: midtransCfg.snapJsUrl,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Gagal memuat konfigurasi pembayaran' });
+  }
 });
 
 // ─── GET /api/studio/vip-status ─────────────────────────────────────────────
@@ -107,12 +144,12 @@ router.get('/vip-status', verifyToken, async (req, res) => {
     const user = rows[0];
     if (!user) return res.status(404).json({ success: false, message: 'User tidak ditemukan' });
 
-    const now      = new Date();
+    const now       = new Date();
     const vipExpiry = user.skin_studio_vip_expires ? new Date(user.skin_studio_vip_expires) : null;
-    const adUntil  = user.skin_studio_ad_until     ? new Date(user.skin_studio_ad_until)    : null;
-    const isAdmin  = user.role && user.role.toLowerCase() === 'admin';
-    const isVip    = isAdmin || (vipExpiry && vipExpiry > now);
-    const isAdPass = !isAdmin && adUntil && adUntil > now;
+    const adUntil   = user.skin_studio_ad_until     ? new Date(user.skin_studio_ad_until)    : null;
+    const isAdmin   = user.role && user.role.toLowerCase() === 'admin';
+    const isVip     = isAdmin || (vipExpiry && vipExpiry > now);
+    const isAdPass  = !isAdmin && adUntil && adUntil > now;
 
     res.json({
       success:      true,
@@ -227,8 +264,7 @@ router.post('/claim-ad-reward', verifyToken, async (req, res) => {
   }
 });
 
-// ─── POST /api/studio/create-payment ─────────────────────────────────────────
-// Buat transaksi Midtrans Snap dan kembalikan snap_token ke frontend.
+// ─── POST /api/studio/create-payment (Midtrans Snap) ─────────────────────────
 router.post('/create-payment', verifyToken, async (req, res) => {
   try {
     const { planKey } = req.body;
@@ -241,15 +277,7 @@ router.post('/create-payment', verifyToken, async (req, res) => {
     if (!cfg.enabled) {
       return res.status(503).json({
         success: false,
-        message: 'Pembayaran Midtrans sedang dinonaktifkan oleh administrator.',
-      });
-    }
-
-    const snapClient = createSnapClient(cfg);
-    if (!snapClient || !cfg.serverKey) {
-      return res.status(503).json({
-        success: false,
-        message: 'Midtrans Server Key belum dikonfigurasi. Hubungi administrator.',
+        message: 'Pembayaran Midtrans sedang dinonaktifkan. Periksa Admin Panel → Payment Settings.',
       });
     }
 
@@ -259,65 +287,37 @@ router.post('/create-payment', verifyToken, async (req, res) => {
     const user = userRows[0];
     if (!user) return res.status(404).json({ success: false, message: 'User tidak ditemukan' });
 
-    // Order ID unik: studio-{userId}-{planKey}-{timestamp}
     const orderId = `studio-${user.id}-${planKey}-${Date.now()}`;
 
-    const parameter = {
-      transaction_details: {
-        order_id:     orderId,
-        gross_amount: plan.priceIdr,
+    const parameter = buildSnapPayload({
+      orderId,
+      amount: plan.priceIdr,
+      itemId: planKey,
+      itemName: plan.label,
+      username: user.username,
+      email: user.email,
+      callbacks: defaultCallbacks('/bot/skin.html?payment=success'),
+      extra: {
+        custom_field1: String(user.id),
+        custom_field2: planKey,
+        custom_field3: String(plan.days),
       },
-      item_details: [{
-        id:       planKey,
-        price:    plan.priceIdr,
-        quantity: 1,
-        name:     plan.label,
-        category: 'VIP Subscription',
-      }],
-      customer_details: {
-        first_name: user.username,
-        email:      user.email || `${user.username}@hyrost.net`,
-      },
-      callbacks: {
-        finish:  `${process.env.MIDTRANS_FINISH_URL  || ''}`,
-        error:   `${process.env.MIDTRANS_ERROR_URL   || ''}`,
-        pending: `${process.env.MIDTRANS_PENDING_URL || ''}`,
-      },
-      custom_field1: String(user.id),
-      custom_field2: planKey,
-      custom_field3: String(plan.days),
-    };
+    });
 
-    const transaction  = await snapClient.createTransaction(parameter);
-    const snapToken    = transaction.token;
-    const redirectUrl  = transaction.redirect_url;
-
-    // Simpan order ke DB agar bisa diverifikasi webhook
-    try {
-      await getPool().execute(`
-        CREATE TABLE IF NOT EXISTS studio_orders (
-          id           INT AUTO_INCREMENT PRIMARY KEY,
-          order_id     VARCHAR(100) NOT NULL UNIQUE,
-          user_id      INT NOT NULL,
-          plan_key     VARCHAR(20)  NOT NULL,
-          plan_days    INT          NOT NULL,
-          amount       INT          NOT NULL,
-          status       VARCHAR(30)  DEFAULT 'pending',
-          snap_token   TEXT,
-          created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-          paid_at      TIMESTAMP    NULL,
-          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-      `);
-    } catch (_) {}
+    const transaction = await createSnapTransaction(cfg, parameter);
+    const snapToken   = transaction.token;
+    const redirectUrl = transaction.redirectUrl;
 
     await getPool().execute(
-      'INSERT INTO studio_orders (order_id, user_id, plan_key, plan_days, amount, snap_token) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE snap_token=VALUES(snap_token), status=\'pending\'',
-      [orderId, user.id, planKey, plan.days, plan.priceIdr, snapToken]
+      `INSERT INTO studio_orders (order_id, user_id, plan_key, plan_days, amount, gateway, payment_method, snap_token, checkout_url, status)
+       VALUES (?, ?, ?, ?, ?, 'midtrans', 'snap', ?, ?, 'pending')
+       ON DUPLICATE KEY UPDATE snap_token=VALUES(snap_token), checkout_url=VALUES(checkout_url), status='pending'`,
+      [orderId, user.id, planKey, plan.days, plan.priceIdr, snapToken, redirectUrl]
     );
 
     res.json({
       success:     true,
+      gateway:     'midtrans',
       snapToken,
       redirectUrl,
       orderId,
@@ -330,66 +330,228 @@ router.post('/create-payment', verifyToken, async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('[studio/create-payment]', err.message, err.ApiResponse || '');
-    res.status(500).json({
+    console.error('[studio/create-payment]', err.message, err.apiResponse || '');
+    const unauthorized = err.statusCode === 401 || /unauthorized/i.test(err.message || '');
+    res.status(err.statusCode === 503 ? 503 : 500).json({
       success: false,
-      message: err.message?.includes('Unauthorized') || err.ApiResponse?.status_code === '401'
-        ? 'Midtrans Server Key tidak valid. Periksa konfigurasi di Admin Panel atau file .env'
+      message: unauthorized
+        ? 'Midtrans Server Key tidak valid atau tidak cocok dengan mode Sandbox/Production. Periksa Admin Panel.'
         : 'Gagal membuat transaksi Midtrans: ' + (err.message || 'Unknown error'),
     });
   }
 });
 
-// ─── POST /api/studio/payment-webhook ────────────────────────────────────────
-// Midtrans HTTP Notification — dipanggil Midtrans server setelah pembayaran.
-// Tidak butuh Authorization header (validasi via signature key).
-router.post('/payment-webhook', async (req, res) => {
+// ─── POST /api/studio/create-tripay-payment (Tripay Gateway) ─────────────────
+router.post('/create-tripay-payment', verifyToken, async (req, res) => {
   try {
-    const notification = req.body;
-    const orderId      = notification.order_id;
-    const statusCode   = notification.status_code;
-    const grossAmount  = notification.gross_amount;
-    const cfg          = await resolveMidtransConfig();
-    const serverKey    = cfg.serverKey || process.env.MIDTRANS_SERVER_KEY || '';
+    const { planKey, method = 'QRIS' } = req.body;
+    const plan = PLANS[planKey];
+    if (!plan) {
+      return res.status(400).json({ success: false, message: `Paket '${planKey}' tidak dikenali` });
+    }
 
-    // Validasi signature Midtrans: SHA-512(order_id + status_code + gross_amount + server_key)
-    const expectedSig = crypto
-      .createHash('sha512')
-      .update(orderId + statusCode + grossAmount + serverKey)
-      .digest('hex');
+    const tripayCfg = await resolveTripayConfig();
+    if (!tripayCfg.enabled) {
+      return res.status(503).json({
+        success: false,
+        message: 'Pembayaran Tripay belum diaktifkan atau API Key belum diisi di Admin Panel.',
+      });
+    }
 
-    if (notification.signature_key !== expectedSig) {
-      console.warn('[studio/webhook] Invalid signature for order:', orderId);
+    const [userRows] = await getPool().execute(
+      'SELECT id, username, email FROM users WHERE id = ?', [req.user.id]
+    );
+    const user = userRows[0];
+    if (!user) return res.status(404).json({ success: false, message: 'User tidak ditemukan' });
+
+    const orderId = `tripay-std-${user.id}-${Date.now()}`;
+
+    const tx = await createTripayTransaction(tripayCfg, {
+      orderId,
+      amount: plan.priceIdr,
+      method: method || 'QRIS',
+      customerName: user.username || 'Member',
+      customerEmail: user.email || 'member@hyrost.net',
+      itemName: plan.label,
+      itemId: planKey,
+      returnUrl: `${req.protocol}://${req.get('host')}/bot/skin.html?payment=success&orderId=${orderId}`,
+    });
+
+    await getPool().execute(
+      `INSERT INTO studio_orders (order_id, user_id, plan_key, plan_days, amount, gateway, payment_method, reference, pay_code, qr_url, checkout_url, status)
+       VALUES (?, ?, ?, ?, ?, 'tripay', ?, ?, ?, ?, ?, 'pending')
+       ON DUPLICATE KEY UPDATE reference=VALUES(reference), pay_code=VALUES(pay_code), qr_url=VALUES(qr_url), checkout_url=VALUES(checkout_url), status='pending'`,
+      [orderId, user.id, planKey, plan.days, plan.priceIdr, method, tx.reference, tx.payCode, tx.qrUrl, tx.checkoutUrl]
+    );
+
+    res.json({
+      success: true,
+      gateway: 'tripay',
+      orderId,
+      reference: tx.reference,
+      paymentMethod: tx.paymentMethod,
+      paymentName: tx.paymentName,
+      amount: tx.amount,
+      totalAmount: tx.totalAmount,
+      payCode: tx.payCode,
+      payUrl: tx.payUrl,
+      checkoutUrl: tx.checkoutUrl,
+      qrUrl: tx.qrUrl,
+      qrString: tx.qrString,
+      expiredTime: tx.expiredTime,
+      instructions: tx.instructions,
+      plan: {
+        key: planKey,
+        label: plan.label,
+        days: plan.days,
+        priceIdr: plan.priceIdr,
+        priceFormatted: `Rp ${plan.priceIdr.toLocaleString('id-ID')}`,
+      },
+    });
+  } catch (err) {
+    console.error('[studio/create-tripay-payment]', err.message);
+    res.status(err.statusCode || 500).json({
+      success: false,
+      message: 'Gagal membuat transaksi Tripay: ' + (err.message || 'Unknown error'),
+    });
+  }
+});
+
+// ─── POST /api/studio/create-manual-payment (QRIS Statis & Transfer Manual) ───
+router.post('/create-manual-payment', verifyToken, async (req, res) => {
+  try {
+    const { planKey } = req.body;
+    const plan = PLANS[planKey];
+    if (!plan) {
+      return res.status(400).json({ success: false, message: `Paket '${planKey}' tidak dikenali` });
+    }
+
+    const manualCfg = await resolveManualPaymentConfig();
+    if (!manualCfg.enabled) {
+      return res.status(503).json({
+        success: false,
+        message: 'Pembayaran transfer manual sedang dinonaktifkan.',
+      });
+    }
+
+    const [userRows] = await getPool().execute(
+      'SELECT id, username, email FROM users WHERE id = ?', [req.user.id]
+    );
+    const user = userRows[0];
+    if (!user) return res.status(404).json({ success: false, message: 'User tidak ditemukan' });
+
+    // Kode unik acak 2-digit (10 s/d 99) agar mudah diverifikasi admin
+    const uniqueCode = Math.floor(Math.random() * 89) + 10;
+    const totalAmount = plan.priceIdr + uniqueCode;
+    const orderId = `manual-std-${user.id}-${Date.now()}`;
+
+    await getPool().execute(
+      `INSERT INTO studio_orders (order_id, user_id, plan_key, plan_days, amount, gateway, payment_method, status)
+       VALUES (?, ?, ?, ?, ?, 'manual', 'qris_manual', 'pending')`,
+      [orderId, user.id, planKey, plan.days, totalAmount]
+    );
+
+    // Format pesan WhatsApp konfirmasi
+    const waText = encodeURIComponent(
+      `Halo Admin Hyrost / Mei Labs,\nSaya ingin konfirmasi pembayaran VIP 3D Skin Studio:\n\n` +
+      `• Order ID: ${orderId}\n` +
+      `• Username: ${user.username}\n` +
+      `• Paket: ${plan.label}\n` +
+      `• Total Transfer: Rp ${totalAmount.toLocaleString('id-ID')} (Kode Unik: ${uniqueCode})\n\n` +
+      `Mohon diaktifkan akun saya. Terima kasih!`
+    );
+
+    const waPhone = (manualCfg.whatsappNumber || '628123456789').replace(/[^0-9]/g, '');
+    const whatsappUrl = `https://wa.me/${waPhone}?text=${waText}`;
+
+    res.json({
+      success: true,
+      gateway: 'manual',
+      orderId,
+      baseAmount: plan.priceIdr,
+      uniqueCode,
+      totalAmount,
+      totalFormatted: `Rp ${totalAmount.toLocaleString('id-ID')}`,
+      qrisImage: manualCfg.qrisImage,
+      bankName: manualCfg.bankName,
+      accountNumber: manualCfg.accountNumber,
+      accountName: manualCfg.accountName,
+      instructions: manualCfg.instructions,
+      whatsappUrl,
+      plan: {
+        key: planKey,
+        label: plan.label,
+        days: plan.days,
+        priceIdr: plan.priceIdr,
+        priceFormatted: `Rp ${plan.priceIdr.toLocaleString('id-ID')}`,
+      },
+    });
+  } catch (err) {
+    console.error('[studio/create-manual-payment]', err.message);
+    res.status(500).json({ success: false, message: 'Gagal membuat order manual' });
+  }
+});
+
+// ─── POST /api/studio/upload-payment-proof ────────────────────────────────────
+router.post('/upload-payment-proof', verifyToken, async (req, res) => {
+  try {
+    const { orderId, proofImage, notes } = req.body;
+    if (!orderId) return res.status(400).json({ success: false, message: 'Order ID wajib diisi' });
+
+    const [rows] = await getPool().execute(
+      'SELECT id, status FROM studio_orders WHERE order_id = ? AND user_id = ?',
+      [orderId, req.user.id]
+    );
+    if (!rows[0]) return res.status(404).json({ success: false, message: 'Order tidak ditemukan' });
+
+    await getPool().execute(
+      'UPDATE studio_orders SET proof_image = ?, admin_notes = ? WHERE order_id = ?',
+      [proofImage || null, notes || 'Bukti bayar diunggah oleh user', orderId]
+    );
+
+    res.json({
+      success: true,
+      message: '✅ Bukti transfer berhasil dikirim! Admin akan segera memverifikasi pesanan Anda.',
+    });
+  } catch (err) {
+    console.error('[studio/upload-payment-proof]', err.message);
+    res.status(500).json({ success: false, message: 'Gagal mengunggah bukti bayar' });
+  }
+});
+
+// ─── POST /api/studio/tripay-webhook ──────────────────────────────────────────
+// Dipanggil Tripay Server ketika pembayaran lunas
+async function processTripayWebhook(req, res) {
+  try {
+    const tripayCfg = await resolveTripayConfig();
+    const signature = req.headers['x-callback-signature'];
+    const callbackEvent = req.headers['x-callback-event'];
+
+    if (!verifyTripayWebhookSignature(req.rawBody || req.body, signature, tripayCfg.privateKey)) {
+      console.warn('[tripay/webhook] Invalid signature received');
       return res.status(403).json({ success: false, message: 'Invalid signature' });
     }
 
-    const transactionStatus = notification.transaction_status;
-    const fraudStatus       = notification.fraud_status;
+    if (callbackEvent !== 'payment_status') {
+      return res.json({ success: true, message: 'Event ignored' });
+    }
 
-    // Cek order di DB
+    const data = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
+    const { merchant_ref, status } = data;
+
     const [orderRows] = await getPool().execute(
-      'SELECT * FROM studio_orders WHERE order_id = ?', [orderId]
+      'SELECT * FROM studio_orders WHERE order_id = ? OR reference = ?',
+      [merchant_ref, data.reference || merchant_ref]
     );
     const order = orderRows[0];
     if (!order) {
-      console.warn('[studio/webhook] Order not found:', orderId);
+      console.warn('[tripay/webhook] Order not found:', merchant_ref);
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    // Tentukan apakah pembayaran berhasil
-    const isPaid =
-      (transactionStatus === 'capture' && fraudStatus === 'accept') ||
-      transactionStatus === 'settlement';
-
-    const isFailed =
-      transactionStatus === 'cancel'  ||
-      transactionStatus === 'deny'    ||
-      transactionStatus === 'expire';
-
-    if (isPaid && order.status !== 'paid') {
-      // Aktifkan VIP di DB
-      const planDays  = order.plan_days;
-      const userId    = order.user_id;
+    if (status === 'PAID' && order.status !== 'paid') {
+      const planDays = order.plan_days;
+      const userId   = order.user_id;
 
       const [existingRows] = await getPool().execute(
         'SELECT skin_studio_vip_expires FROM users WHERE id = ?', [userId]
@@ -409,7 +571,77 @@ router.post('/payment-webhook', async (req, res) => {
       );
 
       await getPool().execute(
-        'UPDATE studio_orders SET status = \'paid\', paid_at = NOW() WHERE order_id = ?',
+        "UPDATE studio_orders SET status = 'paid', paid_at = NOW() WHERE id = ?",
+        [order.id]
+      );
+
+      console.log(`✅ [tripay/webhook] VIP activated: user=${userId} plan=${planName} until=${newExpiry.toISOString()}`);
+    } else if (['EXPIRED', 'FAILED'].includes(status)) {
+      await getPool().execute(
+        'UPDATE studio_orders SET status = ? WHERE id = ?',
+        [status.toLowerCase(), order.id]
+      );
+    }
+
+    res.json({ success: true });
+  } catch (err) {
+    console.error('[studio/tripay-webhook]', err.message);
+    res.status(500).json({ success: false, message: err.message });
+  }
+}
+
+router.post('/tripay-webhook', processTripayWebhook);
+
+// ─── POST /api/studio/payment-webhook (Midtrans) ─────────────────────────────
+async function processStudioWebhook(req, res) {
+  try {
+    const cfg     = await resolveMidtransConfig();
+    const fields  = extractNotificationFields(req.body, req.rawBody);
+    const orderId = fields.order_id;
+
+    if (!verifyNotificationSignature(fields, cfg.serverKey)) {
+      console.warn('[studio/webhook] Invalid signature for order:', orderId);
+      return res.status(403).json({ success: false, message: 'Invalid signature' });
+    }
+
+    const transactionStatus = fields.transaction_status;
+    const fraudStatus       = fields.fraud_status;
+
+    const [orderRows] = await getPool().execute(
+      'SELECT * FROM studio_orders WHERE order_id = ?', [orderId]
+    );
+    const order = orderRows[0];
+    if (!order) {
+      console.warn('[studio/webhook] Order not found:', orderId);
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    const isPaid   = isPaidStatus(transactionStatus, fraudStatus);
+    const isFailed = isFailedStatus(transactionStatus);
+
+    if (isPaid && order.status !== 'paid') {
+      const planDays = order.plan_days;
+      const userId   = order.user_id;
+
+      const [existingRows] = await getPool().execute(
+        'SELECT skin_studio_vip_expires FROM users WHERE id = ?', [userId]
+      );
+      const existing      = existingRows[0];
+      const now           = new Date();
+      const currentExpiry = existing?.skin_studio_vip_expires && new Date(existing.skin_studio_vip_expires) > now
+        ? new Date(existing.skin_studio_vip_expires)
+        : now;
+
+      const newExpiry = new Date(currentExpiry.getTime() + planDays * 24 * 60 * 60 * 1000);
+      const planName  = PLANS[order.plan_key]?.label || `VIP Studio ${planDays} Hari`;
+
+      await getPool().execute(
+        'UPDATE users SET skin_studio_vip_expires = ?, skin_studio_plan = ? WHERE id = ?',
+        [newExpiry, planName, userId]
+      );
+
+      await getPool().execute(
+        "UPDATE studio_orders SET status = 'paid', paid_at = NOW() WHERE order_id = ?",
         [orderId]
       );
 
@@ -429,17 +661,18 @@ router.post('/payment-webhook', async (req, res) => {
     console.error('[studio/payment-webhook]', err.message);
     res.status(500).json({ success: false });
   }
-});
+}
+
+router.post('/payment-webhook', processStudioWebhook);
 
 // ─── GET /api/studio/payment-status/:orderId ─────────────────────────────────
-// Cek status pembayaran order milik user yang login.
 router.get('/payment-status/:orderId', verifyToken, async (req, res) => {
   try {
     const { orderId } = req.params;
 
     const [rows] = await getPool().execute(
-      'SELECT * FROM studio_orders WHERE order_id = ? AND user_id = ?',
-      [orderId, req.user.id]
+      'SELECT * FROM studio_orders WHERE (order_id = ? OR reference = ?) AND user_id = ?',
+      [orderId, orderId, req.user.id]
     );
     const order = rows[0];
     if (!order) {
@@ -447,15 +680,20 @@ router.get('/payment-status/:orderId', verifyToken, async (req, res) => {
     }
 
     res.json({
-      success:   true,
-      orderId:   order.order_id,
-      status:    order.status,
-      isPaid:    order.status === 'paid',
-      planKey:   order.plan_key,
-      planDays:  order.plan_days,
-      amount:    order.amount,
-      paidAt:    order.paid_at,
-      createdAt: order.created_at,
+      success:       true,
+      orderId:       order.order_id,
+      gateway:       order.gateway,
+      paymentMethod: order.payment_method,
+      status:        order.status,
+      isPaid:        order.status === 'paid',
+      planKey:       order.plan_key,
+      planDays:      order.plan_days,
+      amount:        order.amount,
+      qrUrl:         order.qr_url,
+      checkoutUrl:   order.checkout_url,
+      payCode:       order.pay_code,
+      paidAt:        order.paid_at,
+      createdAt:     order.created_at,
     });
   } catch (err) {
     console.error('[studio/payment-status]', err.message);
@@ -463,4 +701,81 @@ router.get('/payment-status/:orderId', verifyToken, async (req, res) => {
   }
 });
 
+// ─── ADMIN ENDPOINTS: Manage Studio Orders ───────────────────────────────────
+
+// GET /api/studio/admin/orders
+router.get('/admin/orders', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const [rows] = await getPool().execute(`
+      SELECT o.*, u.username, u.email
+      FROM studio_orders o
+      JOIN users u ON o.user_id = u.id
+      ORDER BY o.created_at DESC LIMIT 100
+    `);
+    res.json({ success: true, orders: rows });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/studio/admin/approve-order/:orderId
+router.post('/admin/approve-order/:orderId', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const [rows] = await getPool().execute(
+      'SELECT * FROM studio_orders WHERE order_id = ?', [orderId]
+    );
+    const order = rows[0];
+    if (!order) return res.status(404).json({ success: false, message: 'Order tidak ditemukan' });
+
+    const planDays = order.plan_days;
+    const userId   = order.user_id;
+
+    const [existingRows] = await getPool().execute(
+      'SELECT skin_studio_vip_expires FROM users WHERE id = ?', [userId]
+    );
+    const existing      = existingRows[0];
+    const now           = new Date();
+    const currentExpiry = existing?.skin_studio_vip_expires && new Date(existing.skin_studio_vip_expires) > now
+      ? new Date(existing.skin_studio_vip_expires)
+      : now;
+
+    const newExpiry = new Date(currentExpiry.getTime() + planDays * 24 * 60 * 60 * 1000);
+    const planName  = PLANS[order.plan_key]?.label || `VIP Studio ${planDays} Hari (Manual)`;
+
+    await getPool().execute(
+      'UPDATE users SET skin_studio_vip_expires = ?, skin_studio_plan = ? WHERE id = ?',
+      [newExpiry, planName, userId]
+    );
+
+    await getPool().execute(
+      "UPDATE studio_orders SET status = 'paid', paid_at = NOW(), approved_by = ? WHERE order_id = ?",
+      [req.user.id, orderId]
+    );
+
+    res.json({
+      success: true,
+      message: `✅ Order ${orderId} berhasil disetujui! VIP Studio aktif selama ${planDays} hari.`,
+    });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST /api/studio/admin/reject-order/:orderId
+router.post('/admin/reject-order/:orderId', verifyToken, verifyAdmin, async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    await getPool().execute(
+      "UPDATE studio_orders SET status = 'rejected', approved_by = ? WHERE order_id = ?",
+      [req.user.id, orderId]
+    );
+    res.json({ success: true, message: `Order ${orderId} telah ditolak.` });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 module.exports = router;
+module.exports.processStudioWebhook = processStudioWebhook;
+module.exports.processTripayWebhook = processTripayWebhook;

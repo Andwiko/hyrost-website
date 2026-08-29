@@ -467,6 +467,54 @@ function applyStoreVoucher() {
 }
 window.applyStoreVoucher = applyStoreVoucher;
 
+// ── Midtrans Snap Loader for Store ──────────────────────────────────────────
+let _storeSnapLoaded = false;
+let _storeSnapLoading = false;
+
+async function loadStoreSnapJs() {
+    if (typeof window.snap !== 'undefined') {
+        _storeSnapLoaded = true;
+        return true;
+    }
+    if (_storeSnapLoaded) return true;
+    if (_storeSnapLoading) {
+        await new Promise(resolve => {
+            let count = 0;
+            const check = setInterval(() => {
+                count++;
+                if (_storeSnapLoaded || !_storeSnapLoading || count > 50) {
+                    clearInterval(check);
+                    resolve();
+                }
+            }, 100);
+        });
+        return typeof window.snap !== 'undefined';
+    }
+
+    _storeSnapLoading = true;
+    try {
+        const res = await fetch('/api/studio/config');
+        const data = await res.json();
+        if (!data || !data.success || !data.midtransClientKey) {
+            _storeSnapLoading = false;
+            return false;
+        }
+
+        return new Promise(resolve => {
+            const script = document.createElement('script');
+            script.src = data.snapJsUrl || (data.midtransIsProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js');
+            script.setAttribute('data-client-key', data.midtransClientKey);
+            script.type = 'text/javascript';
+            script.onload = () => { _storeSnapLoaded = true; _storeSnapLoading = false; resolve(true); };
+            script.onerror = () => { _storeSnapLoaded = false; _storeSnapLoading = false; resolve(false); };
+            document.head.appendChild(script);
+        });
+    } catch (_) {
+        _storeSnapLoading = false;
+        return false;
+    }
+}
+
 async function processRankIDRPayment() {
     const token = localStorage.getItem('hyrostToken');
     if (!token) return showStoreToast('Silakan login terlebih dahulu!', 'error');
@@ -482,6 +530,9 @@ async function processRankIDRPayment() {
     const selectedRadio = document.querySelector('input[name="payMethod"]:checked');
     const paymentMethod = selectedRadio ? selectedRadio.value : 'qris';
     const promoCode = document.getElementById('storeVoucherInput')?.value || '';
+
+    // Load snap.js in background
+    loadStoreSnapJs();
 
     try {
         const res = await fetch('/api/store/buy-rank-idr', {
@@ -502,6 +553,101 @@ async function processRankIDRPayment() {
         if (res.ok && data.success) {
             closeRankCheckoutModal();
 
+            // Jika ada token Midtrans Snap
+            if (data.midtransToken) {
+                await loadStoreSnapJs();
+                if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
+                    try {
+                        window.snap.pay(data.midtransToken, {
+                            onSuccess: function(result) {
+                                showStoreResult({
+                                    type: 'success',
+                                    title: 'Pembayaran Berhasil!',
+                                    message: `Selamat! Pembayaran Pangkat ${selectedCheckoutRank.rankName} telah lunas via Midtrans.`,
+                                    transactionId: data.transactionId || data.orderCode,
+                                    securityHash: data.securityHash || '',
+                                    instructions: 'Ketik /claim di server Minecraft (In-Game) untuk menyinkronkan pangkat Anda.',
+                                    onClose: () => window.location.reload(),
+                                });
+                            },
+                            onPending: function(result) {
+                                showStoreResult({
+                                    type: 'pending',
+                                    title: 'Menunggu Pembayaran',
+                                    message: 'Selesaikan pembayaran sesuai petunjuk pada layar Midtrans.',
+                                    transactionId: data.transactionId || data.orderCode,
+                                    instructions: 'Setelah transfer lunas, pangkat akan otomatis diaktifkan.',
+                                    onClose: () => window.location.reload(),
+                                });
+                            },
+                            onError: function(result) {
+                                showStoreToast('Pembayaran Midtrans gagal atau dibatalkan.', 'error');
+                            },
+                            onClose: function() {
+                                showStoreToast('Jendela pembayaran ditutup. Kamu dapat melanjutkan kapan saja.', 'info');
+                            }
+                        });
+                        return;
+                    } catch (snapErr) {
+                        console.warn('[store] Snap popup error, fallback to redirect:', snapErr);
+                    }
+                }
+
+                // Fallback direct redirection
+                if (data.redirectUrl) {
+                    showStoreToast('Mengarahkan ke halaman pembayaran Midtrans...', 'info');
+                    setTimeout(() => { window.location.href = data.redirectUrl; }, 600);
+                    return;
+                }
+            }
+
+            // Jika metode Tripay QRIS
+            if (data.gateway === 'tripay' && data.qrUrl) {
+                showStoreResult({
+                    type: 'pending',
+                    title: 'Scan QRIS Real-Time',
+                    message: `<div style="text-align:center; margin:10px 0;"><img src="${data.qrUrl}" alt="QRIS" style="width:200px; height:200px; background:#fff; padding:8px; border-radius:10px; display:inline-block;" /><div style="margin-top:8px; font-weight:800; color:#34d399; font-size:1.2rem;">Rp ${data.amountIDR?.toLocaleString('id-ID')}</div><div style="font-size:0.78rem; color:#94a3b8;">Buka GoPay/DANA/BCA Mobile untuk scan QRIS</div></div>`,
+                    transactionId: data.transactionId || data.orderCode,
+                    securityHash: data.securityHash || '',
+                    instructions: 'Pangkat akan otomatis aktif beberapa detik setelah pembayaran lunas.',
+                    onClose: () => window.location.reload(),
+                });
+                return;
+            }
+
+            // Jika metode Transfer Manual
+            if (data.gateway === 'manual') {
+                const waButtonHtml = data.whatsappUrl 
+                    ? `<div style="margin-top:14px;"><a href="${data.whatsappUrl}" target="_blank" class="btn btn-primary" style="background:#25d366; border:none; display:inline-flex; align-items:center; gap:8px; width:100%; justify-content:center; text-decoration:none;"><i class="fab fa-whatsapp"></i> Konfirmasi ke WhatsApp Admin</a></div>`
+                    : '';
+                const qrisImgHtml = data.qrisImage 
+                    ? `<div style="text-align:center; margin:8px 0;"><img src="${data.qrisImage}" alt="QRIS Admin" style="width:160px; height:160px; background:#fff; padding:6px; border-radius:8px;" /></div>`
+                    : '';
+
+                showStoreResult({
+                    type: 'pending',
+                    title: 'Transfer Manual & QRIS',
+                    message: `<div>
+                        <div style="background:rgba(245,158,11,0.15); border:1px solid rgba(245,158,11,0.3); border-radius:10px; padding:12px; text-align:center; margin-bottom:10px;">
+                            <div style="font-size:0.75rem; color:#fde68a;">Nominal Transfer Tepat (Termasuk Kode Unik):</div>
+                            <div style="font-size:1.4rem; font-weight:900; color:#fbbf24;">Rp ${data.amountIDR?.toLocaleString('id-ID')}</div>
+                        </div>
+                        ${qrisImgHtml}
+                        <div style="font-size:0.82rem; background:rgba(0,0,0,0.3); padding:10px; border-radius:8px; margin-bottom:10px;">
+                            <div><strong>Bank / E-Wallet:</strong> ${data.bankName || 'BCA / DANA'}</div>
+                            <div><strong>No. Rekening / HP:</strong> <code style="color:#38bdf8;">${data.accountNumber || '-'}</code></div>
+                            <div><strong>Atas Nama (A/N):</strong> ${data.accountName || 'Admin'}</div>
+                        </div>
+                        ${waButtonHtml}
+                    </div>`,
+                    transactionId: data.transactionId || data.orderCode,
+                    securityHash: data.securityHash || '',
+                    instructions: data.paymentInstructions || 'Transfer sesuai nominal tepat, lalu kirim bukti transfer.',
+                    onClose: () => window.location.reload(),
+                });
+                return;
+            }
+
             const isPending = data.requiresApproval && !data.midtransToken;
             const txId = data.transactionId || data.orderCode || '';
             const hash = data.securityHash || '';
@@ -517,7 +663,7 @@ async function processRankIDRPayment() {
                     : 'Pangkat telah diaktifkan untuk akun Anda.'),
                 transactionId: txId,
                 securityHash: hash,
-                instructions: isPending ? instructions : instructions,
+                instructions: instructions,
                 onClose: () => window.location.reload(),
             });
         } else {
