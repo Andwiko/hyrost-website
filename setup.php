@@ -1,6 +1,6 @@
 <?php
 /**
- * HYROST REALM & MEI LABS — Backend Manager & Auto-Installer
+ * HYROST REALM & MEI LABS — Backend Manager & Auto-Installer v2.0
  * Web-based Server Manager for Pterodactyl / NuraHost environments.
  */
 
@@ -15,12 +15,14 @@ $containerRoot = '/home/container';
 $wwwRoot = '/home/container/www';
 $logsDir = $containerRoot . '/logs';
 $tmpDir = $containerRoot . '/tmp';
+$nodeInstallDir = $containerRoot . '/.nodejs';
 $pidFile = $tmpDir . '/backend.pid';
 $logFile = $logsDir . '/backend.log';
 
 // Ensure directories exist
 @mkdir($logsDir, 0755, true);
 @mkdir($tmpDir, 0755, true);
+@mkdir($nodeInstallDir, 0755, true);
 @mkdir($containerRoot . '/.npm-cache', 0755, true);
 @mkdir($containerRoot . '/.npm-logs', 0755, true);
 
@@ -30,7 +32,69 @@ if (!file_exists($npmrcPath)) {
     @file_put_contents($npmrcPath, "cache=/home/container/.npm-cache\nlogs-dir=/home/container/.npm-logs\nfund=false\naudit=false\n");
 }
 
-// Find Node.js binary
+// Function to auto-download and install standalone Node.js Linux binary
+function autoInstallNodeJs($targetDir = '/home/container/.nodejs') {
+    $arch = 'x64';
+    $uname = php_uname('m');
+    if (strpos($uname, 'aarch64') !== false || strpos($uname, 'arm64') !== false) {
+        $arch = 'arm64';
+    }
+    
+    $version = '20.18.0';
+    $tarball = "node-v{$version}-linux-{$arch}.tar.gz";
+    $url = "https://nodejs.org/dist/v{$version}/{$tarball}";
+    $tmpTar = "/tmp/{$tarball}";
+    
+    @mkdir($targetDir, 0755, true);
+    
+    // Download tarball via cURL or file_get_contents
+    $downloaded = false;
+    if (function_exists('curl_init')) {
+        $ch = curl_init($url);
+        $fp = fopen($tmpTar, 'wb');
+        curl_setopt($ch, CURLOPT_FILE, $fp);
+        curl_setopt($ch, CURLOPT_HEADER, 0);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 180);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+        fclose($fp);
+        if ($httpCode === 200 && file_exists($tmpTar) && filesize($tmpTar) > 10000000) {
+            $downloaded = true;
+        }
+    }
+    
+    if (!$downloaded) {
+        $data = @file_get_contents($url);
+        if ($data && strlen($data) > 10000000) {
+            @file_put_contents($tmpTar, $data);
+            $downloaded = true;
+        }
+    }
+    
+    if (!$downloaded) {
+        return [false, "Gagal mengunduh file Node.js dari {$url}. Silakan cek koneksi server."];
+    }
+    
+    // Extract tarball
+    $cmd = "tar -xzf {$tmpTar} -C {$targetDir} --strip-components=1 2>&1";
+    $extractOut = shell_exec($cmd);
+    @unlink($tmpTar);
+    
+    $nodeBin = "{$targetDir}/bin/node";
+    if (file_exists($nodeBin)) {
+        @chmod($nodeBin, 0755);
+        if (file_exists("{$targetDir}/bin/npm")) @chmod("{$targetDir}/bin/npm", 0755);
+        if (file_exists("{$targetDir}/bin/npx")) @chmod("{$targetDir}/bin/npx", 0755);
+        return [true, "✓ Node.js v{$version} ({$arch}) berhasil diunduh dan dipasang ke {$targetDir}!"];
+    }
+    
+    return [false, "Gagal mengekstrak Node.js: " . htmlspecialchars($extractOut ?? '')];
+}
+
+// Find Node.js / npm binaries
 function findBinary($name) {
     $candidates = [
         "/home/container/.nodejs/bin/{$name}",
@@ -38,13 +102,24 @@ function findBinary($name) {
         "/usr/bin/{$name}",
         "/bin/{$name}",
         "/opt/node/bin/{$name}",
-        "/opt/nodejs/bin/{$name}"
+        "/opt/nodejs/bin/{$name}",
+        "/home/container/.nvm/versions/node/v20.18.0/bin/{$name}",
+        "/home/container/.nvm/versions/node/v18.20.4/bin/{$name}"
     ];
     foreach ($candidates as $path) {
-        if (file_exists($path) && is_executable($path)) {
+        if (file_exists($path) && (is_executable($path) || @chmod($path, 0755))) {
             return $path;
         }
     }
+    
+    // Check globs
+    $globs = @glob("/home/container/.nvm/versions/node/*/bin/{$name}");
+    if (!empty($globs)) {
+        foreach ($globs as $path) {
+            if (file_exists($path)) return $path;
+        }
+    }
+    
     $which = trim(@shell_exec("which {$name} 2>/dev/null") ?? '');
     if (!empty($which) && file_exists($which)) {
         return $which;
@@ -55,18 +130,37 @@ function findBinary($name) {
 $nodeBin = findBinary('node');
 $npmBin = findBinary('npm');
 
+// Auto-install Node.js if missing
+$autoInstallNotice = '';
+if (!$nodeBin) {
+    list($success, $msg) = autoInstallNodeJs($nodeInstallDir);
+    if ($success) {
+        $autoInstallNotice = $msg;
+        $nodeBin = findBinary('node');
+        $npmBin = findBinary('npm');
+    } else {
+        $autoInstallNotice = $msg;
+    }
+}
+
+// Ensure PATH contains the node directory
+if ($nodeBin) {
+    $nodeDir = dirname($nodeBin);
+    $currentPath = getenv('PATH') ?: '/usr/local/bin:/usr/bin:/bin';
+    putenv("PATH={$nodeDir}:{$currentPath}");
+    $_ENV['PATH'] = "{$nodeDir}:{$currentPath}";
+}
+
 // Check backend process status
 function isBackendRunning($pidFile) {
     if (!file_exists($pidFile)) return false;
     $pid = intval(trim(@file_get_contents($pidFile) ?: '0'));
     if ($pid <= 0) return false;
     
-    // Check if PID is alive
     $check = @shell_exec("kill -0 {$pid} 2>&1");
     if ($check === null || trim($check) === '') {
         return $pid;
     }
-    // Also check ps
     $ps = @shell_exec("ps aux 2>/dev/null | grep 'backend/server.js' | grep -v grep");
     if (!empty($ps)) {
         return $pid;
@@ -85,26 +179,35 @@ function checkPort3044() {
 }
 
 $action = $_GET['action'] ?? '';
-$message = '';
-$messageType = 'info';
+$message = $autoInstallNotice;
+$messageType = empty($autoInstallNotice) ? 'info' : 'success';
 
 // HANDLE ACTIONS
-if ($action === 'install') {
+if ($action === 'install-node') {
+    list($success, $msg) = autoInstallNodeJs($nodeInstallDir);
+    $message = $msg;
+    $messageType = $success ? 'success' : 'error';
+    $nodeBin = findBinary('node');
+    $npmBin = findBinary('npm');
+} elseif ($action === 'install') {
     if (!$npmBin) {
-        $message = "❌ npm binary tidak ditemukan. Node.js belum terinstall di server.";
+        $message = "❌ npm binary tidak ditemukan. Silakan klik 'Download & Pasang Node.js' terlebih dahulu.";
         $messageType = 'error';
     } else {
-        $cmd = "cd {$wwwRoot} && HOME=/home/container {$npmBin} install express cors dotenv jsonwebtoken mysql2 bcryptjs mongoose multer nodemailer qrcode speakeasy google-auth-library googleapis --no-audit --no-fund 2>&1";
+        $nodeDir = dirname($npmBin);
+        $cmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && {$npmBin} install express cors dotenv jsonwebtoken mysql2 bcryptjs mongoose multer nodemailer qrcode speakeasy google-auth-library googleapis --no-audit --no-fund 2>&1";
         $output = shell_exec($cmd);
-        $message = "✅ Instalasi paket selesai!\n\n" . htmlspecialchars($output ?? '');
+        $message = "✅ Instalasi paket npm selesai!\n\n" . htmlspecialchars($output ?? '');
         $messageType = 'success';
     }
 } elseif ($action === 'start' || $action === 'restart') {
     if (!$nodeBin) {
-        $message = "❌ node binary tidak ditemukan.";
+        $message = "❌ node binary tidak ditemukan. Klik 'Download & Pasang Node.js' terlebih dahulu.";
         $messageType = 'error';
     } else {
-        // Kill existing
+        $nodeDir = dirname($nodeBin);
+        
+        // Kill existing process
         $oldPid = intval(trim(@file_get_contents($pidFile) ?: '0'));
         if ($oldPid > 0) {
             @shell_exec("kill -15 {$oldPid} 2>/dev/null || kill -9 {$oldPid} 2>/dev/null");
@@ -114,7 +217,7 @@ if ($action === 'install') {
         @shell_exec("pkill -f 'backend/server.js' 2>/dev/null");
         
         // Start backend in background
-        $startCmd = "cd {$wwwRoot} && HOME=/home/container nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
+        $startCmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
         $newPid = trim(shell_exec($startCmd) ?? '');
         
         if (!empty($newPid) && intval($newPid) > 0) {
@@ -125,7 +228,7 @@ if ($action === 'install') {
                 $message = "🚀 Backend Node.js BERHASIL DINYALAKAN (PID: {$newPid}) di Port 3044!";
                 $messageType = 'success';
             } else {
-                $message = "⚠️ Backend dimulai (PID: {$newPid}), tetapi belum merespon di port 3044. Silakan cek log di bawah.";
+                $message = "⚠️ Backend dijalankan (PID: {$newPid}), silakan cek apakah port 3044 sudah merespon di log bawah.";
                 $messageType = 'warning';
             }
         } else {
@@ -144,14 +247,15 @@ if ($action === 'install') {
     $messageType = 'info';
 }
 
-// Check status now
+// Current status
 $runningPid = isBackendRunning($pidFile);
 $port3044Ok = checkPort3044();
 $isExpressInstalled = file_exists($wwwRoot . '/node_modules/express') || file_exists($containerRoot . '/node_modules/express');
 
-// Auto-start if express exists but port is offline and no action specified
+// Auto-start if ready and not running
 if (!$runningPid && !$port3044Ok && $isExpressInstalled && empty($action) && $nodeBin) {
-    $startCmd = "cd {$wwwRoot} && HOME=/home/container nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
+    $nodeDir = dirname($nodeBin);
+    $startCmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
     $newPid = trim(shell_exec($startCmd) ?? '');
     if (!empty($newPid) && intval($newPid) > 0) {
         file_put_contents($pidFile, $newPid);
@@ -166,9 +270,11 @@ $lastLogs = '';
 if (file_exists($logFile)) {
     $lines = @file($logFile);
     if ($lines) {
-        $lastLogs = implode('', array_slice($lines, -35));
+        $lastLogs = implode('', array_slice($lines, -40));
     }
 }
+
+$nodeVersionStr = $nodeBin ? trim(@shell_exec("{$nodeBin} -v 2>/dev/null") ?: 'v20.18.0') : '';
 ?>
 <!DOCTYPE html>
 <html lang="id">
@@ -207,7 +313,7 @@ if (file_exists($logFile)) {
     }
     .header {
       text-align: center;
-      margin-bottom: 28px;
+      margin-bottom: 24px;
     }
     .header h1 {
       font-size: 1.8rem;
@@ -316,21 +422,20 @@ if (file_exists($logFile)) {
       background: linear-gradient(135deg, #059669, #047857);
       transform: translateY(-1px);
     }
+    .btn-warning {
+      background: linear-gradient(135deg, #d97706, #b45309);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(217, 119, 6, 0.35);
+    }
     .btn-danger {
       background: rgba(239, 68, 68, 0.15);
       border: 1px solid rgba(239, 68, 68, 0.3);
       color: #f87171;
     }
-    .btn-danger:hover {
-      background: rgba(239, 68, 68, 0.25);
-    }
     .btn-outline {
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.15);
       color: var(--text);
-    }
-    .btn-outline:hover {
-      background: rgba(255, 255, 255, 0.1);
     }
     .alert {
       padding: 14px 18px;
@@ -412,7 +517,7 @@ if (file_exists($logFile)) {
         <div class="stat-item">
           <div class="label">Status Node.js</div>
           <div class="value" style="color:<?= $nodeBin ? 'var(--accent-emerald)' : 'var(--accent-red)' ?>;">
-            <?= $nodeBin ? '✓ Terpasang (' . basename($nodeBin) . ')' : '✗ Belum Terpasang' ?>
+            <?= $nodeBin ? "✓ Terpasang ({$nodeVersionStr})" : '✗ Belum Terpasang' ?>
           </div>
         </div>
         <div class="stat-item">
@@ -434,12 +539,18 @@ if (file_exists($logFile)) {
       </div>
 
       <div class="btn-group">
-        <a href="setup.php?action=start" class="btn btn-primary">
-          <i class="fas fa-play"></i> Nyalakan / Restart Backend
-        </a>
-        <a href="setup.php?action=install" class="btn btn-success">
-          <i class="fas fa-download"></i> Install Semua Dependensi (npm)
-        </a>
+        <?php if (!$nodeBin): ?>
+          <a href="setup.php?action=install-node" class="btn btn-warning">
+            <i class="fas fa-cube"></i> Unduh &amp; Pasang Node.js v20 Otomatis
+          </a>
+        <?php else: ?>
+          <a href="setup.php?action=start" class="btn btn-primary">
+            <i class="fas fa-play"></i> Nyalakan / Restart Backend
+          </a>
+          <a href="setup.php?action=install" class="btn btn-success">
+            <i class="fas fa-download"></i> Install Semua Dependensi (npm)
+          </a>
+        <?php endif; ?>
         <?php if ($runningPid): ?>
           <a href="setup.php?action=stop" class="btn btn-danger" onclick="return confirm('Hentikan backend server?')">
             <i class="fas fa-stop"></i> Matikan
