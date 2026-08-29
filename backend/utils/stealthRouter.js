@@ -1,19 +1,38 @@
 /**
  * =============================================================================
  * HYROST — Stealth Opaque Route Obfuscator & Token Resolver
- * Disguises real file & folder names into stealth query tokens (e.g. ?=pv3Ad)
+ * Complete 37 HTML File Registry for Undetectable URL Masking
  * =============================================================================
  */
 
 const crypto = require('crypto');
 
-// 1. Static Token Registry (Fast & Predictable)
+// 1. Complete Static Token Registry (All 37 HTML Files)
 const STEALTH_REGISTRY = {
-  // Core pages
+  // Root & Core
   'pv3Ad': 'dashboard.html',
+  'hY1Ro': 'index.html',
+  'pRv1C': 'privacy.html',
+  'tRm9S': 'terms.html',
+  'vRf8U': 'verify-user.html',
+
+  // Bot & Studio
   'sK1nS': 'bot/skin.html',
+  'sKStD': 'bot/skin-studio.html',
   'b0tM3': 'bot/index.html',
   'bChLog': 'bot/changelog.html',
+
+  // Auth
+  'Lg8In': 'auth/login.html',
+  'Rg3St': 'auth/register.html',
+  'fOrgP': 'auth/forgot-password.html',
+  'rSetP': 'auth/reset-password.html',
+
+  // Account & Inventory
+  'aCc9T': 'account/index.html',
+  'iNv4K': 'inventory/inventory.html',
+
+  // Modules
   'xK9Lm': 'modules/admin.html',
   't7Y4b': 'modules/store.html',
   'lDb8R': 'modules/leaderboard.html',
@@ -26,12 +45,10 @@ const STEALTH_REGISTRY = {
   'sUp7P': 'modules/support.html',
   'mAp3D': 'modules/map.html',
   'sHw6C': 'modules/showcase.html',
+  'mProf': 'modules/profile.html',
+  'mSkSt': 'modules/skin-studio.html',
   'r0lSh': 'modules/role_shop.html',
   'mChat': 'modules/chat.html',
-
-  // Account & Inventory
-  'aCc9T': 'account/index.html',
-  'iNv4K': 'inventory/inventory.html',
 
   // Marketplace
   'mK7tP': 'marketplace/index.html',
@@ -39,24 +56,21 @@ const STEALTH_REGISTRY = {
   'mAuc7': 'marketplace/auction.html',
   'mCrt2': 'marketplace/cart.html',
   'mChk8': 'marketplace/checkout.html',
-  'mUpl5': 'marketplace/upload.html',
-
-  // Auth & System
-  'Lg8In': 'auth/login.html',
-  'Rg3St': 'auth/register.html',
-  'vRf8U': 'verify-user.html',
-  'pRv1C': 'privacy.html',
-  'tRm9S': 'terms.html'
+  'mUpl5': 'marketplace/upload.html'
 };
 
 // Inverted map for instant lookup (file path -> token)
 const FILE_TO_TOKEN = {};
 for (const [token, file] of Object.entries(STEALTH_REGISTRY)) {
-  FILE_TO_TOKEN[file.toLowerCase()] = token;
-  const clean = file.replace(/\.html$/i, '').toLowerCase();
+  const fLower = file.toLowerCase();
+  const clean = fLower.replace(/\.html$/i, '');
+  
+  FILE_TO_TOKEN[fLower] = token;
   FILE_TO_TOKEN[clean] = token;
-  FILE_TO_TOKEN['/' + file.toLowerCase()] = token;
+  FILE_TO_TOKEN['/' + fLower] = token;
   FILE_TO_TOKEN['/' + clean] = token;
+  FILE_TO_TOKEN['../' + fLower] = token;
+  FILE_TO_TOKEN['../' + clean] = token;
 }
 
 /**
@@ -84,13 +98,6 @@ function resolveFileToToken(filePath) {
 
 /**
  * Parse incoming request URL/query to extract stealth token
- * Supports:
- * - `/?=pv3Ad`
- * - `/?pv3Ad`
- * - `/?p=pv3Ad`
- * - `/?v=pv3Ad`
- * - `/r/pv3Ad`
- * - `/s/pv3Ad`
  */
 function extractTokenFromRequest(req) {
   const url = req.url || '';
