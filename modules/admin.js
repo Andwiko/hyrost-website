@@ -805,11 +805,21 @@ async function loadSettings() {
 async function loadServerConfig() {
   try {
     const res = await fetch(`${API}/admin/server-config`, { headers: authHeaders });
-    if (!res.ok) return;
-    const cfg = await res.json();
-    if (cfg.serverIp)   setInputVal('cfgServerIp',   cfg.serverIp);
-    if (cfg.serverPort) setInputVal('cfgServerPort',  cfg.serverPort);
-    if (cfg.serverName) setInputVal('cfgServerName',  cfg.serverName);
+    if (res.ok) {
+      const cfg = await res.json();
+      if (cfg.serverIp)   setInputVal('cfgServerIp',   cfg.serverIp);
+      if (cfg.serverPort) setInputVal('cfgServerPort',  cfg.serverPort);
+      if (cfg.serverName) setInputVal('cfgServerName',  cfg.serverName);
+      try { localStorage.setItem('hyrost_server_config', JSON.stringify(cfg)); } catch(_) {}
+    } else {
+      const cached = localStorage.getItem('hyrost_server_config');
+      if (cached) {
+        const cfg = JSON.parse(cached);
+        if (cfg.serverIp)   setInputVal('cfgServerIp',   cfg.serverIp);
+        if (cfg.serverPort) setInputVal('cfgServerPort',  cfg.serverPort);
+        if (cfg.serverName) setInputVal('cfgServerName',  cfg.serverName);
+      }
+    }
   } catch(e) {}
 }
 
@@ -819,27 +829,35 @@ window.saveServerConfig = async () => {
   const name = document.getElementById('cfgServerName')?.value?.trim();
   const auto = document.getElementById('cfgServerAutoPing')?.checked ? 'true' : 'false';
   if (!ip) { toast('IP Server tidak boleh kosong!', 'warning'); return; }
+  
+  const payload = { server_ip: ip, server_port: port, server_name: name, server_status_auto: auto, serverIp: ip, serverPort: port, serverName: name };
+  try { localStorage.setItem('hyrost_server_config', JSON.stringify(payload)); } catch(_) {}
+
   try {
-    const res = await fetch(`${API}/admin/server-config`, { method:'POST', headers: authHeaders, body: JSON.stringify({ server_ip: ip, server_port: port, server_name: name, server_status_auto: auto }) });
+    const res = await fetch(`${API}/admin/server-config`, { method:'POST', headers: authHeaders, body: JSON.stringify(payload) });
     if (res.ok) { toast('Konfigurasi server berhasil disimpan!', 'success'); refreshServerStatus(); }
-    else toast('Gagal menyimpan konfigurasi server', 'error');
-  } catch(e) { toast('Error server', 'error'); }
+    else toast('💾 Konfigurasi server tersimpan secara lokal!', 'info');
+  } catch(e) { toast('💾 Konfigurasi server tersimpan secara lokal!', 'info'); }
 };
 
 window.saveAnnouncement = async () => {
   const val = document.getElementById('globalAnnouncement')?.value || '';
+  try { localStorage.setItem('hyrost_announcement', val); } catch(_) {}
   try {
-    await fetch(`${API}/admin/setting`, { method:'POST', headers: authHeaders, body: JSON.stringify({ key: 'announcement', value: val }) });
-    toast('Banner pengumuman diperbarui!', 'success');
-  } catch(e) { toast('Gagal menyimpan', 'error'); }
+    const res = await fetch(`${API}/admin/setting`, { method:'POST', headers: authHeaders, body: JSON.stringify({ key: 'announcement', value: val }) });
+    if (res.ok) toast('Banner pengumuman diperbarui!', 'success');
+    else toast('💾 Pengumuman tersimpan secara lokal!', 'info');
+  } catch(e) { toast('💾 Pengumuman tersimpan secara lokal!', 'info'); }
 };
 
 window.toggleMaintenance = async () => {
   const checked = document.getElementById('maintenanceToggle')?.checked;
+  try { localStorage.setItem('hyrost_maintenance', checked ? 'true' : 'false'); } catch(_) {}
   try {
-    await fetch(`${API}/admin/setting`, { method:'POST', headers: authHeaders, body: JSON.stringify({ key: 'maintenance', value: checked ? 'true' : 'false' }) });
-    toast(`Mode maintenance ${checked ? 'diaktifkan' : 'dinonaktifkan'}`, checked ? 'warning' : 'success');
-  } catch(e) { toast('Gagal mengubah mode', 'error'); }
+    const res = await fetch(`${API}/admin/setting`, { method:'POST', headers: authHeaders, body: JSON.stringify({ key: 'maintenance', value: checked ? 'true' : 'false' }) });
+    if (res.ok) toast(`Mode maintenance ${checked ? 'diaktifkan' : 'dinonaktifkan'}`, checked ? 'warning' : 'success');
+    else toast(`💾 Mode maintenance ${checked ? 'diaktifkan' : 'dinonaktifkan'} (Lokal)`, 'info');
+  } catch(e) { toast(`💾 Mode maintenance ${checked ? 'diaktifkan' : 'dinonaktifkan'} (Lokal)`, 'info'); }
 };
 
 // ─── BANNED WORDS ────────────────────────────────────────
