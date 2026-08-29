@@ -1,3 +1,9 @@
+/**
+ * =============================================================================
+ * HYROST — Core Express Application & Multi-Layer Security Architecture
+ * =============================================================================
+ */
+
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -6,7 +12,57 @@ const errorHandler = require('./middleware/errorHandler');
 // Initialize app
 const app = express();
 
-// Security Headers & Hardening
+const rootDir = path.resolve(__dirname, '..');
+
+// ─── 1. UNIVERSAL URL & FILE SECURITY FIREWALL (Runs FIRST) ───────────────────
+app.use((req, res, next) => {
+  // 1.1 Extract and decode raw URL safely
+  let rawUrl = req.originalUrl || req.url || '';
+  let decodedPath = req.path || '';
+
+  try {
+    rawUrl = decodeURIComponent(rawUrl);
+    decodedPath = decodeURIComponent(decodedPath);
+  } catch (_) {
+    return res.status(400).json({ success: false, message: 'Bad Request: Malformed URI encoding detected' });
+  }
+
+  // 1.2 Anti-Null Byte Injection Protection
+  if (rawUrl.includes('\0') || decodedPath.includes('\0')) {
+    return res.status(400).json({ success: false, message: 'Bad Request: Null byte detected in request URI' });
+  }
+
+  // 1.3 Anti-Path Traversal & Relative Path Bypass Protection
+  const hasTraversal = /(?:^|[\\/])\.\.(?:[\\/]|$)/.test(decodedPath) ||
+                       rawUrl.includes('..') ||
+                       /%2e%2e/i.test(req.url) ||
+                       /%252e/i.test(req.url);
+
+  if (hasTraversal) {
+    return res.status(403).json({ success: false, message: 'Forbidden: Path traversal sequence blocked' });
+  }
+
+  // 1.4 Block Access to Protected Internal Directories
+  const forbiddenDirs = /^\/(backend|data|credentials|database|node_modules|scratch|\.system_generated|\.git|\.github|\.gemini)(\/|$)/i;
+  if (forbiddenDirs.test(decodedPath)) {
+    return res.status(403).json({ success: false, message: 'Forbidden: Access to server internal directories is restricted' });
+  }
+
+  // 1.5 Block Access to Sensitive File Formats & Manifests
+  const forbiddenFiles = [
+    /^\/\./i,                                                                    // Any dotfile (.env, .git, .htaccess, etc)
+    /^\/(package.*\.json|tsconfig\.json|ecosystem\.config\.js|test_.*\.js)$/i, // Configs & server scripts
+    /\.(bak|backup|old|save|env.*|sql|db|sqlite|log|ini|sh|ps1|yml|yaml|zip|tar|gz|lock|md|php.*|phtml|exe|bat|cmd|cgi|pl|py)$/i // Sensitive / Executable extensions
+  ];
+
+  if (forbiddenFiles.some((pattern) => pattern.test(decodedPath))) {
+    return res.status(403).json({ success: false, message: 'Forbidden: Access to restricted file format is blocked' });
+  }
+
+  next();
+});
+
+// ─── 2. HTTP SECURITY HEADERS (OWASP Best Practices) ─────────────────────────
 app.use((req, res, next) => {
   res.setHeader('X-Content-Type-Options', 'nosniff');
   res.setHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -23,7 +79,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// Strict CORS Whitelist Configuration
+// ─── 3. STRICT CORS WHITELIST ────────────────────────────────────────────────
 const explicitAllowedOrigins = process.env.ALLOWED_ORIGINS 
   ? process.env.ALLOWED_ORIGINS.split(',').map(s => s.trim().toLowerCase()) 
   : [];
@@ -33,34 +89,21 @@ const LOCALHOST_REGEX = /^http:\/\/(localhost|127\.0\.0\.1)(:[0-9]+)?$/i;
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Non-browser / server-to-server requests
     if (!origin) return callback(null, true);
-
     const lowerOrigin = origin.toLowerCase();
 
-    // 1. Primary trusted domains & all subdomains
-    if (TRUSTED_DOMAIN_REGEX.test(lowerOrigin)) {
-      return callback(null, true);
-    }
+    if (TRUSTED_DOMAIN_REGEX.test(lowerOrigin)) return callback(null, true);
+    if (explicitAllowedOrigins.includes(lowerOrigin)) return callback(null, true);
+    if (process.env.NODE_ENV !== 'production' && LOCALHOST_REGEX.test(lowerOrigin)) return callback(null, true);
 
-    // 2. Explicit origins in .env
-    if (explicitAllowedOrigins.includes(lowerOrigin)) {
-      return callback(null, true);
-    }
-
-    // 3. Localhost in development mode only
-    if (process.env.NODE_ENV !== 'production' && LOCALHOST_REGEX.test(lowerOrigin)) {
-      return callback(null, true);
-    }
-
-    // Block unknown / unauthorized origins
     return callback(new Error(`CORS Blocked: Origin '${origin}' is not authorized`));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-admin-2fa', 'x-minecraft-bridge-key']
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'x-admin-2fa', 'x-minecraft-bridge-key', 'x-callback-signature', 'x-callback-event']
 }));
 
+// Body Parsers with Safe Limits
 app.use(express.json({
   limit: '50mb',
   verify: (req, res, buf) => {
@@ -69,7 +112,7 @@ app.use(express.json({
 }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Discord Developer Portal Endpoint Aliases
+// Discord Interaction Endpoints
 app.use('/interaction', (req, res, next) => {
   req.url = '/interaction' + req.url;
   require('./routes/interaction')(req, res, next);
@@ -78,58 +121,43 @@ app.use('/interactions', (req, res, next) => {
   req.url = '/interaction' + req.url;
   require('./routes/interaction')(req, res, next);
 });
+
 app.get('/verify-user', (req, res) => {
   res.sendFile(path.join(rootDir, 'verify-user.html'));
 });
 
-// Serve uploads & static asset directories with caching
-const rootDir = path.join(__dirname, '..');
+// ─── 4. SECURE STATIC & MEDIA SERVING ─────────────────────────────────────────
 const staticOptions = {
   maxAge: '1d',
   etag: true,
   extensions: ['html', 'htm'],
-  dotfiles: 'ignore'
+  dotfiles: 'deny' // Strictly deny dotfiles
 };
+
 // Secure local media (data/uploads) — filename whitelist only
 app.use('/uploads', require('./routes/media'));
 
-// Static assets only (never expose /data)
+// Static assets directory
 app.use('/assets', express.static(path.join(rootDir, 'assets'), staticOptions));
 
-// Block sensitive paths, dotfiles, backup files, and internal directories
-app.use((req, res, next) => {
-  const forbiddenPatterns = [
-    /^\/\./i,                                                // Any dotfile or dotfolder (.env, .git, .npm, etc)
-    /^\/(backend|database|credentials|data)(\/|$)/i,        // Internal folders
-    /^\/package.*\.json$/i,                                  // Package manifests
-    /^\/ecosystem\.config\.js$/i,                            // PM2 configs
-    /\.(bak|backup|old|save|env.*|sql|db|sqlite|log|ini|sh|ps1|yml|yaml|zip|tar|gz|lock)$/i // Sensitive file extensions
-  ];
-  if (forbiddenPatterns.some((pattern) => pattern.test(req.path))) {
-    return res.status(403).send('Access Denied');
-  }
-  next();
-});
-
-// Rate Limiting & API Security
+// ─── 5. API ROUTES & RATE LIMITING ───────────────────────────────────────────
 const rateLimiter = require('./middleware/rateLimiter');
 app.use('/api', rateLimiter({ windowMs: 15 * 60 * 1000, max: 500 }), require('./routes/index'));
 
-// Fallback 404 Handler for API routes (Guarantees JSON response instead of HTML static files)
+// Fallback 404 Handler for API routes
 app.use('/api', (req, res) => {
   res.status(404).json({ success: false, message: `API Endpoint '${req.originalUrl}' tidak ditemukan pada server Node.js.` });
 });
 
-// Serve frontend static files with caching
+// Frontend HTML & Client Scripts
 app.use(express.static(rootDir, staticOptions));
 
-// Default Route (Fallback for API testing if static file fails or for explicit checks)
-// Note: Since static middleware is above, this will only be hit if no static file matches
+// Default Route
 app.get('/', (req, res) => {
-  res.send('Hyrost API Running');
+  res.sendFile(path.join(rootDir, 'index.html'));
 });
 
-// Error Handler (Should be last)
+// Error Handler
 app.use(errorHandler);
 
 module.exports = app;

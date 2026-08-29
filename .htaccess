@@ -1,25 +1,25 @@
 # =============================================================================
 # HYROST Web & API Server Configuration (.htaccess)
-# Web Security Hardening, Dotfile Protection & Reverse Proxy Routing
+# Web Security Hardening, Path Traversal Shield & Reverse Proxy Routing
 # =============================================================================
 
-# 1. Nonaktifkan Directory Listing (mencegah penjelajahan isi folder publik)
-Options -Indexes
+# 1. Nonaktifkan Directory Listing (Mencegah penjelajahan isi folder publik)
+Options -Indexes -MultiViews
 
-# 2. Blokir Akses ke File Sensitif & Tersembunyi (Apache 2.4 & 2.2 Compatibility)
+# 2. Blokir Akses ke File Sensitif, Tersembunyi & Konfigurasi Server
 <IfModule mod_authz_core.c>
-    # Blokir semua file yang diawali titik (.env, .git, .htaccess, .npmrc, dll)
+    # Blokir semua file tersembunyi / dotfiles (.env, .git, .htaccess, .npmrc, dll)
     <FilesMatch "^\.">
         Require all denied
     </FilesMatch>
 
-    # Blokir file ekstensi sensitif, backup, database & script server
-    <FilesMatch "\.(bak|backup|old|save|env.*|sql|db|sqlite|log|ini|sh|ps1|yml|yaml|zip|tar|gz|lock)$">
+    # Blokir file ekstensi sensitif, backup, database & script server internal
+    <FilesMatch "\.(bak|backup|old|save|env.*|sql|db|sqlite|log|ini|sh|ps1|yml|yaml|zip|tar|gz|lock|md|json|hybk|key|pem|crt)$">
         Require all denied
     </FilesMatch>
 
-    # Blokir script admin lokal
-    <FilesMatch "(create_admin_account|make_admin|set_admin|ecosystem\.config)\.js$">
+    # Blokir script server / admin / testing lokal
+    <FilesMatch "(create_admin_account|make_admin|set_admin|ecosystem\.config|test_.*)\.js$">
         Require all denied
     </FilesMatch>
 </IfModule>
@@ -29,55 +29,72 @@ Options -Indexes
         Order allow,deny
         Deny from all
     </FilesMatch>
-    <FilesMatch "\.(bak|backup|old|save|env.*|sql|db|sqlite|log|ini|sh|ps1|yml|yaml|zip|tar|gz|lock)$">
+    <FilesMatch "\.(bak|backup|old|save|env.*|sql|db|sqlite|log|ini|sh|ps1|yml|yaml|zip|tar|gz|lock|md|json|hybk|key|pem|crt)$">
         Order allow,deny
         Deny from all
     </FilesMatch>
 </IfModule>
 
-# 3. Routing & Rewrite Rules
+# 3. Web Application Firewall (WAF) & URL Protection Rules
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
 
-    # Blokir akses ke folder sensitif
-    RewriteRule ^(data|credentials|backend|database|\.git|\.github|\.npm)(/|$) - [F,L]
+    # 3.1 Blokir Karakter Berbahaya dalam URL (Null Bytes, Path Traversal, Hex Evading)
+    RewriteCond %{THE_REQUEST} (\0|\r|\n) [NC,OR]
+    RewriteCond %{THE_REQUEST} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e/|\.\.%2f|%252e%252e) [NC,OR]
+    RewriteCond %{QUERY_STRING} (\.\./|\.\.\\|%2e%2e%2f|%2e%2e/|\.\.%2f) [NC]
+    RewriteRule ^.*$ - [F,L]
 
-    # Forward request /api/ ke Node.js Backend Port 3044 (jika mod_proxy aktif)
+    # 3.2 Blokir Serangan Injection Populer (SQLi, XSS, Base64 Eval dalam Query String)
+    RewriteCond %{QUERY_STRING} (base64_encode[^(]*\([^)]*\)|base64_decode[^(]*\([^)]*\)) [NC,OR]
+    RewriteCond %{QUERY_STRING} (<|%3C)([^s]*s)+cript.*(>|%3E) [NC,OR]
+    RewriteCond %{QUERY_STRING} (union.*select|insert.*into|drop.*table|select.*from|concat.*\(|information_schema) [NC,OR]
+    RewriteCond %{QUERY_STRING} (GLOBALS|REQUEST)(_|\.|\[|%5B) [NC,OR]
+    RewriteCond %{QUERY_STRING} (mosConfig_[a-zA-Z_]{1,21}(=|\%3D)) [NC,OR]
+    RewriteCond %{QUERY_STRING} (/etc/passwd|/proc/self/environ|cmd=|exec\() [NC]
+    RewriteRule ^.*$ - [F,L]
+
+    # 3.3 Blokir akses langsung ke folder server internal
+    RewriteRule ^(data|credentials|backend|database|node_modules|scratch|\.system_generated|\.git|\.github|\.gemini)(/|$) - [F,L]
+
+    # 3.4 Forward request /api/ dan /uploads/ ke Node.js Backend Port 3044 (Reverse Proxy)
     <IfModule mod_proxy.c>
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteRule ^api/(.*)$ http://127.0.0.1:3044/api/$1 [P,L]
     </IfModule>
 
-    # Clean URL routing untuk file HTML statis
+    # 3.5 Clean URL routing untuk file HTML statis
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME}.html -f
     RewriteRule ^(.*)$ $1.html [L]
 </IfModule>
 
-# 4. Security & Smart Cache Headers
+# 4. HTTP Security & Anti-MIME Sniffing Headers
 <IfModule mod_headers.c>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
     Header set Referrer-Policy "strict-origin-when-cross-origin"
+    Header set Permissions-Policy "camera=(), microphone=(), geolocation=()"
     Header unset X-Powered-By
+    Header unset Server
 
-    # Selalu revalidasi file HTML agar perubahan navbar / UI langsung tampil tanpa Shift+F5
+    # Revalidasi file HTML agar perubahan UI langsung tampil tanpa cache lama
     <FilesMatch "\.(html|htm)$">
         Header set Cache-Control "no-cache, no-store, must-revalidate, max-age=0"
         Header set Pragma "no-cache"
         Header set Expires "0"
     </FilesMatch>
 
-    # Cache file aset statis (CSS, JS, gambar, font)
-    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|svg|webp|woff|woff2|ttf|eot)$">
+    # Cache file aset publik (CSS, JS, gambar, font)
+    <FilesMatch "\.(css|js|png|jpg|jpeg|gif|ico|webp|woff|woff2|ttf|eot)$">
         Header set Cache-Control "public, max-age=31536000, stale-while-revalidate=86400"
     </FilesMatch>
 </IfModule>
 
-# 5. Enable GZIP & Deflate Compression (Dramatically Boosts PageSpeed FCP & LCP)
+# 5. Enable GZIP & Deflate Compression
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/plain
     AddOutputFilterByType DEFLATE text/html
