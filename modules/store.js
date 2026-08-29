@@ -467,6 +467,54 @@ function applyStoreVoucher() {
 }
 window.applyStoreVoucher = applyStoreVoucher;
 
+// ── Midtrans Snap Loader for Store ──────────────────────────────────────────
+let _storeSnapLoaded = false;
+let _storeSnapLoading = false;
+
+async function loadStoreSnapJs() {
+    if (typeof window.snap !== 'undefined') {
+        _storeSnapLoaded = true;
+        return true;
+    }
+    if (_storeSnapLoaded) return true;
+    if (_storeSnapLoading) {
+        await new Promise(resolve => {
+            let count = 0;
+            const check = setInterval(() => {
+                count++;
+                if (_storeSnapLoaded || !_storeSnapLoading || count > 50) {
+                    clearInterval(check);
+                    resolve();
+                }
+            }, 100);
+        });
+        return typeof window.snap !== 'undefined';
+    }
+
+    _storeSnapLoading = true;
+    try {
+        const res = await fetch('/api/studio/config');
+        const data = await res.json();
+        if (!data || !data.success || !data.midtransClientKey) {
+            _storeSnapLoading = false;
+            return false;
+        }
+
+        return new Promise(resolve => {
+            const script = document.createElement('script');
+            script.src = data.snapJsUrl || (data.midtransIsProduction ? 'https://app.midtrans.com/snap/snap.js' : 'https://app.sandbox.midtrans.com/snap/snap.js');
+            script.setAttribute('data-client-key', data.midtransClientKey);
+            script.type = 'text/javascript';
+            script.onload = () => { _storeSnapLoaded = true; _storeSnapLoading = false; resolve(true); };
+            script.onerror = () => { _storeSnapLoaded = false; _storeSnapLoading = false; resolve(false); };
+            document.head.appendChild(script);
+        });
+    } catch (_) {
+        _storeSnapLoading = false;
+        return false;
+    }
+}
+
 async function processRankIDRPayment() {
     const token = localStorage.getItem('hyrostToken');
     if (!token) return showStoreToast('Silakan login terlebih dahulu!', 'error');
@@ -482,6 +530,9 @@ async function processRankIDRPayment() {
     const selectedRadio = document.querySelector('input[name="payMethod"]:checked');
     const paymentMethod = selectedRadio ? selectedRadio.value : 'qris';
     const promoCode = document.getElementById('storeVoucherInput')?.value || '';
+
+    // Load snap.js in background
+    loadStoreSnapJs();
 
     try {
         const res = await fetch('/api/store/buy-rank-idr', {
@@ -502,6 +553,54 @@ async function processRankIDRPayment() {
         if (res.ok && data.success) {
             closeRankCheckoutModal();
 
+            // Jika ada token Midtrans Snap
+            if (data.midtransToken) {
+                await loadStoreSnapJs();
+                if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
+                    try {
+                        window.snap.pay(data.midtransToken, {
+                            onSuccess: function(result) {
+                                showStoreResult({
+                                    type: 'success',
+                                    title: 'Pembayaran Berhasil!',
+                                    message: `Selamat! Pembayaran Pangkat ${selectedCheckoutRank.rankName} telah lunas via Midtrans.`,
+                                    transactionId: data.transactionId || data.orderCode,
+                                    securityHash: data.securityHash || '',
+                                    instructions: 'Ketik /claim di server Minecraft (In-Game) untuk menyinkronkan pangkat Anda.',
+                                    onClose: () => window.location.reload(),
+                                });
+                            },
+                            onPending: function(result) {
+                                showStoreResult({
+                                    type: 'pending',
+                                    title: 'Menunggu Pembayaran',
+                                    message: 'Selesaikan pembayaran sesuai petunjuk pada layar Midtrans.',
+                                    transactionId: data.transactionId || data.orderCode,
+                                    instructions: 'Setelah transfer lunas, pangkat akan otomatis diaktifkan.',
+                                    onClose: () => window.location.reload(),
+                                });
+                            },
+                            onError: function(result) {
+                                showStoreToast('Pembayaran Midtrans gagal atau dibatalkan.', 'error');
+                            },
+                            onClose: function() {
+                                showStoreToast('Jendela pembayaran ditutup. Kamu dapat melanjutkan kapan saja.', 'info');
+                            }
+                        });
+                        return;
+                    } catch (snapErr) {
+                        console.warn('[store] Snap popup error, fallback to redirect:', snapErr);
+                    }
+                }
+
+                // Fallback direct redirection
+                if (data.redirectUrl) {
+                    showStoreToast('Mengarahkan ke halaman pembayaran Midtrans...', 'info');
+                    setTimeout(() => { window.location.href = data.redirectUrl; }, 600);
+                    return;
+                }
+            }
+
             const isPending = data.requiresApproval && !data.midtransToken;
             const txId = data.transactionId || data.orderCode || '';
             const hash = data.securityHash || '';
@@ -517,7 +616,7 @@ async function processRankIDRPayment() {
                     : 'Pangkat telah diaktifkan untuk akun Anda.'),
                 transactionId: txId,
                 securityHash: hash,
-                instructions: isPending ? instructions : instructions,
+                instructions: instructions,
                 onClose: () => window.location.reload(),
             });
         } else {

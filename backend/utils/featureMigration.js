@@ -24,6 +24,22 @@ async function migrateFeatureTables(pool) {
   `);
 
   await pool.execute(`
+    CREATE TABLE IF NOT EXISTS studio_orders (
+      id           INT AUTO_INCREMENT PRIMARY KEY,
+      order_id     VARCHAR(100) NOT NULL UNIQUE,
+      user_id      INT NOT NULL,
+      plan_key     VARCHAR(20)  NOT NULL,
+      plan_days    INT          NOT NULL,
+      amount       INT          NOT NULL,
+      status       VARCHAR(30)  DEFAULT 'pending',
+      snap_token   TEXT,
+      created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
+      paid_at      TIMESTAMP    NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    )
+  `);
+
+  await pool.execute(`
     CREATE TABLE IF NOT EXISTS notification_reads (
       user_id INT NOT NULL,
       notification_id INT NOT NULL,

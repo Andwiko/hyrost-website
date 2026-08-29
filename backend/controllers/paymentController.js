@@ -4,6 +4,16 @@ const crypto = require('crypto');
 const pool = require('../config/mysql');
 const { readPaymentMethods } = require('./adminController');
 const { sendDiscordEmbed } = require('../utils/discordWebhook');
+const {
+  resolveMidtransConfig,
+  buildSnapPayload,
+  defaultCallbacks,
+  createSnapTransaction,
+  extractNotificationFields,
+  verifyNotificationSignature,
+  isPaidStatus,
+  isFailedStatus,
+} = require('../utils/midtrans');
 
 const RANK_PRICES_IDR = {
   VIP: 15000,
@@ -18,22 +28,7 @@ function generateOrderCode() {
 }
 
 async function resolvePaymentMidtransConfig() {
-  let isProd = process.env.MIDTRANS_IS_PRODUCTION === 'true';
-  let serverKey = process.env.MIDTRANS_SERVER_KEY || '';
-  let enabled = process.env.MIDTRANS_ENABLED !== 'false';
-
-  try {
-    const [rows] = await pool.execute(
-      "SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('pay_midtrans_is_production', 'pay_midtrans_server_key', 'pay_midtrans_enabled')"
-    );
-    for (const r of rows) {
-      if (r.setting_key === 'pay_midtrans_is_production') isProd = (r.setting_value === 'true');
-      if (r.setting_key === 'pay_midtrans_server_key' && r.setting_value) serverKey = r.setting_value;
-      if (r.setting_key === 'pay_midtrans_enabled') enabled = (r.setting_value === 'true');
-    }
-  } catch (_) {}
-
-  return { isProd, serverKey, enabled };
+  return resolveMidtransConfig();
 }
 
 async function createRankOrder(userId, { rankName, paymentMethod, promoCode }) {
@@ -48,35 +43,28 @@ async function createRankOrder(userId, { rankName, paymentMethod, promoCode }) {
   }
 
   const orderCode = generateOrderCode();
-  const midtransCfg = await resolvePaymentMidtransConfig();
-  const useMidtrans = midtransCfg.enabled && !!midtransCfg.serverKey && !midtransCfg.serverKey.includes('GANTI_DENGAN');
+  const midtransCfg = await resolveMidtransConfig();
+  const useMidtrans = midtransCfg.enabled;
 
   let midtransToken = null;
+  let redirectUrl = null;
   let midtransOrderId = orderCode;
 
   if (useMidtrans) {
     const [users] = await pool.execute('SELECT username, email FROM users WHERE id = ?', [userId]);
     const user = users[0] || {};
-    const snapEndpoint = midtransCfg.isProd
-      ? 'https://app.midtrans.com/snap/v1/transactions'
-      : 'https://app.sandbox.midtrans.com/snap/v1/transactions';
-
-    const snapRes = await fetch(snapEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: 'Basic ' + Buffer.from(midtransCfg.serverKey + ':').toString('base64'),
-      },
-      body: JSON.stringify({
-        transaction_details: { order_id: orderCode, gross_amount: amount },
-        customer_details: { first_name: user.username, email: user.email || `${user.username}@hyrost.net` },
-        item_details: [{ id: rankName, price: amount, quantity: 1, name: `Rank ${rankName}` }],
-      }),
+    const payload = buildSnapPayload({
+      orderId: orderCode,
+      amount,
+      itemId: rankName,
+      itemName: `Rank ${rankName}`,
+      username: user.username,
+      email: user.email,
+      callbacks: defaultCallbacks('/modules/store.html?payment=success'),
     });
-    if (snapRes.ok) {
-      const snap = await snapRes.json();
-      midtransToken = snap.token;
-    }
+    const snap = await createSnapTransaction(midtransCfg, payload);
+    midtransToken = snap.token;
+    redirectUrl = snap.redirectUrl;
   }
 
   await pool.execute(
@@ -92,6 +80,7 @@ async function createRankOrder(userId, { rankName, paymentMethod, promoCode }) {
     paymentAccount: selected.account,
     paymentInstructions: selected.instructions,
     midtransToken,
+    redirectUrl,
     requiresApproval: !useMidtrans,
   };
 }
@@ -154,19 +143,33 @@ exports.createRankPayment = async (req, res) => {
 
 exports.midtransWebhook = async (req, res) => {
   try {
-    const { order_id, transaction_status, fraud_status } = req.body || {};
+    const fields = extractNotificationFields(req.body, req.rawBody);
+    const order_id = fields.order_id;
     if (!order_id) return res.status(400).json({ message: 'Invalid' });
+
+    if (String(order_id).startsWith('studio-')) {
+      const studioRoutes = require('../routes/studio');
+      if (typeof studioRoutes.processStudioWebhook === 'function') {
+        return studioRoutes.processStudioWebhook(req, res);
+      }
+    }
+
+    const cfg = await resolveMidtransConfig();
+    if (!verifyNotificationSignature(fields, cfg.serverKey)) {
+      console.warn('[payments/webhook] Invalid signature for order:', order_id);
+      return res.status(403).json({ success: false, message: 'Invalid signature' });
+    }
 
     const [orders] = await pool.execute('SELECT * FROM payment_orders WHERE order_code = ? OR midtrans_order_id = ?', [order_id, order_id]);
     const order = orders[0];
     if (!order) return res.status(404).json({ message: 'Order not found' });
 
-    const paid = ['capture', 'settlement'].includes(transaction_status) && fraud_status !== 'deny';
+    const paid = isPaidStatus(fields.transaction_status, fields.fraud_status);
 
     if (paid && order.status === 'pending') {
       await pool.execute("UPDATE payment_orders SET status = 'paid', paid_at = NOW() WHERE id = ?", [order.id]);
       await fulfillRankOrder(order);
-    } else if (['deny', 'cancel', 'expire'].includes(transaction_status)) {
+    } else if (isFailedStatus(fields.transaction_status)) {
       await pool.execute("UPDATE payment_orders SET status = 'failed' WHERE id = ?", [order.id]);
     }
 

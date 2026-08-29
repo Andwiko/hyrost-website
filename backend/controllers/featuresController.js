@@ -33,7 +33,7 @@ exports.getHealth = async (req, res) => {
       },
       googleDrive: driveStatus,
       smtp: require('../utils/mailer').isConfigured(),
-      midtrans: process.env.MIDTRANS_ENABLED === 'true' && !!process.env.MIDTRANS_SERVER_KEY,
+      midtrans: (await require('../utils/midtrans').resolveMidtransConfig()).enabled,
       discord: !!process.env.DISCORD_WEBHOOK_URL,
       sseSubscribers: require('../utils/liveChatBus').subscriberCount(),
       webOnline: require('../utils/webPresence').count(),

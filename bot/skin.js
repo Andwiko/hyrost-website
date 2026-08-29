@@ -1975,9 +1975,11 @@ async function studioApiFetch(endpoint, options = {}) {
     ...(options.headers || {}),
   };
   const controller = new AbortController();
-  const tid = setTimeout(() => controller.abort(), 10000);
+  const timeoutMs = options.timeout || 10000;
+  const { timeout, ...fetchOpts } = options;
+  const tid = setTimeout(() => controller.abort(), timeoutMs);
   try {
-    const res  = await fetch(url, { ...options, headers, signal: controller.signal });
+    const res  = await fetch(url, { ...fetchOpts, headers, signal: controller.signal });
     clearTimeout(tid);
     const data = await res.json().catch(() => ({}));
     return { ok: res.ok, status: res.status, data };
@@ -2186,7 +2188,7 @@ let _snapJsLoading = false;
 let _snapConfig    = null;
 
 async function loadMidtransConfig() {
-  if (_snapConfig) return _snapConfig;
+  if (_snapConfig && _snapConfig.midtransClientKey) return _snapConfig;
   try {
     const { ok, data } = await studioApiFetch('config', { method: 'GET' });
     if (ok && data.success) {
@@ -2224,6 +2226,10 @@ async function loadSnapJs() {
     _snapJsLoading = false;
     return false;
   }
+  if (config.enabled === false) {
+    _snapJsLoading = false;
+    return false;
+  }
 
   return new Promise(resolve => {
     const existing = document.querySelector(`script[src*="snap.js"]`);
@@ -2238,6 +2244,7 @@ async function loadSnapJs() {
     script.id = 'midtrans-snap-script';
     script.src = config.snapJsUrl;
     script.setAttribute('data-client-key', config.midtransClientKey);
+    script.type = 'text/javascript';
     script.onload  = () => { _snapJsLoaded = true;  _snapJsLoading = false; resolve(true); };
     script.onerror = () => { _snapJsLoaded = false; _snapJsLoading = false; resolve(false); };
     document.head.appendChild(script);
@@ -2426,82 +2433,97 @@ async function selectPremiumPlan(planKey, planName, priceStr) {
 
   if (typeof showToast === 'function') showToast('⏳ Mempersiapkan pembayaran Midtrans...');
 
-  // Pastikan Snap.js sudah terload
-  const snapLoaded = await loadSnapJs();
-  if (!snapLoaded || typeof window.snap === 'undefined') {
-    if (typeof showToast === 'function') showToast('❌ Midtrans Snap gagal dimuat. Periksa koneksi dan coba lagi.');
-    return;
-  }
+  // Pastikan Snap.js coba dimuat di background
+  await loadSnapJs();
 
-  // Buat transaksi di server → dapatkan snap_token
+  // Buat transaksi di server → dapatkan snap_token dan redirect_url
   const { ok, data } = await studioApiFetch('create-payment', {
     method: 'POST',
     body: JSON.stringify({ planKey }),
+    timeout: 30000,
   });
 
-  if (!ok || !data.success) {
-    if (typeof showToast === 'function') showToast('❌ Gagal buat transaksi: ' + (data.message || 'Server error'));
+  if (!ok || !data || !data.success) {
+    if (typeof showToast === 'function') showToast('❌ Gagal buat transaksi: ' + (data?.message || 'Server error'));
     return;
   }
 
-  const { snapToken, orderId, plan } = data;
+  const { snapToken, orderId, plan, redirectUrl } = data;
 
-  // Tampilkan Midtrans Snap popup
-  window.snap.pay(snapToken, {
-    onSuccess: async function(result) {
-      if (typeof showToast === 'function') showToast('⏳ Pembayaran berhasil! Mengaktifkan VIP...');
-      _studioCache = null; // invalidate cache
-      
-      // Polling payment-status
-      let attempts = 0;
-      let isCompleted = false;
+  // Coba buka Midtrans Snap modal popup jika library tersedia
+  if (typeof window.snap !== 'undefined' && typeof window.snap.pay === 'function') {
+    try {
+      window.snap.pay(snapToken, {
+        onSuccess: async function(result) {
+          if (typeof showToast === 'function') showToast('⏳ Pembayaran berhasil! Mengaktifkan VIP...');
+          _studioCache = null; // invalidate cache
+          
+          // Polling payment-status
+          let attempts = 0;
+          let isCompleted = false;
 
-      const pollStatus = async () => {
-        attempts++;
-        const { ok: sok, data: sdata } = await studioApiFetch(`payment-status/${orderId}`, { method: 'GET' });
-        if (sok && sdata.isPaid) {
-          isCompleted = true;
-          const status = await fetchStudioStatus();
-          await updateMembershipBadgeUI();
+          const pollStatus = async () => {
+            attempts++;
+            const { ok: sok, data: sdata } = await studioApiFetch(`payment-status/${orderId}`, { method: 'GET' });
+            if (sok && sdata.isPaid) {
+              isCompleted = true;
+              const status = await fetchStudioStatus();
+              await updateMembershipBadgeUI();
 
-          showPaymentSuccessModal({
-            orderId: orderId,
-            planLabel: plan.label,
-            planDays: plan.days,
-            amount: plan.priceIdr,
-            amountFormatted: plan.priceFormatted,
-            paymentType: (result && result.payment_type) ? result.payment_type.toUpperCase() : 'Midtrans Snap',
-            expiryDate: status.vipExpiresAt,
-          });
+              showPaymentSuccessModal({
+                orderId: orderId,
+                planLabel: plan.label,
+                planDays: plan.days,
+                amount: plan.priceIdr,
+                amountFormatted: plan.priceFormatted,
+                paymentType: (result && result.payment_type) ? result.payment_type.toUpperCase() : 'Midtrans Snap',
+                expiryDate: status.vipExpiresAt,
+              });
 
-        } else if (attempts < 6 && !isCompleted) {
-          setTimeout(pollStatus, 1800); // retry tiap 1.8 detik
-        } else {
-          await updateMembershipBadgeUI();
-          showPaymentSuccessModal({
-            orderId: orderId,
-            planLabel: plan.label,
-            planDays: plan.days,
-            amount: plan.priceIdr,
-            amountFormatted: plan.priceFormatted,
-            paymentType: 'Midtrans Online Payment',
-          });
-        }
-      };
+            } else if (attempts < 6 && !isCompleted) {
+              setTimeout(pollStatus, 1800); // retry tiap 1.8 detik
+            } else {
+              await updateMembershipBadgeUI();
+              showPaymentSuccessModal({
+                orderId: orderId,
+                planLabel: plan.label,
+                planDays: plan.days,
+                amount: plan.priceIdr,
+                amountFormatted: plan.priceFormatted,
+                paymentType: 'Midtrans Online Payment',
+              });
+            }
+          };
 
-      setTimeout(pollStatus, 1500);
-    },
-    onPending: function(result) {
-      showPaymentPendingModal();
-    },
-    onError: function(result) {
-      if (typeof showToast === 'function') showToast('❌ Pembayaran gagal. Coba lagi atau pilih metode pembayaran lain.');
-      playAudioFx('whoosh');
-    },
-    onClose: function() {
-      if (typeof showToast === 'function') showToast('ℹ️ Pembayaran ditutup. Kamu bisa melanjutkan kapan saja.');
-    },
-  });
+          setTimeout(pollStatus, 1500);
+        },
+        onPending: function(result) {
+          showPaymentPendingModal();
+        },
+        onError: function(result) {
+          if (typeof showToast === 'function') showToast('❌ Pembayaran gagal. Coba lagi atau pilih metode pembayaran lain.');
+          playAudioFx('whoosh');
+        },
+        onClose: function() {
+          if (typeof showToast === 'function') showToast('ℹ️ Pembayaran ditutup. Kamu bisa melanjutkan kapan saja.');
+        },
+      });
+      return;
+    } catch (snapErr) {
+      console.warn('[selectPremiumPlan] snap.pay popup error, falling back to redirect:', snapErr);
+    }
+  }
+
+  // Fallback direct redirection jika Snap.js diblokir atau gagal muncul
+  if (redirectUrl) {
+    if (typeof showToast === 'function') showToast('🚀 Mengarahkan ke halaman pembayaran Midtrans...');
+    setTimeout(() => {
+      window.location.href = redirectUrl;
+    }, 600);
+    return;
+  }
+
+  if (typeof showToast === 'function') showToast('❌ Midtrans Snap gagal dimuat dan tidak ada link redirect.');
 }
 
 // ── License Key Redemption ────────────────────────────────────────────────────

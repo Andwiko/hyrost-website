@@ -907,43 +907,33 @@ exports.updatePaymentSettings = async (req, res) => {
 exports.testMidtransConnection = async (req, res) => {
     try {
         const { serverKey, isProduction } = req.body;
-        const sKey = (serverKey || globalPaymentSettings.midtrans_server_key || process.env.MIDTRANS_SERVER_KEY || '').trim();
-        const isProd = isProduction !== undefined 
-            ? isProduction 
+        const { testServerKey, sanitizeKey, isPlaceholderKey } = require('../utils/midtrans');
+        const sKey = sanitizeKey(serverKey || globalPaymentSettings.midtrans_server_key || process.env.MIDTRANS_SERVER_KEY);
+        const isProdHint = isProduction !== undefined
+            ? isProduction
             : (globalPaymentSettings.midtrans_is_production || process.env.MIDTRANS_IS_PRODUCTION === 'true');
 
-        if (!sKey || sKey.includes('GANTI_DENGAN_SERVER_KEY')) {
-            return res.status(400).json({ 
-                success: false, 
-                message: 'Server Key Midtrans belum diisi atau masih berupa nilai default placeholder!' 
+        if (isPlaceholderKey(sKey)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Server Key Midtrans belum diisi atau masih berupa nilai default placeholder!'
             });
         }
 
-        // Test API ping to Midtrans v2 endpoint using Basic Auth
-        const endpoint = isProd 
-            ? 'https://api.midtrans.com/v2/token' 
-            : 'https://api.sandbox.midtrans.com/v2/token';
+        const { status, isProd } = await testServerKey(sKey, isProdHint);
 
-        const testRes = await fetch(endpoint, {
-            method: 'GET',
-            headers: {
-                'Authorization': 'Basic ' + Buffer.from(sKey + ':').toString('base64'),
-                'Accept': 'application/json'
-            }
-        });
-
-        if (testRes.status === 401) {
-            return res.status(400).json({ 
-                success: false, 
-                message: '❌ Server Key Midtrans DITOLAK (401 Unauthorized). Pastikan Server Key cocok dengan environment (' + (isProd ? 'Production' : 'Sandbox') + ').' 
+        if (status === 401) {
+            return res.status(400).json({
+                success: false,
+                message: '❌ Server Key Midtrans DITOLAK (401 Unauthorized). Pastikan Server Key cocok dengan environment (' + (isProd ? 'Production' : 'Sandbox') + ').'
             });
         }
 
-        return res.json({ 
-            success: true, 
+        return res.json({
+            success: true,
             message: `✅ Koneksi Midtrans API BERHASIL TERHUBUNG! Mode: ${isProd ? 'PRODUCTION (Live)' : 'SANDBOX (Testing)'}.`,
             isProduction: isProd,
-            status: testRes.status
+            status
         });
     } catch (e) {
         return res.status(500).json({ 

@@ -19,65 +19,16 @@ const router  = express.Router();
 const crypto  = require('crypto');
 const { verifyToken } = require('../middleware/auth');
 const pool    = require('../config/mysql');
-
-// ─── Dynamic Midtrans Config Resolver ─────────────────────────────────────────
-async function resolveMidtransConfig() {
-  let isProd = process.env.MIDTRANS_IS_PRODUCTION === 'true';
-  let serverKey = process.env.MIDTRANS_SERVER_KEY || '';
-  let clientKey = process.env.MIDTRANS_CLIENT_KEY || '';
-  let enabled = process.env.MIDTRANS_ENABLED !== 'false';
-
-  // 1. Try reading directly from .env file on disk (supports hot updates without restart)
-  try {
-    const fs = require('fs');
-    const path = require('path');
-    const envPath = path.resolve(__dirname, '../../.env');
-    if (fs.existsSync(envPath)) {
-      const dotenv = require('dotenv');
-      const envObj = dotenv.parse(fs.readFileSync(envPath));
-      if (envObj.MIDTRANS_IS_PRODUCTION) isProd = (envObj.MIDTRANS_IS_PRODUCTION === 'true');
-      if (envObj.MIDTRANS_SERVER_KEY) serverKey = envObj.MIDTRANS_SERVER_KEY;
-      if (envObj.MIDTRANS_CLIENT_KEY) clientKey = envObj.MIDTRANS_CLIENT_KEY;
-      if (envObj.MIDTRANS_ENABLED) enabled = (envObj.MIDTRANS_ENABLED !== 'false');
-    }
-  } catch (_) {}
-
-  // 2. Override from DB site_settings (Admin panel settings take highest precedence)
-  try {
-    const [rows] = await pool.execute(
-      "SELECT setting_key, setting_value FROM site_settings WHERE setting_key IN ('pay_midtrans_is_production', 'pay_midtrans_server_key', 'pay_midtrans_client_key', 'pay_midtrans_enabled')"
-    );
-    for (const r of rows) {
-      if (r.setting_key === 'pay_midtrans_is_production') isProd = (String(r.setting_value).trim() === 'true');
-      if (r.setting_key === 'pay_midtrans_server_key' && r.setting_value) serverKey = String(r.setting_value).trim();
-      if (r.setting_key === 'pay_midtrans_client_key' && r.setting_value) clientKey = String(r.setting_value).trim();
-      if (r.setting_key === 'pay_midtrans_enabled') enabled = (String(r.setting_value).trim() !== 'false');
-    }
-  } catch (dbErr) {
-    console.warn('[studio/resolveConfig] site_settings fetch error, using env fallback:', dbErr.message);
-  }
-
-  return {
-    isProd: Boolean(isProd),
-    serverKey: String(serverKey || '').trim(),
-    clientKey: String(clientKey || '').trim(),
-    enabled: Boolean(enabled)
-  };
-}
-
-function createSnapClient(config) {
-  try {
-    const midtransClient = require('midtrans-client');
-    return new midtransClient.Snap({
-      isProduction: config.isProd,
-      serverKey:    config.serverKey,
-      clientKey:    config.clientKey,
-    });
-  } catch (e) {
-    console.error('[studio] midtrans-client load error:', e.message);
-    return null;
-  }
-}
+const {
+  resolveMidtransConfig,
+  buildSnapPayload,
+  defaultCallbacks,
+  createSnapTransaction,
+  extractNotificationFields,
+  verifyNotificationSignature,
+  isPaidStatus,
+  isFailedStatus,
+} = require('../utils/midtrans');
 
 // ─── Plan Definitions ────────────────────────────────────────────────────────
 const PLANS = {
@@ -98,9 +49,7 @@ router.get('/config', async (req, res) => {
     enabled:          cfg.enabled,
     midtransClientKey: cfg.clientKey,
     midtransIsProduction: cfg.isProd,
-    snapJsUrl: cfg.isProd
-      ? 'https://app.midtrans.com/snap/snap.js'
-      : 'https://app.sandbox.midtrans.com/snap/snap.js',
+    snapJsUrl: cfg.snapJsUrl,
   });
 });
 
@@ -248,15 +197,7 @@ router.post('/create-payment', verifyToken, async (req, res) => {
     if (!cfg.enabled) {
       return res.status(503).json({
         success: false,
-        message: 'Pembayaran Midtrans sedang dinonaktifkan oleh administrator.',
-      });
-    }
-
-    const snapClient = createSnapClient(cfg);
-    if (!snapClient || !cfg.serverKey) {
-      return res.status(503).json({
-        success: false,
-        message: 'Midtrans Server Key belum dikonfigurasi. Hubungi administrator.',
+        message: 'Pembayaran Midtrans sedang dinonaktifkan atau Server/Client Key belum diisi. Periksa Admin Panel → Payment.',
       });
     }
 
@@ -269,54 +210,24 @@ router.post('/create-payment', verifyToken, async (req, res) => {
     // Order ID unik: studio-{userId}-{planKey}-{timestamp}
     const orderId = `studio-${user.id}-${planKey}-${Date.now()}`;
 
-    const parameter = {
-      transaction_details: {
-        order_id:     orderId,
-        gross_amount: plan.priceIdr,
+    const parameter = buildSnapPayload({
+      orderId,
+      amount: plan.priceIdr,
+      itemId: planKey,
+      itemName: plan.label,
+      username: user.username,
+      email: user.email,
+      callbacks: defaultCallbacks('/bot/skin.html?payment=success'),
+      extra: {
+        custom_field1: String(user.id),
+        custom_field2: planKey,
+        custom_field3: String(plan.days),
       },
-      item_details: [{
-        id:       planKey,
-        price:    plan.priceIdr,
-        quantity: 1,
-        name:     plan.label,
-        category: 'VIP Subscription',
-      }],
-      customer_details: {
-        first_name: user.username,
-        email:      user.email || `${user.username}@hyrost.net`,
-      },
-      callbacks: {
-        finish:  `${process.env.MIDTRANS_FINISH_URL  || ''}`,
-        error:   `${process.env.MIDTRANS_ERROR_URL   || ''}`,
-        pending: `${process.env.MIDTRANS_PENDING_URL || ''}`,
-      },
-      custom_field1: String(user.id),
-      custom_field2: planKey,
-      custom_field3: String(plan.days),
-    };
+    });
 
-    const transaction  = await snapClient.createTransaction(parameter);
+    const transaction  = await createSnapTransaction(cfg, parameter);
     const snapToken    = transaction.token;
-    const redirectUrl  = transaction.redirect_url;
-
-    // Simpan order ke DB agar bisa diverifikasi webhook
-    try {
-      await getPool().execute(`
-        CREATE TABLE IF NOT EXISTS studio_orders (
-          id           INT AUTO_INCREMENT PRIMARY KEY,
-          order_id     VARCHAR(100) NOT NULL UNIQUE,
-          user_id      INT NOT NULL,
-          plan_key     VARCHAR(20)  NOT NULL,
-          plan_days    INT          NOT NULL,
-          amount       INT          NOT NULL,
-          status       VARCHAR(30)  DEFAULT 'pending',
-          snap_token   TEXT,
-          created_at   TIMESTAMP    DEFAULT CURRENT_TIMESTAMP,
-          paid_at      TIMESTAMP    NULL,
-          FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
-        )
-      `);
-    } catch (_) {}
+    const redirectUrl  = transaction.redirectUrl;
 
     await getPool().execute(
       'INSERT INTO studio_orders (order_id, user_id, plan_key, plan_days, amount, snap_token) VALUES (?,?,?,?,?,?) ON DUPLICATE KEY UPDATE snap_token=VALUES(snap_token), status=\'pending\'',
@@ -337,11 +248,12 @@ router.post('/create-payment', verifyToken, async (req, res) => {
       },
     });
   } catch (err) {
-    console.error('[studio/create-payment]', err.message, err.ApiResponse || '');
-    res.status(500).json({
+    console.error('[studio/create-payment]', err.message, err.apiResponse || '');
+    const unauthorized = err.statusCode === 401 || /unauthorized/i.test(err.message || '');
+    res.status(err.statusCode === 503 ? 503 : 500).json({
       success: false,
-      message: err.message?.includes('Unauthorized') || err.ApiResponse?.status_code === '401'
-        ? 'Midtrans Server Key tidak valid. Periksa konfigurasi di Admin Panel atau file .env'
+      message: unauthorized
+        ? 'Midtrans Server Key tidak valid atau tidak cocok dengan mode Sandbox/Production. Periksa Admin Panel.'
         : 'Gagal membuat transaksi Midtrans: ' + (err.message || 'Unknown error'),
     });
   }
@@ -350,30 +262,20 @@ router.post('/create-payment', verifyToken, async (req, res) => {
 // ─── POST /api/studio/payment-webhook ────────────────────────────────────────
 // Midtrans HTTP Notification — dipanggil Midtrans server setelah pembayaran.
 // Tidak butuh Authorization header (validasi via signature key).
-router.post('/payment-webhook', async (req, res) => {
+async function processStudioWebhook(req, res) {
   try {
-    const notification = req.body;
-    const orderId      = notification.order_id;
-    const statusCode   = notification.status_code;
-    const grossAmount  = notification.gross_amount;
-    const cfg          = await resolveMidtransConfig();
-    const serverKey    = cfg.serverKey || process.env.MIDTRANS_SERVER_KEY || '';
+    const cfg    = await resolveMidtransConfig();
+    const fields = extractNotificationFields(req.body, req.rawBody);
+    const orderId = fields.order_id;
 
-    // Validasi signature Midtrans: SHA-512(order_id + status_code + gross_amount + server_key)
-    const expectedSig = crypto
-      .createHash('sha512')
-      .update(orderId + statusCode + grossAmount + serverKey)
-      .digest('hex');
-
-    if (notification.signature_key !== expectedSig) {
+    if (!verifyNotificationSignature(fields, cfg.serverKey)) {
       console.warn('[studio/webhook] Invalid signature for order:', orderId);
       return res.status(403).json({ success: false, message: 'Invalid signature' });
     }
 
-    const transactionStatus = notification.transaction_status;
-    const fraudStatus       = notification.fraud_status;
+    const transactionStatus = fields.transaction_status;
+    const fraudStatus       = fields.fraud_status;
 
-    // Cek order di DB
     const [orderRows] = await getPool().execute(
       'SELECT * FROM studio_orders WHERE order_id = ?', [orderId]
     );
@@ -383,15 +285,8 @@ router.post('/payment-webhook', async (req, res) => {
       return res.status(404).json({ success: false, message: 'Order not found' });
     }
 
-    // Tentukan apakah pembayaran berhasil
-    const isPaid =
-      (transactionStatus === 'capture' && fraudStatus === 'accept') ||
-      transactionStatus === 'settlement';
-
-    const isFailed =
-      transactionStatus === 'cancel'  ||
-      transactionStatus === 'deny'    ||
-      transactionStatus === 'expire';
+    const isPaid = isPaidStatus(transactionStatus, fraudStatus);
+    const isFailed = isFailedStatus(transactionStatus);
 
     if (isPaid && order.status !== 'paid') {
       // Aktifkan VIP di DB
@@ -436,7 +331,9 @@ router.post('/payment-webhook', async (req, res) => {
     console.error('[studio/payment-webhook]', err.message);
     res.status(500).json({ success: false });
   }
-});
+}
+
+router.post('/payment-webhook', processStudioWebhook);
 
 // ─── GET /api/studio/payment-status/:orderId ─────────────────────────────────
 // Cek status pembayaran order milik user yang login.
@@ -471,3 +368,4 @@ router.get('/payment-status/:orderId', verifyToken, async (req, res) => {
 });
 
 module.exports = router;
+module.exports.processStudioWebhook = processStudioWebhook;
