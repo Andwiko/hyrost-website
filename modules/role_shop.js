@@ -8,7 +8,7 @@ const headers = {
 
 document.addEventListener('DOMContentLoaded', async () => {
     if (!token) {
-        window.location.href = '../index.html';
+        window.location.href = '../';
         return;
     }
 

@@ -4,7 +4,7 @@
     <base href="/">
   <meta charset="UTF-8">
   <script>
-    (function(){try{var p=window.location.pathname;if(p.endsWith("/index.html")){window.history.replaceState(null,"",p.slice(0,-10)||"/"+window.location.search+window.location.hash);}else if(p==="/index.html"||p==="index.html"){window.history.replaceState(null,"","/"+window.location.search+window.location.hash);}else if(p.endsWith(".html")){window.history.replaceState(null,"",p.slice(0,-5)+window.location.search+window.location.hash);}}catch(e){}})();
+    (function(){try{var p=window.location.pathname;if(p.endsWith("/")){window.history.replaceState(null,"",p.slice(0,-10)||"/"+window.location.search+window.location.hash);}else if(p==="/"||p==="index.html"){window.history.replaceState(null,"","/"+window.location.search+window.location.hash);}else if(p.endsWith(".html")){window.history.replaceState(null,"",p.slice(0,-5)+window.location.search+window.location.hash);}}catch(e){}})();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#08090C">
@@ -43,7 +43,7 @@
       <nav class="nav-desktop">
         <a href="#hero" class="nav-link active">Beranda</a>
         <a href="#pillars" class="nav-link">Arsitektur Core</a>
-        <a href="/?=sK1nS" class="nav-link" style="color: var(--accent-cyan); font-weight: 600;"><i class="fas fa-cube"></i> 3D Skin Studio</a>
+        <a href="/skin" class="nav-link" style="color: var(--accent-cyan); font-weight: 600;"><i class="fas fa-cube"></i> 3D Skin Studio</a>
         <a href="#chat-demo" class="nav-link">AI Simulator</a>
         <a href="#radio-player" class="nav-link">Live Radio 24/7</a>
         <a href="#commands" class="nav-link">Perintah (<span id="navCmdCount">246</span>)</a>
@@ -67,7 +67,7 @@
     <div class="nav-mobile" id="botNavMenu">
       <a href="#hero" class="nav-link">Beranda</a>
       <a href="#pillars" class="nav-link">Arsitektur Core</a>
-      <a href="/?=sK1nS" class="nav-link" style="color: var(--accent-cyan); font-weight: 600;"><i class="fas fa-cube"></i> 3D Minecraft Skin Studio</a>
+      <a href="/skin" class="nav-link" style="color: var(--accent-cyan); font-weight: 600;"><i class="fas fa-cube"></i> 3D Minecraft Skin Studio</a>
       <a href="#chat-demo" class="nav-link">AI Simulator</a>
       <a href="#radio-player" class="nav-link">Live Radio 24/7</a>
       <a href="#commands" class="nav-link">Perintah (246+)</a>
@@ -103,7 +103,7 @@
             <i class="fab fa-discord"></i>
             <span>Undang Mei ke Server</span>
           </button>
-          <a href="/?=sK1nS" class="cta cta-cyan">
+          <a href="/skin" class="cta cta-cyan">
             <i class="fas fa-cube"></i>
             <span>3D Skin Studio</span>
           </a>
@@ -245,7 +245,7 @@
             <p>Sinkronisasi whitelist server Minecraft via TCP Source RCON murni serta 3D WebGL 60FPS Skin Studio dengan 80+ pose dinamis.</p>
             <div class="bento-card-footer">
               <span class="chip chip-muted">!mcwhitelist & !mcskin</span>
-              <a href="/?=sK1nS" class="cta cta-ghost" style="padding: 0.25rem 0.65rem; font-size: 0.72rem; border-color: var(--accent-cyan); color: var(--accent-cyan);">
+              <a href="/skin" class="cta cta-ghost" style="padding: 0.25rem 0.65rem; font-size: 0.72rem; border-color: var(--accent-cyan); color: var(--accent-cyan);">
                 <i class="fas fa-cube"></i> Buka Studio <i class="fas fa-arrow-right" style="font-size: 0.65rem; margin-left: 3px;"></i>
               </a>
             </div>
@@ -432,8 +432,8 @@
         <a href="#hero" class="footer-link">Beranda</a>
         <a href="#pillars" class="footer-link">Arsitektur</a>
         <a href="#commands" class="footer-link">Perintah</a>
-        <a href="/?=pRv1C" class="footer-link">Privacy</a>
-        <a href="/?=tRm9S" class="footer-link">Terms</a>
+        <a href="/privacy" class="footer-link">Privacy</a>
+        <a href="/terms" class="footer-link">Terms</a>
         <a href="/" class="footer-link" style="color: var(--accent-cyan);">Portal Web</a>
       </div>
     </div>

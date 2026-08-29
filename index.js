@@ -133,7 +133,7 @@ async function handleGoogleLogin(response) {
 
         // Redirect to dashboard
         setTimeout(() => {
-            window.location.href = '/?=pv3Ad';
+            window.location.href = '/dashboard';
         }, 800);
     } catch (err) {
         console.error('Google Login Error:', err);
@@ -204,12 +204,12 @@ function goToDashboard() {
         return;
     }
     
-    window.location.href = '/?=pv3Ad';
+    window.location.href = '/dashboard';
 }
 
 // Show login page (formerly modal)
 function showLoginModal() {
-    window.location.href = '/?=Lg8In';
+    window.location.href = '/login';
 }
 
 // Close login modal (Deprecated)
@@ -250,7 +250,7 @@ function handleLogin(event) {
                 localStorage.setItem('hyrostToken', data.token);
                 
                 closeLoginModal();
-                window.location.href = '/?=pv3Ad';
+                window.location.href = '/dashboard';
             } else {
                 throw new Error(data.message || 'Login failed');
             }

@@ -12,6 +12,7 @@ const fs = require('fs');
 const errorHandler = require('./middleware/errorHandler');
 const {
   resolveTokenToFile,
+  resolveCleanPath,
   resolveFileToToken,
   extractTokenFromRequest
 } = require('./utils/stealthRouter');
@@ -94,9 +95,19 @@ app.use((req, res, next) => {
     }
   }
 
-  // 2.2 Clean Route Resolver: e.g. /dashboard -> dashboard.html, /bot/skin -> bot/skin.html
+  // 2.2 Clean Route Resolver: e.g. /dashboard -> dashboard.html, /leaderboard -> modules/leaderboard.html
   if (reqPath !== '/' && !reqPath.includes('.')) {
     const cleanPath = reqPath.replace(/^\/+/, '');
+
+    // 2.2.1 Check explicit clean route registry (e.g. /leaderboard, /store, /forum, /marketplace)
+    const cleanMatch = resolveCleanPath(cleanPath);
+    if (cleanMatch) {
+      const fullPath = path.resolve(rootDir, cleanMatch);
+      if (fullPath.startsWith(rootDir + path.sep) && fs.existsSync(fullPath)) {
+        return res.sendFile(fullPath);
+      }
+    }
+
     const candidate1 = path.resolve(rootDir, cleanPath + '.html');
     const candidate2 = path.resolve(rootDir, cleanPath, 'index.html');
 

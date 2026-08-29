@@ -4,7 +4,7 @@
     <base href="/">
   <meta charset="UTF-8">
     <script>
-        (function(){try{var p=window.location.pathname;if(p.endsWith("/index.html")){window.history.replaceState(null,"",p.slice(0,-10)||"/"+window.location.search+window.location.hash);}else if(p==="/index.html"||p==="index.html"){window.history.replaceState(null,"","/"+window.location.search+window.location.hash);}else if(p.endsWith(".html")){window.history.replaceState(null,"",p.slice(0,-5)+window.location.search+window.location.hash);}}catch(e){}})();
+        (function(){try{var p=window.location.pathname;if(p.endsWith("/")){window.history.replaceState(null,"",p.slice(0,-10)||"/"+window.location.search+window.location.hash);}else if(p==="/"||p==="index.html"){window.history.replaceState(null,"","/"+window.location.search+window.location.hash);}else if(p.endsWith(".html")){window.history.replaceState(null,"",p.slice(0,-5)+window.location.search+window.location.hash);}}catch(e){}})();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Hyrost - Create Account</title>
@@ -47,7 +47,7 @@
                 </div>
                 
                 <div style="font-size: 0.8rem; color: #9ca3af; margin-bottom: 18px; line-height: 1.5; text-align: center;">
-                    Dengan mendaftar, Anda menyetujui <a href="/?=tRm9S" target="_blank" style="color: #6366f1; text-decoration: underline;">Ketentuan Layanan</a> &amp; <a href="/?=pRv1C" target="_blank" style="color: #06b6d4; text-decoration: underline;">Kebijakan Privasi</a> Hyrost.
+                    Dengan mendaftar, Anda menyetujui <a href="/terms" target="_blank" style="color: #6366f1; text-decoration: underline;">Ketentuan Layanan</a> &amp; <a href="/privacy" target="_blank" style="color: #06b6d4; text-decoration: underline;">Kebijakan Privasi</a> Hyrost.
                 </div>
 
                 <button type="submit" class="register-btn">
@@ -58,11 +58,11 @@
             
             <div class="card-footer">
                 <div id="message" style="display: none; margin-bottom: 15px; text-align: center;"></div>
-                <p>Already have an account? <a href="/?=Lg8In">Login here</a></p>
+                <p>Already have an account? <a href="/login">Login here</a></p>
                 <div style="margin-top: 12px; font-size: 0.75rem; color: #6b7280; display: flex; justify-content: center; gap: 12px;">
-                    <a href="/?=tRm9S" style="color: #9ca3af; text-decoration: none;">Terms of Service</a>
+                    <a href="/terms" style="color: #9ca3af; text-decoration: none;">Terms of Service</a>
                     <span>•</span>
-                    <a href="/?=pRv1C" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a>
+                    <a href="/privacy" style="color: #9ca3af; text-decoration: none;">Privacy Policy</a>
                 </div>
             </div>
         </div>

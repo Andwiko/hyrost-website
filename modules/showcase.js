@@ -285,7 +285,7 @@ function openSubmitBuildModal() {
     const token = localStorage.getItem('hyrostToken');
     if (!token) {
         alert('Silakan login terlebih dahulu untuk mengunggah karya build!');
-        window.location.href = '/?=Lg8In';
+        window.location.href = '/login';
         return;
     }
     document.getElementById('submitBuildModal').classList.add('active');

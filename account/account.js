@@ -50,7 +50,7 @@ async function loadUserProfile() {
     const localUserStr = localStorage.getItem('currentUser');
 
     if (!token && !localUserStr) {
-        window.location.href = '/?=Lg8In';
+        window.location.href = '/login';
         return;
     }
 
@@ -82,7 +82,7 @@ async function loadUserProfile() {
             if (res.status === 401) {
                 localStorage.removeItem('hyrostToken');
                 localStorage.removeItem('currentUser');
-                window.location.href = '/?=Lg8In';
+                window.location.href = '/login';
             }
             return;
         }
@@ -1301,7 +1301,7 @@ function setupEventListeners() {
              // 2. Show Toast & Redirect
              showToast('Logout berhasil. Sampai jumpa!', 'success');
              setTimeout(() => {
-                 window.location.href = '../index.html'; // Adjust path if needed
+                 window.location.href = '../'; // Adjust path if needed
              }, 1000);
         });
     }
@@ -1500,7 +1500,7 @@ function setupEventListeners() {
                         localStorage.removeItem('currentUser');
                         localStorage.removeItem('hyrostToken');
                         setTimeout(() => {
-                            window.location.href = '/?=Lg8In'; 
+                            window.location.href = '/login'; 
                         }, 2000);
                      } else {
                         showToast(data.message || 'Gagal menghapus akun', 'error');
@@ -1927,7 +1927,7 @@ async function loadReferralProgramData() {
         if (result.success && result.data) {
             const d = result.data;
             const linkInput = document.getElementById('myReferralLinkInput');
-            if (linkInput) linkInput.value = d.invite_url || `${window.location.origin}/auth/register.html?ref=${d.referral_code}`;
+            if (linkInput) linkInput.value = d.invite_url || `${window.location.origin}/register?ref=${d.referral_code}`;
 
             // Render Milestones
             const milestoneList = document.getElementById('referralMilestoneList');

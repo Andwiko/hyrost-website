@@ -40,8 +40,8 @@
     const isAuthPage = path.includes('/auth/');
     if (!isAuthPage) {
       window.location.href = path.includes('/modules/') || path.includes('/account/') || path.includes('/inventory/') || path.includes('/marketplace/')
-        ? '../auth/login.html'
-        : 'auth/login.html';
+        ? '../login'
+        : 'auth/login';
     }
   }
 

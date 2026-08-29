@@ -70,7 +70,7 @@ function checkAuthentication() {
     const currentUserStr = localStorage.getItem('currentUser');
     
     if (!token || !currentUserStr) {
-        window.location.href = '/?=Lg8In';
+        window.location.href = '/login';
         return;
     }
 
@@ -141,7 +141,7 @@ async function loadUserProfile() {
     }
 
     if (!token && !localUserStr) {
-        window.location.href = '/?=Lg8In';
+        window.location.href = '/login';
         return;
     }
 
@@ -585,7 +585,7 @@ function executePwaInstall() {
 window.executePwaInstall = executePwaInstall;
 
 function downloadDesktopShortcut() {
-    const shortcutContent = `[InternetShortcut]\nURL=${window.location.protocol}//${window.location.host}/dashboard.html\nIconIndex=0\nIconFile=${window.location.protocol}//${window.location.host}/favicon.ico\n`;
+    const shortcutContent = `[InternetShortcut]\nURL=${window.location.protocol}//${window.location.host}/dashboard\nIconIndex=0\nIconFile=${window.location.protocol}//${window.location.host}/favicon.ico\n`;
     const blob = new Blob([shortcutContent], { type: 'application/x-ms-shortcut' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

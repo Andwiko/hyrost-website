@@ -4,7 +4,7 @@
     <base href="/">
     <meta charset="UTF-8">
     <script>
-        (function(){try{var p=window.location.pathname;if(p.endsWith("/index.html")){window.history.replaceState(null,"",p.slice(0,-10)||"/"+window.location.search+window.location.hash);}else if(p==="/index.html"||p==="index.html"){window.history.replaceState(null,"","/"+window.location.search+window.location.hash);}else if(p.endsWith(".html")){window.history.replaceState(null,"",p.slice(0,-5)+window.location.search+window.location.hash);}}catch(e){}})();
+        (function(){try{var p=window.location.pathname;if(p.endsWith("/")){window.history.replaceState(null,"",p.slice(0,-10)||"/"+window.location.search+window.location.hash);}else if(p==="/"||p==="index.html"){window.history.replaceState(null,"","/"+window.location.search+window.location.hash);}else if(p.endsWith(".html")){window.history.replaceState(null,"",p.slice(0,-5)+window.location.search+window.location.hash);}}catch(e){}})();
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyrost Realm - Modern Minecraft Server & Community Hub</title>
@@ -137,15 +137,15 @@
             <div class="nav-links-container" id="navLinksContainer">
                 <div class="navbar-menu">
                     <a href="/" class="nav-link active">Home</a>
-                    <a href="/?=pv3Ad" class="nav-link">Dashboard</a>
-                    <a href="/?=b0tM3" class="nav-link" style="color: #FF3385; font-weight: 700;"><i class="fab fa-discord" style="color:#5865F2;" aria-hidden="true"></i> Bot Mei <span style="font-size: 0.65rem; background: linear-gradient(135deg, #5865F2, #FF3385); color: #fff; padding: 1px 6px; border-radius: 999px; margin-left: 3px;">NEW</span></a>
-                    <a href="/?=f0rUm" class="nav-link">Forum</a>
-                    <a href="/?=lDb8R" class="nav-link">Leaderboard</a>
-                    <a href="/?=mK7tP" class="nav-link">Marketplace</a>
-                    <a href="/?=wK1iX" class="nav-link">Wiki</a>
+                    <a href="/dashboard" class="nav-link">Dashboard</a>
+                    <a href="/bot" class="nav-link" style="color: #FF3385; font-weight: 700;"><i class="fab fa-discord" style="color:#5865F2;" aria-hidden="true"></i> Bot Mei <span style="font-size: 0.65rem; background: linear-gradient(135deg, #5865F2, #FF3385); color: #fff; padding: 1px 6px; border-radius: 999px; margin-left: 3px;">NEW</span></a>
+                    <a href="/forum" class="nav-link">Forum</a>
+                    <a href="/leaderboard" class="nav-link">Leaderboard</a>
+                    <a href="/marketplace" class="nav-link">Marketplace</a>
+                    <a href="/wiki" class="nav-link">Wiki</a>
                 </div>
                 <div class="navbar-buttons" id="navAuthButtons">
-                    <a href="/?=Lg8In" class="btn-secondary">Masuk</a>
+                    <a href="/login" class="btn-secondary">Masuk</a>
                     <button class="btn-primary" onclick="goToDashboard()" aria-label="Buka Dashboard Pemain">
                         <span>Dashboard</span>
                         <i class="fas fa-arrow-right" aria-hidden="true"></i>
@@ -181,7 +181,7 @@
                             <i class="fas fa-compass" aria-hidden="true"></i>
                             <span>Buka Dashboard</span>
                         </button>
-                        <a href="/?=Lg8In" class="btn-secondary" aria-label="Masuk atau Daftar Akun">
+                        <a href="/login" class="btn-secondary" aria-label="Masuk atau Daftar Akun">
                             <i class="fas fa-sign-in-alt" aria-hidden="true"></i>
                             <span>Masuk / Daftar</span>
                         </a>
@@ -346,7 +346,7 @@
                             <span>Akses Dashboard Sekarang</span>
                             <i class="fas fa-arrow-right" aria-hidden="true"></i>
                         </button>
-                        <a href="/?=Lg8In" class="btn-secondary" aria-label="Buat Akun atau Login">
+                        <a href="/login" class="btn-secondary" aria-label="Buat Akun atau Login">
                             <i class="fas fa-user-plus" aria-hidden="true"></i>
                             <span>Buat Akun / Login</span>
                         </a>
@@ -367,12 +367,12 @@
         <div class="container footer-content">
             <div class="footer-links">
                 <a href="/" class="footer-link">Home</a>
-                <a href="/?=pv3Ad" class="footer-link">Dashboard</a>
-                <a href="/?=b0tM3" class="footer-link" style="color: #FF3385;"><i class="fab fa-discord" aria-hidden="true"></i> Bot Mei</a>
-                <a href="/?=f0rUm" class="footer-link">Forum</a>
-                <a href="/?=sUp7P" class="footer-link">Support</a>
-                <a href="/?=tRm9S" class="footer-link">Terms of Service</a>
-                <a href="/?=pRv1C" class="footer-link">Privacy Policy</a>
+                <a href="/dashboard" class="footer-link">Dashboard</a>
+                <a href="/bot" class="footer-link" style="color: #FF3385;"><i class="fab fa-discord" aria-hidden="true"></i> Bot Mei</a>
+                <a href="/forum" class="footer-link">Forum</a>
+                <a href="/support" class="footer-link">Support</a>
+                <a href="/terms" class="footer-link">Terms of Service</a>
+                <a href="/privacy" class="footer-link">Privacy Policy</a>
             </div>
             <p class="footer-text">
                 &copy; 2026 <strong style="color: var(--accent-indigo);">Hyrost Server</strong>. All rights reserved.

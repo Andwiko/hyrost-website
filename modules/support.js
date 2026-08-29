@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!token) {
         showToast('Anda harus masuk terlebih dahulu!', 'error');
         setTimeout(() => {
-            window.location.href = '../index.html';
+            window.location.href = '../';
         }, 1500);
         return;
     }
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (res.status === 401) {
                 localStorage.removeItem('hyrostToken');
                 localStorage.removeItem('currentUser');
-                window.location.href = '../index.html';
+                window.location.href = '../';
                 return null;
             }
 

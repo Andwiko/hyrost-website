@@ -59,7 +59,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
 
   // ─── CRITICAL: JANGAN intercept URL dengan stealth token atau query string ───
-  // URL seperti /?=pv3Ad, /?=f0rUm, dll. harus langsung ke server Express.
+  // URL seperti /dashboard, /forum, dll. harus langsung ke server Express.
   if (url.search && url.search.length > 1) {
     return; // Biarkan browser fetch langsung ke server, tanpa service worker
   }
@@ -149,7 +149,7 @@ self.addEventListener('push', (event) => {
     icon: data.icon || '/assets/images/hyrost.png',
     badge: '/assets/images/hyrost.png',
     data: {
-      url: data.url || '/?=pv3Ad'
+      url: data.url || '/dashboard'
     }
   };
 
@@ -161,7 +161,7 @@ self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   const targetUrl = (event.notification.data && event.notification.data.url)
     ? event.notification.data.url
-    : '/?=pv3Ad';
+    : '/dashboard';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

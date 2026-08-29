@@ -4,67 +4,67 @@
  *
  * Token Map:
  *   pv3Ad  → dashboard.html
- *   Lg8In  → auth/login.html
- *   Rg3St  → auth/register.html
- *   aCc9T  → account/index.html
- *   xK9Lm  → modules/admin.html
+ *   Lg8In  → auth/login
+ *   Rg3St  → auth/register
+ *   aCc9T  → account/
+ *   xK9Lm  → modules/admin
  *   ... (lihat backend/utils/stealthRouter.js untuk daftar lengkap)
  */
 (function (global) {
 
   /** Navigasi ke Dashboard (memerlukan login) */
   global.goToDashboard = function () {
-    global.location.href = '/?=pv3Ad';
+    global.location.href = '/dashboard';
   };
 
   /** Navigasi ke halaman Login */
   global.showLoginModal = function () {
-    global.location.href = '/?=Lg8In';
+    global.location.href = '/login';
   };
 
   /** Navigasi ke halaman Register */
   global.goToRegister = function () {
-    global.location.href = '/?=Rg3St';
+    global.location.href = '/register';
   };
 
   /** Navigasi ke Profil Akun */
   global.goToAccount = function () {
-    global.location.href = '/?=aCc9T';
+    global.location.href = '/account';
   };
 
   /** Navigasi ke Forum */
   global.goToForum = function () {
-    global.location.href = '/?=f0rUm';
+    global.location.href = '/forum';
   };
 
   /** Navigasi ke Leaderboard */
   global.goToLeaderboard = function () {
-    global.location.href = '/?=lDb8R';
+    global.location.href = '/leaderboard';
   };
 
   /** Navigasi ke Marketplace */
   global.goToMarketplace = function () {
-    global.location.href = '/?=mSh0p';
+    global.location.href = '/marketplace';
   };
 
   /** Navigasi ke Wiki */
   global.goToWiki = function () {
-    global.location.href = '/?=wK1iX';
+    global.location.href = '/wiki';
   };
 
   /** Navigasi ke Inventaris */
   global.goToInventory = function () {
-    global.location.href = '/?=iNv4K';
+    global.location.href = '/inventory';
   };
 
   /** Navigasi ke Admin Panel */
   global.goToAdmin = function () {
-    global.location.href = '/?=xK9Lm';
+    global.location.href = '/admin';
   };
 
   /** Navigasi ke 3D Skin Studio */
   global.goToSkin = function () {
-    global.location.href = '/?=sK1nS';
+    global.location.href = '/skin';
   };
 
   /** Navigasi ke halaman utama */
@@ -74,7 +74,7 @@
 
   /**
    * Helper umum: navigasi ke token manapun.
-   * Contoh: navigateTo('mAp3D')  → /?=mAp3D
+   * Contoh: navigateTo('mAp3D')  → /map
    */
   global.navigateTo = function (token) {
     if (!token) return;

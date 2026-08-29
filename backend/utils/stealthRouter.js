@@ -1,13 +1,11 @@
 /**
  * =============================================================================
- * HYROST — Stealth Opaque Route Obfuscator & Token Resolver
- * Complete 37 HTML File Registry for Undetectable URL Masking
+ * HYROST — Stealth Opaque Route Obfuscator & Universal Clean Route Registry
+ * Complete Route & Token Mapping for All HTML Files (No .html Exposed)
  * =============================================================================
  */
 
-const crypto = require('crypto');
-
-// 1. Complete Static Token Registry (All 37 HTML Files)
+// 1. Static Token Registry (Stealth Token -> Physical File)
 const STEALTH_REGISTRY = {
   // Root & Core
   'pv3Ad': 'dashboard.html',
@@ -59,7 +57,84 @@ const STEALTH_REGISTRY = {
   'mUpl5': 'marketplace/upload.html'
 };
 
-// Inverted map for instant lookup (file path -> token)
+// 2. Comprehensive Clean Route Aliases (Path -> Physical File)
+const CLEAN_ROUTES = {
+  // Primary Navigation
+  'dashboard': 'dashboard.html',
+  'home': 'index.html',
+  'privacy': 'privacy.html',
+  'terms': 'terms.html',
+  'verify-user': 'verify-user.html',
+
+  // Bot
+  'bot': 'bot/index.html',
+  'bot/skin': 'bot/skin.html',
+  'bot/skin-studio': 'bot/skin-studio.html',
+  'bot/changelog': 'bot/changelog.html',
+  'skin': 'bot/skin.html',
+  'skin-studio': 'bot/skin-studio.html',
+  'changelog': 'bot/changelog.html',
+
+  // Auth
+  'login': 'auth/login.html',
+  'auth/login': 'auth/login.html',
+  'register': 'auth/register.html',
+  'auth/register': 'auth/register.html',
+  'forgot-password': 'auth/forgot-password.html',
+  'auth/forgot-password': 'auth/forgot-password.html',
+  'reset-password': 'auth/reset-password.html',
+  'auth/reset-password': 'auth/reset-password.html',
+
+  // Account & Inventory
+  'account': 'account/index.html',
+  'account/index': 'account/index.html',
+  'profile': 'account/index.html',
+  'inventory': 'inventory/inventory.html',
+  'inventory/inventory': 'inventory/inventory.html',
+
+  // Modules & Features
+  'store': 'modules/store.html',
+  'modules/store': 'modules/store.html',
+  'forum': 'modules/forum.html',
+  'modules/forum': 'modules/forum.html',
+  'forum-thread': 'modules/forum-thread.html',
+  'modules/forum-thread': 'modules/forum-thread.html',
+  'showcase': 'modules/showcase.html',
+  'modules/showcase': 'modules/showcase.html',
+  'map': 'modules/map.html',
+  'modules/map': 'modules/map.html',
+  'leaderboard': 'modules/leaderboard.html',
+  'modules/leaderboard': 'modules/leaderboard.html',
+  'rewards': 'modules/rewards.html',
+  'modules/rewards': 'modules/rewards.html',
+  'wiki': 'modules/wiki.html',
+  'modules/wiki': 'modules/wiki.html',
+  'wiki-article': 'modules/wiki-article.html',
+  'modules/wiki-article': 'modules/wiki-article.html',
+  'social': 'modules/social.html',
+  'modules/social': 'modules/social.html',
+  'chat': 'modules/chat.html',
+  'modules/chat': 'modules/chat.html',
+  'support': 'modules/support.html',
+  'modules/support': 'modules/support.html',
+  'admin': 'modules/admin.html',
+  'modules/admin': 'modules/admin.html',
+
+  // Marketplace
+  'marketplace': 'marketplace/shop.html',
+  'marketplace/index': 'marketplace/index.html',
+  'marketplace/shop': 'marketplace/shop.html',
+  'marketplace/auction': 'marketplace/auction.html',
+  'marketplace/cart': 'marketplace/cart.html',
+  'marketplace/checkout': 'marketplace/checkout.html',
+  'marketplace/upload': 'marketplace/upload.html',
+  'shop': 'marketplace/shop.html',
+  'auction': 'marketplace/auction.html',
+  'cart': 'marketplace/cart.html',
+  'checkout': 'marketplace/checkout.html'
+};
+
+// Inverted lookup map
 const FILE_TO_TOKEN = {};
 for (const [token, file] of Object.entries(STEALTH_REGISTRY)) {
   const fLower = file.toLowerCase();
@@ -69,14 +144,10 @@ for (const [token, file] of Object.entries(STEALTH_REGISTRY)) {
   FILE_TO_TOKEN[clean] = token;
   FILE_TO_TOKEN['/' + fLower] = token;
   FILE_TO_TOKEN['/' + clean] = token;
-  FILE_TO_TOKEN['../' + fLower] = token;
-  FILE_TO_TOKEN['../' + clean] = token;
 }
 
 /**
- * Resolve stealth token to actual HTML file relative to web root
- * @param {string} token - e.g. "pv3Ad"
- * @returns {string|null} - e.g. "dashboard.html"
+ * Resolve stealth token to physical HTML file
  */
 function resolveTokenToFile(token) {
   if (!token || typeof token !== 'string') return null;
@@ -85,9 +156,18 @@ function resolveTokenToFile(token) {
 }
 
 /**
- * Get stealth token for a file or path
- * @param {string} filePath - e.g. "/dashboard.html" or "modules/admin"
- * @returns {string|null} - e.g. "pv3Ad"
+ * Resolve clean path to physical HTML file
+ */
+function resolveCleanPath(rawPath) {
+  if (!rawPath || typeof rawPath !== 'string') return null;
+  const clean = rawPath.replace(/^\/+/, '').replace(/\/+$/, '').toLowerCase();
+  if (CLEAN_ROUTES[clean]) return CLEAN_ROUTES[clean];
+  if (CLEAN_ROUTES[clean + '.html']) return CLEAN_ROUTES[clean + '.html'];
+  return null;
+}
+
+/**
+ * Resolve physical file to token
  */
 function resolveFileToToken(filePath) {
   if (!filePath || typeof filePath !== 'string') return null;
@@ -97,7 +177,7 @@ function resolveFileToToken(filePath) {
 }
 
 /**
- * Parse incoming request URL/query to extract stealth token
+ * Extract token from request URL / query string
  */
 function extractTokenFromRequest(req) {
   const url = req.url || '';
@@ -119,7 +199,7 @@ function extractTokenFromRequest(req) {
       return eqMatch[1];
     }
 
-    // Check ?pv3Ad (first key without value or bare token)
+    // Check ?pv3Ad
     const firstParam = rawQuery.split('&')[0].split('=')[0];
     if (firstParam && STEALTH_REGISTRY[firstParam]) {
       return firstParam;
@@ -138,8 +218,10 @@ function extractTokenFromRequest(req) {
 
 module.exports = {
   STEALTH_REGISTRY,
+  CLEAN_ROUTES,
   FILE_TO_TOKEN,
   resolveTokenToFile,
+  resolveCleanPath,
   resolveFileToToken,
   extractTokenFromRequest
 };

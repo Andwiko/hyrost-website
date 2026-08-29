@@ -2519,7 +2519,7 @@ function startTripayPaymentPolling(orderId, plan) {
 async function selectPremiumPlan(planKey, planName, priceStr) {
   if (!isLoggedIn()) {
     if (typeof showToast === 'function') showToast('🔐 Login dulu ke Hyrost Web untuk membeli paket VIP!');
-    setTimeout(() => { window.location.href = '/?=Lg8In'; }, 800);
+    setTimeout(() => { window.location.href = '/login'; }, 800);
     return;
   }
 
@@ -2675,7 +2675,7 @@ async function selectPremiumPlan(planKey, planName, priceStr) {
 async function selectManualPlan(planKey, planName, priceStr) {
   if (!isLoggedIn()) {
     if (typeof showToast === 'function') showToast('🔐 Login dulu ke Hyrost Web untuk membeli paket VIP!');
-    setTimeout(() => { window.location.href = '/?=Lg8In'; }, 800);
+    setTimeout(() => { window.location.href = '/login'; }, 800);
     return;
   }
 

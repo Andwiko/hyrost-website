@@ -77,7 +77,7 @@ function renderUserWidget() {
                     <div style="font-size:0.75rem; color:#9ca3af;">${currentUser.role || 'Member'}</div>
                 </div>
             </div>
-            <a href="../account/index.html" style="display:flex; align-items:center; gap:8px; font-size:0.82rem; color:#9ca3af; text-decoration:none; padding:6px 0; border-top:1px solid rgba(255,255,255,0.05);">
+            <a href="../account/" style="display:flex; align-items:center; gap:8px; font-size:0.82rem; color:#9ca3af; text-decoration:none; padding:6px 0; border-top:1px solid rgba(255,255,255,0.05);">
                 <i class="fas fa-cog"></i> Pengaturan Akun
             </a>
         `;

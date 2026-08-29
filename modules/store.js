@@ -238,7 +238,7 @@ async function buyRankWithGold(rankName, priceCoin) {
     const token = localStorage.getItem('hyrostToken');
     if (!token) {
         showStoreToast('Silakan login terlebih dahulu untuk membeli pangkat!', 'error');
-        window.location.href = '../index.html';
+        window.location.href = '../';
         return;
     }
 
@@ -283,7 +283,7 @@ async function openRankCheckoutModal(rankName, priceIDR) {
     const token = localStorage.getItem('hyrostToken');
     if (!token) {
         showStoreToast('Silakan login terlebih dahulu untuk membeli pangkat!', 'error');
-        window.location.href = '../index.html';
+        window.location.href = '../';
         return;
     }
 

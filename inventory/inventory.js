@@ -163,21 +163,21 @@ function refreshSidebar(role) {
     }
 
     const links = [
-        { name: 'Dashboard', icon: 'fa-chart-pie', href: '/dashboard.html', pageKey: 'dashboard' },
-        { name: 'Profil Saya', icon: 'fa-user-circle', href: '/account/index.html', pageKey: 'account' },
-        { name: 'Toko Pangkat', icon: 'fa-crown', href: '/modules/store.html', pageKey: 'store', iconStyle: 'color:var(--accent-gold);' },
-        { name: 'Forum', icon: 'fa-comments', href: '/modules/forum.html', pageKey: 'forum' },
-        { name: 'Galeri Build', icon: 'fa-cubes-stacked', href: '/modules/showcase.html', pageKey: 'showcase', iconStyle: 'color:var(--accent-cyan);' },
-        { name: '3D Skin Studio', icon: 'fa-person-running', href: '/bot/skin.html', pageKey: 'skin-studio', iconStyle: 'color:var(--accent-pink, #ec4899);' },
-        { name: 'Live Map', icon: 'fa-map-location-dot', href: '/modules/map.html', pageKey: 'map', iconStyle: 'color:var(--accent-emerald-light);' },
-        { name: 'Leaderboard', icon: 'fa-trophy', href: '/modules/leaderboard.html', pageKey: 'leaderboard' },
-        { name: 'Inventaris', icon: 'fa-box', href: '/inventory/inventory.html', pageKey: 'inventory' },
-        { name: 'Marketplace', icon: 'fa-store', href: '/marketplace/index.html', pageKey: 'marketplace' },
-        { name: 'Daily Rewards', icon: 'fa-gift', href: '/modules/rewards.html', pageKey: 'rewards' },
-        { name: 'Wiki & Guide', icon: 'fa-book', href: '/modules/wiki.html', pageKey: 'wiki' },
-        { name: 'Pertemanan', icon: 'fa-users', href: '/modules/social.html', pageKey: 'social' },
-        { name: 'Pusat Bantuan', icon: 'fa-headset', href: '/modules/support.html', pageKey: 'support' },
-        { name: 'Admin Panel', icon: 'fa-user-shield', href: '/modules/admin.html', pageKey: 'admin', adminOnly: true }
+        { name: 'Dashboard', icon: 'fa-chart-pie', href: '/dashboard', pageKey: 'dashboard' },
+        { name: 'Profil Saya', icon: 'fa-user-circle', href: '/account/', pageKey: 'account' },
+        { name: 'Toko Pangkat', icon: 'fa-crown', href: '/store', pageKey: 'store', iconStyle: 'color:var(--accent-gold);' },
+        { name: 'Forum', icon: 'fa-comments', href: '/forum', pageKey: 'forum' },
+        { name: 'Galeri Build', icon: 'fa-cubes-stacked', href: '/showcase', pageKey: 'showcase', iconStyle: 'color:var(--accent-cyan);' },
+        { name: '3D Skin Studio', icon: 'fa-person-running', href: '/skin', pageKey: 'skin-studio', iconStyle: 'color:var(--accent-pink, #ec4899);' },
+        { name: 'Live Map', icon: 'fa-map-location-dot', href: '/map', pageKey: 'map', iconStyle: 'color:var(--accent-emerald-light);' },
+        { name: 'Leaderboard', icon: 'fa-trophy', href: '/leaderboard', pageKey: 'leaderboard' },
+        { name: 'Inventaris', icon: 'fa-box', href: '/inventory', pageKey: 'inventory' },
+        { name: 'Marketplace', icon: 'fa-store', href: '/marketplace/', pageKey: 'marketplace' },
+        { name: 'Daily Rewards', icon: 'fa-gift', href: '/rewards', pageKey: 'rewards' },
+        { name: 'Wiki & Guide', icon: 'fa-book', href: '/wiki', pageKey: 'wiki' },
+        { name: 'Pertemanan', icon: 'fa-users', href: '/social', pageKey: 'social' },
+        { name: 'Pusat Bantuan', icon: 'fa-headset', href: '/support', pageKey: 'support' },
+        { name: 'Admin Panel', icon: 'fa-user-shield', href: '/admin', pageKey: 'admin', adminOnly: true }
     ];
 
     nav.innerHTML = '';
@@ -382,7 +382,7 @@ function renderInventoryGrid(items) {
                 <p style="color:#9ca3af; font-size:0.9rem; max-width:480px; margin:0 auto 20px;">
                     Item muncul di sini setelah Anda membeli dari toko admin atau marketplace user lain.
                 </p>
-                <a href="../marketplace/shop.html" class="btn-equip" style="display:inline-flex; max-width:320px; margin:0 auto; padding:12px 24px; font-size:0.95rem; background: linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-weight:800; text-decoration:none; border-radius:12px; justify-content:center; gap:8px;">
+                <a href="../marketplace" class="btn-equip" style="display:inline-flex; max-width:320px; margin:0 auto; padding:12px 24px; font-size:0.95rem; background: linear-gradient(135deg, #6366f1, #4f46e5); color:#fff; font-weight:800; text-decoration:none; border-radius:12px; justify-content:center; gap:8px;">
                     <i class="fas fa-store"></i> Buka Toko Kosmetik
                 </a>
             </div>
@@ -538,7 +538,7 @@ async function renderMinecraftConnectionStatus() {
         `;
     } else {
         linkBadge.innerHTML = `
-            <a href="../account/index.html" style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:4px 10px; border-radius:9999px; text-decoration:none;">
+            <a href="../account/" style="display:inline-flex; align-items:center; gap:6px; font-size:0.78rem; font-weight:700; background:rgba(245,158,11,0.15); color:#f59e0b; border:1px solid rgba(245,158,11,0.3); padding:4px 10px; border-radius:9999px; text-decoration:none;">
                 <i class="fas fa-exclamation-triangle"></i> Akun MC Belum Ditautkan • Klik untuk Tautkan
             </a>
         `;
@@ -552,7 +552,7 @@ async function claimAllItemsToMinecraft() {
     const mcStatus = await checkMinecraftLinkStatus();
     if (!mcStatus || !mcStatus.isLinked) {
         if (confirm("⚠️ Akun Minecraft Anda belum ditautkan!\nApakah Anda ingin membuka Halaman Profil untuk menautkan Username Minecraft sekarang?")) {
-            window.location.href = '/?=aCc9T';
+            window.location.href = '/account';
         }
         return;
     }
@@ -601,7 +601,7 @@ async function claimItemToMinecraft(id) {
     const mcStatus = await checkMinecraftLinkStatus();
     if (!mcStatus || !mcStatus.isLinked) {
         if (confirm("⚠️ Akun Minecraft Anda belum ditautkan!\nApakah Anda ingin membuka Halaman Profil untuk menautkan Username Minecraft Anda sekarang?")) {
-            window.location.href = '/?=aCc9T';
+            window.location.href = '/account';
         }
         return;
     }
