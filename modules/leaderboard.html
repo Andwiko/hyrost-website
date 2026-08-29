@@ -22,91 +22,107 @@
 
         <!-- Sidebar -->
         <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <img src="/assets/images/hyrost.png" alt="Logo" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-                <div class="brand-text">
-                    <h2>Hyrost</h2>
-                    <span>Member Realm</span>
+            <!-- User Profile Summary in Sidebar Top -->
+            <div class="sidebar-user" onclick="window.location.href='/account/index.html'" style="cursor:pointer;" title="Buka Profil Saya">
+                <img id="sidebarAvatar" src="https://ui-avatars.com/api/?name=User&background=6366f1&color=fff" alt="Avatar" class="avatar-sm">
+                <div class="user-meta">
+                    <h4 id="sidebarUsername">Hyrost Player</h4>
+                    <span id="sidebarRoleBadge" class="badge-role">Member Realm</span>
                 </div>
             </div>
             
             <div class="nav-section-label">Navigasi Utama</div>
             <nav class="sidebar-nav">
-                <a href="/dashboard.html" class="nav-item">
+                <a href="/dashboard.html" class="nav-item ">
                     <i class="fas fa-chart-pie"></i>
                     <span>Dashboard</span>
                 </a>
-                <a href="/account/index.html" class="nav-item">
+                <a href="/account/index.html" class="nav-item ">
                     <i class="fas fa-user-circle"></i>
                     <span>Profil Saya</span>
                 </a>
-                <a href="/modules/store.html" class="nav-item">
-                    <i class="fas fa-crown" style="color:var(--accent-gold);"></i>
+                <a href="/modules/store.html" class="nav-item ">
+                    <i class="fas fa-crown" style="color:var(--accent-gold, #f59e0b);"></i>
                     <span>Toko Pangkat</span>
                 </a>
-                <a href="/modules/forum.html" class="nav-item">
+                <a href="/modules/forum.html" class="nav-item ">
                     <i class="fas fa-comments"></i>
                     <span>Forum</span>
                 </a>
-                <a href="/modules/showcase.html" class="nav-item">
-                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan);"></i>
+                <a href="/modules/showcase.html" class="nav-item ">
+                    <i class="fas fa-cubes-stacked" style="color:var(--accent-cyan, #06b6d4);"></i>
                     <span>Galeri Build</span>
                 </a>
-                <a href="/bot/skin.html" class="nav-item">
+                <a href="/bot/skin.html" class="nav-item ">
                     <i class="fas fa-person-running" style="color:var(--accent-pink, #ec4899);"></i>
                     <span>3D Skin Studio</span>
                 </a>
-                <a href="/modules/map.html" class="nav-item">
-                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald-light);"></i>
+                <a href="/modules/map.html" class="nav-item ">
+                    <i class="fas fa-map-location-dot" style="color:var(--accent-emerald, #10b981);"></i>
                     <span>Live Map</span>
                 </a>
                 <a href="/modules/leaderboard.html" class="nav-item active">
                     <i class="fas fa-trophy"></i>
                     <span>Leaderboard</span>
                 </a>
-                <a href="/inventory/inventory.html" class="nav-item">
+                <a href="/inventory/inventory.html" class="nav-item ">
                     <i class="fas fa-box"></i>
                     <span>Inventaris</span>
                 </a>
-                <a href="/marketplace/index.html" class="nav-item">
+                <a href="/marketplace/shop.html" class="nav-item ">
                     <i class="fas fa-store"></i>
                     <span>Marketplace</span>
                 </a>
-                <a href="/modules/rewards.html" class="nav-item">
+                <a href="/modules/rewards.html" class="nav-item ">
                     <i class="fas fa-gift"></i>
                     <span>Daily Rewards</span>
                 </a>
-                <a href="/modules/wiki.html" class="nav-item">
+                <a href="/modules/wiki.html" class="nav-item ">
                     <i class="fas fa-book"></i>
-                    <span>Wiki & Guide</span>
+                    <span>Wiki &amp; Guide</span>
                 </a>
-                <a href="/modules/social.html" class="nav-item">
+                <a href="/modules/social.html" class="nav-item ">
                     <i class="fas fa-users"></i>
                     <span>Pertemanan</span>
                 </a>
-                <a href="/modules/support.html" class="nav-item">
+                <a href="/modules/support.html" class="nav-item ">
                     <i class="fas fa-headset"></i>
                     <span>Pusat Bantuan</span>
                 </a>
-                <a href="/verify-user.html" class="nav-item">
+                <a href="/verify-user.html" class="nav-item ">
                     <i class="fab fa-discord" style="color:#5865F2;"></i>
                     <span>Verifikasi Discord</span>
                 </a>
+
                 <div class="nav-divider"></div>
                 <div class="nav-section-label nav-section-admin">Admin Panel</div>
-                <a href="/modules/admin.html" class="nav-item nav-admin">
+                <a href="/modules/admin.html" class="nav-item nav-admin ">
                     <i class="fas fa-user-shield"></i>
                     <span>Admin Panel</span>
                 </a>
             </nav>
 
+            <!-- Server Status Widget & PWA Trigger -->
             <div class="sidebar-bottom">
+                <button class="btn-header-action btn-primary-action" id="btnInstallPwa" onclick="promptPWAInstall()" style="width:100%; justify-content:center; margin-bottom:10px; font-size:0.8rem; padding:8px 12px; border-radius:var(--radius-sm, 8px);">
+                    <i class="fas fa-mobile-alt"></i> Install App Hyrost
+                </button>
                 <div class="sidebar-server-pill">
                     <div class="server-pill-row">
-                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan);"></i>Status Realm</span>
+                        <span><i class="fas fa-server" style="margin-right:6px; color:var(--accent-cyan, #06b6d4);"></i>Status Realm</span>
                         <span class="status-dot online"></span>
                     </div>
-                    <div class="server-pill-ip">play.hyrost.net</div>
+                    <div class="server-pill-ip" data-mc-server-ip id="sidebarServerIp">play.hyrost.net</div>
+                    <div class="server-pill-players">
+                        <i class="fas fa-users"></i> <span id="sidebarOnlinePlayers" data-mc-player-count>--</span> Pemain Online
+                    </div>
+                </div>
+                <div style="display:flex; justify-content:center; gap:8px; font-size:0.74rem; margin-top:10px; color:var(--text-dim, #94a3b8);">
+                    <a href="/terms.html" style="color:var(--text-muted, #64748b); text-decoration:none;">Terms</a>
+                    <span>•</span>
+                    <a href="/privacy.html" style="color:var(--text-muted, #64748b); text-decoration:none;">Privacy</a>
+                    <span>•</span>
+                    <a href="/" style="color:var(--text-muted, #64748b); text-decoration:none;">Home</a>
                 </div>
             </div>
         </aside>
