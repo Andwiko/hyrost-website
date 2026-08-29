@@ -45,9 +45,13 @@ const {
 
 // ─── Plan Definitions ────────────────────────────────────────────────────────
 const PLANS = {
-  '1day':    { days: 1,  priceIdr: 2000,  label: 'VIP Studio Pass Harian (1 Hari)' },
+  '1day':    { days: 1,  priceIdr: 2000,  label: 'VIP Studio Pass Harian (24 Jam)' },
+  'daily':   { days: 1,  priceIdr: 2000,  label: 'VIP Studio Pass Harian (24 Jam)' },
   '3days':   { days: 3,  priceIdr: 5000,  label: 'VIP Studio Weekend Pass (3 Hari)' },
+  'weekend': { days: 3,  priceIdr: 5000,  label: 'VIP Studio Weekend Pass (3 Hari)' },
+  '7days':   { days: 7,  priceIdr: 10000, label: 'VIP Studio Pass Mingguan (7 Hari)' },
   'weekly':  { days: 7,  priceIdr: 10000, label: 'VIP Studio Pass Mingguan (7 Hari)' },
+  '30days':  { days: 30, priceIdr: 25000, label: 'VIP Studio Member Bulanan (30 Hari)' },
   'monthly': { days: 30, priceIdr: 25000, label: 'VIP Studio Member Bulanan (30 Hari)' },
 };
 

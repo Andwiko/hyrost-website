@@ -69,8 +69,12 @@ function toggleAudioFx() {
   }
 }
 
+let _lastAudioTime = 0;
 function playAudioFx(type = 'click') {
   if (!isAudioFxEnabled) return;
+  const nowMs = Date.now();
+  if (nowMs - _lastAudioTime < 150) return; // Prevent repeated overlapping sounds
+  _lastAudioTime = nowMs;
   try {
     initAudioContext();
     if (!audioCtx) return;
@@ -2677,17 +2681,35 @@ async function selectManualPlan(planKey, planName, priceStr) {
   if (typeof showToast === 'function') showToast('⏳ Menyiapkan detail transfer manual...');
 
   const basePrices = {
-    'weekly': { days: 7, priceIdr: 10000, label: 'VIP Studio Pass Mingguan (7 Hari)' },
-    'monthly': { days: 30, priceIdr: 25000, label: 'VIP Studio Member Bulanan (30 Hari)' }
+    '1day':    { days: 1,  priceIdr: 2000,  label: 'Pass Harian (24 Jam)' },
+    'daily':   { days: 1,  priceIdr: 2000,  label: 'Pass Harian (24 Jam)' },
+    '3days':   { days: 3,  priceIdr: 5000,  label: 'Weekend Pass (3 Hari)' },
+    'weekend': { days: 3,  priceIdr: 5000,  label: 'Weekend Pass (3 Hari)' },
+    '7days':   { days: 7,  priceIdr: 10000, label: 'Pass Mingguan (7 Hari)' },
+    'weekly':  { days: 7,  priceIdr: 10000, label: 'Pass Mingguan (7 Hari)' },
+    '30days':  { days: 30, priceIdr: 25000, label: 'VIP Bulanan (30 Hari)' },
+    'monthly': { days: 30, priceIdr: 25000, label: 'VIP Bulanan (30 Hari)' }
   };
-  const planInfo = basePrices[planKey] || { days: 30, priceIdr: 25000, label: planName || 'VIP Studio Member (30 Hari)' };
+
+  const parsedPrice = priceStr ? parseInt(String(priceStr).replace(/[^0-9]/g, ''), 10) : 0;
+  const planInfo = basePrices[planKey] ? { ...basePrices[planKey] } : { 
+    days: parsedPrice === 2000 ? 1 : (parsedPrice === 5000 ? 3 : (parsedPrice === 10000 ? 7 : 30)), 
+    priceIdr: parsedPrice || 25000, 
+    label: planName || 'VIP Studio Member' 
+  };
+  if (parsedPrice > 0) {
+    planInfo.priceIdr = parsedPrice;
+  }
+  if (planName) {
+    planInfo.label = planName;
+  }
 
   let responseData = null;
 
   try {
     const { ok, data } = await studioApiFetch('create-manual-payment', {
       method: 'POST',
-      body: JSON.stringify({ planKey }),
+      body: JSON.stringify({ planKey, priceIdr: planInfo.priceIdr }),
       timeout: 8000,
     });
     if (ok && data && data.success) {
