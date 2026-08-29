@@ -1,7 +1,7 @@
 /**
  * =============================================================================
- * HYROST — Client-Side Stealth Route Masker & Navigation Interceptor
- * Complete 37 HTML File Support, Instant Hover Link Masking & Dynamic Loader
+ * HYROST — Client-Side Route Resolver & Safe Navigation Helper
+ * Direct File Support, Clean URL Resolution & Backward-Compatible Token Mapping
  * =============================================================================
  */
 
@@ -65,15 +65,6 @@
     FILE_TO_TOKEN[clean] = token;
     FILE_TO_TOKEN['/' + fLower] = token;
     FILE_TO_TOKEN['/' + clean] = token;
-    FILE_TO_TOKEN['../' + fLower] = token;
-    FILE_TO_TOKEN['../' + clean] = token;
-    FILE_TO_TOKEN['../../' + fLower] = token;
-    FILE_TO_TOKEN['../../' + clean] = token;
-
-    // Basename match for relative links
-    const base = fLower.split('/').pop();
-    if (!FILE_TO_TOKEN[base]) FILE_TO_TOKEN[base] = token;
-    if (!FILE_TO_TOKEN[base.replace(/\.html$/i, '')]) FILE_TO_TOKEN[base.replace(/\.html$/i, '')] = token;
   }
 
   function getStealthTokenForPath(path) {
@@ -90,151 +81,26 @@
     return filePath;
   }
 
-  // 1. Rewrite all anchor href attributes so hover previews show /?=pv3Ad
-  function rewriteAllLinksToStealth() {
-    try {
-      const anchors = document.querySelectorAll('a[href]');
-      anchors.forEach(a => {
-        const href = a.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//')) return;
-        
-        // Skip already formatted stealth URLs
-        if (href.startsWith('/?=')) return;
-
-        const token = getStealthTokenForPath(href);
-        if (token) {
-          const params = href.includes('?') ? '&' + href.slice(href.indexOf('?') + 1) : '';
-          a.setAttribute('href', `/?=${token}${params}`);
-        }
-      });
-    } catch (_) {}
-  }
-
-  // 2. Instant Address Bar Normalization on Page Load
-  function applyStealthAddressBar() {
-    try {
-      if (!global.location || !global.history || !global.history.replaceState) return;
-
-      const p = global.location.pathname;
-      const search = global.location.search || '';
-      const hash = global.location.hash || '';
-
-      // If already has stealth token in query (e.g. ?=pv3Ad or ?pv3Ad)
-      if (search.includes('=')) {
-        const rawToken = search.replace(/^\?/, '');
-        const match = rawToken.match(/(?:^|=)([a-zA-Z0-9_-]{5})/);
-        if (match && STEALTH_REGISTRY[match[1]]) {
-          if (p !== '/' && p !== '') {
-            global.history.replaceState(null, '', `/?=${match[1]}${hash}`);
-          }
-          return;
-        }
-      }
-
-      // If URL has file path (e.g. /dashboard.html or /modules/admin.html or /dashboard)
-      const token = getStealthTokenForPath(p);
-      if (token) {
-        const cleanSearch = search ? search.replace(/^\?/, '&') : '';
-        global.history.replaceState(null, '', `/?=${token}${cleanSearch}${hash}`);
-      } else if (p === '/index.html' || p === 'index.html') {
-        global.history.replaceState(null, '', `/${search}${hash}`);
-      }
-    } catch (_) {}
-  }
-
-  // 3. Fallback Dynamic Page Loader if Server Served Index on Token Request
-  function checkAndLoadIntendedPage() {
-    try {
-      const search = global.location.search || '';
-      const match = search.match(/(?:^\?=?|&)([a-zA-Z0-9_-]{5})/);
-      if (match && STEALTH_REGISTRY[match[1]]) {
-        const token = match[1];
-        const targetFile = STEALTH_REGISTRY[token];
-        const currentPath = global.location.pathname.replace(/^\/+/, '').toLowerCase();
-
-        // If user requested a token other than index, but server loaded index.html
-        if ((currentPath === '' || currentPath === 'index.html') && targetFile !== 'index.html') {
-          const isIndexPage = document.querySelector('.hero-title') !== null || document.title.includes('Hyrost Realm - Modern');
-          if (isIndexPage) {
-            console.log(`[StealthRouter] Loading intended page: ${targetFile}`);
-            // Fetch intended HTML and replace document
-            fetch('/' + targetFile)
-              .then(res => res.text())
-              .then(html => {
-                document.open();
-                document.write(html);
-                document.close();
-                global.history.replaceState(null, '', `/?=${token}`);
-              })
-              .catch(() => {
-                global.location.href = '/' + targetFile;
-              });
-          }
-        }
-      }
-    } catch (_) {}
-  }
-
-  // 4. Intercept Internal Link Clicks
-  function bindLinkInterceptor() {
-    document.addEventListener('click', function (e) {
-      const a = e.target.closest('a');
-      if (!a || !a.href) return;
-
-      const href = a.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('javascript:') || href.startsWith('http://') || href.startsWith('https://') || href.startsWith('//') || href.startsWith('mailto:') || href.startsWith('tel:')) {
-        return;
-      }
-
-      const token = getStealthTokenForPath(href);
-      if (token) {
-        e.preventDefault();
-        const urlParams = href.includes('?') ? href.slice(href.indexOf('?') + 1) : '';
-        const targetUrl = `/?=${token}${urlParams ? '&' + urlParams : ''}`;
-        global.location.href = targetUrl;
-      }
-    }, true);
-  }
-
-  // Run immediately on script evaluation
-  applyStealthAddressBar();
-  checkAndLoadIntendedPage();
-
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => {
-      applyStealthAddressBar();
-      rewriteAllLinksToStealth();
-      bindLinkInterceptor();
-      checkAndLoadIntendedPage();
-    });
-  } else {
-    rewriteAllLinksToStealth();
-    bindLinkInterceptor();
-  }
-
-  // Observer for dynamically added links
-  if (typeof MutationObserver !== 'undefined') {
-    const observer = new MutationObserver(() => {
-      rewriteAllLinksToStealth();
-    });
-    observer.observe(document.documentElement, { childList: true, subtree: true });
-  }
-
   // Expose global helpers
   global.HyrostStealth = {
     REGISTRY: STEALTH_REGISTRY,
     getStealthUrl,
     getStealthTokenForPath,
     navigate: function (filePath, extraQuery) {
-      global.location.href = getStealthUrl(filePath, extraQuery);
+      if (!filePath) return;
+      let target = filePath.startsWith('/') ? filePath : '/' + filePath;
+      if (extraQuery) {
+        target += (target.includes('?') ? '&' : '?') + extraQuery.replace(/^\?/, '');
+      }
+      global.location.href = target;
     }
   };
 
-  // Override legacy navigation helpers
+  // Standard global navigation helpers
   global.goToDashboard = function () {
-    global.location.href = '/?=pv3Ad';
+    global.location.href = '/dashboard.html';
   };
   global.showLoginModal = function () {
-    global.location.href = '/?=Lg8In';
+    global.location.href = '/auth/login.html';
   };
 })(typeof window !== 'undefined' ? window : this);

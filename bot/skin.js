@@ -15,14 +15,14 @@ let currentResolution = 1000;
 // Background Images Registry (Aesthetic Minecraft Shaders & Wallpapers)
 const BG_IMAGES = {
   transparent: null,
-  taiga: 'assets/images/bg_taiga.jpg',
-  nether: 'assets/images/bg_nether.jpg',
-  end: 'assets/images/bg_end.jpg',
-  cherry: 'assets/images/bg_cherry.jpg',
-  snow: 'assets/images/bg_snow.jpg',
-  ocean: 'assets/images/bg_ocean.jpg',
-  sunset: 'assets/images/bg_sunset.jpg',
-  dark: 'assets/images/bg_dark.jpg'
+  taiga: '/bot/assets/images/bg_taiga.jpg',
+  nether: '/bot/assets/images/bg_nether.jpg',
+  end: '/bot/assets/images/bg_end.jpg',
+  cherry: '/bot/assets/images/bg_cherry.jpg',
+  snow: '/bot/assets/images/bg_snow.jpg',
+  ocean: '/bot/assets/images/bg_ocean.jpg',
+  sunset: '/bot/assets/images/bg_sunset.jpg',
+  dark: '/bot/assets/images/bg_dark.jpg'
 };
 
 const PRELOADED_BG_IMAGES = {};
@@ -2519,7 +2519,7 @@ function startTripayPaymentPolling(orderId, plan) {
 async function selectPremiumPlan(planKey, planName, priceStr) {
   if (!isLoggedIn()) {
     if (typeof showToast === 'function') showToast('🔐 Login dulu ke Hyrost Web untuk membeli paket VIP!');
-    setTimeout(() => { window.location.href = '/?=Lg8In'; }, 800);
+    setTimeout(() => { window.location.href = '/auth/login.html'; }, 800);
     return;
   }
 
@@ -2675,7 +2675,7 @@ async function selectPremiumPlan(planKey, planName, priceStr) {
 async function selectManualPlan(planKey, planName, priceStr) {
   if (!isLoggedIn()) {
     if (typeof showToast === 'function') showToast('🔐 Login dulu ke Hyrost Web untuk membeli paket VIP!');
-    setTimeout(() => { window.location.href = '/?=Lg8In'; }, 800);
+    setTimeout(() => { window.location.href = '/auth/login.html'; }, 800);
     return;
   }
 

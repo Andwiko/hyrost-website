@@ -25,7 +25,7 @@ let ticketStatusFilter = '';
 
 // ─── INIT ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!token) { window.location.href = '/?=Lg8In'; return; }
+  if (!token) { window.location.href = '/auth/login.html'; return; }
 
   loadAdminProfile();
   await Promise.all([loadRoles(), refreshServerStatus()]);
@@ -55,7 +55,7 @@ function toast(msg, type = 'info', duration = 3500) {
 window.logout = () => {
   localStorage.removeItem('hyrostToken');
   localStorage.removeItem('currentUser');
-  window.location.href = '/?=Lg8In';
+  window.location.href = '/auth/login.html';
 };
 
 // Mobile sidebar handled by mobileLayout.js (HyrostMobileLayout)
@@ -68,7 +68,7 @@ async function loadAdminProfile() {
     const data = await res.json();
     if ((data.role || '').toLowerCase() !== 'admin') {
       toast('Akses ditolak. Anda bukan Admin.', 'error');
-      setTimeout(() => window.location.href = '/?=pv3Ad', 2000);
+      setTimeout(() => window.location.href = '/dashboard.html', 2000);
       return;
     }
     const el = document.getElementById('adminUsername');
@@ -929,7 +929,7 @@ window.filterLogs = () => {
 // ─── ACCESS DENIED ───────────────────────────────────────
 function handleAccessDenied() {
   toast('Akses ditolak. Hanya Admin yang dapat mengakses panel ini.', 'error', 5000);
-  setTimeout(() => window.location.href = '/?=pv3Ad', 3000);
+  setTimeout(() => window.location.href = '/dashboard.html', 3000);
 }
 
 // ─── MODAL HELPERS ───────────────────────────────────────

@@ -69,7 +69,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ─── 2. STEALTH OPAQUE ROUTE PROCESSOR (?=pv3Ad) ──────────────────────────────
+// ─── 2. UNIVERSAL CLEAN ROUTE & STEALTH TOKEN PROCESSOR ───────────────────────
 app.use((req, res, next) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') return next();
 
@@ -94,14 +94,30 @@ app.use((req, res, next) => {
     }
   }
 
-  // 2.2 If accessing real file or clean name, auto-redirect to stealth token URL
-  // e.g. /dashboard.html or /dashboard -> /?=pv3Ad
-  const targetToken = resolveFileToToken(reqPath);
-  if (targetToken) {
-    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
-    // Strip original query if it was just clean
-    const extraQs = qs && !qs.startsWith('?=') && !qs.startsWith('?' + targetToken) ? '&' + qs.replace(/^\?/, '') : '';
-    return res.redirect(302, `/?=${targetToken}${extraQs}`);
+  // 2.2 Clean Route Resolver: e.g. /dashboard -> dashboard.html, /bot/skin -> bot/skin.html
+  if (reqPath !== '/' && !reqPath.includes('.')) {
+    const cleanPath = reqPath.replace(/^\/+/, '');
+    const candidate1 = path.resolve(rootDir, cleanPath + '.html');
+    const candidate2 = path.resolve(rootDir, cleanPath, 'index.html');
+
+    if (candidate1.startsWith(rootDir + path.sep) && fs.existsSync(candidate1)) {
+      return res.sendFile(candidate1);
+    }
+    if (candidate2.startsWith(rootDir + path.sep) && fs.existsSync(candidate2)) {
+      return res.sendFile(candidate2);
+    }
+
+    // Check alias in stealth registry
+    const targetToken = resolveFileToToken(reqPath);
+    if (targetToken) {
+      const mappedFile = resolveTokenToFile(targetToken);
+      if (mappedFile) {
+        const fullMapped = path.resolve(rootDir, mappedFile);
+        if (fullMapped.startsWith(rootDir + path.sep) && fs.existsSync(fullMapped)) {
+          return res.sendFile(fullMapped);
+        }
+      }
+    }
   }
 
   // 2.3 Redirect /index.html -> /

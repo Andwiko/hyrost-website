@@ -173,41 +173,7 @@ Options -Indexes -MultiViews
         RewriteRule ^api/(.*)$ http://127.0.0.1:3044/api/$1 [P,L]
     </IfModule>
 
-    # 3.6 STEALTH OPAQUE ROUTE REDIRECTS (Alihkan Permintaan File Asli ke Token Samaran)
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /dashboard(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=pv3Ad [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /bot/skin(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=sK1nS [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /bot/index(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=b0tM3 [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/admin(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=xK9Lm [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/store(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=t7Y4b [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/leaderboard(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=lDb8R [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/rewards(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=rW9Dz [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/forum(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=f0rUm [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/wiki(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=wK1iX [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /auth/login(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=Lg8In [R=302,L]
-
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /auth/register(\.html)?[\s\?] [NC]
-    RewriteRule ^.*$ /?=Rg3St [R=302,L]
-
-    # Redirect /index.html ke /
+    # 3.6 Redirect /index.html ke /
     RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html[\s\?] [NC]
     RewriteRule ^index\.html$ / [R=301,L]
 

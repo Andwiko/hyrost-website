@@ -1,36 +1,5 @@
-// Instant Stealth Route Address Bar Normalizer (e.g. /dashboard.html -> /?=pv3Ad)
-(function enforceStealthUrl() {
-  try {
-    if (typeof window === 'undefined' || !window.location || !window.history || !window.history.replaceState) return;
-    const STEALTH_MAP = {
-      'dashboard.html': 'pv3Ad', 'dashboard': 'pv3Ad',
-      'bot/skin.html': 'sK1nS', 'bot/skin': 'sK1nS',
-      'bot/index.html': 'b0tM3', 'bot/index': 'b0tM3',
-      'modules/admin.html': 'xK9Lm', 'modules/admin': 'xK9Lm',
-      'modules/store.html': 't7Y4b', 'modules/store': 't7Y4b',
-      'modules/leaderboard.html': 'lDb8R', 'modules/leaderboard': 'lDb8R',
-      'modules/rewards.html': 'rW9Dz', 'modules/rewards': 'rW9Dz',
-      'modules/forum.html': 'f0rUm', 'modules/forum': 'f0rUm',
-      'modules/wiki.html': 'wK1iX', 'modules/wiki': 'wK1iX',
-      'account/index.html': 'aCc9T', 'account': 'aCc9T',
-      'inventory/inventory.html': 'iNv4K', 'inventory': 'iNv4K',
-      'auth/login.html': 'Lg8In', 'auth/login': 'Lg8In',
-      'auth/register.html': 'Rg3St', 'auth/register': 'Rg3St'
-    };
+// HYROST — Core API Client and Request Utilities
 
-    const p = window.location.pathname.replace(/^\/+/, '').toLowerCase();
-    const search = window.location.search || '';
-    const hash = window.location.hash || '';
-
-    if (search.startsWith('?=')) return;
-
-    if (STEALTH_MAP[p]) {
-      window.history.replaceState(null, '', `/?=${STEALTH_MAP[p]}${hash}`);
-    } else if (p === 'index.html') {
-      window.history.replaceState(null, '', `/${search}${hash}`);
-    }
-  } catch (_) {}
-})();
 
 (function (global) {
   const API = '/api';

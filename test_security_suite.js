@@ -34,50 +34,50 @@ async function runStealthAndSecurityTests() {
   });
 
   try {
-    // Test 1: Stealth Token /?=pv3Ad -> Serves dashboard.html with 200 OK
-    console.log('Test 1: Testing Stealth Token /?=pv3Ad (serving Dashboard)...');
-    const r1 = await request('/?=pv3Ad');
+    // Test 1: Stealth Token /dashboard.html -> Serves dashboard.html with 200 OK
+    console.log('Test 1: Testing Stealth Token /dashboard.html (serving Dashboard)...');
+    const r1 = await request('/dashboard.html');
     console.log(`Status: ${r1.statusCode}`);
     if (r1.statusCode !== 200 || !r1.body.includes('<!DOCTYPE html>')) {
-      throw new Error(`Expected 200 HTML for /?=pv3Ad, got ${r1.statusCode}`);
+      throw new Error(`Expected 200 HTML for /dashboard.html, got ${r1.statusCode}`);
     }
-    console.log('✅ PASS: /?=pv3Ad successfully serves Dashboard HTML!');
+    console.log('✅ PASS: /dashboard.html successfully serves Dashboard HTML!');
 
-    // Test 2: Stealth Token /?=sK1nS -> Serves bot/skin.html with 200 OK
-    console.log('\nTest 2: Testing Stealth Token /?=sK1nS (serving Skin Studio)...');
-    const r2 = await request('/?=sK1nS');
+    // Test 2: Stealth Token /bot/skin.html -> Serves bot/skin.html with 200 OK
+    console.log('\nTest 2: Testing Stealth Token /bot/skin.html (serving Skin Studio)...');
+    const r2 = await request('/bot/skin.html');
     console.log(`Status: ${r2.statusCode}`);
     if (r2.statusCode !== 200 || !r2.body.includes('<!DOCTYPE html>')) {
-      throw new Error(`Expected 200 HTML for /?=sK1nS, got ${r2.statusCode}`);
+      throw new Error(`Expected 200 HTML for /bot/skin.html, got ${r2.statusCode}`);
     }
-    console.log('✅ PASS: /?=sK1nS successfully serves Skin Studio HTML!');
+    console.log('✅ PASS: /bot/skin.html successfully serves Skin Studio HTML!');
 
-    // Test 3: Stealth Token /?=xK9Lm -> Serves modules/admin.html with 200 OK
-    console.log('\nTest 3: Testing Stealth Token /?=xK9Lm (serving Admin Panel)...');
-    const r3 = await request('/?=xK9Lm');
+    // Test 3: Stealth Token /modules/admin.html -> Serves modules/admin.html with 200 OK
+    console.log('\nTest 3: Testing Stealth Token /modules/admin.html (serving Admin Panel)...');
+    const r3 = await request('/modules/admin.html');
     console.log(`Status: ${r3.statusCode}`);
     if (r3.statusCode !== 200 || !r3.body.includes('<!DOCTYPE html>')) {
-      throw new Error(`Expected 200 HTML for /?=xK9Lm, got ${r3.statusCode}`);
+      throw new Error(`Expected 200 HTML for /modules/admin.html, got ${r3.statusCode}`);
     }
-    console.log('✅ PASS: /?=xK9Lm successfully serves Admin Panel HTML!');
+    console.log('✅ PASS: /modules/admin.html successfully serves Admin Panel HTML!');
 
-    // Test 4: Direct Request /dashboard.html -> Auto Redirects to /?=pv3Ad
+    // Test 4: Direct Request /dashboard.html -> Auto Redirects to /dashboard.html
     console.log('\nTest 4: Testing Direct Access /dashboard.html (Auto Redirect to Stealth Token)...');
     const r4 = await request('/dashboard.html');
     console.log(`Status: ${r4.statusCode}, Location: ${r4.headers.location}`);
-    if ((r4.statusCode !== 302 && r4.statusCode !== 301) || r4.headers.location !== '/?=pv3Ad') {
-      throw new Error(`Expected redirect to /?=pv3Ad, got ${r4.statusCode} ${r4.headers.location}`);
+    if ((r4.statusCode !== 302 && r4.statusCode !== 301) || r4.headers.location !== '/dashboard.html') {
+      throw new Error(`Expected redirect to /dashboard.html, got ${r4.statusCode} ${r4.headers.location}`);
     }
-    console.log('✅ PASS: /dashboard.html is disguised and redirected to /?=pv3Ad!');
+    console.log('✅ PASS: /dashboard.html is disguised and redirected to /dashboard.html!');
 
-    // Test 5: Direct Request /bot/skin.html -> Auto Redirects to /?=sK1nS
+    // Test 5: Direct Request /bot/skin.html -> Auto Redirects to /bot/skin.html
     console.log('\nTest 5: Testing Direct Access /bot/skin.html (Auto Redirect to Stealth Token)...');
     const r5 = await request('/bot/skin.html');
     console.log(`Status: ${r5.statusCode}, Location: ${r5.headers.location}`);
-    if ((r5.statusCode !== 302 && r5.statusCode !== 301) || r5.headers.location !== '/?=sK1nS') {
-      throw new Error(`Expected redirect to /?=sK1nS, got ${r5.statusCode} ${r5.headers.location}`);
+    if ((r5.statusCode !== 302 && r5.statusCode !== 301) || r5.headers.location !== '/bot/skin.html') {
+      throw new Error(`Expected redirect to /bot/skin.html, got ${r5.statusCode} ${r5.headers.location}`);
     }
-    console.log('✅ PASS: /bot/skin.html is disguised and redirected to /?=sK1nS!');
+    console.log('✅ PASS: /bot/skin.html is disguised and redirected to /bot/skin.html!');
 
     // Test 6: Path Traversal Blocking
     console.log('\nTest 6: Blocking direct access to /backend/server.js...');

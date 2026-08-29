@@ -944,14 +944,14 @@
 .bg-transparent-pattern {
   background: repeating-conic-gradient(#555 0% 25%, #222 0% 50%) 50% / 8px 8px;
 }
-.bg-taiga-swatch { background: url('assets/images/bg_taiga.jpg') center/cover no-repeat; }
-.bg-nether-swatch { background: url('assets/images/bg_nether.jpg') center/cover no-repeat; }
-.bg-end-swatch { background: url('assets/images/bg_end.jpg') center/cover no-repeat; }
-.bg-cherry-swatch { background: url('assets/images/bg_cherry.jpg') center/cover no-repeat; }
-.bg-snow-swatch { background: url('assets/images/bg_snow.jpg') center/cover no-repeat; }
-.bg-ocean-swatch { background: url('assets/images/bg_ocean.jpg') center/cover no-repeat; }
-.bg-sunset-swatch { background: url('assets/images/bg_sunset.jpg') center/cover no-repeat; }
-.bg-dark-swatch { background: url('assets/images/bg_dark.jpg') center/cover no-repeat; }
+.bg-taiga-swatch { background: url('/bot/assets/images/bg_taiga.jpg') center/cover no-repeat; }
+.bg-nether-swatch { background: url('/bot/assets/images/bg_nether.jpg') center/cover no-repeat; }
+.bg-end-swatch { background: url('/bot/assets/images/bg_end.jpg') center/cover no-repeat; }
+.bg-cherry-swatch { background: url('/bot/assets/images/bg_cherry.jpg') center/cover no-repeat; }
+.bg-snow-swatch { background: url('/bot/assets/images/bg_snow.jpg') center/cover no-repeat; }
+.bg-ocean-swatch { background: url('/bot/assets/images/bg_ocean.jpg') center/cover no-repeat; }
+.bg-sunset-swatch { background: url('/bot/assets/images/bg_sunset.jpg') center/cover no-repeat; }
+.bg-dark-swatch { background: url('/bot/assets/images/bg_dark.jpg') center/cover no-repeat; }
 
 /* ─── Aspect Ratio Selector Grid ─── */
 .aspect-ratio-grid {

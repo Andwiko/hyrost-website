@@ -552,7 +552,7 @@ async function claimAllItemsToMinecraft() {
     const mcStatus = await checkMinecraftLinkStatus();
     if (!mcStatus || !mcStatus.isLinked) {
         if (confirm("⚠️ Akun Minecraft Anda belum ditautkan!\nApakah Anda ingin membuka Halaman Profil untuk menautkan Username Minecraft sekarang?")) {
-            window.location.href = '/?=aCc9T';
+            window.location.href = '/account/index.html';
         }
         return;
     }
@@ -601,7 +601,7 @@ async function claimItemToMinecraft(id) {
     const mcStatus = await checkMinecraftLinkStatus();
     if (!mcStatus || !mcStatus.isLinked) {
         if (confirm("⚠️ Akun Minecraft Anda belum ditautkan!\nApakah Anda ingin membuka Halaman Profil untuk menautkan Username Minecraft Anda sekarang?")) {
-            window.location.href = '/?=aCc9T';
+            window.location.href = '/account/index.html';
         }
         return;
     }
