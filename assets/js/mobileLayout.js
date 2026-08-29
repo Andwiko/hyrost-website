@@ -1,207 +1,186 @@
 /**
- * Hyrost — shared mobile sidebar drawer for dashboard-layout pages.
+ * Hyrost & Mei Labs — Universal Header, Navigation & Mobile Hamburger Drawer Engine
+ * Seamlessly manages mobile navigation, sidebar drawers, overlays, and responsive toggles.
  */
-// Instant Stealth Route Address Bar Normalizer (e.g. /dashboard.html -> /?=pv3Ad)
-(function enforceStealthUrl() {
-  try {
-    if (typeof window === 'undefined' || !window.location || !window.history || !window.history.replaceState) return;
-    const STEALTH_MAP = {
-      'dashboard.html': 'pv3Ad', 'dashboard': 'pv3Ad',
-      'bot/skin.html': 'sK1nS', 'bot/skin': 'sK1nS',
-      'bot/index.html': 'b0tM3', 'bot/index': 'b0tM3',
-      'modules/admin.html': 'xK9Lm', 'modules/admin': 'xK9Lm',
-      'modules/store.html': 't7Y4b', 'modules/store': 't7Y4b',
-      'modules/leaderboard.html': 'lDb8R', 'modules/leaderboard': 'lDb8R',
-      'modules/rewards.html': 'rW9Dz', 'modules/rewards': 'rW9Dz',
-      'modules/forum.html': 'f0rUm', 'modules/forum': 'f0rUm',
-      'modules/wiki.html': 'wK1iX', 'modules/wiki': 'wK1iX',
-      'account/index.html': 'aCc9T', 'account': 'aCc9T',
-      'inventory/inventory.html': 'iNv4K', 'inventory': 'iNv4K',
-      'auth/login.html': 'Lg8In', 'auth/login': 'Lg8In',
-      'auth/register.html': 'Rg3St', 'auth/register': 'Rg3St'
-    };
 
-    const p = window.location.pathname.replace(/^\/+/, '').toLowerCase();
-    const search = window.location.search || '';
-    const hash = window.location.hash || '';
-
-    if (search.startsWith('?=')) return;
-
-    if (STEALTH_MAP[p]) {
-      window.history.replaceState(null, '', `/?=${STEALTH_MAP[p]}${hash}`);
-    } else if (p === 'index.html') {
-      window.history.replaceState(null, '', `/${search}${hash}`);
-    }
-  } catch (_) {}
-})();
-
+// Global Mobile Sidebar Controls (Available Immediately)
 (function (global) {
-  function assetPath(file) {
-    const p = window.location.pathname.toLowerCase();
-    const nested =
-      p.includes('/modules/') ||
-      p.includes('/account/') ||
-      p.includes('/inventory/') ||
-      p.includes('/marketplace/') ||
-      p.includes('/auth/');
-    return nested ? `../assets/${file}` : `assets/${file}`;
-  }
-
-  function getLogoPath() {
-    return assetPath('images/hyrost.png');
-  }
-
-  function homePath() {
-    const p = window.location.pathname.toLowerCase();
-    if (p.includes('/modules/') || p.includes('/account/') || p.includes('/inventory/') || p.includes('/marketplace/') || p.includes('/auth/')) {
-      return '../index.html';
-    }
-    return 'index.html';
-  }
-
-  function ensureOverlay() {
-    let overlay = document.getElementById('sidebarOverlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.id = 'sidebarOverlay';
-      overlay.className = 'sidebar-overlay';
-      document.body.appendChild(overlay);
-    }
-    return overlay;
-  }
-
-  function ensureMobileHeader(container) {
-    let mobileHeader = document.querySelector('.mobile-header');
-    if (mobileHeader || !container) return mobileHeader;
-
-    mobileHeader = document.createElement('div');
-    mobileHeader.className = 'mobile-header';
-    mobileHeader.innerHTML = `
-      <button type="button" id="sidebarToggle" class="btn-header-action" aria-label="Buka menu navigasi">
-        <i class="fas fa-bars"></i>
-      </button>
-      <div class="mobile-logo">
-        <img src="${getLogoPath()}" alt="Hyrost" onerror="this.src='https://ui-avatars.com/api/?name=H&background=6366f1&color=fff'">
-        <h2>Hyrost</h2>
-      </div>
-      <button type="button" class="btn-header-action mobile-logout-btn" title="Keluar" aria-label="Keluar">
-        <i class="fas fa-sign-out-alt"></i>
-      </button>`;
-    container.insertBefore(mobileHeader, container.firstChild);
-
-    const logoutBtn = mobileHeader.querySelector('.mobile-logout-btn');
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        if (typeof global.logout === 'function') {
-          global.logout();
-        } else {
-          localStorage.removeItem('hyrostToken');
-          localStorage.removeItem('currentUser');
-          window.location.href = homePath();
-        }
-      });
-    }
-    return mobileHeader;
-  }
-
   let lastToggleTime = 0;
 
-  function closeDrawer(sidebar, overlay) {
-    sidebar.classList.remove('active', 'open', 'mobile-open');
-    if (overlay) overlay.classList.remove('active', 'open');
-    document.body.style.overflow = '';
+  function getSidebar() {
+    return document.querySelector('#sidebar, .sidebar, #adminSidebar, .admin-sidebar');
   }
 
-  function openDrawer(sidebar, overlay) {
-    sidebar.classList.add('active', 'open', 'mobile-open');
-    if (overlay) overlay.classList.add('active', 'open');
+  function getOverlay() {
+    let ov = document.querySelector('#sidebarOverlay, .sidebar-overlay');
+    if (!ov && (document.querySelector('#sidebar, .sidebar, #adminSidebar, .admin-sidebar'))) {
+      ov = document.createElement('div');
+      ov.id = 'sidebarOverlay';
+      ov.className = 'sidebar-overlay';
+      document.body.appendChild(ov);
+    }
+    return ov;
+  }
+
+  function openDrawer() {
+    const sb = getSidebar();
+    const ov = getOverlay();
+    if (!sb) return;
+    sb.classList.add('active', 'open', 'mobile-open');
+    if (ov) ov.classList.add('active', 'open');
     document.body.style.overflow = 'hidden';
   }
 
-  function toggleDrawer(sidebar, overlay, e) {
+  function closeDrawer() {
+    const sb = getSidebar();
+    const ov = getOverlay();
+    if (sb) sb.classList.remove('active', 'open', 'mobile-open');
+    if (ov) ov.classList.remove('active', 'open');
+    document.body.style.overflow = '';
+  }
+
+  function toggleDrawer(e) {
     if (e && typeof e.stopPropagation === 'function') e.stopPropagation();
     const now = Date.now();
-    if (now - lastToggleTime < 180) return; // Debounce rapid multi-triggers
+    if (now - lastToggleTime < 180) return;
     lastToggleTime = now;
 
-    const sb = sidebar || document.querySelector('.sidebar, .admin-sidebar');
-    const ov = overlay || document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
+    const sb = getSidebar();
     if (!sb) return;
 
     const isOpen =
       sb.classList.contains('active') ||
       sb.classList.contains('open') ||
       sb.classList.contains('mobile-open');
-    if (isOpen) closeDrawer(sb, ov);
-    else openDrawer(sb, ov);
+
+    if (isOpen) {
+      closeDrawer();
+    } else {
+      openDrawer();
+    }
   }
 
-  function bindNavItems(sidebar, overlay) {
-    if (!sidebar) return;
-    const ov = overlay || document.getElementById('sidebarOverlay') || document.querySelector('.sidebar-overlay');
-    sidebar.querySelectorAll('.nav-item, .nav-link, a').forEach((item) => {
-      if (item.dataset.drawerCloseBound) return;
-      item.dataset.drawerCloseBound = '1';
-      item.addEventListener('click', () => {
-        if (window.innerWidth <= 992) closeDrawer(sidebar, ov);
-      });
-    });
-  }
+  // Export functions to window immediately
+  global.toggleMobileSidebar = toggleDrawer;
+  global.closeMobileSidebar = closeDrawer;
+  global.openMobileSidebar = openDrawer;
 
-  function bindDrawer(sidebar, overlay) {
-    const toggle = (e) => toggleDrawer(sidebar, overlay, e);
-
-    global.toggleMobileSidebar = toggle;
-
-    document.querySelectorAll(
-      '#sidebarToggle, #adminSidebarToggle, .sidebar-toggle, .hamburger, [data-toggle="sidebar"], .mobile-header .btn-header-action'
-    ).forEach((btn) => {
-      if (btn.classList.contains('mobile-logout-btn') || btn.title === 'Keluar') return;
+  function initUniversalNav() {
+    // 1. Module / Dashboard Sidebar Toggle Binding
+    const sidebarToggleBtns = document.querySelectorAll(
+      '#sidebarToggle, #adminSidebarToggle, .sidebar-toggle, .admin-menu-toggle, [data-toggle="sidebar"]'
+    );
+    sidebarToggleBtns.forEach((btn) => {
       if (btn.dataset.sidebarBound) return;
       btn.dataset.sidebarBound = '1';
-      btn.addEventListener('click', toggle);
+      btn.addEventListener('click', (e) => toggleDrawer(e));
     });
 
+    const overlay = getOverlay();
     if (overlay && !overlay.dataset.sidebarBound) {
       overlay.dataset.sidebarBound = '1';
       overlay.addEventListener('click', (e) => {
         if (e) e.stopPropagation();
-        closeDrawer(sidebar, overlay);
+        closeDrawer();
       });
     }
 
-    bindNavItems(sidebar, overlay);
+    // Auto-close sidebar drawer when navigating
+    const sidebar = getSidebar();
+    if (sidebar) {
+      sidebar.querySelectorAll('.nav-item, .nav-link, a').forEach((item) => {
+        if (item.dataset.drawerCloseBound) return;
+        item.dataset.drawerCloseBound = '1';
+        item.addEventListener('click', () => {
+          if (window.innerWidth <= 1024) closeDrawer();
+        });
+      });
+    }
 
-    if (!global.__sidebarResizeBound) {
-      global.__sidebarResizeBound = true;
-      window.addEventListener('resize', () => {
-        if (window.innerWidth > 992) closeDrawer(sidebar, overlay);
+    // 2. Landing / Public Page Hamburger (#hamburger -> #navLinksContainer / #navbarMenuWrapper)
+    const publicHamburger = document.getElementById('hamburger');
+    const publicNavMenu = document.getElementById('navLinksContainer') || document.getElementById('navbarMenuWrapper');
+
+    if (publicHamburger && publicNavMenu && !publicHamburger.dataset.navBound) {
+      publicHamburger.dataset.navBound = '1';
+      publicHamburger.addEventListener('click', (e) => {
+        if (e) e.stopPropagation();
+        const isActive = publicNavMenu.classList.toggle('active');
+        publicHamburger.classList.toggle('active');
+        publicHamburger.setAttribute('aria-expanded', isActive ? 'true' : 'false');
+      });
+
+      // Close menu when clicking any nav link
+      publicNavMenu.querySelectorAll('a, button').forEach((link) => {
+        link.addEventListener('click', () => {
+          publicNavMenu.classList.remove('active');
+          publicHamburger.classList.remove('active');
+          publicHamburger.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      // Close menu when clicking outside
+      document.addEventListener('click', (e) => {
+        if (publicNavMenu.classList.contains('active')) {
+          if (!publicNavMenu.contains(e.target) && !publicHamburger.contains(e.target)) {
+            publicNavMenu.classList.remove('active');
+            publicHamburger.classList.remove('active');
+            publicHamburger.setAttribute('aria-expanded', 'false');
+          }
+        }
+      });
+    }
+
+    // 3. Bot Ecosystem Hamburger (#mobileNavToggle -> #botNavMenu)
+    const botNavToggle = document.getElementById('mobileNavToggle');
+    const botNavMenu = document.getElementById('botNavMenu');
+
+    if (botNavToggle && botNavMenu && !botNavToggle.dataset.botNavBound) {
+      botNavToggle.dataset.botNavBound = '1';
+      botNavToggle.addEventListener('click', (e) => {
+        if (e) e.stopPropagation();
+        const isOpen = botNavMenu.classList.toggle('open');
+        botNavToggle.classList.toggle('open');
+        botNavToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+      });
+
+      botNavMenu.querySelectorAll('.nav-link, a, button').forEach((link) => {
+        link.addEventListener('click', () => {
+          botNavMenu.classList.remove('open');
+          botNavToggle.classList.remove('open');
+          botNavToggle.setAttribute('aria-expanded', 'false');
+        });
+      });
+
+      document.addEventListener('click', (e) => {
+        if (botNavMenu.classList.contains('open')) {
+          if (!botNavMenu.contains(e.target) && !botNavToggle.contains(e.target)) {
+            botNavMenu.classList.remove('open');
+            botNavToggle.classList.remove('open');
+            botNavToggle.setAttribute('aria-expanded', 'false');
+          }
+        }
       });
     }
   }
 
-  function init(options = {}) {
-    const sidebar =
-      document.querySelector(options.sidebarSelector || '.sidebar, .admin-sidebar');
-    if (!sidebar) return;
-
-    const isAdmin = sidebar.classList.contains('admin-sidebar');
-    const container =
-      document.querySelector('.dashboard-container') ||
-      document.querySelector('.admin-layout') ||
-      document.body;
-
-    if (!isAdmin) ensureMobileHeader(container);
-    const overlay = ensureOverlay();
-    bindDrawer(sidebar, overlay);
-  }
-
-  global.HyrostMobileLayout = { init, bindNavItems, open: openDrawer, close: closeDrawer, toggle: toggleDrawer };
+  // Run on DOM ready
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => init());
+    document.addEventListener('DOMContentLoaded', initUniversalNav);
   } else {
-    init();
+    initUniversalNav();
   }
+
+  window.addEventListener('resize', () => {
+    if (window.innerWidth > 1024) {
+      closeDrawer();
+    }
+  });
+
+  global.HyrostUniversalNav = {
+    init: initUniversalNav,
+    openSidebar: openDrawer,
+    closeSidebar: closeDrawer,
+    toggleSidebar: toggleDrawer
+  };
 })(window);
-
-
