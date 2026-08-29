@@ -1,20 +1,18 @@
 {
-  "name": "hyrost-website",
+  "name": "backend",
   "version": "1.0.0",
-  "description": "Hyrost Realm Website & Backend Core",
-  "main": "www/backend/server.js",
+  "description": "- Autentikasi (JWT, Google/email)\r - Role: admin & user\r - Membership (akses premium)\r - Forum (thread, reply, kategori)\r - Chat (pribadi & grup, real-time)\r - Dashboard admin",
+  "main": "backend/server.js",
   "scripts": {
-    "start": "node www/backend/server.js || node backend/server.js",
-    "dev": "nodemon www/backend/server.js",
-    "postinstall": "npm install --prefix www || true"
+    "start": "node backend/server.js",
+    "dev": "nodemon backend/server.js"
   },
-  "keywords": [
-    "hyrost",
-    "minecraft",
-    "web"
-  ],
-  "author": "Andwiko",
+  "keywords": [],
+  "author": "",
   "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^3.1.14"
+  },
   "dependencies": {
     "bcryptjs": "^2.4.3",
     "cors": "^2.8.5",
@@ -30,8 +28,5 @@
     "nodemailer": "^9.0.5",
     "qrcode": "^1.5.4",
     "speakeasy": "^2.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.14"
   }
 }

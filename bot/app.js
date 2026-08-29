@@ -941,8 +941,8 @@ function showToast(msg) {
  * -------------------------------------------------------------------------- */
 async function initBotInfoSync() {
   try {
-    const res = await fetch('data/bot-info.json');
-    if (!res.ok) return;
+    const res = await fetch('/data/bot-info.json').catch(() => null);
+    if (!res || !res.ok) return;
     const info = await res.json();
 
     const badgeEl = document.getElementById('botBrandBadge');
