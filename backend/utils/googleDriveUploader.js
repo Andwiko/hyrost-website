@@ -5,7 +5,10 @@
 
 const fs = require('fs');
 const path = require('path');
-const { google } = require('googleapis');
+let google = null;
+try {
+  google = require('googleapis').google;
+} catch (_) {}
 
 const SCOPES = ['https://www.googleapis.com/auth/drive.file'];
 

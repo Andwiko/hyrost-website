@@ -1,4 +1,19 @@
 const path = require("path");
+const Module = require("module");
+
+// Ensure node_modules paths are searched in container root and www root
+const extraPaths = [
+  path.resolve(__dirname, "../node_modules"),
+  path.resolve(__dirname, "../../node_modules"),
+  "/home/container/www/node_modules",
+  "/home/container/node_modules"
+];
+extraPaths.forEach(p => {
+  if (Module.globalPaths && !Module.globalPaths.includes(p)) {
+    Module.globalPaths.push(p);
+  }
+});
+
 let dotenv;
 try {
   dotenv = require("dotenv");

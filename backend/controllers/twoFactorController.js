@@ -1,7 +1,11 @@
 'use strict';
 
-const speakeasy = require('speakeasy');
-const QRCode = require('qrcode');
+let speakeasy = null;
+let QRCode = null;
+try {
+  speakeasy = require('speakeasy');
+  QRCode = require('qrcode');
+} catch (_) {}
 const pool = require('../config/mysql');
 
 exports.setup2FA = async (req, res) => {

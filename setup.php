@@ -195,8 +195,12 @@ if ($action === 'install-node') {
         $messageType = 'error';
     } else {
         $nodeDir = dirname($npmBin);
-        $cmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && {$npmBin} install express cors dotenv jsonwebtoken mysql2 bcryptjs mongoose multer nodemailer qrcode speakeasy google-auth-library googleapis --no-audit --no-fund 2>&1";
+        $cmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && export NODE_PATH=/home/container/www/node_modules:/home/container/node_modules && {$npmBin} install express cors dotenv jsonwebtoken mysql2 bcryptjs mongoose multer nodemailer qrcode speakeasy midtrans-client --no-audit --no-fund 2>&1";
         $output = shell_exec($cmd);
+        
+        // Also ensure installed in parent if needed
+        @shell_exec("cd {$containerRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && export NODE_PATH=/home/container/www/node_modules:/home/container/node_modules && {$npmBin} install express cors dotenv jsonwebtoken mysql2 bcryptjs mongoose multer nodemailer qrcode speakeasy midtrans-client --no-audit --no-fund 2>&1");
+        
         $message = "✅ Instalasi paket npm selesai!\n\n" . htmlspecialchars($output ?? '');
         $messageType = 'success';
     }
@@ -216,8 +220,8 @@ if ($action === 'install-node') {
         }
         @shell_exec("pkill -f 'backend/server.js' 2>/dev/null");
         
-        // Start backend in background
-        $startCmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
+        // Start backend in background with explicit NODE_PATH
+        $startCmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && export NODE_PATH=/home/container/www/node_modules:/home/container/node_modules && nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
         $newPid = trim(shell_exec($startCmd) ?? '');
         
         if (!empty($newPid) && intval($newPid) > 0) {
