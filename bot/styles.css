@@ -47,6 +47,10 @@
   --mei-magenta: var(--accent);
   --mei-cyan: var(--accent-cyan);
   --mei-purple: var(--accent-purple);
+  --mei-gold: #fbbf24;
+  --mei-emerald: #10b981;
+  --mei-pink: #ec4899;
+  --accent-pink: #ec4899;
   --text-dim: var(--text-muted);
   --text-placeholder: var(--text-faint);
   --border-glow: var(--border-mid);
