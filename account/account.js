@@ -50,7 +50,7 @@ async function loadUserProfile() {
     const localUserStr = localStorage.getItem('currentUser');
 
     if (!token && !localUserStr) {
-        window.location.href = '../auth/login.html';
+        window.location.href = '/?=Lg8In';
         return;
     }
 
@@ -82,7 +82,7 @@ async function loadUserProfile() {
             if (res.status === 401) {
                 localStorage.removeItem('hyrostToken');
                 localStorage.removeItem('currentUser');
-                window.location.href = '../auth/login.html';
+                window.location.href = '/?=Lg8In';
             }
             return;
         }
@@ -1500,7 +1500,7 @@ function setupEventListeners() {
                         localStorage.removeItem('currentUser');
                         localStorage.removeItem('hyrostToken');
                         setTimeout(() => {
-                            window.location.href = '../auth/login.html'; 
+                            window.location.href = '/?=Lg8In'; 
                         }, 2000);
                      } else {
                         showToast(data.message || 'Gagal menghapus akun', 'error');

@@ -70,7 +70,7 @@ function checkAuthentication() {
     const currentUserStr = localStorage.getItem('currentUser');
     
     if (!token || !currentUserStr) {
-        window.location.href = 'auth/login.html';
+        window.location.href = '/?=Lg8In';
         return;
     }
 
@@ -141,7 +141,7 @@ async function loadUserProfile() {
     }
 
     if (!token && !localUserStr) {
-        window.location.href = 'auth/login.html';
+        window.location.href = '/?=Lg8In';
         return;
     }
 

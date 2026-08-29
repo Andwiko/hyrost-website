@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 setTimeout(() => {
-                    window.location.href = '../dashboard.html';
+                    window.location.href = '/?=pv3Ad';
                 }, 1000);
             } else {
                 showMessage(data.message || 'Login gagal. Periksa kembali username/email dan password Anda.', 'error');
@@ -168,7 +168,7 @@ window.handleCredentialResponse = async function(response) {
         }
         
         setTimeout(() => {
-            window.location.href = '../dashboard.html';
+            window.location.href = '/?=pv3Ad';
         }, 1000);
     } else {
         if (messageDiv) {

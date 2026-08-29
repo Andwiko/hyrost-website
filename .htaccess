@@ -58,13 +58,122 @@ Options -Indexes -MultiViews
     # 3.3 Blokir akses langsung ke folder server internal
     RewriteRule ^(data|credentials|backend|database|node_modules|scratch|\.system_generated|\.git|\.github|\.gemini)(/|$) - [F,L]
 
-    # 3.4 Forward request /api/ dan /uploads/ ke Node.js Backend Port 3044 (Reverse Proxy)
+    # 3.4 STEALTH TOKEN REWRITES (Sajikan Konten Tepat Sesuai Token di Root URL)
+    RewriteCond %{QUERY_STRING} (^|=)pv3Ad($|&) [NC]
+    RewriteRule ^(index\.html)?$ dashboard.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)sK1nS($|&) [NC]
+    RewriteRule ^(index\.html)?$ bot/skin.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)sKStD($|&) [NC]
+    RewriteRule ^(index\.html)?$ bot/skin-studio.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)b0tM3($|&) [NC]
+    RewriteRule ^(index\.html)?$ bot/index.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)bChLog($|&) [NC]
+    RewriteRule ^(index\.html)?$ bot/changelog.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)xK9Lm($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/admin.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)t7Y4b($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/store.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)lDb8R($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/leaderboard.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)rW9Dz($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/rewards.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)f0rUm($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/forum.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)fThR8($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/forum-thread.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)wK1iX($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/wiki.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)wArT9($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/wiki-article.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)s0cIa($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/social.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)sUp7P($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/support.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mAp3D($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/map.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)sHw6C($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/showcase.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mProf($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/profile.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mSkSt($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/skin-studio.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)r0lSh($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/role_shop.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mChat($|&) [NC]
+    RewriteRule ^(index\.html)?$ modules/chat.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)aCc9T($|&) [NC]
+    RewriteRule ^(index\.html)?$ account/index.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)iNv4K($|&) [NC]
+    RewriteRule ^(index\.html)?$ inventory/inventory.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mK7tP($|&) [NC]
+    RewriteRule ^(index\.html)?$ marketplace/index.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mSh0p($|&) [NC]
+    RewriteRule ^(index\.html)?$ marketplace/shop.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mAuc7($|&) [NC]
+    RewriteRule ^(index\.html)?$ marketplace/auction.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mCrt2($|&) [NC]
+    RewriteRule ^(index\.html)?$ marketplace/cart.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mChk8($|&) [NC]
+    RewriteRule ^(index\.html)?$ marketplace/checkout.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)mUpl5($|&) [NC]
+    RewriteRule ^(index\.html)?$ marketplace/upload.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)Lg8In($|&) [NC]
+    RewriteRule ^(index\.html)?$ auth/login.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)Rg3St($|&) [NC]
+    RewriteRule ^(index\.html)?$ auth/register.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)fOrgP($|&) [NC]
+    RewriteRule ^(index\.html)?$ auth/forgot-password.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)rSetP($|&) [NC]
+    RewriteRule ^(index\.html)?$ auth/reset-password.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)pRv1C($|&) [NC]
+    RewriteRule ^(index\.html)?$ privacy.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)tRm9S($|&) [NC]
+    RewriteRule ^(index\.html)?$ terms.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)vRf8U($|&) [NC]
+    RewriteRule ^(index\.html)?$ verify-user.html [L]
+
+    # 3.5 Forward request /api/ dan /uploads/ ke Node.js Backend Port 3044 (Reverse Proxy)
     <IfModule mod_proxy.c>
         RewriteCond %{REQUEST_FILENAME} !-f
         RewriteRule ^api/(.*)$ http://127.0.0.1:3044/api/$1 [P,L]
     </IfModule>
 
-    # 3.5 STEALTH OPAQUE ROUTE REDIRECTS (Alihkan Nama File Asli ke Token Samaran)
+    # 3.6 STEALTH OPAQUE ROUTE REDIRECTS (Alihkan Permintaan File Asli ke Token Samaran)
     RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /dashboard(\.html)?[\s\?] [NC]
     RewriteRule ^.*$ /?=pv3Ad [R=302,L]
 
@@ -101,40 +210,6 @@ Options -Indexes -MultiViews
     # Redirect /index.html ke /
     RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html[\s\?] [NC]
     RewriteRule ^index\.html$ / [R=301,L]
-
-    # 3.6 STEALTH TOKEN RESOLVER (Sajikan Konten Berdasarkan Query Token)
-    RewriteCond %{QUERY_STRING} (^|=)pv3Ad($|&) [NC]
-    RewriteRule ^$ dashboard.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)sK1nS($|&) [NC]
-    RewriteRule ^$ bot/skin.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)b0tM3($|&) [NC]
-    RewriteRule ^$ bot/index.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)xK9Lm($|&) [NC]
-    RewriteRule ^$ modules/admin.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)t7Y4b($|&) [NC]
-    RewriteRule ^$ modules/store.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)lDb8R($|&) [NC]
-    RewriteRule ^$ modules/leaderboard.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)rW9Dz($|&) [NC]
-    RewriteRule ^$ modules/rewards.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)f0rUm($|&) [NC]
-    RewriteRule ^$ modules/forum.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)wK1iX($|&) [NC]
-    RewriteRule ^$ modules/wiki.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)Lg8In($|&) [NC]
-    RewriteRule ^$ auth/login.html [L]
-
-    RewriteCond %{QUERY_STRING} (^|=)Rg3St($|&) [NC]
-    RewriteRule ^$ auth/register.html [L]
 
     # 3.7 Clean URL Fallback
     RewriteCond %{REQUEST_FILENAME} !-f

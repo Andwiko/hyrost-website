@@ -133,7 +133,7 @@ async function handleGoogleLogin(response) {
 
         // Redirect to dashboard
         setTimeout(() => {
-            window.location.href = 'dashboard.html';
+            window.location.href = '/?=pv3Ad';
         }, 800);
     } catch (err) {
         console.error('Google Login Error:', err);
@@ -204,15 +204,14 @@ function goToDashboard() {
         return;
     }
     
-    window.location.href = 'dashboard.html';
+    window.location.href = '/?=pv3Ad';
 }
 
 // Show login page (formerly modal)
 function showLoginModal() {
-    window.location.href = 'auth/login.html';
+    window.location.href = '/?=Lg8In';
 }
 
-// Close login modal
 // Close login modal (Deprecated)
 function closeLoginModal() {
     // Modal removed
@@ -222,17 +221,16 @@ function closeLoginModal() {
 function handleLogin(event) {
     event.preventDefault();
     
-    const username = document.getElementById('username').value; // This input might be used for email if label says "Username/Email"
+    const username = document.getElementById('username').value;
     const password = document.getElementById('password').value;
     
     if (username && password) {
-        // Real login logic directly to backend
         fetch('/api/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ email: username, password: password }) // Backend expects email
+            body: JSON.stringify({ email: username, password: password })
         })
         .then(response => {
             if (!response.ok) throw new Error('Login failed');
@@ -252,7 +250,7 @@ function handleLogin(event) {
                 localStorage.setItem('hyrostToken', data.token);
                 
                 closeLoginModal();
-                window.location.href = 'dashboard.html';
+                window.location.href = '/?=pv3Ad';
             } else {
                 throw new Error(data.message || 'Login failed');
             }
