@@ -1,6 +1,26 @@
 /**
  * Hyrost — shared mobile sidebar drawer for dashboard-layout pages.
  */
+(function enforceCleanUrl() {
+  try {
+    if (typeof window === 'undefined' || !window.location || !window.history || !window.history.replaceState) return;
+    const p = window.location.pathname;
+    let clean = null;
+
+    if (p.endsWith('/index.html')) {
+      clean = p.slice(0, -10) || '/';
+    } else if (p === '/index.html' || p === 'index.html') {
+      clean = '/';
+    } else if (p.endsWith('.html')) {
+      clean = p.slice(0, -5);
+    }
+
+    if (clean !== null && clean !== p) {
+      window.history.replaceState(null, '', clean + window.location.search + window.location.hash);
+    }
+  } catch (_) {}
+})();
+
 (function (global) {
   function assetPath(file) {
     const p = window.location.pathname.toLowerCase();

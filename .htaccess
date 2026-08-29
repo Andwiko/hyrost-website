@@ -1,6 +1,6 @@
 # =============================================================================
 # HYROST Web & API Server Configuration (.htaccess)
-# Web Security Hardening, Path Traversal Shield & Reverse Proxy Routing
+# Web Security Hardening, Path Traversal Shield & Clean URL Pretty Routing
 # =============================================================================
 
 # 1. Nonaktifkan Directory Listing (Mencegah penjelajahan isi folder publik)
@@ -35,7 +35,7 @@ Options -Indexes -MultiViews
     </FilesMatch>
 </IfModule>
 
-# 3. Web Application Firewall (WAF) & URL Protection Rules
+# 3. Web Application Firewall (WAF) & Clean URL Pretty Routing Rules
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -64,7 +64,25 @@ Options -Indexes -MultiViews
         RewriteRule ^api/(.*)$ http://127.0.0.1:3044/api/$1 [P,L]
     </IfModule>
 
-    # 3.5 Clean URL routing untuk file HTML statis
+    # 3.5 CANONICAL CLEAN URL REDIRECTS (Sembunyikan dan Hapus .html dari Browser Address Bar)
+    # Redirect /index.html ke /
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html[\s\?] [NC]
+    RewriteRule ^index\.html$ / [R=301,L]
+
+    # Redirect subfolder/index.html ke /subfolder/
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /(.*)/index\.html[\s\?] [NC]
+    RewriteRule ^(.*)/index\.html$ /$1/ [R=301,L]
+
+    # Redirect file *.html ke URL Bersih tanpa .html
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^\s]+)\.html[\s\?] [NC]
+    RewriteRule ^(.*)\.html$ /$1 [R=301,L]
+
+    # 3.6 CLEAN URL INTERNAL REWRITE (Sajikan file .html di balik layar tanpa merubah URL)
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{DOCUMENT_ROOT}/$1.html -f
+    RewriteRule ^(.+)$ $1.html [L]
+
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME}.html -f
