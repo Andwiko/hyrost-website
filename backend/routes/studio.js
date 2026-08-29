@@ -183,31 +183,67 @@ router.post('/redeem-key', verifyToken, async (req, res) => {
     let isValidKey = false;
     let planDays   = defaultDays;
 
-    // Format 1: HMAC-signed — MEI-VIP-{DAYS}-{8-char HEX}
-    const hmacPattern = /^MEI-[A-Z0-9]{2,10}-(\d{1,3})-([A-F0-9]{8})$/;
-    const hmacMatch   = normalized.match(hmacPattern);
-    if (hmacMatch) {
-      const daysPart = parseInt(hmacMatch[1], 10);
-      const hmacPart = hmacMatch[2];
-      const payload  = normalized.slice(0, -(hmacPart.length + 1));
-      const expected = crypto.createHmac('sha256', hmacSecret)
-        .update(payload).digest('hex').toUpperCase().substring(0, 8);
-      if (hmacPart === expected && daysPart >= 1 && daysPart <= 365) {
-        isValidKey = true;
-        planDays   = daysPart;
+    // Promo Codes List
+    const PROMO_CODES = {
+      'MEILABS2026': 30,
+      'HYROSTVIP': 30,
+      'VIPSTUDIO30': 30,
+      'MEIVIP30': 30,
+      'MEIVIP7': 7,
+      'MEIPRO': 30,
+      'STUDIOPRO': 30,
+      'FREEVIP': 7
+    };
+
+    if (PROMO_CODES[normalized]) {
+      isValidKey = true;
+      planDays = PROMO_CODES[normalized];
+    }
+
+    // Format 1: HMAC-signed with salt — MEI-VIP-{DAYS}-{SALT}-{HMAC} (e.g. MEI-VIP-30-7B2F1A-A3F7C2E1)
+    if (!isValidKey) {
+      const hmacSaltPattern = /^MEI-[A-Z0-9]{2,10}-(\d{1,3})-([A-F0-9]{4,10})-([A-F0-9]{8})$/;
+      const matchWithSalt = normalized.match(hmacSaltPattern);
+      if (matchWithSalt) {
+        const daysPart = parseInt(matchWithSalt[1], 10);
+        const hmacPart = matchWithSalt[3];
+        const payload = normalized.slice(0, -(hmacPart.length + 1));
+        const expected = crypto.createHmac('sha256', hmacSecret)
+          .update(payload).digest('hex').toUpperCase().substring(0, 8);
+        if (hmacPart === expected && daysPart >= 1 && daysPart <= 365) {
+          isValidKey = true;
+          planDays = daysPart;
+        }
       }
     }
 
-    // Format 2: Legacy — MEI-... length >= 12
-    if (!isValidKey && normalized.startsWith('MEI-') && normalized.length >= 12) {
+    // Format 2: HMAC-signed simple — MEI-VIP-{DAYS}-{HMAC} (e.g. MEI-VIP-30-A3F7C2E1)
+    if (!isValidKey) {
+      const hmacPattern = /^MEI-[A-Z0-9]{2,10}-(\d{1,3})-([A-F0-9]{8})$/;
+      const hmacMatch = normalized.match(hmacPattern);
+      if (hmacMatch) {
+        const daysPart = parseInt(hmacMatch[1], 10);
+        const hmacPart = hmacMatch[2];
+        const payload = normalized.slice(0, -(hmacPart.length + 1));
+        const expected = crypto.createHmac('sha256', hmacSecret)
+          .update(payload).digest('hex').toUpperCase().substring(0, 8);
+        if (hmacPart === expected && daysPart >= 1 && daysPart <= 365) {
+          isValidKey = true;
+          planDays = daysPart;
+        }
+      }
+    }
+
+    // Format 3: Legacy Prefix — MEI-... length >= 10
+    if (!isValidKey && normalized.startsWith('MEI-') && normalized.length >= 10) {
       isValidKey = true;
-      planDays   = defaultDays;
+      planDays = defaultDays;
     }
 
     if (!isValidKey) {
       return res.status(400).json({
         success: false,
-        message: 'Format kode lisensi tidak valid. Contoh: MEI-VIP-30-A3F7C2E1'
+        message: 'Format kode lisensi tidak valid. Contoh: MEI-VIP-30-7B2F1A-A3F7C2E1 atau MEILABS2026'
       });
     }
 
@@ -762,15 +798,28 @@ router.post('/admin/approve-order/:orderId', verifyToken, verifyAdmin, async (re
   }
 });
 
-// POST /api/studio/admin/reject-order/:orderId
-router.post('/admin/reject-order/:orderId', verifyToken, verifyAdmin, async (req, res) => {
+// POST /api/studio/admin/generate-keys
+router.post('/admin/generate-keys', verifyToken, verifyAdmin, async (req, res) => {
   try {
-    const { orderId } = req.params;
-    await getPool().execute(
-      "UPDATE studio_orders SET status = 'rejected', approved_by = ? WHERE order_id = ?",
-      [req.user.id, orderId]
-    );
-    res.json({ success: true, message: `Order ${orderId} telah ditolak.` });
+    const days = parseInt(req.body.days || '30', 10);
+    const count = Math.min(Math.max(parseInt(req.body.count || '1', 10), 1), 50);
+    const hmacSecret = process.env.STUDIO_LICENSE_HMAC_SECRET || process.env.JWT_SECRET || 'mei-labs-studio-key';
+
+    const keys = [];
+    for (let i = 0; i < count; i++) {
+      const salt = crypto.randomBytes(3).toString('hex').toUpperCase();
+      const payload = `MEI-VIP-${days}-${salt}`;
+      const hmac = crypto.createHmac('sha256', hmacSecret).update(payload).digest('hex').toUpperCase().substring(0, 8);
+      keys.push(`${payload}-${hmac}`);
+    }
+
+    res.json({
+      success: true,
+      message: `✅ Berhasil membuat ${count} kode lisensi VIP (${days} hari)`,
+      days,
+      count,
+      keys
+    });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
