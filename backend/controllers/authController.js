@@ -158,8 +158,23 @@ exports.login = async (req, res) => {
       return res.status(401).json({ message: "Kredensial tidak valid atau akun telah dinonaktifkan" });
     }
 
-    // Validate password
-    const isMatch = await bcrypt.compare(password, user.password);
+    // Validate password (supports bcrypt hash and plain-text auto-upgrade)
+    let isMatch = false;
+    if (user.password) {
+      if (user.password.startsWith('$2a$') || user.password.startsWith('$2b$') || user.password.startsWith('$2y$')) {
+        isMatch = await bcrypt.compare(password, user.password);
+      } else {
+        isMatch = (password === user.password);
+        if (isMatch) {
+          try {
+            const salt = await bcrypt.genSalt(10);
+            const upgradedHash = await bcrypt.hash(password, salt);
+            await pool.execute('UPDATE users SET password = ? WHERE id = ?', [upgradedHash, user.id]);
+          } catch (_) {}
+        }
+      }
+    }
+
     if (!isMatch) {
       logSecurityEvent('LOGIN_FAILED_WRONG_PASSWORD', { username: user.username, userId: user.id, ip, status: 'WARN' });
       return res.status(401).json({ message: "Password yang Anda masukkan salah" });

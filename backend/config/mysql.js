@@ -38,11 +38,13 @@ const connectionReady = (async () => {
         isConnected = false;
         console.log('⚠️ MySQL Database Unreachable:', err.message);
         console.log('⚡ Active: IN-MEMORY FALLBACK MODE (Local Testing Active)');
-        await seedInMemoryAdmin(inMemoryStore);
         const loaded = await localDbSync.loadInto(inMemoryStore);
         if (loaded) {
             console.log('📂 Loaded local file store: data/store/database.json');
         }
+        await seedInMemoryAdmin(inMemoryStore);
+        await localDbSync.persistImmediate(inMemoryStore);
+        console.log('✅ Admin user credentials synchronized from .env to local store.');
     }
 })();
 
