@@ -1,24 +1,25 @@
 /**
  * Hyrost Service Worker
  * Smart PWA Cache Engine — Network-First for HTML & Stale-While-Revalidate for Assets
- * Version: 2026-v20
+ * Version: 2026-v30
+ *
+ * PENTING: URL dengan query string stealth token (/?=TOKEN) TIDAK di-cache.
+ * Server Express yang menangani routing tersebut secara dinamis.
  */
 
-const CACHE_NAME = 'hyrost-v20';
+const CACHE_NAME = 'hyrost-v30';
 
+// Hanya cache static assets, BUKAN halaman HTML dinamis
 const PRECACHE_ASSETS = [
-  '/',
-  '/index.html',
-  '/dashboard.html',
-  '/dashboard.css',
-  '/dashboard.js',
   '/styles.css',
   '/favicon.ico',
   '/favicon.png',
-  '/assets/images/hyrost.png'
+  '/assets/images/hyrost.png',
+  '/dashboard.css',
+  '/manifest.json'
 ];
 
-// Install: precache essential assets & immediately activate
+// Install: precache static assets & immediately activate
 self.addEventListener('install', (event) => {
   self.skipWaiting();
   event.waitUntil(
@@ -49,7 +50,7 @@ self.addEventListener('activate', (event) => {
 // Fetch: Strategy based on request type
 self.addEventListener('fetch', (event) => {
   const req = event.request;
-  
+
   // Ignore unsupported schemes (chrome-extension, moz-extension, etc)
   if (!req.url.startsWith('http://') && !req.url.startsWith('https://')) {
     return;
@@ -57,38 +58,63 @@ self.addEventListener('fetch', (event) => {
 
   const url = new URL(req.url);
 
-  // 1. Never cache non-GET or /api/ requests
-  if (req.method !== 'GET' || url.pathname.startsWith('/api/') || url.pathname.startsWith('/socket.io/')) {
+  // ─── CRITICAL: JANGAN intercept URL dengan stealth token atau query string ───
+  // URL seperti /?=pv3Ad, /?=f0rUm, dll. harus langsung ke server Express.
+  if (url.search && url.search.length > 1) {
+    return; // Biarkan browser fetch langsung ke server, tanpa service worker
+  }
+
+  // Jangan intercept: non-GET, /api/, /socket.io/, /uploads/
+  if (
+    req.method !== 'GET' ||
+    url.pathname.startsWith('/api/') ||
+    url.pathname.startsWith('/socket.io/') ||
+    url.pathname.startsWith('/uploads/')
+  ) {
     return;
   }
 
-  const isHTML = req.mode === 'navigate' || (req.headers.get('accept') && req.headers.get('accept').includes('text/html'));
+  const isHTML =
+    req.mode === 'navigate' ||
+    (req.headers.get('accept') && req.headers.get('accept').includes('text/html'));
 
   if (isHTML) {
-    // 2. HTML NAVIGATION: Network-First strategy
-    // Always fetch fresh HTML from server so updates appear immediately without Shift+F5
+    // HTML NAVIGATION: Selalu Network-First — JANGAN fallback ke index.html
+    // karena halaman berbeda punya konten berbeda (dashboard vs forum vs leaderboard)
     event.respondWith(
       fetch(req)
         .then((networkResponse) => {
           if (networkResponse && networkResponse.status === 200) {
-            const responseClone = networkResponse.clone();
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(req, responseClone);
-            });
+            // Cache hanya halaman root / dan static HTML tanpa query string
+            if (!url.search) {
+              const responseClone = networkResponse.clone();
+              caches.open(CACHE_NAME).then((cache) => {
+                cache.put(req, responseClone);
+              });
+            }
           }
           return networkResponse;
         })
         .catch(() => {
-          // If offline or network fails, fall back to cached HTML
+          // Offline: gunakan cache jika ada, jika tidak tampilkan halaman offline
           return caches.match(req).then((cached) => {
-            return cached || caches.match('/index.html') || caches.match('/');
+            if (cached) return cached;
+            // Hanya fallback ke index.html jika URL memang root
+            if (url.pathname === '/' && !url.search) {
+              return caches.match('/');
+            }
+            // Jangan fallback sembarang ke index.html — biarkan error network muncul
+            return new Response('<h1>Offline</h1><p>Tidak ada koneksi internet.</p>', {
+              status: 503,
+              headers: { 'Content-Type': 'text/html' }
+            });
           });
         })
     );
     return;
   }
 
-  // 3. STATIC ASSETS (CSS, JS, Images, Fonts): Stale-While-Revalidate strategy
+  // STATIC ASSETS (CSS, JS, Images, Fonts): Stale-While-Revalidate strategy
   event.respondWith(
     caches.match(req).then((cachedResponse) => {
       const fetchPromise = fetch(req)
@@ -123,7 +149,7 @@ self.addEventListener('push', (event) => {
     icon: data.icon || '/assets/images/hyrost.png',
     badge: '/assets/images/hyrost.png',
     data: {
-      url: data.url || '/dashboard.html'
+      url: data.url || '/?=pv3Ad'
     }
   };
 
@@ -133,12 +159,15 @@ self.addEventListener('push', (event) => {
 // Notification Click Event Listener
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = (event.notification.data && event.notification.data.url) ? event.notification.data.url : '/dashboard.html';
+  const targetUrl = (event.notification.data && event.notification.data.url)
+    ? event.notification.data.url
+    : '/?=pv3Ad';
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
       for (const client of clientList) {
-        if (client.url.includes(targetUrl) && 'focus' in client) {
+        if (client.url.includes('hyrost') && 'focus' in client) {
+          client.navigate(targetUrl);
           return client.focus();
         }
       }
@@ -148,4 +177,3 @@ self.addEventListener('notificationclick', (event) => {
     })
   );
 });
-
