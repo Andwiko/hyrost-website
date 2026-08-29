@@ -2,7 +2,7 @@
 <html lang="id">
 <head>
     <base href="/">
-  <meta charset="UTF-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hyrost Wiki - Article</title>
     <!-- Core Styles -->
@@ -129,8 +129,8 @@
             <header class="content-header">
                 <div class="header-title-row">
                     <h1>Wiki Reader</h1>
-                     <!-- Notification System -->
-                     <div class="notification-wrapper">
+                    <!-- Notification System -->
+                    <div class="notification-wrapper">
                         <button class="icon-btn notification-btn" id="notificationBtn">
                             <i class="fas fa-bell"></i>
                             <span class="notification-badge" id="notificationBadge">0</span>
@@ -144,7 +144,7 @@
                                 <!-- Items inserted by JS -->
                             </div>
                             <div class="dropdown-footer">
-                                <a href="#">View All</a>
+                                <a href="/modules/wiki.html">View All</a>
                             </div>
                         </div>
                     </div>
@@ -163,13 +163,13 @@
 
                     <p>Selamat datang di panduan farming Hyrost! Di sini kami akan membahas cara terbaik untuk mendapatkan Gold dengan cepat di awal permainan.</p>
 
-                    <h2>1. Mining di Resource World</h2>
+                    <h2 id="section-mining">1. Mining di Resource World</h2>
                     <p>Resource World adalah tempat terbaik untuk mencari ore. Berbeda dengan Survival World, dunia ini di-reset setiap minggu.</p>
                     <div class="wiki-alert info">
                         <strong>Tips Pro:</strong> Gunakan pickaxe dengan enchantment Fortune III untuk hasil maksimal.
                     </div>
 
-                    <h2>2. Menjual Hasil Tani</h2>
+                    <h2 id="section-farming">2. Menjual Hasil Tani</h2>
                     <p>Pertanian otomatis seperti Pumpkin dan Melon sangat menguntungkan jika dijual ke Server Shop.</p>
                     <ul>
                         <li>Harga Pumpkin: 10G / stack</li>
@@ -177,7 +177,7 @@
                         <li>Harga Wheat: 12G / stack</li>
                     </ul>
 
-                    <h2>3. Mengikuti Event Mancing</h2>
+                    <h2 id="section-event">3. Mengikuti Event Mancing</h2>
                     <p>Setiap hari Sabtu pukul 19:00 WIB, ada event memancing di spawn dengan hadiah ikan langka yang bisa dijual mahal.</p>
                     
                     <div class="wiki-alert warn">
@@ -188,25 +188,24 @@
                 <aside class="article-sidebar">
                     <h4>Daftar Isi</h4>
                     <ul class="toc-list">
-                        <li><a href="#">1. Mining di Resource World</a></li>
-                        <li><a href="#">2. Menjual Hasil Tani</a></li>
-                        <li><a href="#">3. Mengikuti Event Mancing</a></li>
+                        <li><a href="#section-mining">1. Mining di Resource World</a></li>
+                        <li><a href="#section-farming">2. Menjual Hasil Tani</a></li>
+                        <li><a href="#section-event">3. Mengikuti Event Mancing</a></li>
                     </ul>
 
                     <h4 style="margin-top:30px;">Artikel Terkait</h4>
                     <ul class="toc-list">
-                        <li><a href="#">Panduan Job Miner</a></li>
-                        <li><a href="#">Cara Membuat Toko</a></li>
+                        <li><a href="/modules/wiki.html">Panduan Job Miner</a></li>
+                        <li><a href="/modules/wiki.html">Cara Membuat Toko</a></li>
                     </ul>
                 </aside>
             </div>
-
         </main>
     </div>
 
     <script src="/inventory/inventory.js"></script>
     <script src="/assets/js/notifications.js"></script>
     <script src="/assets/js/server_status.js"></script>
-  <script src="/assets/js/mobileLayout.js"></script>
+    <script src="/assets/js/mobileLayout.js"></script>
 </body>
 </html>
