@@ -86,8 +86,8 @@ async function createRankOrder(userId, { rankName, paymentMethod = 'qris', promo
   const tripayCfg   = await resolveTripayConfig();
   const manualCfg   = await resolvePaymentManualConfig();
 
-  const isTripay = paymentMethod === 'tripay' || paymentMethod.startsWith('tripay_');
-  const isManual = paymentMethod === 'manual' || paymentMethod === 'qris_manual';
+  const isTripay = paymentMethod === 'tripay' || paymentMethod.startsWith('tripay_') || (paymentMethod === 'qris' && tripayCfg.enabled);
+  const isManual = paymentMethod === 'manual' || paymentMethod === 'qris_manual' || (!tripayCfg.enabled && !midtransCfg.enabled);
   const isMidtrans = !isTripay && !isManual && midtransCfg.enabled;
 
   let midtransToken = null;

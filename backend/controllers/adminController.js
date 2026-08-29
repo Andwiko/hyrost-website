@@ -838,20 +838,39 @@ let globalPaymentSettings = {
     mandiri_va_number: "88012398471230",
     qris_image_url: "https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=HYROST_REALM_QRIS_PAYMENT_GATEWAY",
     tax_rate: 0,
-    // Midtrans Payment Gateway Configuration
-    midtrans_enabled: process.env.MIDTRANS_ENABLED !== 'false',
-    midtrans_is_production: process.env.MIDTRANS_IS_PRODUCTION === 'true',
+    // Midtrans Payment Gateway Configuration (Disabled by default)
+    midtrans_enabled: false,
+    midtrans_is_production: false,
     midtrans_server_key: process.env.MIDTRANS_SERVER_KEY || '',
     midtrans_client_key: process.env.MIDTRANS_CLIENT_KEY || '',
     midtrans_merchant_id: process.env.MIDTRANS_MERCHANT_ID || '',
+
+    // Tripay Payment Gateway Configuration (Opsi 1)
+    tripay_enabled: true,
+    tripay_is_production: false,
+    tripay_api_key: process.env.TRIPAY_API_KEY || '',
+    tripay_private_key: process.env.TRIPAY_PRIVATE_KEY || '',
+    tripay_merchant_code: process.env.TRIPAY_MERCHANT_CODE || '',
+
+    // Manual QRIS & Bank Transfer Configuration (Opsi 5)
+    manual_enabled: true,
+    manual_qris_image: process.env.MANUAL_QRIS_IMAGE || '',
+    manual_bank_name: process.env.MANUAL_BANK_NAME || 'BCA / DANA / GoPay',
+    manual_account_number: process.env.MANUAL_ACCOUNT_NUMBER || '08123456789',
+    manual_account_name: process.env.MANUAL_ACCOUNT_NAME || 'Hyrost Admin',
+    manual_whatsapp: process.env.MANUAL_WHATSAPP || '628123456789',
+    manual_instructions: process.env.MANUAL_PAYMENT_INSTRUCTIONS || 'Transfer nominal tepat lalu kirim bukti ke WhatsApp.',
+
     saweria_url: process.env.STUDIO_SAWERIA_URL || 'https://saweria.co/meilabs'
 };
 
 exports.getPaymentSettings = async (req, res) => {
     try {
-        // Start with env defaults
-        globalPaymentSettings.midtrans_enabled = process.env.MIDTRANS_ENABLED !== 'false';
+        globalPaymentSettings.midtrans_enabled = process.env.MIDTRANS_ENABLED === 'true';
         globalPaymentSettings.midtrans_is_production = process.env.MIDTRANS_IS_PRODUCTION === 'true';
+        globalPaymentSettings.tripay_enabled = process.env.TRIPAY_ENABLED !== 'false';
+        globalPaymentSettings.manual_enabled = process.env.MANUAL_ENABLED !== 'false';
+
         if (process.env.MIDTRANS_SERVER_KEY && !globalPaymentSettings.midtrans_server_key) {
             globalPaymentSettings.midtrans_server_key = process.env.MIDTRANS_SERVER_KEY;
         }

@@ -2568,14 +2568,23 @@ async function selectPremiumPlan(planKey, planName, priceStr) {
 
       // Jika redirect checkout URL
       if (checkoutUrl) {
-        if (typeof showToast === 'function') showToast('🚀 Mengarahkan ke halaman pembayaran...');
+        if (typeof showToast === 'function') showToast('🚀 Mengarahkan ke halaman pembayaran Tripay...');
         setTimeout(() => { window.location.href = checkoutUrl; }, 600);
         return;
       }
     }
   }
 
-  // 2. Fallback ke Midtrans Snap jika Tripay tidak aktif atau gagal
+  // 2. Jika Midtrans aktif, coba Snap; jika Midtrans nonaktif, langsung buka Transfer Manual & QRIS Statis
+  const isMidtransEnabled = cfgOk && cfgData && cfgData.midtrans && cfgData.midtrans.enabled;
+  if (!isMidtransEnabled) {
+    if (typeof showToast === 'function') {
+      showToast('💡 Menggunakan metode QRIS Statis & Transfer Manual (0% Fee)...');
+    }
+    selectManualPlan(planKey, planName, priceStr);
+    return;
+  }
+
   await loadSnapJs();
 
   const { ok: mOk, data: mData } = await studioApiFetch('create-payment', {
@@ -2586,7 +2595,7 @@ async function selectPremiumPlan(planKey, planName, priceStr) {
 
   if (!mOk || !mData || !mData.success) {
     if (typeof showToast === 'function') {
-      showToast('❌ Gateway online belum siap. Mengalihkan ke opsi Transfer Manual...');
+      showToast('💡 Mengalihkan ke opsi QRIS Statis & Transfer Manual...');
     }
     selectManualPlan(planKey, planName, priceStr);
     return;

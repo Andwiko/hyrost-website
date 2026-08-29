@@ -1497,6 +1497,9 @@ async function testMidtransConnection() {
       toast(data.message || "Koneksi Midtrans gagal", "error");
     }
   }
+}
+window.testMidtransConnection = testMidtransConnection;
+
 function updateTripayModeBadge() {
   const isProd = document.getElementById('payTripayIsProduction')?.checked;
   const label = document.getElementById('tripayModeLabel');
@@ -1924,5 +1927,4 @@ window.rejectPaymentOrder = async (id) => {
   loadPaymentOrders();
 };
 window.deletePaymentMethodAdmin = deletePaymentMethodAdmin;
-
 

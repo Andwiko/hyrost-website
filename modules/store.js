@@ -495,7 +495,7 @@ async function loadStoreSnapJs() {
     try {
         const res = await fetch('/api/studio/config');
         const data = await res.json();
-        if (!data || !data.success || !data.midtransClientKey) {
+        if (!data || !data.success || !data.midtrans?.enabled || !data.midtransClientKey) {
             _storeSnapLoading = false;
             return false;
         }
