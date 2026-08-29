@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const params = new URLSearchParams(window.location.search);
     threadId = params.get('id');
     if (!threadId) {
-        window.location.href = '/modules/forum.html';
+        window.location.href = '/?=f0rUm';
         return;
     }
 
@@ -166,7 +166,7 @@ function renderThread(thread) {
     const actionsDiv = document.getElementById('threadDetailActions');
     if (actionsDiv) {
         let html = '';
-        if (isOwner) html += `<button class="thread-action-btn btn-edit-thread" onclick="window.location.href='/modules/forum.html'" title="Edit"><i class="fas fa-edit"></i></button>`;
+        if (isOwner) html += `<button class="thread-action-btn btn-edit-thread" onclick="window.location.href='/?=f0rUm'" title="Edit"><i class="fas fa-edit"></i></button>`;
         if (isAdmin)  html += `
             <button class="thread-action-btn btn-pin" onclick="pinThread()" title="${thread.is_pinned ? 'Unpin' : 'Pin'}"><i class="fas fa-thumbtack"></i></button>
             <button class="thread-action-btn btn-delete-thread" onclick="deleteThread()" title="Hapus"><i class="fas fa-trash"></i></button>`;
@@ -396,7 +396,7 @@ async function deleteThread() {
         });
         if (res.ok) {
             showToast('Thread dihapus.', 'success');
-            setTimeout(() => { window.location.href = '/modules/forum.html'; }, 1000);
+            setTimeout(() => { window.location.href = '/?=f0rUm'; }, 1000);
         }
     } catch (err) { showToast('Error: ' + err.message, 'error'); }
 }

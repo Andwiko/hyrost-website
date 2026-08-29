@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 
                 setTimeout(() => {
-                    window.location.href = '/dashboard.html';
+                    window.location.href = '/?=pv3Ad';
                 }, 1000);
             } else {
                 showMessage(data.message || 'Registrasi gagal. Pastikan data valid dan email belum pernah digunakan.', 'error');

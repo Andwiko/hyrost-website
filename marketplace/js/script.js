@@ -233,7 +233,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             alert('Terima kasih! Pesanan Anda telah diterima. Kami akan memprosesnya segera.');
             localStorage.removeItem('cart');
-            window.location.href = '/marketplace/index.html';
+            window.location.href = '/?=mK7tP';
         });
 
         renderOrderSummary();
@@ -294,7 +294,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     messageDiv.style.color = 'green';
                     uploadForm.reset();
                     setTimeout(() => {
-                        window.location.href = '/marketplace/index.html';
+                        window.location.href = '/?=mK7tP';
                     }, 2000);
                 } else {
                     throw new Error(result.message || 'Gagal mengupload item');
