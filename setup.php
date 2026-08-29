@@ -259,7 +259,7 @@ $isExpressInstalled = file_exists($wwwRoot . '/node_modules/express') || file_ex
 // Auto-start if ready and not running
 if (!$runningPid && !$port3044Ok && $isExpressInstalled && empty($action) && $nodeBin) {
     $nodeDir = dirname($nodeBin);
-    $startCmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
+    $startCmd = "cd {$wwwRoot} && export HOME=/home/container && export PATH={$nodeDir}:\$PATH && export NODE_PATH=/home/container/www/node_modules:/home/container/node_modules && nohup {$nodeBin} backend/server.js >> {$logFile} 2>&1 & echo $!";
     $newPid = trim(shell_exec($startCmd) ?? '');
     if (!empty($newPid) && intval($newPid) > 0) {
         file_put_contents($pidFile, $newPid);
