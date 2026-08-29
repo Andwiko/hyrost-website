@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
+    <base href="/">
   <script src="/assets/js/stealthRouter.js"></script>
     <meta charset="UTF-8" />
     <script>
@@ -8,8 +9,8 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Login - Hyrost</title>
-    <link rel="icon" type="image/png" href="../assets/images/hyrost.png" />
-    <link rel="stylesheet" href="auth.css" />
+    <link rel="icon" type="image/png" href="/assets/images/hyrost.png" />
+    <link rel="stylesheet" href="/auth/auth.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,7 +31,7 @@
           </a>
           <div class="logo-area">
             <img
-              src="../assets/images/hyrost.png"
+              src="/assets/images/hyrost.png"
               alt="Hyrost Logo"
               class="logo-img"
               style="width:54px; height:54px; border-radius:12px;"
@@ -148,7 +149,7 @@
       </div>
     </div>
 
-    <script src="login.js?v=20"></script>
+    <script src="/auth/login.js?v=20"></script>
     <script>
       function togglePasswordVisibility() {
         const passwordInput = document.getElementById("password");

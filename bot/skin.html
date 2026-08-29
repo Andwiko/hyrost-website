@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
+    <base href="/">
   <script src="/assets/js/stealthRouter.js"></script>
   <meta charset="UTF-8">
   <script>
@@ -13,15 +14,15 @@
   <meta name="theme-color" content="#FF3385">
 
   <!-- Favicon & Fonts -->
-  <link rel="icon" type="image/jpeg" href="assets/images/mei-avatar.jpg">
+  <link rel="icon" type="image/jpeg" href="/bot/assets/images/mei-avatar.jpg">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=Instrument+Sans:ital,wght@0,400;0,500;0,600;1,400&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
   <!-- Core Bot Stylesheet & Modular Studio Stylesheet -->
-  <link rel="stylesheet" href="styles.css?v=56">
-  <link rel="stylesheet" href="skin.css?v=56">
+  <link rel="stylesheet" href="/bot/styles.css?v=56">
+  <link rel="stylesheet" href="/bot/skin.css?v=56">
 
   <!-- SkinView3D WebGL Library & GifShot Animation Library -->
   <script src="https://cdn.jsdelivr.net/npm/skinview3d@3.0.1/bundles/skinview3d.bundle.js"></script>
@@ -40,7 +41,7 @@
   <header class="header-container">
     <div class="nav-wrap">
       <a href="/" class="brand" aria-label="Beranda Mei Labs">
-        <img src="assets/images/mei-avatar.jpg" alt="Mei Avatar" class="brand-avatar" onerror="this.src='assets/images/mei-avatar.jpg'">
+        <img src="assets/images/mei-avatar.jpg" alt="Mei Avatar" class="brand-avatar" onerror="this.src='/bot/assets/images/mei-avatar.jpg'">
         <span class="brand-name">Mei Labs<span class="brand-dot">.</span></span>
         <span class="chip bot-version-text" id="botBrandBadge" style="margin-left: 4px;">v2.54.24</span>
       </a>
@@ -1296,7 +1297,7 @@
         <div class="ad-creative-card">
           <div class="ad-creative-badge">SPONSORED CLOUD NODE</div>
           <div class="ad-creative-logo">
-            <img src="assets/images/mei-avatar.jpg" alt="Mei Labs" class="ad-brand-icon">
+            <img src="/bot/assets/images/mei-avatar.jpg" alt="Mei Labs" class="ad-brand-icon">
             <div>
               <h4 style="margin:0; color:#fff; font-size:1.05rem;">Mei Labs Cloud &amp; Game Server Node</h4>
               <p style="margin:4px 0 0; font-size:0.75rem; color:var(--text-muted);">Hosting Bot Discord 24/7 &amp; Server Minecraft Indonesia Anti-DDoS</p>
@@ -1345,11 +1346,11 @@
   </footer>
 
   <!-- Modular Scripts -->
-  <script src="app.js?v=28"></script>
+  <script src="/bot/app.js?v=28"></script>
 
   <!-- Midtrans Snap.js (loaded dynamically by skin.js) -->
   <!-- Client Key di-inject via /api/studio/config oleh skin.js saat init -->
 
-  <script src="skin.js?v=57"></script>
+  <script src="/bot/skin.js?v=57"></script>
 </body>
 </html>

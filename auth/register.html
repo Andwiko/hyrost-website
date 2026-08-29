@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <base href="/">
   <script src="/assets/js/stealthRouter.js"></script>
     <meta charset="UTF-8">
     <script>
@@ -8,8 +9,8 @@
     </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Join Hyrost - Create Account</title>
-    <link rel="icon" type="image/png" href="../assets/images/hyrost.png">
-    <link rel="stylesheet" href="auth.css">
+    <link rel="icon" type="image/png" href="/assets/images/hyrost.png">
+    <link rel="stylesheet" href="/auth/auth.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -23,7 +24,7 @@
                     <i class="fas fa-arrow-left"></i> Back to Home
                 </a>
                 <div class="logo-area">
-                    <img src="../assets/images/hyrost.png" alt="Hyrost Logo" class="logo-img" style="width:54px; height:54px; border-radius:12px;">
+                    <img src="/assets/images/hyrost.png" alt="Hyrost Logo" class="logo-img" style="width:54px; height:54px; border-radius:12px;">
                     <h1>HYROST</h1>
                     <p>Begin Your Adventure</p>
                 </div>
@@ -70,7 +71,7 @@
     
     <!-- Google Sign-In Script -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <script src="register.js?v=20"></script>
+    <script src="/auth/register.js?v=20"></script>
     <script>
         function togglePasswordVisibility() {
             const passwordInput = document.getElementById('password');
