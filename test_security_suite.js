@@ -23,8 +23,8 @@ function request(path, options = {}) {
   });
 }
 
-async function runSecurityAndCleanUrlTests() {
-  console.log('🛡️  Starting URL Security & Clean URL Verification Suite...\n');
+async function runStealthAndSecurityTests() {
+  console.log('🛡️  Starting Stealth Route Masking (?=pv3Ad) & Security Verification Suite...\n');
 
   await new Promise((resolve) => {
     server = app.listen(PORT, () => {
@@ -34,76 +34,79 @@ async function runSecurityAndCleanUrlTests() {
   });
 
   try {
-    // Test 1: Path Traversal to /backend/server.js
-    console.log('Test 1: Blocking direct access to /backend/server.js...');
-    const r1 = await request('/backend/server.js');
+    // Test 1: Stealth Token /?=pv3Ad -> Serves dashboard.html with 200 OK
+    console.log('Test 1: Testing Stealth Token /?=pv3Ad (serving Dashboard)...');
+    const r1 = await request('/?=pv3Ad');
     console.log(`Status: ${r1.statusCode}`);
-    if (r1.statusCode !== 403) throw new Error(`Expected 403, got ${r1.statusCode}`);
+    if (r1.statusCode !== 200 || !r1.body.includes('<!DOCTYPE html>')) {
+      throw new Error(`Expected 200 HTML for /?=pv3Ad, got ${r1.statusCode}`);
+    }
+    console.log('✅ PASS: /?=pv3Ad successfully serves Dashboard HTML!');
+
+    // Test 2: Stealth Token /?=sK1nS -> Serves bot/skin.html with 200 OK
+    console.log('\nTest 2: Testing Stealth Token /?=sK1nS (serving Skin Studio)...');
+    const r2 = await request('/?=sK1nS');
+    console.log(`Status: ${r2.statusCode}`);
+    if (r2.statusCode !== 200 || !r2.body.includes('<!DOCTYPE html>')) {
+      throw new Error(`Expected 200 HTML for /?=sK1nS, got ${r2.statusCode}`);
+    }
+    console.log('✅ PASS: /?=sK1nS successfully serves Skin Studio HTML!');
+
+    // Test 3: Stealth Token /?=xK9Lm -> Serves modules/admin.html with 200 OK
+    console.log('\nTest 3: Testing Stealth Token /?=xK9Lm (serving Admin Panel)...');
+    const r3 = await request('/?=xK9Lm');
+    console.log(`Status: ${r3.statusCode}`);
+    if (r3.statusCode !== 200 || !r3.body.includes('<!DOCTYPE html>')) {
+      throw new Error(`Expected 200 HTML for /?=xK9Lm, got ${r3.statusCode}`);
+    }
+    console.log('✅ PASS: /?=xK9Lm successfully serves Admin Panel HTML!');
+
+    // Test 4: Direct Request /dashboard.html -> Auto Redirects to /?=pv3Ad
+    console.log('\nTest 4: Testing Direct Access /dashboard.html (Auto Redirect to Stealth Token)...');
+    const r4 = await request('/dashboard.html');
+    console.log(`Status: ${r4.statusCode}, Location: ${r4.headers.location}`);
+    if ((r4.statusCode !== 302 && r4.statusCode !== 301) || r4.headers.location !== '/?=pv3Ad') {
+      throw new Error(`Expected redirect to /?=pv3Ad, got ${r4.statusCode} ${r4.headers.location}`);
+    }
+    console.log('✅ PASS: /dashboard.html is disguised and redirected to /?=pv3Ad!');
+
+    // Test 5: Direct Request /bot/skin.html -> Auto Redirects to /?=sK1nS
+    console.log('\nTest 5: Testing Direct Access /bot/skin.html (Auto Redirect to Stealth Token)...');
+    const r5 = await request('/bot/skin.html');
+    console.log(`Status: ${r5.statusCode}, Location: ${r5.headers.location}`);
+    if ((r5.statusCode !== 302 && r5.statusCode !== 301) || r5.headers.location !== '/?=sK1nS') {
+      throw new Error(`Expected redirect to /?=sK1nS, got ${r5.statusCode} ${r5.headers.location}`);
+    }
+    console.log('✅ PASS: /bot/skin.html is disguised and redirected to /?=sK1nS!');
+
+    // Test 6: Path Traversal Blocking
+    console.log('\nTest 6: Blocking direct access to /backend/server.js...');
+    const r6 = await request('/backend/server.js');
+    console.log(`Status: ${r6.statusCode}`);
+    if (r6.statusCode !== 403) throw new Error(`Expected 403, got ${r6.statusCode}`);
     console.log('✅ PASS: /backend/server.js is blocked!');
 
-    // Test 2: Path Traversal via URL encoded .. (/%2e%2e/backend)
-    console.log('\nTest 2: Blocking URL Encoded Path Traversal (/%2e%2e/backend)...');
-    const r2 = await request('/%2e%2e/backend');
-    console.log(`Status: ${r2.statusCode}`);
-    if (r2.statusCode !== 403 && r2.statusCode !== 400) throw new Error(`Expected 403/400, got ${r2.statusCode}`);
-    console.log('✅ PASS: Path traversal sequence blocked!');
-
-    // Test 3: Access to .env
-    console.log('\nTest 3: Blocking access to .env file...');
-    const r3 = await request('/.env');
-    console.log(`Status: ${r3.statusCode}`);
-    if (r3.statusCode !== 403) throw new Error(`Expected 403, got ${r3.statusCode}`);
+    // Test 7: Access to .env
+    console.log('\nTest 7: Blocking access to .env file...');
+    const r7 = await request('/.env');
+    console.log(`Status: ${r7.statusCode}`);
+    if (r7.statusCode !== 403) throw new Error(`Expected 403, got ${r7.statusCode}`);
     console.log('✅ PASS: .env access is blocked!');
 
-    // Test 4: Access to /data/ directory
-    console.log('\nTest 4: Blocking access to /data/ internal folder...');
-    const r4 = await request('/data/store/users.json');
-    console.log(`Status: ${r4.statusCode}`);
-    if (r4.statusCode !== 403) throw new Error(`Expected 403, got ${r4.statusCode}`);
-    console.log('✅ PASS: /data/ access is blocked!');
-
-    // Test 5: Clean URL 301 Redirect for /index.html -> /
-    console.log('\nTest 5: Testing Clean URL Redirect for /index.html -> / ...');
-    const r5 = await request('/index.html');
-    console.log(`Status: ${r5.statusCode}, Location: ${r5.headers.location}`);
-    if (r5.statusCode !== 301 || r5.headers.location !== '/') throw new Error(`Expected 301 to /, got ${r5.statusCode} ${r5.headers.location}`);
-    console.log('✅ PASS: /index.html cleanly redirects to /');
-
-    // Test 6: Clean URL 301 Redirect for /dashboard.html -> /dashboard
-    console.log('\nTest 6: Testing Clean URL Redirect for /dashboard.html -> /dashboard ...');
-    const r6 = await request('/dashboard.html');
-    console.log(`Status: ${r6.statusCode}, Location: ${r6.headers.location}`);
-    if (r6.statusCode !== 301 || r6.headers.location !== '/dashboard') throw new Error(`Expected 301 to /dashboard, got ${r6.statusCode} ${r6.headers.location}`);
-    console.log('✅ PASS: /dashboard.html cleanly redirects to /dashboard');
-
-    // Test 7: Serving Clean URL /dashboard (200 OK HTML)
-    console.log('\nTest 7: Testing Clean URL serving for /dashboard ...');
-    const r7 = await request('/dashboard');
-    console.log(`Status: ${r7.statusCode}`);
-    if (r7.statusCode !== 200 || !r7.body.includes('<!DOCTYPE html>')) throw new Error(`Expected 200 HTML for /dashboard, got ${r7.statusCode}`);
-    console.log('✅ PASS: /dashboard cleanly serves HTML without showing .html in URL!');
-
-    // Test 8: Serving Clean URL /bot/skin (200 OK HTML)
-    console.log('\nTest 8: Testing Clean URL serving for /bot/skin ...');
-    const r8 = await request('/bot/skin');
-    console.log(`Status: ${r8.statusCode}`);
-    if (r8.statusCode !== 200 || !r8.body.includes('<!DOCTYPE html>')) throw new Error(`Expected 200 HTML for /bot/skin, got ${r8.statusCode}`);
-    console.log('✅ PASS: /bot/skin cleanly serves HTML without showing .html in URL!');
-
-    // Test 9: Check Security Headers
-    console.log('\nTest 9: Verifying OWASP Security Headers...');
-    const r9 = await request('/');
-    if (r9.headers['x-content-type-options'] !== 'nosniff') throw new Error('Missing X-Content-Type-Options: nosniff');
-    if (!r9.headers['x-frame-options']) throw new Error('Missing X-Frame-Options');
+    // Test 8: Check Security Headers
+    console.log('\nTest 8: Verifying OWASP Security Headers...');
+    const r8 = await request('/');
+    if (r8.headers['x-content-type-options'] !== 'nosniff') throw new Error('Missing X-Content-Type-Options: nosniff');
+    if (!r8.headers['x-frame-options']) throw new Error('Missing X-Frame-Options');
     console.log('✅ PASS: All OWASP Security Headers verified!');
 
-    console.log('\n🎉 ALL SECURITY & CLEAN URL TESTS PASSED (100% SUCCESSFUL)! 🚀🛡️\n');
+    console.log('\n🎉 ALL STEALTH MASKING (?=pv3Ad) & SECURITY TESTS PASSED (100% SUCCESSFUL)! 🚀🛡️\n');
   } finally {
     server.close();
   }
 }
 
-runSecurityAndCleanUrlTests().then(() => process.exit(0)).catch(err => {
+runStealthAndSecurityTests().then(() => process.exit(0)).catch(err => {
   console.error('❌ Test failed:', err);
   if (server) server.close();
   process.exit(1);

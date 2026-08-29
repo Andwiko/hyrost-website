@@ -1,6 +1,6 @@
 # =============================================================================
 # HYROST Web & API Server Configuration (.htaccess)
-# Web Security Hardening, Path Traversal Shield & Clean URL Pretty Routing
+# Web Security Hardening, Path Traversal Shield & Stealth Route Masking (?=pv3Ad)
 # =============================================================================
 
 # 1. Nonaktifkan Directory Listing (Mencegah penjelajahan isi folder publik)
@@ -35,7 +35,7 @@ Options -Indexes -MultiViews
     </FilesMatch>
 </IfModule>
 
-# 3. Web Application Firewall (WAF) & Clean URL Pretty Routing Rules
+# 3. Web Application Firewall (WAF) & Stealth Route Masking Rules
 <IfModule mod_rewrite.c>
     RewriteEngine On
     RewriteBase /
@@ -64,20 +64,79 @@ Options -Indexes -MultiViews
         RewriteRule ^api/(.*)$ http://127.0.0.1:3044/api/$1 [P,L]
     </IfModule>
 
-    # 3.5 CANONICAL CLEAN URL REDIRECTS (Sembunyikan dan Hapus .html dari Browser Address Bar)
+    # 3.5 STEALTH OPAQUE ROUTE REDIRECTS (Alihkan Nama File Asli ke Token Samaran)
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /dashboard(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=pv3Ad [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /bot/skin(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=sK1nS [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /bot/index(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=b0tM3 [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/admin(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=xK9Lm [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/store(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=t7Y4b [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/leaderboard(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=lDb8R [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/rewards(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=rW9Dz [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/forum(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=f0rUm [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /modules/wiki(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=wK1iX [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /auth/login(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=Lg8In [R=302,L]
+
+    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /auth/register(\.html)?[\s\?] [NC]
+    RewriteRule ^.*$ /?=Rg3St [R=302,L]
+
     # Redirect /index.html ke /
     RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.html[\s\?] [NC]
     RewriteRule ^index\.html$ / [R=301,L]
 
-    # Redirect subfolder/index.html ke /subfolder/
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /(.*)/index\.html[\s\?] [NC]
-    RewriteRule ^(.*)/index\.html$ /$1/ [R=301,L]
+    # 3.6 STEALTH TOKEN RESOLVER (Sajikan Konten Berdasarkan Query Token)
+    RewriteCond %{QUERY_STRING} (^|=)pv3Ad($|&) [NC]
+    RewriteRule ^$ dashboard.html [L]
 
-    # Redirect file *.html ke URL Bersih tanpa .html
-    RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /([^\s]+)\.html[\s\?] [NC]
-    RewriteRule ^(.*)\.html$ /$1 [R=301,L]
+    RewriteCond %{QUERY_STRING} (^|=)sK1nS($|&) [NC]
+    RewriteRule ^$ bot/skin.html [L]
 
-    # 3.6 CLEAN URL INTERNAL REWRITE (Sajikan file .html di balik layar tanpa merubah URL)
+    RewriteCond %{QUERY_STRING} (^|=)b0tM3($|&) [NC]
+    RewriteRule ^$ bot/index.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)xK9Lm($|&) [NC]
+    RewriteRule ^$ modules/admin.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)t7Y4b($|&) [NC]
+    RewriteRule ^$ modules/store.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)lDb8R($|&) [NC]
+    RewriteRule ^$ modules/leaderboard.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)rW9Dz($|&) [NC]
+    RewriteRule ^$ modules/rewards.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)f0rUm($|&) [NC]
+    RewriteRule ^$ modules/forum.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)wK1iX($|&) [NC]
+    RewriteRule ^$ modules/wiki.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)Lg8In($|&) [NC]
+    RewriteRule ^$ auth/login.html [L]
+
+    RewriteCond %{QUERY_STRING} (^|=)Rg3St($|&) [NC]
+    RewriteRule ^$ auth/register.html [L]
+
+    # 3.7 Clean URL Fallback
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{DOCUMENT_ROOT}/$1.html -f

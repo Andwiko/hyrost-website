@@ -1,7 +1,7 @@
 /**
  * =============================================================================
  * HYROST — Core Express Application & Multi-Layer Security Architecture
- * Clean URL Routing, Anti-Path Traversal Firewall & Security Hardening
+ * Stealth Route Masking (?=pv3Ad), URL Firewall & Security Hardening
  * =============================================================================
  */
 
@@ -10,6 +10,11 @@ const cors = require('cors');
 const path = require('path');
 const fs = require('fs');
 const errorHandler = require('./middleware/errorHandler');
+const {
+  resolveTokenToFile,
+  resolveFileToToken,
+  extractTokenFromRequest
+} = require('./utils/stealthRouter');
 
 // Initialize app
 const app = express();
@@ -64,7 +69,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ─── 2. CANONICAL CLEAN URL ENFORCEMENT (Strips .html from browser URL) ───────
+// ─── 2. STEALTH OPAQUE ROUTE PROCESSOR (?=pv3Ad) ──────────────────────────────
 app.use((req, res, next) => {
   if (req.method !== 'GET' && req.method !== 'HEAD') return next();
 
@@ -75,23 +80,34 @@ app.use((req, res, next) => {
                      reqPath.startsWith('/interaction');
   if (isExcluded) return next();
 
-  const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+  // 2.1 Check if incoming request matches a Stealth Token (e.g. ?=pv3Ad or ?pv3Ad)
+  const token = extractTokenFromRequest(req);
+  if (token) {
+    const targetFile = resolveTokenToFile(token);
+    if (targetFile) {
+      const fullPath = path.resolve(rootDir, targetFile);
+      if (fullPath.startsWith(rootDir + path.sep) && fs.existsSync(fullPath)) {
+        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
+        res.setHeader('X-Route-Mask', token);
+        return res.sendFile(fullPath);
+      }
+    }
+  }
 
-  // 2.1 Redirect /index.html -> /
+  // 2.2 If accessing real file or clean name, auto-redirect to stealth token URL
+  // e.g. /dashboard.html or /dashboard -> /?=pv3Ad
+  const targetToken = resolveFileToToken(reqPath);
+  if (targetToken) {
+    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
+    // Strip original query if it was just clean
+    const extraQs = qs && !qs.startsWith('?=') && !qs.startsWith('?' + targetToken) ? '&' + qs.replace(/^\?/, '') : '';
+    return res.redirect(302, `/?=${targetToken}${extraQs}`);
+  }
+
+  // 2.3 Redirect /index.html -> /
   if (reqPath === '/index.html') {
+    const qs = req.url.includes('?') ? req.url.slice(req.url.indexOf('?')) : '';
     return res.redirect(301, '/' + qs);
-  }
-
-  // 2.2 Redirect /subfolder/index.html -> /subfolder/
-  if (reqPath.endsWith('/index.html')) {
-    const clean = reqPath.slice(0, -10) + '/';
-    return res.redirect(301, clean + qs);
-  }
-
-  // 2.3 Redirect any direct *.html request to clean URL without .html
-  if (reqPath.endsWith('.html')) {
-    const clean = reqPath.slice(0, -5);
-    return res.redirect(301, clean + qs);
   }
 
   next();
@@ -184,49 +200,10 @@ app.use('/api', (req, res) => {
   res.status(404).json({ success: false, message: `API Endpoint '${req.originalUrl}' tidak ditemukan pada server Node.js.` });
 });
 
-// ─── 7. CLEAN URL RESOLVER (Serves .html files behind pretty URLs) ────────────
-app.use((req, res, next) => {
-  if (req.method !== 'GET' && req.method !== 'HEAD') return next();
-  if (req.path.startsWith('/api') || req.path.startsWith('/uploads') || req.path.startsWith('/assets')) return next();
-
-  // Normalize path
-  let reqPath = req.path;
-  if (reqPath === '/') {
-    return res.sendFile(path.join(rootDir, 'index.html'));
-  }
-
-  const cleanPath = reqPath.replace(/\/+$/, '');
-  const candidateHtml = path.resolve(rootDir, '.' + cleanPath + '.html');
-  const candidateIndex = path.resolve(rootDir, '.' + cleanPath + '/index.html');
-
-  // Verify candidate is safely inside rootDir
-  const rootWithSep = rootDir.endsWith(path.sep) ? rootDir : rootDir + path.sep;
-
-  if (candidateHtml.startsWith(rootWithSep) && fs.existsSync(candidateHtml)) {
-    try {
-      if (fs.statSync(candidateHtml).isFile()) {
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-        return res.sendFile(candidateHtml);
-      }
-    } catch (_) {}
-  }
-
-  if (candidateIndex.startsWith(rootWithSep) && fs.existsSync(candidateIndex)) {
-    try {
-      if (fs.statSync(candidateIndex).isFile()) {
-        res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate, max-age=0');
-        return res.sendFile(candidateIndex);
-      }
-    } catch (_) {}
-  }
-
-  next();
-});
-
-// Frontend HTML & Static assets fallback
+// ─── 7. STATIC FILES & DEFAULT ROOT SERVING ──────────────────────────────────
 app.use(express.static(rootDir, staticOptions));
 
-// Default Route
+// Default Route (Serves index.html on root)
 app.get('/', (req, res) => {
   res.sendFile(path.join(rootDir, 'index.html'));
 });
