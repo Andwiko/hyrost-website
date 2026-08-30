@@ -13,6 +13,22 @@ extraPaths.forEach(p => {
     Module.globalPaths.push(p);
   }
 });
+module.paths = [...new Set([...extraPaths, ...module.paths])];
+
+// DIAGNOSTIC LOGS
+console.log("[Diagnostics] Current __dirname:", __dirname);
+console.log("[Diagnostics] module.paths:", module.paths);
+try {
+  const fs = require('fs');
+  const targetDir = path.resolve(__dirname, "../node_modules");
+  console.log("[Diagnostics] node_modules in parent exists?", fs.existsSync(targetDir));
+  if (fs.existsSync(targetDir)) {
+    console.log("[Diagnostics] express in node_modules exists?", fs.existsSync(path.join(targetDir, "express")));
+    console.log("[Diagnostics] express/lib/express.js exists?", fs.existsSync(path.join(targetDir, "express/lib/express.js")));
+  }
+} catch (e) {
+  console.log("[Diagnostics] Failed to list node_modules:", e.message);
+}
 
 let dotenv;
 try {

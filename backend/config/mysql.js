@@ -38,13 +38,27 @@ const connectionReady = (async () => {
         isConnected = false;
         console.log('⚠️ MySQL Database Unreachable:', err.message);
         console.log('⚡ Active: IN-MEMORY FALLBACK MODE (Local Testing Active)');
-        const loaded = await localDbSync.loadInto(inMemoryStore);
-        if (loaded) {
-            console.log('📂 Loaded local file store: data/store/database.json');
+        try {
+            if (localDbSync && typeof localDbSync.loadInto === 'function') {
+                const loaded = await localDbSync.loadInto(inMemoryStore);
+                if (loaded) {
+                    console.log('📂 Loaded local file store: data/store/database.json');
+                }
+            }
+            if (typeof seedInMemoryAdmin === 'function') {
+                await seedInMemoryAdmin(inMemoryStore);
+            }
+            if (localDbSync) {
+                if (typeof localDbSync.flushPersist === 'function') {
+                    await localDbSync.flushPersist(inMemoryStore);
+                } else if (typeof localDbSync.persistImmediate === 'function') {
+                    await localDbSync.persistImmediate(inMemoryStore);
+                }
+            }
+            console.log('✅ Admin user credentials synchronized from .env to local store.');
+        } catch (syncErr) {
+            console.warn('⚠️ Fallback sync non-fatal warning:', syncErr.message);
         }
-        await seedInMemoryAdmin(inMemoryStore);
-        await localDbSync.persistImmediate(inMemoryStore);
-        console.log('✅ Admin user credentials synchronized from .env to local store.');
     }
 })();
 
@@ -229,12 +243,9 @@ const poolWrapper = {
             try {
                 return await realPool.execute(sql, values);
             } catch (err) {
-                if (['ECONNREFUSED', 'ETIMEDOUT', 'ECONNRESET', 'PROTOCOL_CONNECTION_LOST'].includes(err.code)) {
-                    isConnected = false;
-                    console.log('⚡ MySQL Connection lost. Falling back to In-Memory DB.');
-                } else {
-                    throw err;
-                }
+                isConnected = false;
+                console.error(`⚡ MySQL Error (${err.code || 'UNKNOWN'}):`, err.message);
+                console.log('⚡ Falling back to In-Memory DB due to query failure.');
             }
         }
 
@@ -753,7 +764,9 @@ const poolWrapper = {
         return [{ insertId: Date.now(), affectedRows: 1 }, []];
         })();
 
-        localDbSync.schedulePersist(inMemoryStore);
+        if (localDbSync && typeof localDbSync.schedulePersist === 'function') {
+            try { localDbSync.schedulePersist(inMemoryStore); } catch (_) {}
+        }
         return fallbackResult;
     },
 

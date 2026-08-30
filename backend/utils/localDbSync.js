@@ -47,5 +47,6 @@ module.exports = {
   loadInto,
   schedulePersist,
   flushPersist,
+  persistImmediate: flushPersist,
   STORE_FILE,
 };
