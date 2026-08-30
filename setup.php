@@ -574,8 +574,8 @@ $nodeVersionStr = $nodeBin ? trim(@shell_exec("{$nodeBin} -v 2>/dev/null") ?: 'v
     </div>
 
     <div class="quick-links">
-      <a href="/admin" target="_blank"><i class="fas fa-shield-alt"></i> Buka Admin Panel</a>
-      <a href="/bot/skin" target="_blank"><i class="fas fa-cube"></i> Buka 3D Skin Studio</a>
+      <a href="/modules/admin.html" target="_blank"><i class="fas fa-shield-alt"></i> Buka Admin Panel</a>
+      <a href="/bot/skin.html" target="_blank"><i class="fas fa-cube"></i> Buka 3D Skin Studio</a>
       <a href="/" target="_blank"><i class="fas fa-home"></i> Beranda Hyrost</a>
     </div>
   </div>

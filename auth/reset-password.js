@@ -34,7 +34,7 @@ document.getElementById('reset-form').addEventListener('submit', async function(
             messageDiv.style.color = '#4cd137';
             messageDiv.textContent = 'Password updated! Redirecting to login...';
             setTimeout(() => {
-                window.location.href = '/login';
+                window.location.href = '/auth/login.html';
             }, 2000);
         } else {
             messageDiv.style.color = '#e84118';

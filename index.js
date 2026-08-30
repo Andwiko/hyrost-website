@@ -209,7 +209,7 @@ function goToDashboard() {
 
 // Show login page (formerly modal)
 function showLoginModal() {
-    window.location.href = '/login';
+    window.location.href = '/auth/login.html';
 }
 
 // Close login modal (Deprecated)

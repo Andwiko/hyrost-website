@@ -19,12 +19,12 @@
 
   /** Navigasi ke halaman Login */
   global.showLoginModal = function () {
-    global.location.href = '/login';
+    global.window.location.href = '/auth/login.html';
   };
 
   /** Navigasi ke halaman Register */
   global.goToRegister = function () {
-    global.location.href = '/register';
+    global.window.location.href = '/auth/register.html';
   };
 
   /** Navigasi ke Profil Akun */
@@ -34,12 +34,12 @@
 
   /** Navigasi ke Forum */
   global.goToForum = function () {
-    global.location.href = '/forum';
+    global.window.location.href = '/modules/forum.html';
   };
 
   /** Navigasi ke Leaderboard */
   global.goToLeaderboard = function () {
-    global.location.href = '/leaderboard';
+    global.window.location.href = '/modules/leaderboard.html';
   };
 
   /** Navigasi ke Marketplace */
@@ -49,22 +49,22 @@
 
   /** Navigasi ke Wiki */
   global.goToWiki = function () {
-    global.location.href = '/wiki';
+    global.window.location.href = '/modules/wiki.html';
   };
 
   /** Navigasi ke Inventaris */
   global.goToInventory = function () {
-    global.location.href = '/inventory';
+    global.window.location.href = '/inventory/inventory.html';
   };
 
   /** Navigasi ke Admin Panel */
   global.goToAdmin = function () {
-    global.location.href = '/admin';
+    global.window.location.href = '/modules/admin.html';
   };
 
   /** Navigasi ke 3D Skin Studio */
   global.goToSkin = function () {
-    global.location.href = '/skin';
+    global.window.location.href = '/bot/skin.html';
   };
 
   /** Navigasi ke halaman utama */

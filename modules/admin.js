@@ -25,7 +25,7 @@ let ticketStatusFilter = '';
 
 // ─── INIT ────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
-  if (!token) { window.location.href = '/login'; return; }
+  if (!token) { window.location.href = '/auth/login.html'; return; }
 
   loadAdminProfile();
   await Promise.all([loadRoles(), refreshServerStatus()]);
@@ -55,7 +55,7 @@ function toast(msg, type = 'info', duration = 3500) {
 window.logout = () => {
   localStorage.removeItem('hyrostToken');
   localStorage.removeItem('currentUser');
-  window.location.href = '/login';
+  window.location.href = '/auth/login.html';
 };
 
 // Mobile sidebar handled by mobileLayout.js (HyrostMobileLayout)
