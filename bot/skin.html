@@ -127,6 +127,11 @@
     <div class="studio-layout-grid">
       <!-- Left Column: 3D Viewport -->
       <div class="viewport-card">
+        <!-- Floating Theater Exit Button (High Priority for Mobile & Desktop) -->
+        <button type="button" class="theater-floating-exit-btn" id="btnFloatingExitTheater" onclick="toggleFullscreenTheater()" title="Keluar dari Mode Teater" aria-label="Keluar dari Mode Teater">
+          <i class="fas fa-arrow-left"></i> <span>Keluar Mode Teater</span>
+        </button>
+
         <div class="viewport-badge-top" id="viewportBadgeTop">
           <div style="display:flex; align-items:center; gap:8px;">
             <i class="fas fa-circle" style="color:var(--mei-emerald); font-size:0.6rem;"></i>
@@ -168,6 +173,9 @@
           </button>
           <button class="viewport-action-btn" onclick="resetCameraView()" title="Reset Posisi Kamera">
             <i class="fas fa-camera-rotate" style="color:#ff3355;"></i> <span>Reset Kamera</span>
+          </button>
+          <button class="viewport-action-btn theater-bar-exit-btn" onclick="toggleFullscreenTheater()" title="Keluar dari Mode Teater">
+            <i class="fas fa-compress" style="color:#ff4466;"></i> <span>Keluar Teater</span>
           </button>
         </div>
 

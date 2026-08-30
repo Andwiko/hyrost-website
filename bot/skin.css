@@ -1331,8 +1331,10 @@
   }
 }
 
-/* Normal state: theater exit button is hidden */
-.theater-exit-btn {
+/* Normal state: theater exit buttons are hidden */
+.theater-exit-btn,
+.theater-floating-exit-btn,
+.theater-bar-exit-btn {
   display: none;
 }
 
@@ -1343,6 +1345,7 @@ body.fullscreen-theater-mode {
   width: 100vw !important;
   height: 100dvh !important;
   inset: 0 !important;
+  touch-action: none;
 }
 
 /* Hide background website elements completely in theater mode */
@@ -1385,13 +1388,46 @@ body.fullscreen-theater-mode .viewport-card {
   overflow: hidden !important;
 }
 
+/* ─── Prominent Floating Theater Exit Button (Mobile & Desktop) ─── */
+body.fullscreen-theater-mode .theater-floating-exit-btn {
+  display: inline-flex !important;
+  position: fixed !important;
+  top: max(14px, env(safe-area-inset-top, 14px)) !important;
+  left: max(14px, env(safe-area-inset-left, 14px)) !important;
+  z-index: 999999999 !important;
+  align-items: center !important;
+  gap: 8px !important;
+  background: linear-gradient(135deg, #ff3355 0%, #dc2626 100%) !important;
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.4) !important;
+  padding: 8px 18px !important;
+  border-radius: 999px !important;
+  font-family: var(--font-body, system-ui, sans-serif) !important;
+  font-size: 0.85rem !important;
+  font-weight: 800 !important;
+  letter-spacing: 0.3px !important;
+  cursor: pointer !important;
+  box-shadow: 0 4px 20px rgba(255, 51, 85, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.2) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+
+body.fullscreen-theater-mode .theater-floating-exit-btn:hover,
+body.fullscreen-theater-mode .theater-floating-exit-btn:active {
+  transform: scale(1.06) !important;
+  background: linear-gradient(135deg, #ff1a40 0%, #b91c1c 100%) !important;
+  box-shadow: 0 6px 28px rgba(255, 51, 85, 0.85) !important;
+}
+
 body.fullscreen-theater-mode .viewport-badge-top {
   position: relative !important;
   top: auto !important;
   left: auto !important;
   right: auto !important;
   width: 100% !important;
-  margin-bottom: 10px !important;
+  margin-top: 46px !important;
+  margin-bottom: 8px !important;
   box-sizing: border-box !important;
   flex-shrink: 0 !important;
   background: rgba(15, 17, 23, 0.92) !important;
@@ -1426,6 +1462,13 @@ body.fullscreen-theater-mode .theater-exit-btn:hover {
   color: #fff !important;
   transform: scale(1.05) !important;
   box-shadow: 0 0 18px rgba(255, 51, 85, 0.6) !important;
+}
+
+body.fullscreen-theater-mode .theater-bar-exit-btn {
+  display: inline-flex !important;
+  background: rgba(255, 51, 85, 0.15) !important;
+  border-color: rgba(255, 51, 85, 0.5) !important;
+  color: #ff6688 !important;
 }
 
 body.fullscreen-theater-mode .viewport-canvas-wrapper {
